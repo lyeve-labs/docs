@@ -32,6 +32,33 @@ Each release publishes three tags per image:
 Tags carry no `v` prefix: release `v0.50.4` is the image tag `0.50.4`. Pin an exact version in
 production and upgrade on purpose.
 
+### Release candidates
+
+Before a release, the engine and the admin console publish one or more release candidates,
+tagged `X.Y.Z-rc.N`. A candidate is the build we intend to ship, published so you can try the
+upgrade on a copy of your own deployment before the release is final. An urgent fix can ship
+without one.
+
+| Tag | Moves? |
+|---|---|
+| `X.Y.Z-rc.1`, `X.Y.Z-rc.2`, ... | Never. One candidate, exactly |
+
+A candidate is published under its exact tag and nothing else. It never moves `latest` or the
+minor tag, so you only run one by naming it:
+
+```bash
+docker pull ghcr.io/lyeve-labs/lyeve-core:X.Y.Z-rc.N
+```
+
+What a candidate promises:
+
+- The release `X.Y.Z` is the last candidate, with no other change.
+- A database that ran a candidate upgrades to `X.Y.Z` and to every later release.
+- There is no downgrade from a candidate to an earlier release. Run candidates on a copy of your
+  data, never on the only one.
+
+Report a problem with a candidate as you would with a release. A fix produces the next candidate.
+
 ## The engine image
 
 | | |
