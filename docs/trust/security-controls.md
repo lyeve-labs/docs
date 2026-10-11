@@ -146,11 +146,9 @@ removes it with its usage history. A disabled or expired key authenticates
 nothing. Clients send the key in the `X-API-Key` header, and every use is
 recorded in the key's history.
 
-:::caution[Known defect]
-A key's `schemas` list is stored but not enforced today. What a key may read is
-decided by its roles and scopes, so do not rely on `schemas` to keep a key away
-from a content type.
-:::
+A key's roles go through the same access rules as a person's, field masks
+included. A key with a `schemas` list is refused every other content type with
+`403`, whatever its roles allow.
 
 There is no rotate route. Rotation is: create the replacement, deploy it, revoke
 the old key. SCIM provisioning tokens do rotate in place

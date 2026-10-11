@@ -36,6 +36,18 @@ still change before it is marked stable.
   bandwidth.
 :::
 
+## In the admin console
+
+Open **Access > API keys**. The **Usage (this month)** column shows each key's
+requests, with a bar for a key that has a monthly limit. To change a key's
+limits, choose its **Request limits** button. The drawer has **Per hour**,
+**Per day** and **Per month**, where `0` sets no ceiling, and **Save** applies
+them. The **New key** form has the same three fields.
+
+![The Request limits drawer for the partner-feed key, open over the API keys list, with a limit of 200 requests per month.](images/api-key-request-limits.png)
+
+The sections below cover the monthly limit over the API.
+
 ## How it works
 
 | Question | Answer |
@@ -58,11 +70,12 @@ to get one, and creates the `post` content type used here.
    curl -X POST http://localhost:3001/api/admin/api-keys \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "partner-feed", "scopes": ["content:read"], "monthly_limit": 3}'
+     -d '{"name": "partner-feed", "roles": ["site-reader"], "scopes": ["content:read"], "monthly_limit": 3}'
    ```
 
    The answer is `201` with `"monthly_limit": 3`. Copy `raw_key` into `KEY`
-   and `id` into `KEY_ID`.
+   and `id` into `KEY_ID`. The `site-reader` role needs an access rule that
+   reads `post`, as step 1 of [API keys](api-keys.md#try-it) creates.
 
 2. Call the Content API four times with it:
 
@@ -98,9 +111,6 @@ to get one, and creates the `post` content type used here.
    ```
 
    The answer is the key with `"monthly_limit": 0`.
-
-5. In the admin console, **Access > API keys** shows how much of its limit each
-   key has used this month, and lets you change the limit one key at a time.
 
 ## Set or change a limit
 
