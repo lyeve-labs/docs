@@ -32,6 +32,18 @@ content write.
   [Event replay](event-replay.md) publishes past changes again.
 :::
 
+## In the admin console
+
+As a super admin, open **Settings > Message broker**. The counters show what
+was **Published**, **Refused by the broker** and had **Nowhere to send** since
+the process started. **Connection** gives the **Backend**, the **Target**,
+whether **TLS** is on, the **Topics** pattern and the **Last publish**. When no
+broker is set, **Connecting services** says that events are discarded. The
+page only reads the connection. The broker itself is set as
+[Settings](#settings) describes, and **Refresh** reads the page again.
+
+![The Message broker page on an instance with no broker configured, with the published count, the connection details, the topic pattern lyeve.tenant.{tenant}.{schema}.{event} and a warning that events are discarded until EVENT_BUS is set.](images/message-broker-events.png)
+
 ## How it works
 
 | Step | What happens |
@@ -98,8 +110,7 @@ server with JetStream, and the `nats` command line tool.
    with the entry's fields in `data`.
 
 5. Read the status again. `backend` is `nats`, `connected` is `true`, and
-   `published` has grown. A super admin sees the same under
-   **Settings > Message broker** in the admin console.
+   `published` has grown.
 
 ## What a message carries
 

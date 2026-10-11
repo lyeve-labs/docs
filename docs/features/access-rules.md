@@ -10,7 +10,7 @@ sidebar:
 An access rule says what one role may do with one resource. It names the role,
 the resource, the actions allowed, and the fields removed from what that role
 reads. Rules apply to people who sign in, in the admin console or with a
-session token.
+session token, and to API keys through the roles each key carries.
 
 :::tip[Best for]
 - **Editors who must not delete.** Give `editor` `read` and `update` on
@@ -24,11 +24,27 @@ session token.
 :::
 
 :::note[Use something else when]
-- You want to limit a program. An [API key](api-keys.md) is limited by its
-  scopes, and access rules and field masks do not apply to it.
+- You want to limit a program further than its roles. An
+  [API key](api-keys.md) also carries scopes and a list of content types.
 - You want to know what each role can do before any rule exists. See
   [roles and permissions](../guides/user/roles-and-permissions.md).
 :::
+
+## In the admin console
+
+Open **Access > Permissions**. Only a super admin sees the page. Each role is a
+row, and expanding it lists its rules: **Every schema** for the `*` rule, then
+one row per content type or flow. A filled dot is an action the rule allows,
+and **Field mask** lists the fields the role does not read.
+
+- **New role** adds a role. It starts with no actions anywhere.
+- The plus button on a role's row adds a rule, and the pencil edits one. The
+  rule form has a checkbox per action and a **Field mask** box for
+  comma-separated field names.
+- **Show resources with no rule** lists the content types and flows a role has
+  no rule for.
+
+![Access > Permissions with a reader role that reads post without its body, and a support role that reads every content type and updates author.](images/access-rules.png)
 
 ## How it works
 
@@ -157,9 +173,6 @@ a super admin token in `TOKEN`. The quickstart shows how to get one.
 
    Every entry comes back with `title` and without `body`.
 
-6. Open **Access > Permissions** in the admin console. The `reader` rule is in
-   the list. Only a super admin sees the page.
-
 ## Shut a role out of one content type
 
 Write a rule for that content type with no actions. It overrides any `*` rule
@@ -255,6 +268,6 @@ refused with `403 This route needs a signed-in session.`
 - [Roles and permissions](../guides/user/roles-and-permissions.md): what each
   role may do before any rule.
 - [Flows](flows.md#who-may-do-what): which flow route needs which action.
-- [API keys](api-keys.md): how a program's access is limited instead.
+- [API keys](api-keys.md): what a key's scopes and content types add to its roles.
 - [Editorial review](editorial-review.md): the review definitions a rule can
   name.

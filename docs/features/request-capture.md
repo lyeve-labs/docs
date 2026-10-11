@@ -52,6 +52,24 @@ dropped rather than queued, and the server log counts them.
 Deleting a tenant deletes its captures. A privacy erasure request for a person
 deletes the captures that name them.
 
+## In the admin console
+
+Open **Insight > Observability > Request capture**.
+
+- **Capture rules** lists each rule's **Route**, **Method**, **Sample**, how
+  long its captures are **Kept for**, and its state. **New rule** adds one.
+- **Captures** lists the newest requests with their status, how long each
+  **Took** and when it was **Captured**. Select captures and press
+  **New replay set** to save them under a **Name**.
+- **Replay sets** lists the saved sets. **Replay** on a set runs it again
+  after you confirm, and gives each request's status and time beside the
+  original's.
+
+![The Request capture page with two rules, content reads kept for 7 days and every other request for 1 day, a replay set named Content smoke holding three captures, and the newest captures below.](images/request-capture.png)
+
+Reading one capture in full, replaying it on its own and comparing two
+captures go through the API below.
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -127,9 +145,6 @@ You need an admin token in `TOKEN`. The
    curl -X DELETE http://localhost:3001/api/admin/request-captures/$REPLAY_ID \
      -H "Authorization: Bearer $TOKEN"
    ```
-
-The admin console has no page for captures, so you work with them over the
-API.
 
 ## Replay a call safely
 

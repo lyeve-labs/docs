@@ -35,6 +35,21 @@ the fields it needs, and subscriptions tell it when content changes.
   streams them over Server-Sent Events or WebSocket.
 :::
 
+## In the admin console
+
+Open **Delivery > GraphQL**. **Where it answers** gives the address for
+queries and mutations and the one for subscriptions, with **A first request**
+to copy. **Schema** lists every root field generated from your content types
+under **Queries**, **Mutations** and **Subscriptions**, with its arguments and
+what it does. **Persisted queries** lists the queries clients may send by hash,
+each with its **Operation**, **Hash** and **Query**, and buttons to copy the
+hash, disable the query or delete it. **New persisted query** registers one.
+
+![The GraphQL page with the generated Queries, Mutations and Subscriptions, and two persisted queries, LatestPosts and PostBySlug, each with its hash and query text.](images/graphql-api.png)
+
+The sections below query, filter and subscribe over the API, and set the
+persisted query rules.
+
 ## How the schema is built
 
 The schema is generated from your content types and rebuilt when one is
@@ -146,9 +161,6 @@ shows how to get one) and a content type named `post`, such as the one in
    ```
 
    The answer is the same `data` as sending the text.
-
-6. Open **Delivery > GraphQL** in the admin console to see the root fields and
-   the persisted queries.
 
 ## Query and filter
 

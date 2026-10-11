@@ -38,6 +38,23 @@ Editorial review is in beta. Three limits apply:
   minutes after its due time.
 :::
 
+## In the admin console
+
+Open **Reviews**. **Definitions** lists each review with its content type, its stages in order
+and what happens **On approval**. **New definition** creates one: give it a **Name**, pick the
+**Content schema**, and fill in **Stages, in order**, each with a **Stage name**, a
+**Required role** and **SLA, hours**. **Assignments** lists every entry under review with its
+stage, status, assignee and due time, and the tabs above it filter by status.
+
+![The Reviews page. The Launch page review definition has two stages, Copy edit for the editor role within 24 hours and Legal for the legal role within 48 hours, and publishes on approval. Below it, two entries are under review, one in the Legal stage and one waiting for Copy edit.](images/editorial-review.png)
+
+On an entry's page, the **Review** card shows **Not under review.** until someone picks a
+**Definition**, gives the **Assignee** as a user id and chooses **Start review**. Under review,
+it shows the stage, status, assignee and due time, a **Comment** box, and the actions you may
+take, such as **Approve**, **Request changes** and **Reject**.
+
+![The Review card of an entry in stage 2 of 2, Legal, with the status In review, assigned to you and due on October 13. Below a Comment box are Approve, Request changes and Reject.](images/editorial-review-entry.png)
+
 ## How it works
 
 | Part | What it is |
@@ -155,19 +172,7 @@ You need a token in `TOKEN` for an `admin` or `super_admin`. The
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   Each transition is listed with its `action`, `actor_id` and `comment`. In the admin console,
-   **Reviews** lists the assignment, and the entry's **Review** card shows its stage.
-
-## Review in the admin console
-
-Open **Reviews**. **New definition** creates a definition with its stages, each with a
-**Stage name**, a **Required role** and **SLA, hours**. **Assignments** lists every entry under
-review, filtered by status, with overdue ones marked **Overdue**.
-
-On an entry's page, the **Review** card shows **Not under review.** until someone chooses
-**Start review**. Under review it shows the stage, status, assignee and due time, a comment box,
-and the actions you may take: **Approve**, **Reject**, **Request changes**, **Publish** and
-**Unpublish**.
+   Each transition is listed with its `action`, `actor_id` and `comment`.
 
 ## Who may act
 

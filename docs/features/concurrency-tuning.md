@@ -48,6 +48,17 @@ without a restart.
 Each replica has its own set, and a change made over the API applies to the
 replica that received it until it restarts. There are no per-tenant limits.
 
+## In the admin console
+
+Open **Insight > Observability** and find **Goroutine engine**. **Tracker**,
+**Worker pool**, **Parallel engine** and **Async hooks** give the same numbers
+as the reads below, and **Goroutines by owner** lists the live tasks of each
+feature with the age of the oldest. Below them, **Resize the pool**,
+**Parallel engine** and **Async hooks** change the settings with **Apply**.
+The section notes that a change holds until the instance restarts.
+
+![The Goroutine engine section with the tracker, a worker pool of 100 with nothing waiting, the parallel engine at 4 at once, and async hooks off.](images/concurrency-tuning.png)
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -95,10 +106,6 @@ You need an admin token in `TOKEN`. The
      -H "Content-Type: application/json" \
      -d '{"size": 200}'
    ```
-
-5. In the admin console, open **Insight > Observability**. The
-   **Goroutine engine** section shows the same views, with forms for the
-   changes. The forms need the same license as the API.
 
 ## Read the numbers
 

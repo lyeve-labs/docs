@@ -53,6 +53,23 @@ erasure rewrites entries without updating their hashes, so an erased entry
 no longer matches either.
 :::
 
+## In the admin console
+
+Open **Insight > Audit log**. The **Entries** tab lists the log, newest first,
+with the time, action, resource, user and address of each entry. Search by
+action, resource type or user id, or narrow the list with an action and a
+**From** and **To** date. **Export JSON** downloads your tenant's entries. A
+super admin also sees **Export all**, for every tenant, and **Prune**.
+
+![The Entries tab of the audit log listing recent actions, newest first, each with its time, action, resource and the user who acted.](images/audit-log.png)
+
+The **Retention and holds** tab lists the retention **Policies** and the
+**Legal holds**. **New policy** and **New hold** add one, **Release** on a
+hold removes it, and **Enforce now** runs enforcement at once. The
+**Streaming** tab holds [audit log streaming](audit-log-streaming.md).
+
+![The Retention and holds tab with a policy that keeps every event on user for one year and then deletes it, and a legal hold named Case 2026-114 that protects entries on user.](images/audit-log-retention.png)
+
 ## Turn it on
 
 1. Install a license that includes `audit`. See
@@ -61,7 +78,6 @@ no longer matches either.
    `openssl rand -hex 32`. A production instance refuses to start without it.
    Outside production, a missing key logs a warning and the chain is not
    protected by a secret.
-3. Open **Insight > Audit log** in the admin console.
 
 Keep `LYEVE_AUDIT_HMAC_KEY` stable. Changing it breaks the chain for entries
 written before the change. Without the license, the routes are not served and

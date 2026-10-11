@@ -54,6 +54,24 @@ custom rules, the tenant limit and the address entries. You can still list
 and delete them, but not create or edit one. Refusals keep being counted, and
 reading them needs the license again.
 
+## In the admin console
+
+Open **Settings > Rate limits**. The page counts the custom rules, the
+enforced rules and the callers at their limit. Below the counts are the
+**Global limit**, the **Sign-in and reset protections**, the **Custom rules**
+and the **Engine limits**, which come from the environment and change only
+there. The edit button on a row changes that limit, and **New rule** adds a
+custom rule. **Right now** lists the callers close to a limit.
+
+![The Rate limits page counting two custom rules, with the global limit turned off at 50 per second and a burst of 100, and the sign-in protections at 5 attempts per address every 15 minutes.](images/rate-limiting.png)
+
+**Tenant controls** opens **Tenant rate limits**. **Set a limit** gives the
+tenant a limit of its own. The **Allow list** and **Deny list** each take
+entries through **New address**. **Refusal history** counts what was refused
+in the **Last hour**, **Last day** or **Last week**.
+
+![Tenant rate limits with no limit of the tenant's own, one allowed and one denied IPv6 range, each with a note, and the refusal history for the last day.](images/rate-limiting-tenant.png)
+
 ## Try it
 
 You need a super admin token in `TOKEN`. The
@@ -123,10 +141,6 @@ You need a super admin token in `TOKEN`. The
    The answer is `201`. A super admin's rule with no `tenant_id` applies to
    every tenant, so the answer carries none. Without the license it is `402`
    with `payment_required`.
-
-5. Open **Settings > Rate limits** in the admin console. The page shows the
-   global limit, the protections, the limits on public routes and the custom
-   rules.
 
 ## The sign-in protections
 

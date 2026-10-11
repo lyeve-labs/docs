@@ -33,6 +33,27 @@ rejected rows download as CSV, and a finished import can be rolled back.
   [Migrate existing content](../how-to/migrate-existing-content.md).
 :::
 
+## In the admin console
+
+Open **Insight > Imports**. **History** lists each import with what it created, updated,
+skipped and rejected. Its buttons open the import's rows, download the rows it rejected, and
+roll it back. **Mapping templates** lists the saved mappings, and **New template** adds one.
+
+![The Imports page. History lists store-pages.csv, imported into landing_page to create and update, which finished with rows rejected: 3 created and 1 rejected. Mapping templates starts below it.](images/bulk-import.png)
+
+**New import** opens a wizard in three steps:
+
+1. **Source.** Choose **Upload a file** or **From a web address**, pick the **Content type**,
+   and pick a **Mapping template** if you saved one. **Format** reads it from the file unless
+   you pick one. Choose **Read the file**.
+2. **Map.** Check the **Column in the file** for each field, guessed from the column names.
+   Under **When an entry already exists**, choose **Create only** or **Create and update**, and
+   pick the **Key field**, such as **Entry slug**. Choose **Dry run**.
+3. **Check.** Read how many rows **Would import** and **Would be rejected**, and why. Then
+   choose the import button, which names the count, such as **Import 2 rows**.
+
+![The Check step of a new import. Of 3 rows in the file, 2 would import and 1 would be rejected, row 3 for a missing title. Import 2 rows is at the bottom.](images/bulk-import-check.png)
+
 ## How it works
 
 | Step | What happens |
@@ -104,24 +125,6 @@ FD=dGl0bGUsYm9keQpIZWxsbyxGaXJzdCBwb3N0Cg==
    ```json
    { "removed": 1, "status": "rolled_back" }
    ```
-
-6. In the admin console, open **Insight**, then **Imports**. The import is in **History**, with
-   its rows and its rollback.
-
-## Import from the admin console
-
-Open **Insight**, then **Imports**, and choose **New import**. The wizard has three steps:
-
-1. **Source.** Choose **Upload a file** or **From a web address**, pick the **Content type**,
-   and choose **Read the file**. **Format** reads it from the file unless you pick one.
-2. **Map.** Check the **Column mapping**, which is guessed from the column names. Under **When
-   an entry already exists**, choose **Create only** or **Create and update**, with a **Key
-   field** such as **Entry slug**. Choose **Dry run**.
-3. **Check.** Read how many rows **Would import** and **Would be rejected**, then choose
-   **Import N rows**.
-
-Each import in **History** has buttons to open its rows, download its rejected rows, cancel it
-while it runs and roll it back.
 
 ## Formats
 

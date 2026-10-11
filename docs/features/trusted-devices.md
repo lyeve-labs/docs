@@ -32,6 +32,22 @@ score.
 - You want a limit on request volume. Use [rate limiting](rate-limiting.md).
 :::
 
+## In the admin console
+
+Each person manages the browsers their own account trusts. Open the account
+menu in the header and choose **Trusted devices**.
+
+- To trust the browser you are using, enter a name in **Name this device** and
+  choose **Trust this browser**. Only the browser you are reading the page in
+  can be trusted from here.
+- **Remembered devices** lists every trusted browser with when it was last
+  seen and added. The trash button on a row forgets it.
+
+The console has no screen for login history or blocks. Use the API below for
+those.
+
+![The Trusted devices page of an editor's account, with the Trust this browser form and two remembered devices, Phone and Work laptop.](images/trusted-devices.png)
+
 ## How it works
 
 Every sign-in gets a score from 0 to 100 and a level:
@@ -78,9 +94,6 @@ history require a second factor whatever the score.
 2. Behind a load balancer or reverse proxy, set `TRUSTED_PROXIES` to its CIDR
    ranges. Without it every login appears to come from the proxy.
 3. Restart the instance.
-
-People manage their trusted browsers from the account menu in the admin
-console, under **Trusted devices**.
 
 ## Try it
 

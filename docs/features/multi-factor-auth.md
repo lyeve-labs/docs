@@ -30,6 +30,24 @@ turns it on for their own account.
   the provider.
 :::
 
+## In the admin console
+
+Each person turns it on for their own account:
+
+1. Open the account menu in the header and choose **Two-factor
+   authentication**.
+2. Choose **Turn on two-factor authentication**.
+3. Scan the QR code with an authenticator app, or copy the **Manual entry
+   secret**.
+4. Enter **The 6-digit code from the app** and choose **Verify and turn on**.
+5. Save the eight backup codes, or choose **Copy all codes**. They are shown
+   once.
+
+To turn it off, enter a current code or a backup code on the same page and
+choose **Turn off**.
+
+![The Two-factor authentication page during enrollment, with the QR code, the manual entry secret and the field for the six-digit code.](images/multi-factor-auth.png)
+
 ## How it works
 
 | Method | Used for |
@@ -64,17 +82,8 @@ instance's `ENCRYPTION_KEY`.
    registers a passkey.
 3. Restart the instance.
 
-In the admin console, each person enrolls their own account:
-
-1. Open the account menu in the header and choose **Two-factor
-   authentication**.
-2. Choose **Turn on two-factor authentication**.
-3. Scan the QR code with an authenticator app, or copy the secret.
-4. Enter the six-digit code and choose **Verify and turn on**.
-5. Save the eight backup codes. They are shown once.
-
-To turn it off, enter a current code or a backup code on the same page and
-choose **Turn off**.
+Each person then enrolls in the admin console. See
+[In the admin console](#in-the-admin-console).
 
 ## Try it
 

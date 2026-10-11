@@ -49,6 +49,16 @@ with no signed-in caller, pass through unchanged.
 Credential headers such as `Authorization`, `Cookie` and `Set-Cookie` are never
 stored or replayed.
 
+## In the admin console
+
+Open **Insight > Observability > Idempotency**. The page counts the keys held,
+the keys with a stored response and the requests in flight. **Keys** lists
+each key with the request it was sent on, its state, how many times it was
+replayed and its age. The page only reads. Clear a key, or see which store
+holds the keys, with the routes in [Try it](#try-it).
+
+![The Idempotency page with three keys held, each stored with the POST request it was sent on, its replay count and its age.](images/idempotent-requests.png)
+
 ## Try it
 
 You need an admin token in `TOKEN` and the `post` content type from the
@@ -96,9 +106,6 @@ You need an admin token in `TOKEN` and the `post` content type from the
    curl -X DELETE http://localhost:3001/api/admin/idempotency/checkout-7f3c9a2e-001 \
      -H "Authorization: Bearer $TOKEN"
    ```
-
-In the admin console, open **Insight > Observability > Idempotency** to see
-stored keys and which store holds them.
 
 ## Share keys across instances
 

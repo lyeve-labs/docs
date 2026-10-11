@@ -27,6 +27,21 @@ find it in your S3 bucket, and a schedule runs the same export on a timetable.
 - You want a full copy of a tenant to restore later. See [tenants](tenants.md).
 :::
 
+## In the admin console
+
+Open **Insight > Data export**. **Exports** lists each export with its format, what it holds,
+its status, the entries written and its size, and a button that downloads the file.
+**Schedules** lists each export that runs on a timetable, with its next run and buttons that
+pause or delete the schedule.
+
+![The Data export page. Exports lists two finished exports, published-pages-json in JSON and landing-pages-csv in CSV, each with its entry count, size and a download button. Schedules lists Nightly backup, every day at 02:00 UTC, enabled and next running on October 12.](images/data-export.png)
+
+**New export** asks for a **Name**, the **Schemas**, the **Format** and the **Statuses**, with
+**Include the schema definitions** and **Bundle referenced media**. **Start** runs it in the
+background. **New schedule** asks for the same, plus **When**: **Every hour**,
+**Every day at 02:00 UTC**, **Every Monday at 02:00 UTC**,
+**On the first of each month at 02:00 UTC** or **A cron expression of my own**.
+
 ## How it works
 
 | Step | What happens |
@@ -96,10 +111,6 @@ You need a content type `post` with a few entries, and a token in `TOKEN` for an
    ```
 
    The pause answers `200` without a `next_run_at`, and the delete answers `204`.
-
-6. In the admin console, open **Insight**, then **Data export**. The export is under
-   **Exports**, with a **Download** button. **New export** and **New schedule** do steps 1 and
-   4 from forms.
 
 ## Formats
 
@@ -181,10 +192,6 @@ curl -X POST http://localhost:3001/api/admin/data-export/schedules \
 - `next_run_at` shows when it runs next and `last_run_at` when it last ran. Disabling a
   schedule clears `next_run_at`.
 - `PUT` changes only the fields you send.
-
-In the admin console, **New schedule** offers **Every hour**, **Every day at 02:00 UTC**, **Every
-Monday at 02:00 UTC**, **On the first of each month at 02:00 UTC** or **A cron expression of my
-own**, and each schedule can be paused, resumed or deleted.
 
 ## Routes
 

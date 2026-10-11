@@ -29,8 +29,25 @@ site may search, and you can see what readers look for.
   [the data model](../concepts/data-model.md#entries).
 :::
 
-Searching from the admin console instead? [Search and organization](../guides/user/search-and-organization.md)
-covers the console side.
+## In the admin console
+
+Open **Search**. Type in **Search content** and choose **Search** to search every entry,
+drafts included. Each result shows its content type, status, slug and rank. The cards beside
+the results hold the settings the sections below describe:
+
+- **Public search** lists the content types under **Anyone may search**. Tick the ones your
+  site may search and choose **Save**.
+- **Ranking weights** sets **Title**, **Body** and **Tags** for every content type with no
+  weights of its own, the row saved under `*`.
+- **Synonyms** lists the synonym groups, and **New synonym** adds one.
+- **Last 30 days** counts **Searches** and the share with **No results**, and lists the top
+  queries.
+- **Rebuild index**, under **Index**, rebuilds the index from every entry.
+
+![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card has landing_page ticked under Anyone may search, and the Ranking weights card starts below it.](images/search.png)
+
+[Search and organization](../guides/user/search-and-organization.md) walks through searching
+from the console step by step.
 
 ## How it works
 
@@ -94,9 +111,6 @@ get one.
    ```json
    { "total_searches": 2, "unique_queries": 2, "avg_result_count": 1, "avg_duration_ms": 3, "top_queries": [{ "query_text": "hello", "count": 1 }], "zero_result_pct": 50 }
    ```
-
-5. Open **Search** in the admin console. The synonym is listed under **Synonyms**, and
-   **Last 30 days** counts your searches.
 
 ## Search as an admin
 
@@ -203,9 +217,6 @@ curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
 - A content type that is not public answers `404`, the same as one that does not exist.
 - Browsers may cache a result for 30 seconds.
 
-In the console, the **Public search** card on the **Search** page sets the same list with
-**Anyone may search**.
-
 ## Match other words with synonyms
 
 ```bash
@@ -237,7 +248,6 @@ A search uses the weights saved for its content type, then the ones saved under 
 `*`, then the defaults: title 1.0, body 0.4, tags 0.2. A negative weight counts as 0, and all
 three at 0 count as the defaults. `GET /api/admin/search/ranking?schema=article` answers the
 weights saved under that exact name, or the defaults when none are, even if a `*` row exists.
-The console's **Ranking weights** card edits the `*` row.
 
 | Backend | How weights apply |
 |---|---|

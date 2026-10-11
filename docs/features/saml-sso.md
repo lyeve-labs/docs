@@ -32,6 +32,22 @@ console session. Each tenant has its own providers.
   Add [SCIM provisioning](scim-provisioning.md) next to SAML.
 :::
 
+## In the admin console
+
+Open **Access > SAML SSO**. The list shows each provider with the expiry of
+**Our certificate** and **Their certificate**, and links to its **Metadata**
+and a **Test sign-in**. **Certificates to renew** counts the certificates that
+are expired or close to expiry.
+
+- **New provider** asks for the **Entity ID**, **Sign-on URL**, **Their signing
+  certificate** and **Attribute mapping** from your identity provider. Turn on
+  **Show on the sign-in page** to put its button on the login page.
+- To rotate our certificate, choose the refresh button on a provider. The new
+  certificate waits under **Waiting to be promoted**. Once the provider has
+  it, choose **Promote**.
+
+![Access > SAML SSO with two providers and their certificate expiry dates, and a new certificate for azure-ad waiting to be promoted.](images/saml-sso.png)
+
 ## How it works
 
 | Step | What happens |
@@ -64,8 +80,7 @@ What you can rely on:
 2. Set `LYEVE_BASE_URL` to the public address of the instance. In production,
    sign-in refuses to start without it.
 3. Set `SECURE_COOKIE=true` when the instance is served over HTTPS.
-4. Restart the instance and add a provider. A super admin opens **Access >
-   SAML SSO** in the admin console and chooses **New provider**, or uses the
+4. Restart the instance and add a provider in the admin console or with the
    API below.
 5. Give your provider the addresses in
    [Register LyEve with the provider](#register-lyeve-with-the-provider).
@@ -143,8 +158,7 @@ You need a super admin token in `TOKEN`. The
 
    The answer is the service provider's metadata XML.
 
-5. Open **Access > SAML SSO** in the admin console. The provider is listed
-   with its certificate expiry dates, and the login page offers it.
+5. Open the admin console's login page. It offers the provider.
 
 ## Register LyEve with the provider
 
@@ -202,9 +216,8 @@ Rotate in two steps so sign-in never breaks:
    ```
 
 Both calls return the provider. Promoting before staging answers
-`400 no next certificate configured`. The console shows the same two steps,
-and counts the certificates that are expired or close to expiry under
-**Certificates to renew**.
+`400 no next certificate configured`. The console has the same two steps. See
+[In the admin console](#in-the-admin-console).
 
 ## Settings
 
