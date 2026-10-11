@@ -151,18 +151,38 @@ holds several content types, only the rows of `content_type` are imported.
 ## Limits
 
 - 100,000 rows per import. Split a larger file into several imports.
-- 50 MiB per file, after base64 decoding.
+- 50 MiB per file, 52,428,800 bytes, uploaded or read from `source_url`.
+  [A file over 50 MiB](#a-file-over-50-mib) lists what each case answers.
 - A CSV file or a workbook sheet is read up to 1,024 columns and 5,000,000 cells, its width
-  times its rows. A wider or larger file answers `400` before any row is read. Empty cells
-  after a row's last value do not count toward its width. JSON, NDJSON and YAML rows hold
-  only their own keys, so the size limit bounds them. The `400` for a file that is too wide
-  carries the code `bulk_import.too_many_columns`, and one with too many cells
-  `bulk_import.too_many_cells`, beside the message. Every other parse failure carries
+  times its rows. A wider or larger file answers `400` before any row is imported. In a
+  workbook, empty cells after a row's last value do not count toward its width. JSON, NDJSON
+  and YAML rows hold only their own keys, so the size limit bounds them. The `400` for a file
+  that is too wide carries the code `bulk_import.too_many_columns`, and one with too many
+  cells `bulk_import.too_many_cells`, beside the message. Every other parse failure carries
   `bad_request`.
 - A `source_url` must be an absolute `http` or `https` address. Private, loopback and
   link-local addresses are refused, after a redirect too. The fetch gives up after 60 seconds
   and follows at most three redirects. The job keeps the address without its query string, so
   a signed link's signature is not stored.
+
+### A file over 50 MiB
+
+An uploaded file travels base64-encoded inside the request, so `POST /api/admin/imports`,
+`/api/admin/imports/validate` and `/api/admin/imports/preview` accept a request of up to
+70,953,644 bytes: a 50 MiB file once encoded, plus 1 MiB for the rest of the body.
+`MAX_BODY_BYTES` and `MAX_JSON_BODY_BYTES` do not change that figure. The engine checks the
+request's size before the import reads any of it. A file of 50.75 MiB or more always makes
+the request too large.
+
+| The file | Status | Message |
+|---|---|---|
+| Uploaded, in a request over 70,953,644 bytes | `413` | `Request body exceeds the 70953644 byte limit.` |
+| Uploaded, over 50 MiB once decoded, in a request of 70,953,644 bytes or less | `413` | `decoded file exceeds maximum size of 52428800 bytes` |
+| Uploaded in a chunked request, without `Content-Length`, over 70,953,644 bytes | `413` | `request body too large` |
+| Read from `source_url`, over 50 MiB | `422` | `the file is larger than 52428800 bytes` |
+
+Each `413` carries the code `payload_too_large`. Nothing is imported. Split the file and
+import the parts.
 
 ## Map fields
 
@@ -303,7 +323,9 @@ call them. `{id}` is the job id.
 | `404` | `import job not found` |
 | `409` | `job is already <status>` on cancel |
 | `409` | `only completed jobs can be rolled back (current status: <status>)` |
-| `413` | `request body too large`, `decoded file exceeds maximum size of 52428800 bytes` |
+| `413` | `Request body exceeds the 70953644 byte limit.`, for a request over 70,953,644 bytes |
+| `413` | `decoded file exceeds maximum size of 52428800 bytes` |
+| `413` | `request body too large`, for a chunked request that runs past 70,953,644 bytes |
 | `422` | `content_type is not a defined content schema` |
 | `422` | `target_field is not a field of this content type: <field>` |
 | `422` | `an upsert needs upsert_key, the field that finds the entry to update` |

@@ -8,9 +8,10 @@ sidebar:
 Two parts of LyEve are MIT-licensed, and each image carries the MIT `LICENSE`
 for the code in it:
 
-- **The engine.** Content types and the Content API, users and roles,
-  sign-in, draft and publish, revisions, and the PostgreSQL, MySQL and SQL
-  Server support. Access rules are a feature, covered below.
+- **The engine.** First-run setup, sign-in, users and roles, and the
+  PostgreSQL, MySQL and SQL Server support. It answers the Admin API and the
+  Content API. On its own it serves no content, because content types come
+  from a feature.
 - **The admin console.**
 
 Three parts are commercial, and their source is not public:
@@ -20,7 +21,11 @@ Three parts are commercial, and their source is not public:
   against a public key.
 - **Every feature beyond the engine, including the ones included free.** They
   are commercial software under the [EULA](https://lyeve.com/legal/eula). Free
-  means free of charge, not open source.
+  means free of charge, not open source. Content types, entries, draft and
+  publish, revisions and scheduled publishing come from two free features,
+  [schema changes](../features/schema-changes.md) and
+  [content lifecycle](../features/content-lifecycle.md). Access rules are a
+  feature too.
 - **The visual flow and schema editors in the admin image.** They carry a
   commercial license of their own, which the admin image ships beside the MIT
   one as `LICENSE-COMMERCIAL.md`.

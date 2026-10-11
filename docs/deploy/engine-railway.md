@@ -81,6 +81,12 @@ The JWKS document is on the domain for port 3002, and the setup route on the dom
 the one-time `setup_token` in the service's log, or `LYEVE_SETUP_TOKEN` when you set it. The
 [quickstart](../getting-started/quickstart.md) continues from step 2.
 
+## The admin console
+
+This page sets up the engine alone. The admin console runs as its own service, from the image
+`ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
+settings and the routing it needs.
+
 ## Next
 
 - [Engine on Fly.io](engine-fly.md): another host that publishes both APIs.

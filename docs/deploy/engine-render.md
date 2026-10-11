@@ -93,6 +93,12 @@ curl https://your-service.onrender.com/.well-known/jwks.json
 The first request after idle time is slow, and the next ones are fast until the service spins
 down again.
 
+## The admin console
+
+This page sets up the engine alone. The admin console runs as its own service, from the image
+`ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
+settings and the routing it needs.
+
 ## Next
 
 - [Free-tier stack](free-tier-overview.md): the $0 recipe and its limits.
