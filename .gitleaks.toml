@@ -1,0 +1,35 @@
+# Gitleaks configuration for docs.
+#
+#   gitleaks detect --config=.gitleaks.toml --verbose
+#
+# Every path below holds placeholder or fixture material only. Real
+# credentials never enter this repo. If a scan flags something outside these
+# paths, treat it as a genuine finding.
+
+title = "docs gitleaks config"
+
+# Without this a config REPLACES the built-in ruleset rather than adding to
+# it, so this file would detect only the rules written below and a tree
+# holding an AWS secret key would scan clean.
+[extend]
+  useDefault = true
+
+
+[allowlist]
+  description = "Documentation placeholders: every key shown is illustrative"
+
+  paths = [
+    # This file quotes the patterns it allowlists, so it matches itself.
+    '''\.gitleaks\.toml$''',
+    '''\.mdx?$''',
+  ]
+
+  stopwords = [
+    "example",
+    "placeholder",
+    "changeme",
+    "your-",
+    "a-32-byte-key",
+    "sk-live-abc",
+    "s3cr3t",
+  ]

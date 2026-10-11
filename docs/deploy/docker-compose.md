@@ -1,0 +1,261 @@
+---
+title: Docker Compose
+description: "Run the engine, the admin console, Postgres and a TLS proxy on one host with one Compose file."
+sidebar:
+  order: 14
+---
+
+This page gives you the whole stack in two files: the engine
+(`ghcr.io/lyeve-labs/lyeve-core`), the admin console (`ghcr.io/lyeve-labs/lyeve-admin`), a
+Postgres database and a Caddy proxy that obtains TLS certificates. Copy both files, write the
+`.env`, and run `docker compose up -d`.
+
+:::tip[Best for]
+- **Production on one server**, with the admin console and TLS included.
+- **Evaluating everything** on a machine you control, the console's screens included.
+:::
+
+:::note[Use something else when]
+You need more than one engine replica or failover. Use [Kubernetes](kubernetes.md), and read
+[Scaling](../scaling/index.md).
+:::
+
+## Before you start
+
+- A server with Docker and Docker Compose, with ports 80 and 443 open.
+- Two DNS names pointing at it, such as `admin.yourdomain.com` and `api.yourdomain.com`.
+
+## The Compose file
+
+```yaml
+# docker-compose.yml
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    # The database serves TLS so the engine connects with sslmode=require.
+    # The Debian-based image ships a self-signed certificate, which
+    # sslmode=require accepts.
+    command:
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+      - -c
+      - ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+    environment:
+      POSTGRES_USER: lyeve
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: lyeve
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lyeve -d lyeve"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  engine:
+    image: ghcr.io/lyeve-labs/lyeve-core:latest
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://lyeve:${DB_PASSWORD}@db:5432/lyeve?sslmode=require
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      LYEVE_AUDIT_HMAC_KEY: ${AUDIT_HMAC_KEY}
+      ADMIN_CONSOLE_KEY: ${ADMIN_CONSOLE_KEY}
+      RATE_LIMIT_RPS: "100"
+      SECURE_COOKIE: "true"
+      CORS_ORIGINS: https://admin.yourdomain.com
+      LYEVE_CONSOLE_URL: https://admin.yourdomain.com
+      TRUSTED_PROXIES: 172.28.0.0/24
+      LYEVE_LICENSE_KEY: ${LYEVE_LICENSE_KEY:-}
+      LYEVE_PLUGINS: ${LYEVE_PLUGINS:-}
+    volumes:
+      - engine-state:/var/lib/lyeve
+      - uploads-data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  admin:
+    image: ghcr.io/lyeve-labs/lyeve-admin:latest
+    restart: unless-stopped
+    environment:
+      ORIGIN: https://admin.yourdomain.com
+      CORE_INTERNAL_URL: http://proxy:8080
+      CORE_API_INTERNAL_URL: http://proxy:8080
+      ADMIN_CONSOLE_KEY: ${ADMIN_CONSOLE_KEY}
+      ADDRESS_HEADER: X-Forwarded-For
+      XFF_DEPTH: "1"
+    depends_on:
+      - proxy
+
+  proxy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - engine
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
+volumes:
+  db-data:
+  engine-state:
+  uploads-data:
+  caddy-data:
+```
+
+The proxy reads a `Caddyfile` next to the Compose file:
+
+```text
+# Caddyfile
+
+# Reachable inside the Compose network only. The console's server sends its
+# engine calls here. The hop is plain HTTP, so the proxy tells the engine the
+# browser's side was HTTPS. Without that, SECURE_COOKIE=true answers every
+# call with a redirect.
+http://proxy:8080 {
+  handle /api/admin/* {
+    reverse_proxy engine:3001 {
+      header_up X-Forwarded-Proto https
+    }
+  }
+  handle {
+    reverse_proxy engine:3002 {
+      header_up X-Forwarded-Proto https
+    }
+  }
+}
+
+# The admin console. The browser also calls the engine's APIs on this origin.
+admin.yourdomain.com {
+  handle /api/admin/* {
+    reverse_proxy engine:3001
+  }
+  handle /api/* {
+    reverse_proxy engine:3002
+  }
+  handle /.well-known/* {
+    reverse_proxy engine:3002
+  }
+  handle {
+    reverse_proxy admin:3002
+  }
+}
+
+# The Content API for your sites and apps.
+api.yourdomain.com {
+  reverse_proxy engine:3002
+}
+```
+
+Replace `yourdomain.com` in both files with your domain, so Caddy can obtain certificates for
+both public names. `TRUSTED_PROXIES` names the subnet the Compose file gives its network. If you
+change one, change the other.
+
+## Secrets and the `.env` file
+
+Compose fills `${VAR}` from a `.env` file next to the Compose file. Keep every secret there and
+keep that file out of version control. Generate it once:
+
+```bash
+cat > .env <<SECRETS
+DB_PASSWORD=$(openssl rand -hex 24)
+JWT_SECRET=$(openssl rand -hex 32)
+ENCRYPTION_KEY=$(openssl rand -hex 32)
+AUDIT_HMAC_KEY=$(openssl rand -hex 32)
+ADMIN_CONSOLE_KEY=$(openssl rand -hex 32)
+LYEVE_LICENSE_KEY=
+LYEVE_PLUGINS=
+SECRETS
+```
+
+Leave `LYEVE_LICENSE_KEY` empty to run the free features only. An empty `LYEVE_PLUGINS` starts
+every feature the license allows. Store `JWT_SECRET` and `ENCRYPTION_KEY` somewhere durable:
+`ENCRYPTION_KEY` encrypts stored secrets such as MFA seeds and OAuth client secrets, so a new
+value makes them unreadable.
+
+Each engine and console variable in these files is explained on
+[Docker images](docker.md), and every engine variable on
+[Configuration](../reference/configuration.md). `APP_ENV` defaults to `production`, which
+refuses a weak configuration, as
+[Configuration](../reference/configuration.md#what-production-refuses) lists.
+
+## Persistence
+
+Four volumes hold state:
+
+- `db-data` holds the database. Every tenant, entry and user lives here.
+- `engine-state` holds the signing key and the cached license. Lose it and every issued token
+  stops working, so every user signs in again.
+- `uploads-data` holds uploaded media when storage is on local disk, the default.
+- `caddy-data` holds the proxy's TLS certificates.
+
+Back up `db-data` and `uploads-data` together, and keep a copy of `engine-state`. To keep media
+off the host, point storage at an S3-compatible bucket instead. See
+[Object storage](../features/object-storage.md).
+
+## Bring it up
+
+```bash
+docker compose up -d
+docker compose logs -f engine       # watch migrations and boot
+docker compose ps                   # engine shows (healthy)
+```
+
+The engine waits for the database health check, because it applies its migrations when it
+starts. Its image carries its own health check, which asks `/healthz`. The image has no shell,
+so do not replace that check with a `CMD-SHELL` one.
+
+The engine maps no host port, so ask for readiness from inside the network. The Caddy image has
+`wget`:
+
+```bash
+docker compose exec proxy wget -qO- http://engine:3001/readyz
+```
+
+The answer is `{"status":"ok", ...}` with its checks once the engine is ready.
+[Health endpoints](docker.md#health-endpoints) says what each probe checks.
+
+## Create the first administrator
+
+Open `https://admin.yourdomain.com`. A fresh instance sends you to `/setup`, which asks for a
+setup token before it creates the first administrator. The engine prints the token at startup
+while no account exists:
+
+```bash
+docker compose logs engine | grep setup_token
+```
+
+To choose the token yourself, set `LYEVE_SETUP_TOKEN` (16 characters or more) on the engine.
+Signing in exercises the whole path: the proxy, the console, the engine and Postgres.
+
+## Upgrades
+
+Pull and recreate. The engine applies any new migrations when it starts:
+
+```bash
+docker compose pull engine admin
+docker compose up -d
+```
+
+`latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
+as `ghcr.io/lyeve-labs/lyeve-core:0.50.4` and change the tag when you choose to.
+
+## Next
+
+- [Production checklist](production-checklist.md): what to confirm before you take traffic.
+- [Backup and restore](../how-to/backup-and-restore.md): tenant snapshots and restores.
+- [Email](../features/email.md): outbound mail for invitations and password resets.
+- [Kubernetes](kubernetes.md): the same images on a cluster.

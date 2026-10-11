@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Node, for a local preview
+node_modules/
+dist/
+.astro/
+.cache/
+
+# Local preview output
+_site/
+build/
