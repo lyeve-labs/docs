@@ -42,6 +42,17 @@ Every quota and key limit already stored is enforced on every install, even
 after a license lapses. Clearing a limit, lifting a block and handling increase
 requests are free too.
 
+## In the admin console
+
+Open **Operations > Quotas and usage** as a super admin. The **Quotas** table
+lists each tenant that has a quota, with its API calls, storage and bandwidth
+used and the share of each limit. **Requests for more** lists the increases
+tenants have asked for. The page has no snapshot or export, so take those
+through the API below. Setting a quota is on
+[Tenant quotas](tenant-quotas.md#in-the-admin-console).
+
+![The Quotas and usage page with a quota for the default tenant, its API calls, storage and bandwidth used against each limit, a note that the quota is reported and never enforced, and one request for 100,000 API calls waiting.](images/usage-and-quotas.png)
+
 ## Try it
 
 You need a super admin token in `TOKEN`. The
@@ -84,9 +95,6 @@ You need a super admin token in `TOKEN`. The
    tenant_id,billing_period,api_calls,storage_bytes,bandwidth_bytes,content_count,media_count
    default,2026-10,0,0,0,1,0
    ```
-
-4. In the admin console, a super admin opens **Operations > Quotas and
-   usage**.
 
 ## Read one tenant or one key
 

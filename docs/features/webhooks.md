@@ -36,6 +36,32 @@ the other way: another service posts to LyEve and an entry is created.
 - The call needs logic, several steps or a response. [Flows](flows.md) do that.
 :::
 
+## In the admin console
+
+Open **Delivery > Webhooks**. The table lists each webhook with its **URL**,
+**Events**, **Schemas** and **Status**, and the **All**, **Enabled** and
+**Disabled** filter narrows it. Each row has buttons to test the webhook, open
+its **Delivery history**, rotate its signing secret, edit, duplicate or delete
+it. **Dead letters** opens the **Dead letter queue**, which holds the
+deliveries that ran out of attempts.
+
+![The Webhooks page listing two webhooks, Rebuild site enabled for post and Search index sync disabled for post and author, each with its URL, its after_create, after_update and after_delete events and its action buttons.](images/webhooks.png)
+
+**New webhook** asks for a **Name**, a **URL**, a **Signing secret**, the
+**Events** and the **Schemas**, with the template and filters under
+**Delivery options**. The **Events** list also offers `before_create`,
+`before_update` and `before_delete`, which never send a delivery, so tick the
+`after_` events.
+
+Open **Delivery > Incoming webhooks** for the endpoints other services post to.
+Each one shows its content type, the address to post to and whether it is
+enabled. **New incoming webhook** adds one.
+
+![The Incoming webhooks page with one enabled webhook, Guest posts, which creates post entries from payloads sent to its POST /api/v1/webhooks/in address.](images/webhooks-incoming.png)
+
+The sections below cover the same tasks over the Admin API, with the payload
+your endpoint receives and the retry policy.
+
 ## How it works
 
 | Step | What happens |
@@ -104,9 +130,6 @@ example assumes a content type named `post`, such as the one in
    ```json
    { "total": 1, "success_count": 1, "failure_count": 0, "success_rate": 100, "avg_latency_ms": 111, "last_24h": 1 }
    ```
-
-4. Open **Delivery > Webhooks** in the admin console. Your webhook is listed,
-   and **Delivery history** shows the test.
 
 To write the receiver that checks the signature, follow
 [Add a webhook](../how-to/add-a-webhook.md).
@@ -300,9 +323,6 @@ free.
 - Either answers `409 dead letter entry is not pending` once the entry has left
   `pending`.
 
-The console's **Dead letters** button on the **Webhooks** page shows the same
-queue.
-
 ## Read the history
 
 Every attempt is recorded with its status code, duration, request body, retry
@@ -431,10 +451,8 @@ If you set `LYEVE_PLUGINS` to choose which features start, include `webhook`.
 See [Licensing and tiers](../concepts/licensing-and-tiers.md).
 
 :::caution
-- The console's event list also offers `before_create`, `before_update` and
-  `before_delete`. Those never send a delivery. Tick the `after_` events.
-- A host that does not resolve, or resolves to a private address, is refused
-  on save with `400 invalid input`.
+A host that does not resolve, or resolves to a private address, is refused on
+save with `400 invalid input`.
 :::
 
 ## Routes

@@ -69,6 +69,22 @@ Without the PostgreSQL extension or MySQL's `performance_schema`, a slow
 request is still recorded with its method, path and duration, but with no
 query and no plan.
 
+## In the admin console
+
+Open **Insight > Observability > Slow queries**. Only a super admin can open
+it. **Sampled** counts the recorded entries, beside the slowest and the median
+time on the page. **Captured statements** lists each entry with the time it
+**Took**, its **Caller** and when it was **Captured**, and the search box above
+it narrows the page. **Analyze postgres**, **Analyze mysql** and
+**Analyze mssql** run the plan analysis when you ask, and list what they find
+under **Index suggestions**.
+
+![The Slow queries page with the sampled count, the slowest and median times, the three Analyze buttons and the captured statements, each with the time it took.](images/slow-query-analysis.png)
+
+On a database that does not report its statements, as in the picture, each
+entry reads as the request's method and path. [Prepare the database](#prepare-the-database)
+says what to turn on.
+
 ## Try it
 
 This needs a license with `query-monitor` and a super admin token in `TOKEN`.
@@ -104,9 +120,6 @@ The [quickstart](../getting-started/quickstart.md) shows how to get one.
    The answer has `top_cpu_time`, `top_io_reads`, `top_duration`,
    `top_executions` and `missing_indexes`. On another database every list is
    empty.
-
-4. In the admin console, open **Insight > Observability > Slow queries**. Only
-   a super admin sees it.
 
 ## Read a plan and its suggestions
 

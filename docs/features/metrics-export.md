@@ -61,6 +61,18 @@ Every export carries the same metrics:
 Traces are not part of this feature. To send traces, see
 [tracing under load](../scaling/index.md#tracing-under-load).
 
+## In the admin console
+
+Open **Insight > Observability > Telemetry**. **Metrics** lists every metric
+family the instance serves, with its current samples. Type part of a name in
+**Filter families**, or pick a type, to narrow the list. **Tenant destination**
+saves where the tenant's own series are pushed, by **OTLP** or
+**Pushgateway**, to a **URL** with headers from **Add header**. **Exporters**
+lists the backends the instance ships to, and reads
+**No exporter configured** until one is set.
+
+![The Telemetry page filtered to lyeve_requests_total, a counter with one sample per status class, method and tenant.](images/metrics-export.png)
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -105,9 +117,6 @@ You need an admin token in `TOKEN`. The
 
    Without a configured Pushgateway the answer is `404` with
    `exporter not found`.
-
-5. In the admin console, open **Insight > Observability > Telemetry** to see
-   each exporter's health.
 
 ## Choose a backend
 

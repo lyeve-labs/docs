@@ -54,6 +54,25 @@ server, and you need no Go knowledge to read the result:
 `go tool pprof -http=:8080 cpu.pb.gz` opens it in a browser, flame graph
 included.
 
+## In the admin console
+
+Open **Insight > Observability > Profiler**. Only a super admin can open it.
+
+- **Memory** gives the heap in use, heap objects, the total allocated, garbage
+  collection cycles, goroutines and the heap slope, with a label such as
+  **Steady** for the trend.
+- **Slowest endpoints** ranks the twenty slowest endpoints by p95, with their
+  count, average, p50, p99 and maximum. **By plugin** groups the same timings
+  by feature.
+- **pprof export** downloads a **CPU**, **Goroutines**, **Heap** or
+  **Allocations** profile, and **Flamegraph** records a CPU profile over a
+  **Window** of seconds and draws it.
+
+![The Profiler page with a steady memory trend and the slowest endpoints ranked by p95, each with its count, average and percentiles.](images/request-profiling.png)
+
+**Insight > Observability** also ranks endpoints by latency, under
+**Latency rankings**.
+
 ## Try it
 
 You need a super admin token in `TOKEN`. The
@@ -117,9 +136,6 @@ You need a super admin token in `TOKEN`. The
    ```
 
    The answer has `snapshots`, `slope_bytes_per_sec` and `leak_likely`.
-
-5. In the admin console, open **Insight > Observability > Profiler** to see the
-   same rankings and heap trend on screen.
 
 ## Rank the slowest endpoints
 

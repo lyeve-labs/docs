@@ -57,6 +57,21 @@ providers in its region, and an upload whose region cannot be read answers
 `503` rather than land elsewhere. See
 [object storage](object-storage.md#keep-a-tenants-files-in-its-region).
 
+## In the admin console
+
+Open **Settings > Data residency**. **Where tenants are** counts the regions,
+the tenants, the replicated tenants and the tenants not placed. Below the
+counts it lists how many tenants each region holds, and each tenant's region,
+replica and assignment date. **Regions** lists every region with where it runs
+and whether it accepts tenants. **New region** opens a form with **Slug**,
+**Name**, **Runs on**, **Latitude**, **Longitude**, **Accepting new tenants**
+and **Default for new tenants**.
+
+![The Data residency page with two regions. Northwind Traders is placed in eu-west-1, and the regions EU West (Ireland) and US East (Virginia) both accept tenants.](images/data-residency.png)
+
+The console does not assign a tenant to a region. Do that over the API, as
+[Try it](#try-it) shows.
+
 ## Try it
 
 This defines a region, assigns a tenant to it and reads the report. You need a
@@ -127,16 +142,14 @@ super admin token in `TOKEN`. The
    The answer is the region with `distance_km`, about `781` from Paris to
    Dublin.
 
-6. Open **Settings > Data residency** in the admin console. The region and the
-   assignment are there.
-
 ## Turn it on
 
 1. Run with a license that includes `data-residency`. If you set
    `LYEVE_PLUGINS`, include `data-residency` in it. See
    [Licensing and tiers](../concepts/licensing-and-tiers.md).
 2. On each engine, set `INSTANCE_REGION` to the slug of the region it serves.
-3. Create regions and assign tenants, in the console or over the API.
+3. Create regions in the console or over the API, and assign tenants over the
+   API.
 
 Without the license the feature does not start, and its routes answer `404`.
 

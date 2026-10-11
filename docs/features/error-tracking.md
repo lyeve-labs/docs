@@ -60,6 +60,17 @@ resolve for a fix you want to confirm, and ignore for an error you have
 decided to live with.
 :::
 
+## In the admin console
+
+Open **Insight > Observability > Errors**. **Recent events** lists the newest
+events with their time, endpoint, status and message. **Spike alerts** sets
+where a spike is reported and what counts as one, as
+[Get told when errors spike](#get-told-when-errors-spike) describes.
+
+![The Recent events table with six events: Gateway timed out three times at /checkout with status 504, Unsupported color profile in cover.png twice at /uploads/cover with 422, and Sync stopped after 30 seconds once at /jobs/newsletter-sync with 500.](images/error-tracking.png)
+
+Register codes and triage alerts through the API below.
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -120,9 +131,6 @@ You need an admin token in `TOKEN`. The
    ```
 
    Send the event from step 2 again, and the alert is `open` once more.
-
-5. In the admin console, open **Insight > Observability > Errors** to see the
-   same codes, events and alerts.
 
 ## Triage alerts
 

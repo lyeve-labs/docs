@@ -41,11 +41,22 @@ a signed-in user download or erase their own data.
 | Part | What it gives you | Where |
 |---|---|---|
 | **Daily figures** | `dau`, `api_calls`, `storage` and `new_users` for one tenant and one day, computed when you ask. | Admin API |
-| **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API |
+| **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API and admin console |
 | **Tenant usage** | A super admin's view of usage and activity across tenants, and each tenant's own view. | Admin and Content API |
 | **Privacy requests** | A user's own export and erasure. | Content API |
 
-The admin console has no page for these figures, so you work with them through
+## In the admin console
+
+Open **Insight > Analytics destinations**. **Destinations** lists the services
+this tenant's events go to, with each one's type, whether it is on and how many
+attempts a delivery gets. **New destination** connects a service, and the edit
+button on a row changes it. A destination that is off is kept and receives
+nothing. **Deliveries owed** lists the events a destination refused, narrowed
+by **All**, **Retrying** or **Failed**.
+
+![The Analytics destinations page with one Google Analytics 4 destination named main-ga4, switched off, with one attempt per event and nothing owed.](images/analytics.png)
+
+The daily figures have no page in the console, so you work with them through
 the API below.
 
 ## Try it

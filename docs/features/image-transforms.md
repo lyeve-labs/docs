@@ -41,6 +41,20 @@ can still change before it is marked stable.
   original, and it does the work instead.
 :::
 
+## In the admin console
+
+Open **Media library** and choose an image. Its **Preview** holds two sections
+for transforms. Under **Focal point**, click the image where a crop should
+center and choose **Save focal point**. Under **Transform URL**, set **Width**,
+**Height**, **Fit**, **Format**, **Quality** and **Expires**, then choose
+**Build URL**. The **Signed URL** appears below with the time it stops working,
+and its button copies it.
+
+![The Transform URL section of an image's preview, set to 800 by 450 with the Cover fit and WebP, and the signed URL it built with the time it stops working.](images/image-transforms.png)
+
+The sections below sign the same URLs over the Admin API and list every
+parameter.
+
 ## How it works
 
 | Step | What happens |
@@ -102,11 +116,6 @@ on a free install.
    `X-Transform-Cache: miss`.
 
 4. Load it again. The same `ETag` comes back with `X-Transform-Cache: hit`.
-
-5. In the admin console, open the image in the **Media library**. Its
-   **Preview** drawer has a focal point picker and a builder that signs a URL
-   with **Width**, **Height**, **Fit**, **Format**, **Quality** and
-   **Expires**.
 
 ## Parameters
 

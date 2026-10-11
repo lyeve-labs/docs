@@ -65,6 +65,21 @@ channel and no license.
 Every surface takes the same channel fields, so a setting you write for one
 works on the others.
 
+## In the admin console
+
+Each watched feature has its own channel form in the console, with the same
+five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
+**HTTPS webhook URL** and **PagerDuty routing key**.
+
+| What is watched | Where to open it |
+|---|---|
+| A scheduled job | **Operations > Scheduled jobs**, under **Failure alerts** in the job's form, with **Alert after this many failures in a row**. |
+| Error spikes | **Insight > Observability > Errors**, then **Spike alerts**. **What counts as a spike** sets a **Default** or **Custom** threshold. |
+| Log volume | **Insight > Logs**, then **Volume alerts**. Each rule from **New rule** has its own **Channels**. |
+| An uptime probe | **Insight > Observability > Synthetic monitoring**, then **Notice channels** on the probe's row. |
+
+![The Spike alerts page with two addresses in Email and a webhook address in Slack webhook URL, above the Discord, HTTPS webhook and PagerDuty fields.](images/alerts.png)
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -143,8 +158,6 @@ Send `alerts` in the body of any route that creates or updates a job:
   and the first run that works sends the recovery notice to the same channels.
 - An update that leaves `alerts` out keeps the job's current setting.
   `"alerts": null`, or an object naming no channel, removes them.
-- The admin console's **Operations > Scheduled jobs** has the email, Slack,
-  Discord and webhook fields in each job's form. Set PagerDuty over the API.
 
 The line a chat channel receives reads
 `Cron job "nightly-export" failed 3 runs in a row. The endpoint answered 500.`,

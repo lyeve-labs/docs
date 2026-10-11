@@ -34,6 +34,20 @@ by accident: the data stays until a super admin applies it.
 What a content type holds, its fields, field types and relations, is explained on
 [the data model](../concepts/data-model.md) page.
 
+## In the admin console
+
+Open **Schema builder** and pick a content type under **Content types**. Edit its fields, then
+choose **Preview DDL** to read the statements a save would run, each with its **Down SQL**.
+Nothing changes until you choose **Save**.
+
+![The Preview DDL dialog for the Note content type, after an unsaved edit that adds a subtitle field and removes pinned. It lists two statements, add column _note.subtitle and drop column _note.pinned, each with its SQL and a Down SQL toggle.](images/schema-changes.png)
+
+**History**, at the foot of the editor, lists the statements recorded for the content type.
+A save that removes a field leaves the removal there as a queued change. Until a super admin
+chooses **Apply**, every console page shows the count at the top, such as
+**1 pending migration**. **List** and **Canvas** switch between the editor and the diagram
+described in [Work on the schema canvas](#work-on-the-schema-canvas).
+
 ## How it works
 
 Each save compares the new definition with the stored one and acts on the difference:
@@ -126,9 +140,6 @@ shows how to get one.
    { "applied": 1, "canceled": 0 }
    ```
 
-6. In the admin console, open **Schema builder** and pick **Note**. **Preview DDL** shows
-   the statements for unsaved edits, and **History** lists what ran and what is queued.
-
 ## Preview a change
 
 Two routes answer the statements a definition would run, and change nothing:
@@ -181,8 +192,6 @@ definition uses again is canceled instead of run.
 | Apply one content type's queue | `POST /api/admin/schemas/{name}/apply-pending` |
 | See every queued statement, by content type | `GET /api/admin/migrate` |
 | Apply every queue | `POST /api/admin/migrate/apply`, or `POST /api/admin/schemas/migrate`, which also answers a `message` |
-
-In the console, a super admin applies a queue from **History** in the Schema builder.
 
 ## Delete a content type
 

@@ -60,6 +60,18 @@ exceptions, and no role sees unmasked output on a masked path.
 Matching is by pattern and cannot catch every form of personal data. Keep
 personal data out of fields that do not need it.
 
+## In the admin console
+
+Open **Settings > PII masking**. **Your own rules** lists the tenant's
+patterns with their order, replacement and state.
+**Presets, in the order they run** lists the built-in rules, which cannot be
+edited. **New rule** opens a form with **Name**, **Pattern**,
+**Replaced with** and **Priority**. Its **Try it** box runs the pattern on a
+**Sample** with **Run it**, and stores nothing. A new rule starts off until you turn on **Masking**.
+**Unmasked reads**, lower on the page, is the access log.
+
+![The PII masking page with one rule of the tenant's own, EMPLOYEE_ID, replacing EMP- and six digits with a redacted-employee placeholder, above the built-in presets in the order they run.](images/pii-masking.png)
+
 ## Try it
 
 This adds a rule for staff numbers and watches it mask a response. You need an
@@ -126,9 +138,6 @@ to get a token.
    ```
 
    The answer is `204`.
-
-A super admin manages the same rules and reads the log under
-**Settings > PII masking** in the admin console.
 
 ## Add your own rules
 

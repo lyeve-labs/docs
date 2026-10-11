@@ -32,6 +32,21 @@ Localization is in beta. Plan around these limits:
   translation there.
 :::
 
+## In the admin console
+
+Open **Settings > Locales**. Set the **Default locale**, add each language under
+**Enabled locales** with **Add locale**, build the **Fallback chain** in order with
+**Append**, then choose **Save**.
+
+![The Locales settings page. English is the default locale, German, French and Italian are enabled, and the fallback chain holds German.](images/localization.png)
+
+Each enabled locale is a tab in the **Translations** card on every entry's page. A tab shows
+the translation's status, its progress as **N of M fields written**, and the localized fields
+to fill in. An empty field names the locale a reader gets instead. A draft translation shows
+**Mark translated**, and **Save** keeps the fields.
+
+![The Translations card of an entry, on the fr tab. The French translation is a draft with 2 of 3 fields written. The title and summary are in French, and the empty body notes that a French reader gets it in German.](images/localization-entry.png)
+
 ## How it works
 
 | Part | What it is |
@@ -128,8 +143,7 @@ You need a token in `TOKEN` for an `admin` or `super_admin`. The
    ```
 
    The answer lists the translations, the `localized_fields`, and a `completeness` entry per
-   locale with `done`, `total` and `missing`. In the admin console, the entry's **Translations**
-   card shows the same progress as **N of M fields written**.
+   locale with `done`, `total` and `missing`.
 
 ## Mark which fields are translated
 
@@ -176,8 +190,7 @@ delete, export and resolve them.
 
 Every other part of localization is free.
 
-In the admin console, a `super_admin` opens **Settings**, then **Locales**. Over the API,
-`GET` and `PUT` `/api/admin/localization/locales`:
+Read and change the locale settings with `GET` and `PUT` `/api/admin/localization/locales`:
 
 | Setting | Meaning | Default |
 |---------|---------|---------|

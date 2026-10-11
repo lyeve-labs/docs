@@ -37,6 +37,26 @@ still change before it is marked stable.
   [Editorial review](editorial-review.md) adds stages and approvals.
 :::
 
+## In the admin console
+
+Open **Delivery > Releases**. The list shows each release with its status, its number of
+entries and when it **Goes out**, and the tabs above it filter by status. **New release** asks
+for a **Name** and a **Description**.
+
+Open a release to work on it:
+
+1. **Include entry** adds an entry by its ID. **When the release goes out** chooses
+   **Publish it** or **Unpublish it**, and the **Does** column shows the choice for each entry.
+2. Under **Schedule**, pick when it **Goes out at** and choose **Schedule**, or choose
+   **Publish now**.
+3. A scheduled release shows when it goes out, with **Unschedule** beside it. **Cancel release**
+   and **Delete** sit beside **Publish now**.
+
+On an entry's page, the **Release** card adds that entry to a release. Pick the **Release** and
+**When it goes out**, then choose **Add to release**.
+
+![The Spring launch release, scheduled to go out on March 1, 2027 at 09:00 UTC. It unpublishes Winter catalog and publishes Spring catalog and Spring pricing, with Publish now, Cancel release and Unschedule.](images/content-releases.png)
+
 ## How it works
 
 A release changes its entries in two stages:
@@ -140,9 +160,6 @@ to get one. Create two entries first, as in
 
    Scheduling or publishing the third release answers `409` until you take the
    entry out of one of them.
-
-5. In the admin console, open **Delivery > Releases** to see every release, or
-   use the **Release** card on an entry's page to add it to one.
 
 ## Build a release
 

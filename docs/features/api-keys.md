@@ -13,10 +13,11 @@ optional expiry and an optional monthly request limit. Every request a key
 makes is recorded against it, refused ones included.
 
 :::tip[Best for]
-- **A website or app that reads content.** A `content:read` key in your
-  frontend's build or server, revoked on its own if it leaks.
-- **An importer that writes entries.** A key with the `editor` role and
-  `content:write`, and nothing else.
+- **A website or app that reads content.** A `content:read` key with a role
+  that may read your published content types, in your frontend's build or
+  server, revoked on its own if it leaks.
+- **An importer that writes entries.** A key with the `editor` role,
+  `content:write` and an access rule that lets `editor` create the entries.
 - **A partner integration with a budget.** With `apikey-pro`, a
   [monthly request limit](api-key-request-limits.md), so one client cannot run
   up unlimited traffic.
@@ -28,10 +29,24 @@ makes is recorded against it, refused ones included.
 :::note[Use something else when]
 - A script or CI job calls the Admin API (`/api/admin/*`). Use an
   [admin token](../how-to/admin-tokens.md).
-- You need different people to see different fields. Field masks come from
-  [access rules](access-rules.md), which apply to people who sign in and not
-  to keys.
 :::
+
+## In the admin console
+
+Open **Access > API keys**. A super admin sees every key in the tenant with its
+roles, scopes, status, expiry and **Usage (this month)**. **All**, **Active**
+and **Revoked** narrow the list.
+
+1. Choose **New key**. Give it a **Name**, pick its **Roles**, and choose under
+   **Access** what it may reach on each part of the Content API. The form
+   lists the scopes it will grant.
+2. Set **Expires** and the **Request limits** if the key needs them, then
+   choose **Create**.
+3. Copy the key from **API key created**. It is not shown again.
+
+Each row has buttons to set the key's request limits, revoke it and delete it.
+
+![Access > API keys listing four keys with their roles, scopes, status and requests this month, one of them revoked.](images/api-keys-list.png)
 
 ## How a key is checked
 
@@ -39,7 +54,9 @@ makes is recorded against it, refused ones included.
 |---|---|
 | The key | Sent in `X-API-Key`, enabled and not expired. Anything else answers `401`. |
 | The scope | The scope the method and path need is one the key holds. |
-| The role | Writes to content need the `editor`, `admin` or `super_admin` role on the key. |
+| The content types | A key with a `schemas` list reaches only those content types. |
+| The role | A write to content needs the `editor`, `admin` or `super_admin` role on the key. |
+| The access rules | The key's roles go through [access rules](access-rules.md), the same rules as a person's. A read needs a rule that allows `read` on the content type, and a write one that allows the action. A field mask on a role hides those fields from the key too. |
 | The monthly limit | The key has requests left this calendar month (UTC). |
 
 A scope is `<resource>:<action>`. The resource is the first path segment after
@@ -66,20 +83,33 @@ You need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one, and
 creates the `post` content type used here.
 
-1. Create a key that may only read content:
+1. Give a role read access to `post`. A key reads only what its roles may
+   read, and a key with no role reads nothing:
+
+   ```bash
+   curl -X POST http://localhost:3001/api/admin/permissions \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"role": "site-reader", "schema_name": "post", "actions": ["read"]}'
+   ```
+
+   The answer is `200` with the rule. [Access rules](access-rules.md) covers
+   the rest of what a rule holds.
+
+2. Create a key with that role that may only read content:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/api-keys \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "website-build", "scopes": ["content:read"]}'
+     -d '{"name": "website-build", "roles": ["site-reader"], "scopes": ["content:read"]}'
    ```
 
    ```json
    {
      "id": "8c2e4f1a-3b6d-4a9e-b0c7-1d5f2e8a6b94",
      "name": "website-build",
-     "roles": [],
+     "roles": ["site-reader"],
      "schemas": [],
      "scopes": ["content:read"],
      "tenant_id": "default",
@@ -94,16 +124,17 @@ creates the `post` content type used here.
    `raw_key` is shown once. Only a hash is kept, so a lost key cannot be
    recovered.
 
-2. Read content with the key:
+3. Read content with the key:
 
    ```bash
    curl http://localhost:3002/api/v1/content/post \
      -H "X-API-Key: $KEY"
    ```
 
-   The answer is the list of posts.
+   The answer is the list of posts. Reading a content type no rule opens to
+   `site-reader` answers `403` with `permission denied`.
 
-3. Try to write with it:
+4. Try to write with it:
 
    ```bash
    curl -X POST http://localhost:3002/api/v1/content/post \
@@ -116,7 +147,7 @@ creates the `post` content type used here.
    { "error": "insufficient scope" }
    ```
 
-4. See what the key did:
+5. See what the key did:
 
    ```bash
    curl "http://localhost:3001/api/admin/api-keys/$KEY_ID/audit?limit=10" \
@@ -130,7 +161,7 @@ creates the `post` content type used here.
    ]
    ```
 
-5. See this month's usage:
+6. See this month's usage:
 
    ```bash
    curl http://localhost:3001/api/admin/usage/api-key/$KEY_ID \
@@ -139,7 +170,7 @@ creates the `post` content type used here.
 
    The answer holds `billing_period`, `requests`, `bytes_in` and `bytes_out`.
 
-6. Revoke the key:
+7. Revoke the key:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/api-keys/$KEY_ID/revoke \
@@ -164,34 +195,38 @@ lowering or clearing one is free. See
 
 ## Let a key write content
 
-Give it the `editor` role and the write scope. Only roles you hold can be
+Give it the `editor` role and the write scope, and give `editor` an access rule
+that lets it create entries of that content type. Only roles you hold can be
 granted, unless you are a super admin:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/permissions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "editor", "schema_name": "post", "actions": ["read", "create"]}'
+```
 
 ```json
 { "name": "catalog-import", "roles": ["editor"], "scopes": ["content:read", "content:write"] }
 ```
 
-Without the role, a write answers `403` with `insufficient permissions`.
-Without the scope, it answers `403` with `insufficient scope`.
+A write is checked in this order:
 
-:::caution
-- **Access rules do not limit a key.** A key with `content:read` reads every
-  content type in its tenant, with every field. Field masks apply to people
-  who sign in.
-- **`schemas` is not enforced.** A key stores a `schemas` list and the console
-  shows it, but the Content API does not check it. Limit a key with scopes.
-- **Keys made in the console carry no scopes.** The **New key** form sets a
-  name, roles, allowed schemas, an expiry and a monthly request limit. A console key without an admin role is
-  refused on every Content API route, so create Content API keys over the API.
-:::
+| Missing | Answer |
+|---|---|
+| The write scope | `403` with `insufficient scope` |
+| The `editor`, `admin` or `super_admin` role | `403` with `insufficient permissions` |
+| A rule that allows the action on the content type | `403` with `permission denied` |
+
+A `schemas` list on the key narrows it further. A key with
+`"schemas": ["post"]` answers `403` with `schema not allowed for this
+credential` on any other content type, whatever its roles allow.
 
 ## Manage keys
 
-Keys are managed from a signed-in session by an `admin` or `super_admin`. In
-the admin console, a super admin opens **Access > API keys**. A request made
-with an API key or an admin token cannot create, revoke or delete keys.
-
-![Access > API keys before any key exists, with the New key button.](images/api-keys.png)
+Keys are managed from a signed-in session by an `admin` or `super_admin`, in
+the admin console or over the routes below. A request made with an API key or
+an admin token cannot create, revoke or delete keys.
 
 Revoking turns a key off and keeps its history. Deleting removes the key and
 its history. To replace a leaked key, create a new one, move the program to
@@ -245,6 +280,8 @@ See
 |---|---|---|
 | `401` | `authentication required` | The key is unknown, revoked or expired. |
 | `403` | `insufficient scope` | The key's scopes do not cover the route. |
+| `403` | `schema not allowed for this credential` | The content type is outside the key's `schemas` list. |
+| `403` | `permission denied` | No access rule lets the key's roles do this on the content type. |
 | `429` | `monthly request limit (100000) exceeded` | The key used its monthly limit. The answer carries `X-RateLimit-Exceeded: true`. |
 
 <details>

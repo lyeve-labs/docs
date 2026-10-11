@@ -50,6 +50,24 @@ Every send checks the tenant's suppression list. A suppressed address is
 dropped, a send with nobody left is refused, and if the list cannot be read the
 send is refused too.
 
+## In the admin console
+
+Open **Settings > Email**. **Provider pool** lists the tenant's providers.
+**New provider** opens a form: pick **SMTP** or **Provider API** as the
+**Transport**, fill in the **From address** and the server or API details,
+then set the **Priority**, **Max per hour** and **Status**. A provider saved
+here joins the pool at once. **Fallback transport**, below the pool, holds the
+`SMTP_*` settings used when the pool is empty or every provider fails.
+
+![The New provider form with the SMTP transport, the from address noreply@example.com, the host smtp.example.com on port 587, a username, a hidden password and TLS turned on.](images/email.png)
+
+**Templates**, at the top of the page, lists every template with its subject
+and status. **New template** adds one, and each row can be previewed and
+edited. The two templates marked **Required** cannot be deleted. **Triggers**,
+beside it, holds the [content triggers](#mail-when-content-changes).
+
+![The Email templates page listing the required magic-link and password-reset templates and a welcome template, all three active.](images/email-templates.png)
+
 ## Try it
 
 You need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
@@ -118,9 +136,6 @@ it, which works on a free install.
 
    On a new tenant `current` is `3`: the two required templates and `welcome`.
    With `email-pro` the `limit` is `0`, which means no ceiling.
-
-6. Open **Settings > Email** in the admin console to set up the provider the
-   mail goes out through.
 
 ## Free and email-pro
 

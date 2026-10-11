@@ -61,6 +61,17 @@ still change before it is marked stable.
   redirects are not followed. To reach a collector inside your network, put a
   public HTTPS endpoint in front of it.
 
+## In the admin console
+
+Open **Insight > Audit log** and choose the **Streaming** tab. Each stream
+shows its name, its kind, its URL and when it last delivered. A stream that is
+turned off is marked **Paused**. **Send a test** sends one test event, and the
+edit and delete buttons on the row change or remove the stream.
+**New destination** opens a form with **Name**, **Destination**, **URL**,
+**Signing secret**, **Enabled** and **Send the existing log too**.
+
+![The Streaming tab of the audit log with one paused HTTPS stream named security-team, pointed at https://example.com/audit and never delivered, with Send a test, edit and delete buttons.](images/audit-log-streaming.png)
+
 ## Try it
 
 Run this on an install whose license carries `audit` and `audit-pro`, signed in
@@ -109,9 +120,8 @@ address.
    The answer is `{"data": [...]}`, and each stream reports
    `cursor_sequence`, `pending_entries` and `lag_seconds`.
 
-5. In the admin console, the **Streaming** tab of **Insight > Audit log** lists
-   the streams. Delete the test stream with
-   `DELETE /api/admin/audit-log/sinks/$SINK_ID` when you are done.
+5. Delete the test stream with `DELETE /api/admin/audit-log/sinks/$SINK_ID`
+   when you are done.
 
 ## Create a stream
 

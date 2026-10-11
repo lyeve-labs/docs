@@ -32,6 +32,22 @@ payload before anything goes live.
   [Scheduled jobs](scheduled-jobs.md) do that and keep a run history.
 :::
 
+## In the admin console
+
+Open **Flows**. The list shows each flow's **Slug**, **Status**, **Trigger**,
+**Version** and **Last run**, with **New flow**, **Import**, **Datasources** and
+**Variables** above it. Choose a flow to open its editor: the **Palette** of
+node types on the left, the canvas in the middle and the **Inspector** for the
+selected node on the right. **Save** keeps the draft and **Publish** makes it a
+new version. Below the canvas, the **Test** tab runs the draft on a trigger
+payload you edit, and **Runs** lists every run with its status, kind and
+duration.
+
+![The editor for the Hello flow, published as version 1, with an API request trigger joined to a response node named greet, the Inspector showing the trigger, and one succeeded test run under Runs.](images/flows.png)
+
+[Build a custom API with flows](../how-to/build-a-custom-api-with-flows.md) builds
+one on the canvas step by step.
+
 ## How a flow works
 
 Every flow has the same three parts.
@@ -108,8 +124,6 @@ nodes, so it runs on any install. You need an admin token in `TOKEN`. The
    { "message": "Hello Ada" }
    ```
 
-5. Open **Flows** in the admin console. The `hello` flow is there on the
-   canvas, with the test run under **Runs**.
 
 ## Four ways to build one
 

@@ -35,6 +35,15 @@ the log: without a mail relay the logged link has its token replaced by
 `[REDACTED]`.
 :::
 
+## In the admin console
+
+1. On the sign-in page, choose **Email me a sign-in link**.
+2. Enter the account's address and choose **Email me a link**.
+3. Open the link from the email. On **Sign in with your link**, choose
+   **Continue** to finish signing in on that device.
+
+![The Sign in with an email link page with an email address entered and the Email me a link button.](images/magic-link-sign-in.png)
+
 ## How it works
 
 | Step | What happens |
@@ -58,8 +67,6 @@ end:
   people open the admin console at. In production it is required and must use
   `https`, and magic link sign-in refuses to start without it. Outside
   production it defaults to `http://localhost:5173`.
-
-In the admin console, the sign-in page links to **Email me a sign-in link**.
 
 ## Try it
 

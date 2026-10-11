@@ -45,6 +45,18 @@ see stale content after a write.
 A content write clears that tenant's cached reads by default. Flushing the
 cache never signs anyone out, because sessions are kept apart from it.
 
+## In the admin console
+
+Open **Insight > Observability > Cache**. The top row gives the **Hit rate**,
+**Entries**, **Evicted** and **Misses**. **Providers** lists each cache provider
+with the state of its circuit. **Response cache rules** lists each rule's
+**Route**, **Time to live**, **Tags** and state, with **Purge all** and
+**Purge by tag** above them. **New rule** asks for the **Route**, the
+**Time to live, in seconds**, the **Tags** and **Serve from the cache**.
+**Stored**, at the bottom, has **Flush everything**.
+
+![The Cache page with the memory-primary provider healthy and one response cache rule serving /api/v1/search/{schema} for 5 minutes, tagged post.](images/caching.png)
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -102,9 +114,6 @@ You need an admin token in `TOKEN`. The
    ```json
    { "message": "cache flushed" }
    ```
-
-5. In the admin console, open **Insight > Observability > Cache** for hit
-   rates, providers and flush controls.
 
 ## One provider, or several with cache-pro
 

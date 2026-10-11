@@ -34,6 +34,22 @@ time they arrive.
   is free.
 :::
 
+## In the admin console
+
+Open **Access > OAuth providers**. Only a super admin sees it. The list shows
+each provider with its issuer, scopes and roles, and whether it is enabled.
+
+1. Choose **New provider**.
+2. Fill in **Provider name**, **Issuer URL**, **Client ID** and **Client
+   secret**. **Scopes**, **Roles claim** and **Default roles** are optional.
+3. Turn on **Enabled** to offer the provider on the login page, and choose
+   **Create**.
+
+The pencil on a row edits a provider. Leave **New client secret** blank to keep
+the stored one. Templates and the backup provider are set over the API below.
+
+![Access > OAuth providers listing google and keycloak, both disabled, with their issuers, scopes and roles.](images/oauth-sign-in.png)
+
 ## How it works
 
 | Step | What happens |
@@ -64,9 +80,8 @@ What you can rely on:
    `https://lyeve.example.com`. Every callback address is built from it, never
    from the request's `Host` header.
 3. Set `SECURE_COOKIE=true` when the instance is served over HTTPS.
-4. Restart the instance, then add a provider. A super admin opens **Access >
-   OAuth providers** in the admin console and chooses **New provider**, or uses
-   the API below.
+4. Restart the instance, then add a provider in the admin console or with the
+   API below.
 
 ## Try it
 
@@ -137,8 +152,7 @@ The [quickstart](../getting-started/quickstart.md) shows how to get one.
    ```
 
 5. Open the admin console's login page. Under **or continue with** it shows a
-   sign-in button for Google. Providers are listed under **Access > OAuth
-   providers**, which only a super admin sees.
+   sign-in button for Google.
 
 ## Free and oauth-pro
 

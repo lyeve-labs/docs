@@ -50,6 +50,33 @@ still change before it is marked stable.
   and `webhook` for the sections they hold. An instance exports only the
   sections it runs, and refuses a section it has nothing to apply to.
 
+## In the admin console
+
+Open **Settings > Config sync**.
+
+**Export.** Under **Export this instance**, enter a **Passphrase** and choose
+**Export**. When the bundle is ready, the page lists its sections. Choose the
+**Download** button to save it as `lyeve-config-<date>.json`.
+
+**Apply.** Under **Apply a bundle**, on the target instance:
+
+1. Choose the **Bundle file**. The page shows the file, where it was exported
+   from, when, and which sections it holds.
+2. Enter the **Passphrase** it was exported with.
+3. Tick **Delete what the bundle does not name** if the target should lose
+   what only it holds. See [Deleting what the bundle does not name](#deleting-what-the-bundle-does-not-name).
+4. Choose **Compare** to see the plan, or **Dry run** to run every check an
+   apply runs without writing.
+5. Choose **Apply**, then **Apply** again in **Apply this bundle?** to confirm.
+
+![The Apply a bundle form with a bundle file loaded and its passphrase entered, above the plan under What applying does, which says this instance already matches the bundle and lists each section as unchanged.](images/promote-configuration.png)
+
+The plan, under **What applying does**, lists each section with how many items
+it creates, updates, deletes and leaves unchanged, and a row for each item that
+changes, with the fields an update touches. A problem stops the apply, and the
+page names the item and, when a license limit is the cause, the feature that
+lifts it. Apply stays off until every problem is fixed.
+
 ## Try it
 
 This exports an instance, compares the file with the same instance, and dry
@@ -115,9 +142,6 @@ runs it, so nothing is written. Run it on an install whose license carries
    The answer carries the plan with `"applied": false` and `"dry_run": true`.
    Nothing was written.
 
-5. In the admin console, open **Settings > Config sync** to do the same with
-   **Export**, **Compare**, **Dry run** and **Apply**.
-
 ## What a bundle carries
 
 | Section | What moves | Named in a plan as |
@@ -171,30 +195,6 @@ in it. Keep the passphrase in a secret store, apart from the file, and keep
 the file out of public places. Every export is recorded in the
 [audit log](audit-log.md) as `config_sync.export`, and every apply as
 `config_sync.apply`, or `config_sync.apply_partial` when it stopped part way.
-
-## From the admin console
-
-Open **Settings**, then **Config sync**.
-
-**Export.** Enter a passphrase and choose **Export**. When the bundle is
-ready, choose **Download** to save it as `lyeve-config-<date>.json`.
-
-**Apply.** On the target instance:
-
-1. Choose the bundle file. The page shows where it was exported from, when,
-   and which sections it holds.
-2. Enter the passphrase it was exported with.
-3. Tick **Delete what the bundle does not name** if the target should lose
-   what only it holds. See [Deleting what the bundle does not name](#deleting-what-the-bundle-does-not-name).
-4. Choose **Compare** to see the plan, or **Dry run** to run every check an
-   apply runs without writing.
-5. Choose **Apply** and confirm.
-
-The plan lists each section with how many items it creates, updates, deletes
-and leaves unchanged, and a row for each item that changes, with the fields an
-update touches. A problem stops the apply, and the page names the item and,
-when a license limit is the cause, the feature that lifts it. Apply stays off
-until every problem is fixed.
 
 ## From the command line
 

@@ -50,6 +50,20 @@ in search and tail (the default tenant, or the one named in `tenant_id`), and
 every record in the stream, including the instance's own lines that belong to
 no tenant.
 
+## In the admin console
+
+Open **Insight > Logs**. **Volume and levels** counts the last 24 hours of
+entries by level, and a level chip shows only that level's entries. Under
+**Entries**, type words from a message and press **Search**, or pick a level
+and a page size. **Volume alerts** opens the rules described under
+[Watch log volume](#watch-log-volume).
+
+![The Logs page searched for the word slow, listing WARN entries that read slow request detected, each with its time.](images/logs.png)
+
+**Insight > Observability** follows the live log under **Live log tail**, with
+a **Minimum level**, **Pause** and **Clear**. Finding the lines of one request
+or one trace, changing levels and shipping records go through the API below.
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -119,8 +133,6 @@ You need an admin token in `TOKEN`. The
    `DEBUG`, `0` is `INFO`, `4` is `WARN` and `8` is `ERROR`.
 
 5. Put the level back with the same request as step 3 and `{"level": "INFO"}`.
-   In the admin console, **Insight > Logs** searches the same records, and
-   **Insight > Observability** shows the live stream under **Live log tail**.
 
 ## Find a line
 

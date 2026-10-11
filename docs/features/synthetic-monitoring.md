@@ -47,6 +47,22 @@ region is a label on the result, also sent to the target as the
 `X-Synthetic-Region` header. A due probe runs once even when several replicas
 are running.
 
+## In the admin console
+
+Open **Insight > Observability > Synthetic monitoring**. The top row counts the
+**Probes**, how many are **Failing** and how many are **Paused**. Each row
+under **Probes** gives the probe's type and target, its state, how often it
+runs and its last run. The row buttons are **Run now**, **Notice channels**,
+edit and delete.
+
+**New probe** asks for a **Name**, **What it checks**, the target, an
+**Interval, in seconds**, a **Timeout, in seconds**, the
+**Failures before an alert** and whether to **Run on the schedule**.
+
+![The Synthetic monitoring page with two probes: Checkout API, a health check that is failing, and Partner feed webhook, a webhook delivery that is paused.](images/synthetic-monitoring.png)
+
+Results, trends and alerts are read through the API below.
+
 ## Try it
 
 This works on a free install. You need an admin token in `TOKEN`. The
@@ -122,9 +138,6 @@ This works on a free install. You need an admin token in `TOKEN`. The
    curl -X DELETE http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID \
      -H "Authorization: Bearer $TOKEN"
    ```
-
-6. In the admin console, open **Insight > Observability > Synthetic
-   monitoring** to create and watch probes on screen.
 
 ## Set up a probe
 

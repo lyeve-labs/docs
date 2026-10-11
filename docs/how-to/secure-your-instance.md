@@ -211,8 +211,10 @@ use. Every install also holds these rules:
   [admin token](admin-tokens.md) instead, with an address list.
 - Only a signed-in person manages keys, and every request a key makes is
   recorded against it.
-- Neither access rules nor a key's `schemas` list limit a key, so give each
-  one only the scopes its job needs. See [API keys](../features/api-keys.md).
+- A key's roles go through the same access rules as a person's, and a key
+  with a `schemas` list reaches only those content types. Give each key only
+  the roles, scopes and content types its job needs. See
+  [API keys](../features/api-keys.md).
 
 **Check:** the instance starts with `ENFORCE_API_KEY_PEPPER=true`. Without
 the pepper, it stops with a line naming `API_KEY_PEPPER`.

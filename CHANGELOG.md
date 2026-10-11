@@ -4,6 +4,16 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.2.0] - 2026-10-11
+
+### Added
+
+- Every feature page with a screen in the admin console says where it is, what it shows and how to use it there, with a screenshot.
+
+### Fixed
+
+- The API key pages said access rules and a key's list of content types do not limit a key. A key's roles go through the same access rules as a person's, field masks included, and a key is refused every content type outside its list. The walkthrough now gives its key a role with a read rule first.
+
 ## [0.1.0] - 2026-10-11
 
 ### Added
