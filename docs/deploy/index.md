@@ -72,20 +72,21 @@ Both are a `DATABASE_URL` value and nothing more. For an engine with no database
 
 ## The admin console needs a server, not Vercel or Cloudflare Pages
 
-The admin console ships only as the container image `ghcr.io/lyeve-labs/lyeve-admin`. Vercel
-and Cloudflare Pages build a site from its source repository and do not run a container image,
-and the console's source is not published. The console cannot be hosted on either.
+The admin console is a long-running Node server. It ships as the container image
+`ghcr.io/lyeve-labs/lyeve-admin`, and its source is public in
+[`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin). Vercel and Cloudflare Pages run
+neither a container image nor a long-running server, so neither runs the console as it ships.
 
-Run the image on a host that runs containers. The console's server sends every `/api` call to
-one base URL, `CORE_INTERNAL_URL`, so that URL must route `/api/admin` to the engine's port
-`3001` and every other `/api` path to port `3002`. A small proxy or an Ingress does that:
+Run the image as its own service on a host that runs containers, Railway and Render included.
+The console's server sends every `/api` call to one base URL, `CORE_INTERNAL_URL`, so that URL
+must route `/api/admin` to the engine's port `3001` and every other `/api` path to port `3002`.
+A small proxy or an Ingress does that:
 
 - [Docker Compose](docker-compose.md): the engine, the console, Postgres and a TLS proxy on one
   host.
 - [Kubernetes](kubernetes.md): the same images on a cluster, routed by an Ingress.
 
-The single-container engine hosts above give the engine no such route, so the free-tier stack
-has no host for the console. Run it with Compose on a server you control.
+[The admin image](docker.md#the-admin-image) lists the console's settings.
 
 ## Before go-live
 
