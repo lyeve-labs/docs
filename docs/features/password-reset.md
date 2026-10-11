@@ -35,6 +35,19 @@ Password reset is in beta. An account created by OAuth or SAML sign-in can
 use it too, and then has a password it can sign in with.
 :::
 
+## In the admin console
+
+1. On the sign-in page, choose **Forgot password?**.
+2. Enter the account's address and choose **Email me a reset link**.
+3. Open the link from the email. On **Choose a new password**, enter the
+   password in **New password** and **Confirm new password**, then choose
+   **Save**.
+
+The console checks that the password has at least 12 characters before it
+sends the token, so a password that is too short does not spend the link.
+
+![The Reset your password page with an email address entered and the Email me a reset link button.](images/password-reset.png)
+
 ## How it works
 
 | Step | What happens |
@@ -58,11 +71,6 @@ without it.
 With no relay configured, a request still answers `200` and no mail is sent.
 The server log records that a token was issued, with only its first eight
 characters.
-
-In the admin console, the sign-in page links to **Forgot password?**, which
-opens `/forgot-password`. The link in the email opens `/reset-password`. The
-console checks the length before it sends the token, so a password that is too
-short does not spend the link.
 
 ## Try it
 

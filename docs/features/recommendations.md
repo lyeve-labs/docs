@@ -28,6 +28,15 @@ you ask, from the console or from your own scheduler.
 - You want counts of views and visitors. [Analytics](analytics.md) reports them.
 :::
 
+## In the admin console
+
+Open **Settings > Recommendations**. **Trending now** lists the entries with the most activity
+this week, by entry id, with each one's **Score** and **Views**. New activity counts once a
+super admin chooses **Recompute**. **The split** reports how readers divide between the
+recommended feed and a random baseline, once readers have asked for a feed.
+
+![The Recommendations settings page. Trending now lists five entries by id, the first with a score of 12.0 and 6 views, and Recompute sits at the top right.](images/recommendations.png)
+
 ## How it works
 
 | Step | What happens |
@@ -99,9 +108,6 @@ entries in `A` and `B`.
 
    The answer is `{"items": [...]}`, each with `content_id`, `score` and `view_count`.
 
-5. Open **Settings**, then **Recommendations**, in the admin console. **Trending now** lists
-   both entries.
-
 ## Record what readers do
 
 `POST /api/v1/recommendations/behavior` takes `content_id`, an entry's id, and `action`, one of
@@ -127,9 +133,8 @@ the last recompute. A `limit` or `offset` above its maximum is lowered, not refu
 ## Recompute scores
 
 Recompute after a batch of activity, or call the refresh route on a timetable from your own
-tooling, signed in as a super admin. In the console, a super admin chooses
-**Recompute** under **Settings**, then **Recommendations**. Only one recompute runs at a time,
-and a second answers `409`.
+tooling, signed in as a super admin. Only one recompute runs at a time, and a second answers
+`409`.
 
 :::caution
 Trending is a count of activity over the last seven days, with no decay inside that window. A

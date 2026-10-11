@@ -59,6 +59,23 @@ A quota is set over a tenant, so a tenant admin reads it and asks for more but
 never changes it. Setting, removing and reviewing are for a super admin, and a
 tenant admin who tries gets `403` even for their own tenant.
 
+## In the admin console
+
+Open **Operations > Quotas and usage** as a super admin. Each quota shows what
+its tenant has used against each limit. **Requests for more** lists the
+increases tenants have asked for, and each one has a button to approve it and
+one to deny it. **New quota** sets a quota on a tenant by its slug, and the edit
+button on a row opens the same form:
+
+- **API calls a month**, **Storage (GB)** and **Bandwidth a month (GB)**. `0`
+  leaves that limit unchecked.
+- **Hard limit** and **Block the tenant past a limit**. A quota blocks only
+  with both on. Otherwise the page says the quota is reported and never
+  enforced.
+- **Grace period (hours)**, **Warn at 80%** and **Warn at 90%**.
+
+![The quota form for the default tenant with 50000 API calls a month, 1 GB of storage and 10 GB of bandwidth a month, Hard limit and blocking off, a grace period of 24 hours, and both warnings on.](images/tenant-quotas.png)
+
 ## Try it
 
 Run this on an install whose license carries `usage-pro` and
@@ -135,8 +152,7 @@ one. A test tenant keeps the block away from your real traffic.
    The quota now reads `"requests_limit": 100000`.
 
 6. Delete the test tenant with `DELETE /api/admin/tenants/{id}`. Its quota and
-   requests go with it. In the admin console, a super admin finds quotas under
-   **Operations > Quotas and usage**.
+   requests go with it.
 
 :::caution[A lone extra tenant takes anonymous requests]
 An install started without `MULTI_TENANT=true` keeps its `default` tenant

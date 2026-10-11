@@ -41,6 +41,20 @@ Assignment is keyed on the user id in the caller's token, never on anything in t
 body. Shares of traffic are each above 0 and at most 100, and the total cannot exceed 100. A
 total below 100 does not hold anyone out: the remainder goes to the variant created last.
 
+## In the admin console
+
+Open **Delivery > Experiments**. Each experiment shows the question it tests, its status, the
+exposures it needs and when it was created. A draft has **Start**, a running one has **Pause**
+and **Stop**, and the row buttons edit, duplicate or delete it. **New experiment** asks for a
+**Name**, **What it is testing**, a **Confidence level**, the **Minimum exposures per variant**
+and whether to **Stop automatically once significant**.
+
+![The Experiments page with signup-button running and pricing-headline still a draft, each with the question it tests and the exposures it needs.](images/ab-testing.png)
+
+**Confidence level** is the `significance_threshold` below, so `0.95` means a p-value below
+0.05. **Minimum exposures per variant** and the **Needs per variant** column are counted across
+all variants together, the same as `min_sample_size`.
+
 ## Try it
 
 You need a token in `TOKEN` for an `admin` or `super_admin`. The
@@ -119,9 +133,7 @@ for the end user in steps 4 and 5.
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   The answer lists each variant with its exposures and conversions, as below. In the admin
-   console, open **Delivery**, then **Experiments**, and open `signup-button` to see the same
-   numbers under **What the results support**.
+   The answer lists each variant with its exposures and conversions, as below.
 
 ## Read the results
 
@@ -178,15 +190,6 @@ These settings go on create or update:
 | `auto_stop_enabled` | Complete the experiment once its results are significant. | `false` |
 
 Metric types are `conversion`, `count`, `revenue` and `custom`.
-
-:::caution[The console form reads the threshold the other way round]
-The experiment form in the admin console asks for the p-value to beat and sends `0.05` by
-default, but the API reads `significance_threshold` as a confidence level. An experiment saved
-from the console with `0.05` counts any p-value below 0.95 as significant, so it declares
-winners far too early, and auto-stop ends it on that result. The form refuses any value above
-0.2, so create and edit experiments through the API until this is fixed. The form's **Minimum
-exposures per variant** is also counted across all variants together.
-:::
 
 ## Settings
 

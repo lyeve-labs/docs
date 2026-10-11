@@ -32,8 +32,17 @@ itself at times you set, and link to other entries.
   [the data model](../concepts/data-model.md#entries) page.
 :::
 
-The console side of this, the buttons and the revision panel, is in
-[Drafts and publishing](../guides/user/drafts-and-publishing.md).
+## In the admin console
+
+Open **Content**, pick a content type and open an entry. The badge at the top shows its
+status, beside **Publish** or **Unpublish**. **History** opens the **Revision history** panel,
+and the number beside it counts the revisions. Choose a revision, then **Restore** to bring it
+back as a new revision.
+
+![An entry's page with the Revision history panel open beside it. The entry is published, with Unpublish and History (3) at the top, and the oldest of its three revisions is selected with a Restore button under it.](images/content-lifecycle.png)
+
+[Drafts and publishing](../guides/user/drafts-and-publishing.md) walks through these steps.
+Archiving, scheduling, comparing two revisions and change notes are on the Admin API, below.
 
 ## How it works
 
@@ -166,7 +175,7 @@ This creates a draft, publishes it, rolls it back and schedules it. You need a t
    ```
 
    The answer is the entry with `scheduled_publish_at` and `scheduled_unpublish_at` stored in
-   UTC. Open **Content**, then **Post**, in the admin console to see the entry.
+   UTC.
 
 ## Find and read entries
 

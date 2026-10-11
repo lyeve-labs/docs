@@ -31,6 +31,23 @@ listeners that react to changes run as if the events had just happened.
   push them live.
 :::
 
+## In the admin console
+
+Open **Insight > Events**. **Recorded**, **Carrying an error** and
+**Recent replays** count the log and the runs.
+
+1. Under **Replay**, set **Replay from** and give the run a name in
+   **Handler**.
+2. Leave **Rehearse first, posting nothing** ticked and choose **Rehearse**.
+   The run counts the events in the window and posts nothing.
+3. Untick it to send the events for real. The button then reads **Replay**.
+
+Each run is listed with its status, progress and result, and a rehearsal is
+marked **rehearsal**. **Published** lists the log, with a search and
+**Only those carrying an error**.
+
+![The Events page with a completed rehearsal named search-rebuild that posted nothing, above the log of published events with their topic, type, source and content type.](images/event-replay.png)
+
 ## How it works
 
 | Part | What it does |
@@ -124,9 +141,6 @@ shows how to get one.
 
 5. Send it once more. The new run reports the events as `skipped`, because
    `search-rebuild` already replayed them.
-
-6. Open **Insight > Events** in the admin console to browse the log and the
-   runs.
 
 ## Start a replay
 

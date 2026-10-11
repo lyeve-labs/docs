@@ -29,6 +29,23 @@ are the people who can sign in.
   that on their own.
 :::
 
+## In the admin console
+
+Open **Access > SCIM provisioning**. The page shows the base path to give your
+directory, `/api/v1/scim/v2`, and each connection with what happens to an
+account the directory removes.
+
+1. Choose **New connection**.
+2. Enter a **Name** and a **Bearer token** of at least 32 characters. Copy the
+   token into your directory now, because it cannot be read again.
+3. Under **When the directory removes somebody**, choose whether the account
+   is disabled or deleted, then choose **Create**.
+
+The refresh button on a connection replaces its token, and the trash button
+removes the connection.
+
+![Access > SCIM provisioning with the base path and two connections, one that disables removed accounts and one that deletes them.](images/scim-provisioning.png)
+
 ## How it works
 
 | Part | What it is |
@@ -52,8 +69,7 @@ What you can rely on:
 1. Run with a license that carries `scim`. See
    [licensing and tiers](../concepts/licensing-and-tiers.md).
 2. Restart the instance.
-3. Create a connection. A super admin opens **Access > SCIM provisioning** in
-   the admin console and chooses **New connection**, or uses the API below.
+3. Create a connection in the admin console or with the API below.
 4. In your identity provider, set the SCIM base URL to
    `https://lyeve.example.com/api/v1/scim/v2` and the token to the one you
    chose.

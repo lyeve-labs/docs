@@ -34,6 +34,19 @@ events. A client that reconnects picks up the events it missed.
   `contentChanged` subscription.
 :::
 
+## In the admin console
+
+Open **Insight > Realtime** to see who is connected right now.
+**Server-sent events** counts the streams **Open now** and those accepted
+recently, the **Events pushed** and the **Rejected** ones.
+**WebSocket** counts the sockets **Open now** and **Idle**, the **Broadcasts**
+and the **Reconnections**. **Connections by tenant** lists each tenant holding
+a stream open, with its share. **Refresh** reads the counts again.
+
+![The Realtime page with two server-sent event streams and two WebSocket connections open, all held by the default tenant, and the events pushed and broadcasts sent so far.](images/realtime.png)
+
+The sections below open streams and sockets, broadcast and list who is online.
+
 ## How it works
 
 | Piece | What it does |
@@ -120,9 +133,6 @@ shows how to get one) and a content type named `post`, such as the one in
    ```
 
    You are on the list, with `connection_count: 1`.
-
-4. Open **Insight > Realtime** in the admin console to see the tenant's
-   connection counts.
 
 ## Server-Sent Events
 

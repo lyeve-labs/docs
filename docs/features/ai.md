@@ -57,6 +57,17 @@ A call goes to the tenant's enabled providers in priority order, highest
 `priority` first, and the first one that can do the job answers. An operation
 no provider can do answers `409` rather than going somewhere unexpected.
 
+## In the admin console
+
+Open **Operations > AI**. Its tabs are **Providers**, **Prompts**,
+**Transcripts**, **Prices** and **Settings**. **Providers** counts the enabled
+providers, the calls, their average latency and their cost. Below that, each
+provider shows its kind, priority and modalities, whether a key is stored, and
+whether it is enabled. **New provider** adds one. With **Enabled** off, a
+provider is kept and takes no calls.
+
+![The AI providers page with one OpenAI-compatible provider named Example gateway at https://example.com/v1, priority 10, serving text, embeddings and images, with its key stored and the provider disabled.](images/ai.png)
+
 ## Try it
 
 You need an admin token in `TOKEN` from a super admin, and a key from your
@@ -124,7 +135,7 @@ the token.
 
 ## Connect a provider
 
-A super admin adds providers under **Operations > AI > Providers**, or with
+A super admin adds providers in the console or with
 `POST /api/admin/ai/providers`. Keys are encrypted with `ENCRYPTION_KEY`, one
 derived key per tenant.
 

@@ -31,6 +31,17 @@ carries the same calls over HTTP/2.
   at once. Use the [GraphQL API](graphql-api.md).
 :::
 
+## In the admin console
+
+As a super admin, open **Delivery > gRPC**. A badge says whether the gRPC API
+is **Serving**. **Listeners** gives the **gRPC** address, with a button to copy
+it, the **Health and REST** address and whether **Reflection** is on.
+**Services** lists each service with what its health check reports, and
+**REST, without a gRPC client** lists the JSON routes. **Refresh** reads the
+status again.
+
+![The Services table of the gRPC page, with ContentService, FlowService and SchemaService each reported as Serving.](images/grpc-api.png)
+
 ## How it works
 
 | Listener | Variable | Default | Serves |
@@ -91,9 +102,6 @@ You need a signed-in user's token in `TOKEN`. The
 
    The answer lists your content types as `schemas`, each with `name` and
    `definition`.
-
-5. Open **Delivery > gRPC** in the admin console as a super admin. It shows
-   the listeners, their services and health, and runs one JSON route for you.
 
 ## Call the services
 

@@ -64,6 +64,21 @@ count for the caller on the tenant's own count and answers `required` and
 from 1 to 1000, with its captcha settings. Without one, the tenant's count is
 read against `CAPTCHA_THRESHOLD`.
 
+## In the admin console
+
+Open **Settings > Captcha**. The page holds the tenant's own captcha, which
+its flows and pages check. A note at the top says the admin sign-in always uses
+the instance captcha, so nothing saved here can lock an admin out.
+**What is checked now** names the captcha the tenant's flows use and says
+whether the instance has one set. Under **Tenant settings**, pick a
+**Provider**, enter the **Site key** and **Secret key**, and choose **Save**.
+**Clear tenant settings** puts the tenant back on the instance captcha.
+
+![The Captcha settings page. A note says the admin login always uses the instance captcha, a summary says this tenant's flows check Turnstile with its own keys, and the tenant settings form shows Turnstile selected with a site key filled in.](images/captcha.png)
+
+Saving tenant settings needs `multitenant-customization`. The instance captcha
+comes from the settings in [Turn it on](#turn-it-on).
+
 ## Turn it on
 
 Captcha runs on every install and does nothing until both keys are set:

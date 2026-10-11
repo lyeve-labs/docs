@@ -46,6 +46,27 @@ Every request runs in exactly one tenant, decided before it is handled:
 another tenant by sending one. Every read and write is then limited to the
 resolved tenant.
 
+## In the admin console
+
+Open **Operations > Tenants**. A super admin sees every tenant with a record,
+with its slug, name, plan, status and creation date. On an install started
+without `MULTI_TENANT=true`, the `default` tenant has no record, so the list
+starts at **No tenants yet**. **New tenant** opens a form with a **Slug**, a
+**Display name** and an optional **Plan**, and **Create** adds the tenant. The
+buttons on a row edit, disable or delete the tenant.
+
+![The New tenant form open over the Tenants page, with the slug acme and the display name Acme Inc. filled in and the plan left empty.](images/tenants.png)
+
+The tenant's name opens its page, with **Archive**, **What this tenant may
+use**, and its **Members** with **New member**.
+
+**Operations > Tenant costs**, which admins open too, shows what the tenant's
+usage costs this month in total and by resource, then its budgets and prices.
+**Aggregate now** reads the meters at once instead of on the hour, and
+**New budget** adds a budget.
+
+![The This month panel of Tenant costs, with 18.00 USD spent so far, all of it on the database, and no budget at risk.](images/tenants-costs.png)
+
 ## Try it
 
 This creates a second tenant, writes an entry into it and shows that the
@@ -148,8 +169,7 @@ needs no license.
 
 Tenant routes need the `super_admin` role. Anyone else gets `403`, with
 `insufficient permissions` on the tenant routes and `super_admin role required`
-on the domain and membership routes. In the console a super admin works under
-**Operations > Tenants**.
+on the domain and membership routes.
 
 A slug is how every route, header and domain mapping names a tenant:
 
@@ -315,8 +335,7 @@ a [flow](flows.md) can notify someone. Its data carries `tenant_id`,
 `budget_id`, `budget_name`, `resource_type`, `period`, `period_start`,
 `period_end`, `amount`, `budget_amount`, `threshold` and `currency`.
 
-Every cost route needs the `admin` role and works on the caller's tenant. In the
-console, admins open **Operations > Tenant costs**.
+Every cost route needs the `admin` role and works on the caller's tenant.
 
 ## Brand the admin per tenant
 

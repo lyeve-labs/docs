@@ -29,6 +29,23 @@ straight to the bucket.
   [media library](media.md) does that, and stores its files here.
 :::
 
+## In the admin console
+
+Open **Settings > Storage**. **How storage works** explains where uploads go,
+and with no provider the page reads **No provider configured**: uploads are
+then written to the engine's own directory. **New provider** opens a form.
+Pick the **Type** (**Amazon S3**, **Google Cloud Storage**,
+**Azure Blob Storage**, **MinIO** or **Local directory**), then fill in what it
+asks for, such as the **Bucket**, **Region**, **Access key ID** and
+**Secret access key** of an S3 bucket. Leave **Endpoint** empty for Amazon S3 and set it for an
+S3-compatible service. A lower **Priority** receives uploads first, and
+**Create** saves the provider.
+
+![The New provider form for Amazon S3, filled in with the name primary, the bucket acme-media, the region eu-west-1 and an access key, with the secret hidden.](images/object-storage.png)
+
+The sections below add the same over the Admin API, with the connection test
+and presigned uploads.
+
 ## How it works
 
 | Piece | What it does |
@@ -103,9 +120,6 @@ You need an admin token for a super admin in `TOKEN`. The
    `s3: status 403 Forbidden`.
 
 5. Repeat step 2. The answer now carries an `upload_url` on your bucket.
-
-6. Open **Settings > Storage** in the admin console to see and edit the
-   providers.
 
 ## Providers
 

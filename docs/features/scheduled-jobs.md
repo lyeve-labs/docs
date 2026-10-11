@@ -49,6 +49,18 @@ Pick a scheduled job when your own service does the work and only needs to be
 told when. Pick a flow when the work is in LyEve's content or needs several
 steps. See [flows](flows.md#how-a-flow-works).
 
+## In the admin console
+
+As a super admin, open **Operations > Scheduled jobs**. Each job is listed with
+its schedule, endpoint, status and last run, and **Enabled** and **Disabled**
+narrow the list. The buttons on a row edit or delete the job. **New job** asks
+for a **Name**, a **Description**, a **Cron schedule**, an **Endpoint URL** and
+a **JSON payload (optional)**, and **Enabled** runs the job on its schedule. The
+same form takes the alert channels and **Alert after this many failures in a
+row**.
+
+![The Scheduled jobs page with two jobs that have not run yet: nightly-export, enabled, every day at 02:00, and weekly-partner-feed, disabled, every Monday at 08:00.](images/scheduled-jobs.png)
+
 ## Try it
 
 You need an admin token in `TOKEN`. The
@@ -130,9 +142,6 @@ inspector, so you can watch the calls arrive.
    ```
 
    The answer is the job with `"enabled": false`. `/enable` turns it back on.
-
-5. As a super admin, open **Operations > Scheduled jobs** in the admin console.
-   The job is listed with its schedule, endpoint, status and last run.
 
 ## Write a schedule
 

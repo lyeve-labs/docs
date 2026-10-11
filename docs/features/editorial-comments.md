@@ -33,6 +33,18 @@ still change before it is marked stable.
   comment at each decision, and it is free.
 :::
 
+## In the admin console
+
+Open an entry under **Content**. The **Comments** card below its fields holds the entry's
+threads, and its title counts the open ones. **Open**, **Resolved** and **All** choose which
+threads it lists.
+
+- Write in **New thread**, pick anyone to notify under **Mention**, and choose **Comment**.
+- **Reply** answers a thread.
+- **Resolve** closes a thread, and **Reopen** brings a resolved one back.
+
+![The Comments card of an entry, titled Comments (1 open) and showing all threads. A resolved thread with one reply has Reopen, an open thread with one reply has Resolve and Reply, and the New thread box with Mention and Comment sits below.](images/editorial-comments.png)
+
 ## How it works
 
 | Part | What it does |
@@ -110,9 +122,6 @@ to get one. Copy an entry's id into `ENTRY_ID`, for example from
 
    The answer is `{"data": [...]}`, with the thread and its reply under
    `replies`.
-
-5. In the admin console, the **Comments** panel on an entry's page shows the
-   threads, with **New thread**, **Reply** and **Mention**.
 
 ## Comment, reply and mention
 

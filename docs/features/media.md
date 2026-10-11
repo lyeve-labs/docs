@@ -24,9 +24,19 @@ load.
   and location data, and scan for viruses.
 :::
 
-Working in the admin console instead? [Media library](../guides/user/media-library.md) covers
-the same tasks there. Where files are kept, local disk or S3 and other providers, is set on
-[object storage](object-storage.md).
+## In the admin console
+
+Open **Media library**. It shows every file in **Grid** or **List** view, with
+**Upload files**, **Import from URL** and a **File name** search. Choose a file to open its
+**Preview**, with its name, type, size and dimensions, **Download** and **Delete**.
+**Publish** gives the file its public address: the preview then shows the **Published**
+badge and the **Public path**, also as **Markdown** and **HTML** to copy. **Alt text**,
+**Tags** and **Folder** are under **Details**, kept with **Save**.
+
+![The preview of a published image, harbor.png, showing its name, type, size, dimensions and upload time, the Published badge beside Unpublish, and its public path, also written as Markdown and as HTML.](images/media.png)
+
+[Media library](../guides/user/media-library.md) walks through each task there. Where files
+are kept, local disk or S3 and other providers, is set on [object storage](object-storage.md).
 
 ## How it works
 
@@ -124,9 +134,6 @@ get one. Any PNG or JPEG works as `hero.png`.
    ```
 
    The answer is `{"items": [...], "total": 1}`.
-
-6. Open **Media library** in the admin console. The image is there, and its preview shows the
-   **Published** badge and the public path.
 
 ## Upload files
 
