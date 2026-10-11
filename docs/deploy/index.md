@@ -77,7 +77,7 @@ The admin console is a long-running Node server. It ships as the container image
 [`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin). Vercel and Cloudflare Pages run
 neither a container image nor a long-running server, so neither runs the console as it ships.
 
-Run the image as its own service on a host that runs containers, Railway and Render included.
+Run the image as its own service on a host that runs containers.
 The console's server sends every `/api` call to one base URL, `CORE_INTERNAL_URL`, so that URL
 must route `/api/admin` to the engine's port `3001` and every other `/api` path to port `3002`.
 A small proxy or an Ingress does that:
