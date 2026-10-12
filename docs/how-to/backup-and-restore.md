@@ -1,5 +1,5 @@
 ---
-title: Back Up & Restore Tenants
+title: Back up and restore tenants
 description: "Export, validate, import, restore and clone one tenant, and run backup jobs that write encrypted archives to S3."
 sidebar:
   order: 7

@@ -1,5 +1,5 @@
 ---
-title: Company & Licensing Guide
+title: Company and licensing guide
 description: "Evaluate LyEve: find what is free, what a license adds, and the security and compliance pages a review needs, each by link."
 sidebar:
   order: 1

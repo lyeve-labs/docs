@@ -1,5 +1,5 @@
 ---
-title: Free-Tier Stack
+title: Free-tier stack
 description: "Run the engine and its database for $0 a month on free hosting plans, and know the limits before you rely on it."
 sidebar:
   order: 2

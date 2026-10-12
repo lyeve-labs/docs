@@ -1,5 +1,5 @@
 ---
-title: Source Code
+title: Source code
 description: "Check which parts of LyEve are MIT-licensed, which are commercial, and which repositories you can read today."
 sidebar:
   order: 2

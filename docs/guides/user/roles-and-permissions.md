@@ -1,5 +1,5 @@
 ---
-title: Users, Roles & Permissions
+title: Users, roles and permissions
 description: Create accounts, choose each person's role, see what every role may do, and pick the right credential for a person, an app, a script or a service.
 sidebar:
   order: 5

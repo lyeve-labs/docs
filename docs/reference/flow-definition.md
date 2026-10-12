@@ -1,5 +1,5 @@
 ---
-title: Flow Definition Format
+title: Flow definition format
 description: "Look up any part of a flow definition: top-level keys, settings, graph rules, expressions, and every trigger and node with its settings and limits."
 sidebar:
   order: 5

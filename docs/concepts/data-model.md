@@ -1,5 +1,5 @@
 ---
-title: Data Model
+title: Data model
 description: "Learn how content types, fields, relations, entries, statuses and revisions fit together, through one small blog carried through every section."
 sidebar:
   order: 2

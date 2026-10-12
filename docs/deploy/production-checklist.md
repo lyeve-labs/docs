@@ -1,5 +1,5 @@
 ---
-title: Production Checklist
+title: Production checklist
 description: "Tick off the secrets, proxies, database, backups and monitoring of a LyEve deployment before it takes real traffic."
 sidebar:
   order: 13

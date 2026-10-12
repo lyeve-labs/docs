@@ -1,5 +1,5 @@
 ---
-title: Drafts, Publishing & Revisions
+title: Drafts, publishing and revisions
 description: "Publish and unpublish entries in the admin console, look back through an entry's revisions, and restore an earlier version."
 sidebar:
   order: 3
