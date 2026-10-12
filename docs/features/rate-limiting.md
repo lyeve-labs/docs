@@ -5,7 +5,7 @@ sidebar:
   order: 57
 ---
 
-> **Included free** on every install. Custom rules, changes to the sign-in protections, a tenant's own global limit, address allow and deny lists and the refusal history need a license with the `rate-limit-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. Custom rules, changes to the sign-in protections, a tenant's own global limit, a public route's own limit, address allow and deny lists and the refusal history need a license with the `rate-limit-pro` feature. See [pricing](https://lyeve.com/pricing).
 
 Rate limiting answers `429 Too Many Requests` when a client sends more
 requests than a limit allows. It keeps one client from crowding out the
@@ -25,6 +25,8 @@ protections, and a super admin can turn on one global limit.
   your office through every limit that tenant sets.
 - **Seeing what was refused.** The refusal history counts refused requests
   per minute and per rule for the last seven days.
+- **A busy public route.** A localized site that resolves a locale on every
+  page load raises the resolve route above the general public limit.
 :::
 
 :::note[Use something else when]
@@ -45,6 +47,7 @@ protections, and a super admin can turn on one global limit.
 | Custom | Your own rule for an endpoint pattern, tenant or role. | Cannot be created or edited. |
 | Tenant global | One tenant's own rate and burst per client address, over every request to that tenant. | Cannot be set. |
 | Address lists | Per-tenant allow and deny entries, each an address or a range. | Cannot be added. |
+| Public route | A limit of its own on a public route that runs on the general public limit, such as locale resolve, search or media reads. | Cannot be set. The route keeps the general public limit. |
 
 A request must pass every limit that matches it. There is no switch that turns
 limiting off. To relax a limit, change the rule.
@@ -209,6 +212,38 @@ because it would never take effect.
 `install_global` limit beside it, and `licensed`. `DELETE` removes the tenant
 limit and stays free.
 
+## Give a public route its own limit
+
+The public routes that need no sign-in each run on one of two limits. Sign-in,
+token and other credential routes have a limit of their own. Every other
+public route, such as locale resolve, search and media reads, shares the
+general public limit: 50 requests a second per address with a burst of 100,
+set by `PUBLIC_RATE_LIMIT_GLOBAL`.
+
+With `rate-limit-pro`, a super admin gives one of those routes a limit of its
+own, higher or lower than the general one:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/rate-limits/public-routes \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"endpoint": "GET /api/v1/localization/resolve", "requests": 600, "window_seconds": 1}'
+```
+
+The limit replaces the general one on that route, and requests to it no longer
+count against the general limit. A `HEAD` request follows its `GET` route.
+Every replica picks a change up within ten seconds. A route under `/auth`, or
+one with a limit of its own, answers `422`: only `PUBLIC_RATE_LIMITS` moves
+those.
+
+`GET` on the same path answers `licensed`, the `general` limit, each route on
+it with its `custom` limit or `null`, any stored limit that no longer applies
+under `inactive`, and `also_applies`: the limits a request to the route still
+has to pass, such as `RATE_LIMIT_RPS` and the global limit. A raise above one
+of those is capped by it. `POST /api/admin/rate-limits/public-routes/reset`
+with `{"endpoint": ...}` puts a route back on the general limit and needs no
+license. A stored limit keeps applying if the license lapses.
+
 ## Block or allow addresses
 
 With `rate-limit-pro`, each tenant keeps allow and deny entries, each an
@@ -280,6 +315,7 @@ some rule matched.
 | `RATE_LIMIT_BACKEND` | `redis` also counts the ceiling in Redis, shared by every replica. Needs `RATE_LIMIT_RPS` above `0`. | `memory` |
 | `RATE_LIMIT_REDIS_URL` | Redis for the shared count. Falls back to `REDIS_URL`, then `redis://localhost:6379/0`. | unset |
 | `PUBLIC_RATE_LIMITS` | Overrides the per-route limits on public routes. | unset |
+| `PUBLIC_RATE_LIMIT_GLOBAL` | The general public limit, per address over every public route with no limit of its own, as `rate:burst`. Raise it where many callers share one address, such as a proxy or a CDN. | `50:100` |
 
 The shared Redis count is free on every install, and its burst defaults to
 `RATE_LIMIT_RPS`. Without it, each replica keeps its own counters. If you set
@@ -311,6 +347,9 @@ Every route needs the `admin` or `super_admin` role.
 | `POST` | `/api/admin/rate-limits/ip-rules` | Add `cidr` to `list` (`allow` or `deny`), with an optional `note`. `201`. | `rate-limit-pro` |
 | `DELETE` | `/api/admin/rate-limits/ip-rules/{id}` | Remove an address entry. | |
 | `GET` | `/api/admin/rate-limits/history` | Refused requests for your tenant. Query: `hours`. | `rate-limit-pro` |
+| `GET` | `/api/admin/rate-limits/public-routes` | The general public limit, the routes on it with their own limits, and the limits beside them. | super admin |
+| `PUT` | `/api/admin/rate-limits/public-routes` | Give a route on the general limit its own: `endpoint`, `requests`, `window_seconds`. `204`. | super admin and `rate-limit-pro` |
+| `POST` | `/api/admin/rate-limits/public-routes/reset` | Put a route back on the general limit: `endpoint`. `204`, or `404` when it had none. | super admin |
 
 </details>
 
@@ -335,6 +374,8 @@ Every route needs the `admin` or `super_admin` role.
 | `403` | `super_admin required to change the global limit` | An admin tried to change the global limit. |
 | `403` | `super_admin required to change an auth limit` | An admin tried to change or reset a protection. |
 | `403` | `super_admin required to name another tenant` | An admin passed `?tenant=` to the status route. |
+| `403` | `super_admin required to read the public route limits` or `super_admin required to change a public route limit` | An admin called a public route limit route. |
+| `422` | `only a public route on the general limit takes a limit of its own: a route with its own limit is moved by PUBLIC_RATE_LIMITS` | The route has a limit of its own, sits under `/auth`, or is not served. |
 | `404` | `rate-limit rule not found` or `no such protection` | Unknown id or name. |
 | `409` | `the global limit is changed through /api/admin/rate-limits/global` | `PUT` or `DELETE` on the global limit through `/{id}`. |
 | `409` | `a built-in protection is changed through /api/admin/rate-limits/protections` | `PUT` or `DELETE` on a protection through `/{id}`. |

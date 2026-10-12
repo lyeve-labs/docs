@@ -243,7 +243,9 @@ translated**, or over the API by updating the translation with
 
 `GET /api/v1/localization/resolve?entry_id=<id>&locale=fr-CA`, or `POST` with
 `{"entry_id", "locale"}`, resolves one entry with no credential, on the tenant's own host. It
-allows 30 requests a second per address, with bursts of 60. The answer carries the source
+runs on the general public limit, 50 requests a second per address with bursts of 100 unless
+`PUBLIC_RATE_LIMIT_GLOBAL` changes it. A site that resolves a locale on every page load can
+give the route a [limit of its own](rate-limiting.md#give-a-public-route-its-own-limit). The answer carries the source
 `entry` without its fields, `requested_locale`, `resolved_locale`, `fallback_chain`,
 `translation_status` and the resolved `title`, `body` and `meta`. When the entry has no translation at all, `title` is empty and
 `body` is `{}`. An empty `locale` means `en`.
