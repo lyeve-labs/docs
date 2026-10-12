@@ -48,7 +48,10 @@ gcloud run deploy lyeve-engine \
 
 Keep `--max-instances=1`, and do not deploy a second service from the image for the other port.
 Each instance signs with a key of its own, so a token from one is refused by another.
-`--min-instances=1` removes cold starts but keeps an instance running, which is billed.
+With the default `--min-instances=0`, the first request after a scale to zero waits for Cloud
+Run to start an instance, then for the engine to start. The engine logs its share as `boot_ms`
+on its `serving` line. `--min-instances=1` removes cold starts but keeps an instance running,
+which is billed.
 
 Pin a release tag instead of `latest` in production. See
 [Docker images](docker.md#images-and-tags).

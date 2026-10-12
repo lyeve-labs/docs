@@ -67,8 +67,10 @@ ways to run LyEve, see [Choose where to run LyEve](index.md).
 ## Limits of the free stack
 
 - **Cold starts.** Both free engine hosts stop the container after a period with no traffic:
-  Render free web services, and Cloud Run with `--min-instances=0`. The first request after that waits for the engine to start and reconnect
-  to the database. On Neon the database may be resuming too.
+  Render free web services, and Cloud Run with `--min-instances=0`. The first request after that
+  waits for three things: the host starting the container, the database resuming if it slept
+  (Neon does), and the engine's own start. The engine logs its share as `boot_ms` on its
+  `serving` line, so the log shows how much of a slow first request was the engine.
 - **Signing out on restart.** The engine keeps its signing key at `JWT_KEY_PATH`
   (`/var/lib/lyeve/jwt_key.json`) and creates a new one when the file is missing. On a host with
   no persistent disk, every cold start or redeploy makes a new key, and every token issued
