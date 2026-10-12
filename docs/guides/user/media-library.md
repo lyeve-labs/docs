@@ -1,5 +1,5 @@
 ---
-title: Media Library
+title: Media library
 description: "Upload, organize, find and publish images and files in the admin console's media library, and use them in your content."
 sidebar:
   order: 4

@@ -1,5 +1,5 @@
 ---
-title: Migrate Existing Content
+title: Migrate existing content
 description: "Bring content into LyEve from files and other systems, move it between instances and tenants, or move the whole database to another server."
 sidebar:
   order: 9

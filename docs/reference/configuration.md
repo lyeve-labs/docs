@@ -1,5 +1,5 @@
 ---
-title: Configuration Reference
+title: Configuration reference
 description: "Look up every engine setting with its default, and set it through an environment variable, a YAML file or the admin console."
 sidebar:
   order: 1

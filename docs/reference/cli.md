@@ -1,5 +1,5 @@
 ---
-title: Server Binary
+title: Server binary
 description: "Run the server binary, use its built-in health check, and know what happens to migrations when it starts."
 sidebar:
   order: 3

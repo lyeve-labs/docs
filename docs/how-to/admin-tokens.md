@@ -1,5 +1,5 @@
 ---
-title: Automate the Admin API with Admin Tokens
+title: Automate the Admin API with admin tokens
 description: Give a script or CI job its own Admin API credential, limited to chosen grants, one tenant, 90 days and a list of addresses, with a log of every call.
 sidebar:
   order: 14

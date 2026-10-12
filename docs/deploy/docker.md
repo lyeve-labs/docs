@@ -1,5 +1,5 @@
 ---
-title: Docker Images
+title: Docker images
 description: "Run the engine and admin console images on your own hosts: tags, ports, volumes, settings, TLS and health checks."
 sidebar:
   order: 12

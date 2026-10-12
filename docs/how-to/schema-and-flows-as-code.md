@@ -1,5 +1,5 @@
 ---
-title: Keep the Content Model and Flows in Git
+title: Keep the content model and flows in Git
 description: "Pull the content model and the flows into your repository, review changes in pull requests, gate them in CI, and promote both on release."
 sidebar:
   order: 12

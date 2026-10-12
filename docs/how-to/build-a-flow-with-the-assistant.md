@@ -1,5 +1,5 @@
 ---
-title: Build a Flow with the Assistant
+title: Build a flow with the assistant
 description: "Describe a flow in plain words in the flow editor, read the validated draft, accept it onto the canvas, refine it, and ask about any node."
 sidebar:
   order: 11

@@ -1,5 +1,5 @@
 ---
-title: Core Concepts
+title: Core concepts
 description: "Learn the ideas the rest of the LyEve docs assume: content types and entries, publishing, users and credentials, tenants, licenses and the two APIs."
 sidebar:
   order: 1

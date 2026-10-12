@@ -1,5 +1,5 @@
 ---
-title: User Guide
+title: User guide
 description: "Find the shortest path to working in the LyEve admin console, and the page that holds each job an editor or administrator does there."
 sidebar:
   order: 1

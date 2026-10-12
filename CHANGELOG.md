@@ -4,6 +4,16 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.3.1] - 2026-10-12
+
+### Fixed
+
+- The roles and permissions guide said access rules do not apply to API keys. A key is judged by the roles it carries, so a key with no role reads no content, and the guide says so. The troubleshooting table names the 403 a key with no role meets, and how to fix it.
+
+### Changed
+
+- Page titles are written in sentence case, so the sidebar, the page headings and the search results read the same way as the rest of the site. "Your First Content Type" is now "Your first content type", and an ampersand in a title is now "and".
+
 ## [0.3.0] - 2026-10-12
 
 ### Added

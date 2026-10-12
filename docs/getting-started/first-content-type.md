@@ -1,5 +1,5 @@
 ---
-title: Your First Content Type
+title: Your first content type
 description: "Model a blog with Post and Author content types, preview and apply the change, then write, publish and read posts with their author."
 sidebar:
   order: 5

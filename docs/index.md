@@ -1,5 +1,5 @@
 ---
-title: LyEve Documentation
+title: LyEve documentation
 description: "Learn what LyEve is and who it is for, try it in ten minutes, and find the guide for the job you are doing."
 sidebar:
   order: 1
