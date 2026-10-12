@@ -60,8 +60,8 @@ answers `404`. To choose which features start, and to apply a license, see
 | Feature | Best for | Free or license | Where in the console |
 |---|---|---|---|
 | [Access rules](access-rules.md) | Deciding what each role may do per content type, flow and review | Free, with rules for up to three roles. More need `rbac-pro` | Access > Permissions |
-| [API keys](api-keys.md) | Scripts, apps and CI jobs that read or write content | Free. A monthly request limit per key needs `apikey-pro` | Access > API keys |
-| [API key request limits](api-key-request-limits.md) | Capping how many requests one key may make in a month | `apikey-pro` | Access > API keys |
+| [API keys](api-keys.md) | Scripts, apps and CI jobs that read or write content | Free. Request limits per key need `apikey-pro` | Access > API keys |
+| [API key request limits](api-key-request-limits.md) | Capping how many requests one key may make in an hour, a day or a month | `apikey-pro` | Access > API keys |
 | [Password reset](password-reset.md) | Letting people reset a forgotten password by email | Free | The sign-in page, **Forgot password?** |
 | [Magic link sign-in](magic-link-sign-in.md) | Sign-in by a single-use link sent by email | Free | The sign-in page, **Email me a sign-in link** |
 | [Multi-factor authentication](multi-factor-auth.md) | A second sign-in step with an authenticator app, backup codes or passkeys | Free. Enrolling a passkey needs `mfa-pro` | Settings > Two-factor authentication |

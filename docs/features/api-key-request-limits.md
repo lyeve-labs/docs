@@ -1,6 +1,6 @@
 ---
 title: API key request limits
-description: "Cap how many requests an API key may make in a calendar month, so a key you hand to a partner or a script cannot run up your traffic."
+description: "Cap how many requests an API key may make in an hour, a day and a calendar month, so a key you hand to a partner or a script cannot run up your traffic."
 sidebar:
   order: 5
 capability_of: apikey
@@ -9,8 +9,9 @@ capability_of: apikey
 > **Requires** a license with the `apikey-pro` feature. See [pricing](https://lyeve.com/pricing).
 
 A request limit caps how many requests one [API key](api-keys.md) may make in a
-calendar month. Once the key reaches it, every further request answers `429`
-until the next month starts or you raise the limit. Everything else about keys,
+clock hour, a day or a calendar month. A key can carry any of the three. Once
+it reaches one, every further request answers `429` until that window ends or
+you raise the limit. Everything else about keys,
 from creating them to reading their history, stays free on every install.
 
 :::caution[Beta]
@@ -21,8 +22,11 @@ still change before it is marked stable.
 :::tip[Best for]
 - **A partner integration with a budget.** Give the partner's key 100,000
   requests a month, so their traffic cannot grow past what you agreed.
-- **A build job or script that could loop.** A bug that calls the API in a
-  tight loop stops at the limit instead of running all month.
+- **A build job or script that could loop.** An hourly limit stops a bug that
+  calls the API in a tight loop within the hour, instead of letting it spend
+  the month's allowance first.
+- **Spreading a budget evenly.** A daily limit of 5,000 under a monthly one of
+  100,000 keeps one busy day from using a month's worth.
 - **Trial access.** Hand a prospect a key good for a few thousand requests.
 - **A key you suspect has leaked.** Lower its limit at once while you move the
   real client to a new key. Lowering a limit is free.
@@ -46,17 +50,19 @@ them. The **New key** form has the same three fields.
 
 ![The Request limits drawer for the partner-feed key, open over the API keys list, with a limit of 200 requests per month.](images/api-key-request-limits.png)
 
-The sections below cover the monthly limit over the API.
+The sections below cover the same three limits over the API.
 
 ## How it works
 
 | Question | Answer |
 |---|---|
-| What is counted | Every request the key makes on the Content API, whatever it answers, except the ones refused at the limit. |
-| When the count resets | At the start of each calendar month, in UTC. |
-| What a key over its limit gets | `429` with `X-RateLimit-Exceeded: true` and `{"error": "monthly request limit (100000) exceeded"}`. |
+| What is counted | Every request the key makes on the Content API, whatever it answers, except the ones refused at a limit. |
+| When the count resets | On the hour, at midnight and on the first of the month, each in UTC. A limit set partway through a window counts from then. |
+| What a key over its limit gets | `429` with `X-RateLimit-Exceeded: true`, `Retry-After` in seconds until the window ends, and `{"error": "hourly request limit (1000) exceeded", "window": "hourly"}`. When several limits are spent, the answer names the one that resets last. |
+| How the limits relate | A shorter window's limit cannot be above a longer one's, because it could never be reached. |
 | What `0` means | No limit. It is the default. |
 | Who counts | [Usage and quotas](usage-and-quotas.md), which runs on every install. If the count cannot be read, the request goes through. |
+| How exact it is | The count is checked before a request and written after it, so requests that arrive together can pass a limit by as many as are in flight at once. |
 
 ## Try it
 
@@ -64,18 +70,19 @@ Run this on an install whose license carries `apikey-pro`. You need an admin
 token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how
 to get one, and creates the `post` content type used here.
 
-1. Create a key that may make three requests this month:
+1. Create a key that may make three requests an hour:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/api-keys \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "partner-feed", "roles": ["site-reader"], "scopes": ["content:read"], "monthly_limit": 3}'
+     -d '{"name": "partner-feed", "roles": ["site-reader"], "scopes": ["content:read"], "hourly_limit": 3, "monthly_limit": 1000}'
    ```
 
-   The answer is `201` with `"monthly_limit": 3`. Copy `raw_key` into `KEY`
-   and `id` into `KEY_ID`. The `site-reader` role needs an access rule that
-   reads `post`, as step 1 of [API keys](api-keys.md#try-it) creates.
+   The answer is `201` with `"hourly_limit": 3` and `"monthly_limit": 1000`.
+   Copy `raw_key` into `KEY` and `id` into `KEY_ID`. The `site-reader` role
+   needs an access rule that reads `post`, as step 1 of
+   [API keys](api-keys.md#try-it) creates.
 
 2. Call the Content API four times with it:
 
@@ -86,7 +93,8 @@ to get one, and creates the `post` content type used here.
    done
    ```
 
-   You see `200`, `200`, `200`, then `429`.
+   You see `200`, `200`, `200`, then `429`. The fourth answer carries
+   `Retry-After` with the seconds left in the hour.
 
 3. Read the key's use this month:
 
@@ -101,35 +109,42 @@ to get one, and creates the `post` content type used here.
 
    The refused fourth call is not counted.
 
-4. Clear the limit, and the key is served again:
+4. Clear the hourly limit, and the key is served again:
 
    ```bash
-   curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/monthly-limit \
+   curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/limits \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"monthly_limit": 0}'
+     -d '{"hourly_limit": 0}'
    ```
 
-   The answer is the key with `"monthly_limit": 0`.
+   The answer is the key with `"hourly_limit": 0` and its monthly limit
+   unchanged, because a field the body leaves out keeps its value.
 
 ## Set or change a limit
 
-Give a new key a limit with `monthly_limit` on `POST /api/admin/api-keys`, as in
-step 1, or change the limit of an existing key:
+Give a new key limits with `hourly_limit`, `daily_limit` and `monthly_limit` on
+`POST /api/admin/api-keys`, as in step 1, or change the limits of an existing
+key:
 
 ```bash
-curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/monthly-limit \
+curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/limits \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"monthly_limit": 50000}'
+  -d '{"daily_limit": 5000, "monthly_limit": 100000}'
 ```
+
+`PATCH /api/admin/api-keys/{id}/monthly-limit` still sets the monthly limit
+alone.
 
 Both routes take an `admin` or `super_admin` with a signed-in session. An admin
 token or another API key is refused.
 
+Each limit is judged on its own:
+
 | Write | Needs `apikey-pro` |
 |---|---|
-| Create a key with a `monthly_limit` above `0` | Yes |
+| Create a key with any limit above `0` | Yes |
 | Give a key with no limit its first one | Yes |
 | Raise a key's limit | Yes |
 | Lower a key's limit | No |
@@ -147,10 +162,11 @@ one needs `apikey-pro` again.
 
 | Status | Message | Cause |
 |---|---|---|
-| `400` | `validation failed on field "monthly_limit"` | The limit is below `0`. |
+| `400` | `validation failed on field "monthly_limit"` | A limit is below `0`. |
 | `402` | `payment_required`, naming `feature:apikey-pro` | The write sets a first limit or raises one without `apikey-pro`. Nothing is stored. |
 | `404` | `api key not found` | No key with that id in your tenant. |
-| `429` | `monthly request limit (<n>) exceeded` | The key used its limit for this month. |
+| `422` | `daily_limit (<n>) is above monthly_limit (<n>), so it can never be reached` | A shorter window's limit is above a longer one's. |
+| `429` | `hourly request limit (<n>) exceeded`, or `daily` or `monthly` | The key used that limit for the current window. |
 
 The 402 body in full:
 
