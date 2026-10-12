@@ -4,7 +4,7 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
-## [Unreleased]
+## [0.3.1] - 2026-10-12
 
 ### Fixed
 
