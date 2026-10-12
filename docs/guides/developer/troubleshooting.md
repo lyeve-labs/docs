@@ -21,6 +21,7 @@ follow the request id into the engine's log, which names the cause.
 | `401` on `POST /api/admin/setup` | The setup token is wrong, or setup already finished and the token was retired | Use the token from the engine's log or `LYEVE_SETUP_TOKEN`. If an account exists, sign in instead |
 | `409` `The initial setup has already been completed.` | The first administrator already exists | Sign in |
 | `403` `insufficient scope` | The API key's scopes do not cover this method and path | Give the key the scope, such as `content:write`. See [API keys](../../features/api-keys.md) |
+| `403` `permission denied` | No access rule lets the caller's roles do this on this content type. A fresh install has no rules, and an API key with no role is refused every content type | Write a rule for the role under **Access > Permissions** and give the key that role. See [access rules](../../features/access-rules.md) |
 | `403` `insufficient permissions` | Your role cannot call this route | Ask a `super_admin` for the role. See [roles](../user/roles-and-permissions.md) |
 | `403` `request carries no tenant scope` | The account or key belongs to no tenant | Give the account a tenant membership |
 | `403` `This route needs a signed-in session.` | An admin token or an API key called a route only a signed-in person may call | Call it from a session |
