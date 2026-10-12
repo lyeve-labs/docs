@@ -152,7 +152,7 @@ are, one content type at a time.
 | `include_schemas` | Add each schema's definition. Inside the document for `json` and `yaml`, as `schemas.json` beside the data otherwise, which makes the download a ZIP. | `false` |
 | `include_media` | Bundle the media files entries reference. The download becomes a ZIP. One file may be up to 5 GiB. | `false` |
 | `flatten_json` | Write a nested CSV value as `key=value; key=value` in its cell instead of JSON. | `false` |
-| `s3` | `{"bucket", "key", "region"}`. Upload the result instead of keeping it for download. `key` is a prefix, and the extension is added. | none |
+| `s3` | `{"bucket", "key", "region"}`. Upload the result instead of keeping it for download. The file lands at `data-exports/<tenant>/<key>.<ext>`, so `key` names only the part after the tenant's prefix and tenants that share a bucket cannot write over each other's exports. | none |
 
 ## Follow, download and cancel an export
 
@@ -258,6 +258,7 @@ while the instance runs makes them answer `402` `payment_required`.
 | `404` | `export object not found` | The file is gone from storage. |
 | `503` | `too many concurrent exports running, try again later` | `DATA_EXPORT_MAX_CONCURRENT` exports are already running. |
 | `400` | `S3 bucket is not a valid bucket name` | The bucket name breaks S3's rules. |
+| `400` | `S3 key must not contain a .. segment` | The key tries to leave the tenant's prefix. |
 | `402` | `payment_required` | The license lapsed while the instance ran. |
 | `404` | `database error` | No job or schedule has that id. |
 
