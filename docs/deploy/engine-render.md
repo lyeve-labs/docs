@@ -15,8 +15,8 @@ staging engine.
 :::caution[What you give up]
 - Render routes one public port per service, so the engine publishes the Admin API or the
   Content API, not both. For both, use [Railway](engine-railway.md) or [Fly.io](engine-fly.md).
-- A free web service spins down after a period with no traffic. The next request waits for the
-  engine to start and connect to the database.
+- A free web service spins down after a period with no traffic. The next request waits for
+  Render to start the container, then for the engine to start and connect to the database.
 - A free web service has no persistent disk, so every start creates a new signing key and users
   sign in again.
 :::
@@ -91,7 +91,14 @@ curl https://your-service.onrender.com/.well-known/jwks.json
 ```
 
 The first request after idle time is slow, and the next ones are fast until the service spins
-down again.
+down again. Part of that wait is Render starting the container and part is the engine's own
+start, which the engine logs as `boot_ms` on its `serving` line.
+
+## The admin console
+
+This page sets up the engine alone. The admin console runs as its own service, from the image
+`ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
+settings and the routing it needs.
 
 ## Next
 

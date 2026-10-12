@@ -165,6 +165,13 @@ Archives are encrypted with a key derived for each tenant from the instance's
 `ENCRYPTION_KEY`, or by AWS KMS when `KMS_PROVIDER=aws`. Keep that key safe:
 an archive cannot be restored without it.
 
+With `KMS_PROVIDER=aws`, each archive is encrypted under a fresh data key that
+AWS KMS generates and wraps with `KMS_KEY_ID`. Restoring the archive asks KMS
+to unwrap that key. Credentials come from the standard AWS chain: the
+environment, web identity, the shared credentials and config files, and
+container or instance credentials. Grant the engine's role
+`kms:GenerateDataKey` and `kms:Decrypt` on the key.
+
 ## Restore from an archive
 
 1. Dry-run the restore into a staging tenant:

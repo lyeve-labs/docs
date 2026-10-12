@@ -32,8 +32,8 @@ protections, and a super admin can turn on one global limit.
   [web application firewall](web-application-firewall.md).
 - You want to stop automated sign-in after a few failures. Add
   [captcha](captcha.md) next to the protections.
-- You want to cap one API key's requests per month. Set the key's
-  [monthly limit](api-keys.md).
+- You want to cap one API key's requests per hour, day or month. Set the
+  key's [request limits](api-key-request-limits.md).
 :::
 
 ## How it works
