@@ -16,7 +16,7 @@ credential to use, what each role may do, and how to manage accounts.
 | Who is calling | Use | Sent as | Home page |
 |---|---|---|---|
 | A person in the admin console, or code acting for them | A session from signing in | The console's cookie, or `Authorization: Bearer <token>` | [Quickstart](../../getting-started/quickstart.md) |
-| A site or app reading content | An API key with scopes | `X-API-Key: ly_...` | [API keys](../../features/api-keys.md) |
+| A site or app reading content | An API key with a role and scopes | `X-API-Key: ly_...` | [API keys](../../features/api-keys.md) |
 | A script or CI job on the Admin API | An admin token with grants | `Authorization: Bearer lyat_...` | [Admin tokens](../../how-to/admin-tokens.md) |
 | A service checking who a caller is | The public key, to verify a session token | `GET /.well-known/jwks.json` | [Validate tokens](../../integrations/validate-tokens-jwks.md) |
 
@@ -116,8 +116,8 @@ Every request goes through the same steps, in order:
 4. **The credential's own limits.** An API key needs the scope the route
    needs. An admin token needs the grant the route declares.
 5. **The access rule.** On content, flows and reviews, the caller's roles need
-   a rule that allows the action. Access rules apply to people who sign in,
-   not to API keys.
+   a rule that allows the action. An API key is judged by the roles it
+   carries, so a key with no role reads no content.
 
 `401` means "I do not know who you are": fix the credential. `403` means "I
 know who you are, and you may not do this": fix the role, the rule, the scope
