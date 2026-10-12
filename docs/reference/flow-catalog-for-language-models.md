@@ -1,5 +1,5 @@
 ---
-title: The Flow Catalog for Language Models
+title: The flow catalog for language models
 description: "Give a language model the whole flow definition format in one document, so it can draft a flow you import, test and publish."
 sidebar:
   order: 6

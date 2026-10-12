@@ -1,5 +1,5 @@
 ---
-title: Getting Started
+title: Getting started
 description: "Learn what LyEve is, then follow the getting started pages in order from installing it to modeling your first content."
 sidebar:
   order: 1

@@ -4,6 +4,12 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [Unreleased]
+
+### Changed
+
+- Page titles are written in sentence case, so the sidebar, the page headings and the search results read the same way as the rest of the site. "Your First Content Type" is now "Your first content type", and an ampersand in a title is now "and".
+
 ## [0.3.0] - 2026-10-12
 
 ### Added

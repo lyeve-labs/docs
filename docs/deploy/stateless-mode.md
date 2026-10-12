@@ -1,5 +1,5 @@
 ---
-title: Stateless Mode
+title: Stateless mode
 description: "Run the engine with no database as a webhook relay, with flows, webhooks and API keys declared in the configuration file."
 sidebar:
   order: 14

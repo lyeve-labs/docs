@@ -1,5 +1,5 @@
 ---
-title: Verify Offline
+title: Verify offline
 description: "Confirm on your own machine that, given a signed license token, the server makes no outbound call to verify a license or gate a feature."
 sidebar:
   order: 1

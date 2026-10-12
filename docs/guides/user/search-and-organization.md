@@ -1,5 +1,5 @@
 ---
-title: Search & Organization
+title: Search and organization
 description: "Find entries in the admin console by browsing collections and paging their lists, and with full-text search, synonyms and ranking where search is licensed."
 sidebar:
   order: 6

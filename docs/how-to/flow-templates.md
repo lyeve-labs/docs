@@ -1,5 +1,5 @@
 ---
-title: Start from a Flow Template
+title: Start from a flow template
 description: "Pick one of eighteen starter flows, see what each one needs, create it as a draft, test it and publish it."
 sidebar:
   order: 13

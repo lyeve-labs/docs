@@ -1,5 +1,5 @@
 ---
-title: Developer Guide
+title: Developer guide
 description: "Find the shortest path to calling LyEve from your site, app or service, and the page that holds each integration job."
 sidebar:
   order: 1

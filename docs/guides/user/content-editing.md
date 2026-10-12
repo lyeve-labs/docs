@@ -1,5 +1,5 @@
 ---
-title: Creating & Editing Content
+title: Creating and editing content
 description: "Create and edit entries in the admin console: pick a collection, fill in each kind of field, fix what a save refuses, and delete what you no longer need."
 sidebar:
   order: 2

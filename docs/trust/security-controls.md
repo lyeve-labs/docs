@@ -1,5 +1,5 @@
 ---
-title: Security Controls
+title: Security controls
 description: "Check the audit chain, API keys, rate limits, the web application firewall, sign-in controls and what the server never sends anywhere, through routes and settings on a running install."
 sidebar:
   order: 4

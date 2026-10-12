@@ -1,5 +1,5 @@
 ---
-title: Data Protection
+title: Data protection
 description: "Check what LyEve does for a data subject request, a legal hold, a retention policy, a residency rule, masked personal data and tenant deletion, through routes you can call."
 sidebar:
   order: 3
