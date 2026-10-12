@@ -96,8 +96,12 @@ segment, so `/api/v1/content/post/42` needs `content.post:<action>` and
 A scope on the bare resource always covers every name under it, so a key made
 before named scopes keeps everything it reached.
 
+A key held to some content types reads them through the content routes.
+GraphQL reads every content type the key's roles allow, whatever the key is
+held to, so leave the `graphql` scopes off such a key.
+
 To see every route a key can be scoped to on your instance, with the scope each
-one needs, ask as a super admin:
+one needs, ask as an admin:
 
 ```bash
 curl http://localhost:3001/api/admin/api-key-scopes \
@@ -277,7 +281,7 @@ each. **Schema catalog** lets the key discover the content types. Every other
 route group your instance opens to keys folds out below with its routes, and
 one whose path names something, such as flow endpoints, takes a list of the
 names the key may call. **Request limits** sets the hourly, daily and monthly
-ceilings.
+ceilings, and the **Request limits** button on a key's row changes them later.
 :::
 
 ## Manage keys
@@ -302,7 +306,7 @@ it, then revoke the old one.
 | `GET` | `/api/admin/api-keys/{id}/audit` | The key's requests, newest first, with `limit` (default 50) and `offset`. Without `apikey-pro`, the last thirty days. |
 | `PATCH` | `/api/admin/api-keys/{id}/limits` | Sets any of `hourly_limit`, `daily_limit` and `monthly_limit`. `0` removes a limit. See [API key request limits](api-key-request-limits.md). |
 | `PATCH` | `/api/admin/api-keys/{id}/monthly-limit` | Sets `{"monthly_limit": 50000}` alone. |
-| `GET` | `/api/admin/api-key-scopes` | Every route a key can be scoped to, with its scope. Super admin. |
+| `GET` | `/api/admin/api-key-scopes` | Every route a key can be scoped to, with its scope. |
 | `GET` | `/api/admin/usage/api-key/{id}` | Requests and bytes this month. |
 
 </details>
