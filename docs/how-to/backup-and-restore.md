@@ -190,8 +190,9 @@ container or instance credentials. Grant the engine's role
 ## Test restores
 
 A restore test takes the tenant's newest archive that is at least an hour old,
-checks its checksum and SQL, and loads it into a test tenant, then records
-`passed` or `failed` with the tables and rows it imported.
+checks its checksum and SQL, and runs its restore as a dry run against a test
+tenant, then records `passed` or `failed` with the tables and rows the restore
+would load. It writes nothing.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/tenant-backup/restore-tests/schedules \
@@ -204,10 +205,9 @@ Run it with `POST .../restore-tests/schedules/{id}/trigger`, which answers with
 the result once the test finishes, and read past results at
 `GET .../restore-tests/results`. `timeout_sec` defaults to 600.
 
-:::danger[A restore test empties its test tenant]
-The test truncates every table it loads in `test_tenant`. Point it at a tenant
-that holds nothing you need, never at a live one. Like a backup job, a schedule
-stores `schedule_cron` but runs only when you call `trigger`.
+:::note[A schedule runs only when you trigger it]
+Like a backup job, a schedule stores `schedule_cron` but runs only when you call
+`trigger`. The test changes no rows in `test_tenant`.
 :::
 
 ## Clone a tenant
