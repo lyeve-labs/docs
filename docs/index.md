@@ -37,7 +37,7 @@ New to LyEve? [Getting started](getting-started/index.md) puts the first pages i
 |---|---|---|
 | Engine | Stores your content and accounts in your database, and answers every request over two HTTP APIs: one to manage the instance, one to read and write content. It has no screens of its own | The image `ghcr.io/lyeve-labs/lyeve-core` |
 | Admin console | The web interface where editors write and administrators configure. It calls the engine for you | The image `ghcr.io/lyeve-labs/lyeve-admin` |
-| Database | Holds everything: PostgreSQL, MySQL 8 or later, or SQL Server and Azure SQL | You provide it, on your own server or a managed service |
+| Database | Holds everything: PostgreSQL, MySQL 8.0 or 8.4, or SQL Server and Azure SQL | You provide it, on your own server or a managed service |
 
 Your own code can call the APIs directly or through the TypeScript packages on npm
 ([SDK overview](sdk/index.md)). [Core concepts](concepts/index.md#the-two-apis) explains the

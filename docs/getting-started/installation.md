@@ -21,7 +21,7 @@ The engine stores everything in one database:
 | Database | `DATABASE_URL` starts with |
 |---|---|
 | PostgreSQL | `postgres://` |
-| MySQL 8 or later | `mysql://` |
+| MySQL 8.0 or 8.4 | `mysql://` |
 | SQL Server and Azure SQL | `sqlserver://` |
 
 The engine picks the database from that scheme and creates its tables on first start. If you
@@ -31,6 +31,30 @@ Use a dedicated database user. A production engine refuses to start as the datab
 default superuser (`postgres` on PostgreSQL, `root` on MySQL, `sa` on SQL Server). On
 PostgreSQL, use `sslmode=require` unless the database is on a private network. A production
 engine logs a warning on every start when the connection can run without TLS.
+
+### MySQL needs two settings
+
+LyEve is tested on MySQL 8.0 and 8.4. MySQL 9 is not supported yet.
+
+Create the database with the `utf8mb4_unicode_ci` collation:
+
+```sql
+CREATE DATABASE lyeve CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+MySQL gives a new database `utf8mb4_0900_ai_ci` when the statement names no collation, and
+so does the official container image. Under that collation the engine stops on its first
+start with "Illegal mix of collations". To run MySQL in a container, start the server with
+`--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci` and it creates the
+database the right way.
+
+Then add `parseTime=true` to the URL:
+
+```
+mysql://lyeve:password@tcp(db:3306)/lyeve?parseTime=true
+```
+
+Without it the engine starts, but the first setup request fails.
 
 ### SQL Server needs one setting first
 
