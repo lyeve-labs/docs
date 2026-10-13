@@ -49,8 +49,11 @@ The engine stores everything in one database. It reads the type from the scheme 
 | Database | `DATABASE_URL` form |
 |---|---|
 | PostgreSQL | `postgres://user:pass@host:5432/lyeve?sslmode=require` (or `postgresql://`) |
-| MySQL 8 or later | `mysql://user:pass@tcp(host:3306)/lyeve`, with the host in `tcp(...)` |
+| MySQL 8.0 or 8.4 | `mysql://user:pass@tcp(host:3306)/lyeve?parseTime=true`, with the host in `tcp(...)` |
 | SQL Server 2019 or later, and Azure SQL | `sqlserver://user:pass@host:1433?database=lyeve` |
+
+MySQL needs the `utf8mb4_unicode_ci` collation on the database and `parseTime=true` in the
+URL. See [MySQL needs two settings](../getting-started/installation.md#mysql-needs-two-settings).
 
 SQL Server needs read committed snapshot isolation turned on before it takes traffic. See
 [Installation](../getting-started/installation.md).
