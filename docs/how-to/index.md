@@ -38,7 +38,7 @@ Each recipe stands on its own. Do them in any order.
   [admin token](admin-tokens.md) suits a script.
 - **Placeholders.** Values in angle brackets, such as `<tenant-slug>`, stand for your own.
   Replace them before you run a command.
-- **Databases.** Every recipe works on PostgreSQL, MySQL 8+ and SQL Server or Azure SQL.
+- **Databases.** Every recipe works on PostgreSQL, MySQL 8.0 or 8.4, and SQL Server or Azure SQL.
 
 To check that an instance answers on both ports before you start:
 
