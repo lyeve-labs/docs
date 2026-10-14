@@ -4,6 +4,17 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.3.2] - 2026-10-14
+
+### Added
+
+- The Docker deployment page describes release candidates: the image tag each one carries, that a candidate never moves the latest or minor tag, how to run one, and that a database which ran a candidate cannot go back to an earlier release.
+
+### Fixed
+
+- The installation and deployment pages gave a MySQL connection URL that starts the engine but fails the first setup request. The URL now carries `parseTime=true`, and a new section says the database needs the `utf8mb4_unicode_ci` collation, which a stock MySQL server or container does not give it.
+- The pages said any MySQL from version 8 works. They now name the tested versions, 8.0 and 8.4, and say that MySQL 9 is not supported yet.
+
 ## [0.3.1] - 2026-10-12
 
 ### Fixed
