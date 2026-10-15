@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-> **Requires** a license with the `ai` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `ai` feature. See [pricing](https://lyeve.com/pricing/).
 > The [support desk](#support-desk) also needs the `support` capability, and it is beta.
 
 AI puts the model providers you choose, with your own keys, behind the admin

@@ -5,7 +5,7 @@ sidebar:
   order: 28
 ---
 
-> **Requires** a license with the `events` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `events` feature. See [pricing](https://lyeve.com/pricing/).
 
 Event replay keeps a log of every entry created, updated or deleted, with its
 fields. When a system downstream missed changes, you pick a start time and

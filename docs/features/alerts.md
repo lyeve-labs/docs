@@ -6,7 +6,7 @@ sidebar:
 capability_of: cron
 ---
 
-> **Included free** on every install, with alerts by email. Slack, Discord, PagerDuty and signed webhook channels, a tenant's own error spike threshold and error events older than 30 days need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with alerts by email. Slack, Discord, PagerDuty and signed webhook channels, a tenant's own error spike threshold and error events older than 30 days need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Four features watch your instance and can tell people when something breaks: a
 [scheduled job](scheduled-jobs.md) that keeps failing, an

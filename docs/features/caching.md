@@ -5,7 +5,7 @@ sidebar:
   order: 11
 ---
 
-> **Included free** on every install, with one cache provider of any kind and up to 10 response cache rules per tenant. Several providers with failover, moving entries between providers, the provider benchmark and more rules need a license with the `cache-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with one cache provider of any kind and up to 10 response cache rules per tenant. Several providers with failover, moving entries between providers, the provider benchmark and more rules need a license with the `cache-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Caching keeps the answers to frequent reads, such as content items, content
 lists, searches, the dashboard and the schema list, so repeated requests skip

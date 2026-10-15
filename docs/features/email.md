@@ -5,7 +5,7 @@ sidebar:
   order: 25
 ---
 
-> **Included free** on every install, with one SMTP provider and five templates per tenant. More providers, the `api` transport, more than five templates, creating triggers, the delivery dashboard and bounce classification need a license with the `email-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with one SMTP provider and five templates per tenant. More providers, the `api` transport, more than five templates, creating triggers, the delivery dashboard and bounce classification need a license with the `email-pro` feature. See [pricing](https://lyeve.com/pricing/).
 >
 > Sending over SMTP, templates, bounces and suppressions are stable. The `api` transport is
 > beta.

@@ -5,7 +5,7 @@ sidebar:
   order: 12
 ---
 
-> **Included free** on every install. A flow that uses a custom path, another protocol or an outbound node requires a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. A flow that uses a custom path, another protocol or an outbound node requires a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Clicking the same change into staging and then into production is how the two
 drift apart. This guide puts the content model and the flows in your

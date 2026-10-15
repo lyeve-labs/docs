@@ -5,7 +5,7 @@ sidebar:
   order: 44
 ---
 
-> **Included free** on every install, with authenticator apps, backup codes and signing in with a passkey already enrolled. Enrolling a passkey and marking one as the backup key need a license with the `mfa-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with authenticator apps, backup codes and signing in with a passkey already enrolled. Enrolling a passkey and marking one as the backup key need a license with the `mfa-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Multi-factor authentication adds a second step to admin sign-in. After the
 password, the person enters a code from an authenticator app or uses a

@@ -5,7 +5,7 @@ sidebar:
   order: 64
 ---
 
-> **Requires** a license with the `search` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `search` feature. See [pricing](https://lyeve.com/pricing/).
 
 Search finds entries by the words in them, ranks the best matches first and marks where each
 match is. It runs in your database with nothing else to install, and can move to

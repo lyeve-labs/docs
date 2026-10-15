@@ -5,7 +5,7 @@ sidebar:
   order: 63
 ---
 
-> **Requires** a license with the `scim` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `scim` feature. See [pricing](https://lyeve.com/pricing/).
 
 SCIM provisioning lets your identity provider manage LyEve users for you. When
 someone joins, changes or leaves in Azure AD, Okta or another SCIM 2.0

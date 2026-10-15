@@ -5,7 +5,7 @@ sidebar:
   order: 59
 ---
 
-> **Requires** a license with the `recommendations` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `recommendations` feature. See [pricing](https://lyeve.com/pricing/).
 
 Recommendations learns from what signed-in readers do with your entries: what they view,
 like, share and bookmark. From that it answers three questions: which entries are similar to

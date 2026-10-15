@@ -6,7 +6,7 @@ sidebar:
 capability_of: audit
 ---
 
-> **Requires** a license with the `audit-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `audit-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A stream sends every new [audit log](audit-log.md) entry to a destination you
 choose, so your security team reads it in the tools they already use. Entries

@@ -5,7 +5,7 @@ sidebar:
   order: 55
 ---
 
-> **Requires** a license with the `query-monitor` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `query-monitor` feature. See [pricing](https://lyeve.com/pricing/).
 
 Slow query analysis watches how long each request takes. When one passes the
 threshold, it records the database's most expensive recent query beside it,

@@ -5,7 +5,7 @@ sidebar:
   order: 42
 ---
 
-> **Included free** on every install, with up to 1,000 generated image variants per tenant. More variants need a license with the `media-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with up to 1,000 generated image variants per tenant. More variants need a license with the `media-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 The media library holds your images, documents, video and audio. Each upload is checked
 against the type it claims, its metadata is read, and images get thumbnails. You can search

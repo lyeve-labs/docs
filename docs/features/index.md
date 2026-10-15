@@ -15,7 +15,7 @@ while its feature runs for your tenant, and many show only to a super admin. "No
 feature works through the API and settings alone. A route of a feature that is not running
 answers `404`. To choose which features start, and to apply a license, see
 [Licensing and tiers](../concepts/licensing-and-tiers.md). Prices are at
-[lyeve.com/pricing](https://lyeve.com/pricing).
+[lyeve.com/pricing](https://lyeve.com/pricing/).
 
 ## Model and write content
 

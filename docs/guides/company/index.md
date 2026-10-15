@@ -14,7 +14,7 @@ infrastructure and your database, so your content, users and files stay in syste
 1. [Core concepts](../../concepts/index.md): what LyEve does, in six ideas.
 2. [Licensing and tiers](../../concepts/licensing-and-tiers.md): what runs free with no time
    limit, what each paid feature is called, and what happens when a license expires.
-3. [Pricing](https://lyeve.com/pricing): plans, and features you can buy on their own.
+3. [Pricing](https://lyeve.com/pricing/): plans, and features you can buy on their own.
 4. [Source code](../../trust/source-code.md): which parts are MIT, which are commercial, and
    which repositories you can read today.
 5. [Security controls](../../trust/security-controls.md): each control as a route or setting a
@@ -51,4 +51,4 @@ infrastructure and your database, so your content, users and files stay in syste
 ## Related
 
 - [Features](../../features/index.md): every feature, and whether it is free.
-- [lyeve.com/contact](https://lyeve.com/contact): support and sales questions.
+- [lyeve.com/contact](https://lyeve.com/contact/): support and sales questions.

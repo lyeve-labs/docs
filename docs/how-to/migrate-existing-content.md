@@ -5,7 +5,7 @@ sidebar:
   order: 9
 ---
 
-> **Included free** on every install. Moving the whole database requires a license with the `migration-toolkit` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. Moving the whole database requires a license with the `migration-toolkit` feature. See [pricing](https://lyeve.com/pricing/).
 
 Moving content means moving two things: the **content types**, the shape, and the **entries**,
 the content itself. LyEve has a tool for each kind of move, and none of them is a single
@@ -163,7 +163,7 @@ whatever database wrote it, so it loads on PostgreSQL, MySQL or SQL Server.
 
 ## Move the whole database
 
-> **Requires** a license with the `migration-toolkit` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `migration-toolkit` feature. See [pricing](https://lyeve.com/pricing/).
 
 The database migrator copies the database under an install from one connection string to
 another, in any pairing of PostgreSQL, MySQL and SQL Server. It copies tables and rows, not

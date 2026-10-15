@@ -5,7 +5,7 @@ sidebar:
   order: 48
 ---
 
-> **Included free** on every install, with the `default` tenant, domain mapping, the JSON Lines and dump migrate routes, and the cost ledger. Creating more tenants needs `multitenant-provisioning`, backup, restore and clone need `tenant-backup`, the database migrator needs `migration-toolkit`, and per-tenant admin branding needs `multitenant-customization`. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with the `default` tenant, domain mapping, the JSON Lines and dump migrate routes, and the cost ledger. Creating more tenants needs `multitenant-provisioning`, backup, restore and clone need `tenant-backup`, the database migrator needs `migration-toolkit`, and per-tenant admin branding needs `multitenant-customization`. See [pricing](https://lyeve.com/pricing/).
 
 A tenant is one customer, brand or site on a shared instance. Each tenant has
 its own content types, entries, media, users, API keys and settings, and a
@@ -339,7 +339,7 @@ Every cost route needs the `admin` role and works on the caller's tenant.
 
 ## Brand the admin per tenant
 
-> **Requires** a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing/).
 
 A tenant's admin can make the admin console their own, under
 **Settings > Customization**. Everything is kept per tenant. The same license

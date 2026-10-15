@@ -5,7 +5,7 @@ sidebar:
   order: 51
 ---
 
-> **Requires** a license with the `pii-mask` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `pii-mask` feature. See [pricing](https://lyeve.com/pricing/).
 
 PII masking replaces personal data with a placeholder before it leaves the
 instance, so `ada@example.com` in a response becomes `[redacted-email]`. It

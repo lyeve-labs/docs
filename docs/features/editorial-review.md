@@ -5,7 +5,7 @@ sidebar:
   order: 62
 ---
 
-> **Included free** on every install, with one review workflow per tenant. More workflows, escalation, approvals from several reviewers and stages that apply only to some entries need a license with the `review-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with one review workflow per tenant. More workflows, escalation, approvals from several reviewers and stages that apply only to some entries need a license with the `review-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Editorial review puts an entry through sign-off before it goes live. You define a review for
 a content type as an ordered list of stages, each with the role allowed to approve it and an

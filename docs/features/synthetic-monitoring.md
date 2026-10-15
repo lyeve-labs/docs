@@ -5,7 +5,7 @@ sidebar:
   order: 71
 ---
 
-> **Included free** on every install, with three probes per tenant, each run at most every 300 seconds, and down and recovery notices by email. More probes and shorter intervals need a license with the `synthetic-monitoring-pro` feature, and Slack, Discord, PagerDuty and webhook notices need `alerts-pro`. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with three probes per tenant, each run at most every 300 seconds, and down and recovery notices by email. More probes and shorter intervals need a license with the `synthetic-monitoring-pro` feature, and Slack, Discord, PagerDuty and webhook notices need `alerts-pro`. See [pricing](https://lyeve.com/pricing/).
 
 Synthetic monitoring calls your endpoints on a schedule, so you learn that
 something broke before a user tells you. Every run is recorded with its outcome

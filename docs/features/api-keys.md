@@ -1,11 +1,11 @@
 ---
 title: API keys
-description: Give a website, app or service its own key for the Content API, limit it to the schemas and endpoints it needs, cap its requests per hour, day or month, and see every call it made.
+description: Give a website, app or service its own Content API key, limited to the schemas and endpoints it needs. Cap its requests by hour, day or month and see each call.
 sidebar:
   order: 5
 ---
 
-> **Included free** on every install, up to five active keys per tenant and the last thirty days of each key's request history. A license with the `apikey-pro` feature lifts both and lets you set or raise a key's request limits. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, up to five active keys per tenant and the last thirty days of each key's request history. A license with the `apikey-pro` feature lifts both and lets you set or raise a key's request limits. See [pricing](https://lyeve.com/pricing/).
 
 An API key lets a program call the Content API (`/api/v1/*`) without a person
 signing in. Each key carries scopes that say what it may read, create, update
