@@ -4,6 +4,14 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.3.3] - 2026-10-15
+
+### Fixed
+
+- Links to the pricing, contact and plugin license pages named each address without its trailing slash, so every one went through a permanent redirect. They now name the address the site serves.
+- The flow catalog reference page showed a second top-level heading under its title. It is now a section heading.
+- The analytics, API keys, data protection and security controls pages carried descriptions longer than a search result shows. They are shorter and keep the same facts.
+
 ## [0.3.2] - 2026-10-14
 
 ### Added
