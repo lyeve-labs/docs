@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-> **Included free** on every install. Saving a preset of your own needs a license with the `schema-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. Saving a preset of your own needs a license with the `schema-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A preset creates a small set of content types in one call, with their fields, relations and
 validation already written. It is a starting point you own. Once created, the content types

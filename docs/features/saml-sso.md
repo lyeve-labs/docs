@@ -5,7 +5,7 @@ sidebar:
   order: 61
 ---
 
-> **Requires** a license with the `saml` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `saml` feature. See [pricing](https://lyeve.com/pricing/).
 
 SAML single sign-on lets your team sign in to the admin console through your
 company's identity provider. LyEve acts as the SAML service provider: it sends

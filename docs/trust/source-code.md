@@ -20,7 +20,7 @@ Three parts are commercial, and their source is not public:
   holds no secret, because verification is an offline Ed25519 signature check
   against a public key.
 - **Every feature beyond the engine, including the ones included free.** They
-  are commercial software under the [EULA](https://lyeve.com/legal/eula). Free
+  are commercial software under the [EULA](https://lyeve.com/legal/eula/). Free
   means free of charge, not open source. Content types, entries, draft and
   publish, revisions and scheduled publishing come from two free features,
   [schema changes](../features/schema-changes.md) and
@@ -94,7 +94,7 @@ The other nine are the client libraries and the UI kit, each published on npm:
   modify and redistribute it. Read it, fork it and file bugs in
   [lyeve-core](https://github.com/lyeve-labs/lyeve-core/issues) and
   [lyeve-admin](https://github.com/lyeve-labs/lyeve-admin/issues). Support
-  requests go through [lyeve.com/contact](https://lyeve.com/contact).
+  requests go through [lyeve.com/contact](https://lyeve.com/contact/).
 - **The client libraries are fully open.** You can read, fork and build every
   library your application links against.
 

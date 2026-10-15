@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-> **Included free** on every install, up to 25 webhooks per tenant. Step 6 sets a retry policy and resends a delivery, which need a license with the `webhook-pro` feature, and step 7 needs `events`. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, up to 25 webhooks per tenant. Step 6 sets a retry policy and resends a delivery, which need a license with the `webhook-pro` feature, and step 7 needs `events`. See [pricing](https://lyeve.com/pricing/).
 
 This walkthrough connects LyEve to an endpoint of your own. You run a small
 receiver that refuses any request LyEve did not sign, register it as a

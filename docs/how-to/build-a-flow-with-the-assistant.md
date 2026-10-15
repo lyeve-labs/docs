@@ -5,7 +5,7 @@ sidebar:
   order: 11
 ---
 
-> **Requires** a license with the `ai` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `ai` feature. See [pricing](https://lyeve.com/pricing/).
 
 Instead of dragging nodes onto the canvas, you can tell the flow editor what
 you want and get a draft back. This guide builds one flow that way: when a

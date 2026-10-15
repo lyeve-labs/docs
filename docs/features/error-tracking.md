@@ -5,7 +5,7 @@ sidebar:
   order: 27
 ---
 
-> **Included free** on every install, with spike alerts by email and 30 days of events to read. Slack, Discord, PagerDuty and webhook alerts, a tenant's own spike threshold and older events need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with spike alerts by email and 30 days of events to read. Slack, Discord, PagerDuty and webhook alerts, a tenant's own spike threshold and older events need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Error tracking keeps a list of the failures you report, grouped so you see each
 distinct problem once with a count beside it. You register error codes, send

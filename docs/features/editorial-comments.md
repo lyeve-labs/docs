@@ -6,7 +6,7 @@ sidebar:
 capability_of: content
 ---
 
-> **Requires** a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Editorial comments let your team talk about an entry where the entry is. A
 first comment opens a thread, and replies stay under it, one level deep.

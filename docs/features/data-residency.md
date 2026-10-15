@@ -5,7 +5,7 @@ sidebar:
   order: 22
 ---
 
-> **Requires** a license with the `data-residency` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `data-residency` feature. See [pricing](https://lyeve.com/pricing/).
 
 Data residency records where each tenant's data must live and holds every
 engine to it. You define the regions you run in, assign each

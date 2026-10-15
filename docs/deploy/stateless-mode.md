@@ -8,7 +8,7 @@ sidebar:
 > **Included free** on every install, with up to twenty flows and 25 outbound webhooks. A relay's
 > webhook trigger, custom paths, outbound nodes and more flows require a license with the
 > `flow-pro` feature, and more webhooks, payload templates, filters and retry settings the
-> `webhook-pro` feature. See [pricing](https://lyeve.com/pricing).
+> `webhook-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 `LYEVE_MODE=stateless` starts the engine with no database at all. It receives webhooks,
 reshapes them with a flow and passes them on, all in one container, with no database to run or

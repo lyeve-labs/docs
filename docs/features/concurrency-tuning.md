@@ -5,7 +5,7 @@ sidebar:
   order: 31
 ---
 
-> **Included free** on every install, with every view of the worker pool, the parallel engine, async hooks and task status. Changing them on a running server, and the four settings that set them at start, need a license with the `goroutine-engine-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with every view of the worker pool, the parallel engine, async hooks and task status. Changing them on a running server, and the four settings that set them at start, need a license with the `goroutine-engine-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 :::caution[Beta]
 `goroutine-engine-pro` is in beta. It works as this page describes, and its

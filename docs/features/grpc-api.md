@@ -5,7 +5,7 @@ sidebar:
   order: 32
 ---
 
-> **Requires** a license with the `grpc` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `grpc` feature. See [pricing](https://lyeve.com/pricing/).
 
 The gRPC API serves your content types and entries to gRPC clients on a port
 of its own, with the same data, tenants, roles and data residency rules as the

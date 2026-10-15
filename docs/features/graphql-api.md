@@ -5,7 +5,7 @@ sidebar:
   order: 31
 ---
 
-> **Requires** a license with the `graphql` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `graphql` feature. See [pricing](https://lyeve.com/pricing/).
 
 The GraphQL API serves your content types as one GraphQL schema at
 `/api/v1/graphql`, beside the REST Content API. Every content type gets a list

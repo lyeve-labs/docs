@@ -5,7 +5,7 @@ sidebar:
   order: 40
 ---
 
-> **Included free** on every install, including retention policies and volume alerts by email. Slack, Discord, PagerDuty and webhook channels on a volume alert need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, including retention policies and volume alerts by email. Slack, Discord, PagerDuty and webhook channels on a volume alert need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Every line the instance logs is stored, so you can search it later, watch it
 live and keep it for as long as you choose. You can turn on debug output for

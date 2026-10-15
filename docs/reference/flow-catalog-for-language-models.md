@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-> **Included free** on every install. The types marked `Tier: pro` need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. The types marked `Tier: pro` need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 This page is a document to hand to a language model, such as ChatGPT or
 Claude, so it can write a [flow](../features/flows.md) for you. It holds the
@@ -56,7 +56,7 @@ these steps for you, with your tenant's own provider. See
 The copy below lists only the built-in nodes. The import shapes, error bodies
 and datasource settings are in [Flow definition format](flow-definition.md).
 
-# LyEve flow definitions
+## LyEve flow definitions
 
 This document is generated from the node catalog and is written for a
 language model that drafts flow definitions. It is complete: every node

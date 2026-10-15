@@ -1,6 +1,6 @@
 ---
 title: Data protection
-description: "Check what LyEve does for a data subject request, a legal hold, a retention policy, a residency rule, masked personal data and tenant deletion, through routes you can call."
+description: "Check what LyEve does for data subject requests, legal holds, retention, residency, masked personal data and tenant deletion, through routes you can call."
 sidebar:
   order: 3
 ---
@@ -19,7 +19,7 @@ request and response shapes.
 | Data residency | A license with the `data-residency` feature |
 | Masking personal data | A license with the `pii-mask` feature |
 
-See [pricing](https://lyeve.com/pricing).
+See [pricing](https://lyeve.com/pricing/).
 
 ## Where personal data lives
 
@@ -111,7 +111,7 @@ unaudited export still leaves a trace.
 
 ## Legal holds
 
-> **Requires** a license with the `audit-retention` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `audit-retention` feature. See [pricing](https://lyeve.com/pricing/).
 
 Holds are part of the [Audit log](../features/audit-log.md).
 
@@ -143,7 +143,7 @@ hold preserves, for disclosure to a court or a regulator.
 
 ## Retention
 
-> **Requires** a license with the `audit-retention` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `audit-retention` feature. See [pricing](https://lyeve.com/pricing/).
 
 Audit-log retention is a policy per `event_type` and `resource_type`:
 
@@ -174,7 +174,7 @@ legal hold for 30 days.
 
 ## Residency
 
-> **Requires** a license with the `data-residency` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `data-residency` feature. See [pricing](https://lyeve.com/pricing/).
 
 [Data residency](../features/data-residency.md) assigns each tenant one primary
 region and records replicas and planned moves between regions. Regions and the
@@ -200,7 +200,7 @@ runs.
 
 ## Masking
 
-> **Requires** a license with the `pii-mask` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `pii-mask` feature. See [pricing](https://lyeve.com/pricing/).
 
 [PII masking](../features/pii-masking.md) redacts personal data in text
 response bodies (JSON, XML, form data, JavaScript and any `text/*` type) up to

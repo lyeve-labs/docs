@@ -6,7 +6,7 @@ sidebar:
 capability_of: content
 ---
 
-> **Requires** a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A release is a named set of entries that change together. Use one for a launch:
 the new product pages go live and the old ones go back to draft in one action.

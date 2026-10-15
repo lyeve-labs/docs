@@ -43,7 +43,7 @@ by status, use search.
 
 ## Search by words
 
-> **Requires** a license with the `search` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `search` feature. See [pricing](https://lyeve.com/pricing/).
 
 Open **Search**, type in **Search content** and choose **Search**. Search looks in every
 entry's title, body and tags, in every collection and every status.

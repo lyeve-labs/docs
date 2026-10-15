@@ -6,7 +6,7 @@ sidebar:
 capability_of: media
 ---
 
-> **Included free** on every install, up to 1,000 stored variants per tenant. A license with the `media-pro` feature lifts that ceiling. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, up to 1,000 stored variants per tenant. A license with the `media-pro` feature lifts that ceiling. See [pricing](https://lyeve.com/pricing/).
 
 Every image in the [media library](media.md) gets three fixed thumbnails at
 upload. Image transforms add any size, crop and format, asked for in a URL and

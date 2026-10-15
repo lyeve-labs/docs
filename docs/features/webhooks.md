@@ -5,7 +5,7 @@ sidebar:
   order: 78
 ---
 
-> **Included free** on every install, up to 25 outbound webhooks per tenant with signed delivery and the default retry policy. More webhooks, payload templates, filters, retry policies, dead-letter replay, delivery search and incoming webhooks need a license with the `webhook-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, up to 25 outbound webhooks per tenant with signed delivery and the default retry policy. More webhooks, payload templates, filters, retry policies, dead-letter replay, delivery search and incoming webhooks need a license with the `webhook-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A webhook calls a URL you choose each time an entry is created, updated or
 deleted, so a build, a cache purge or a sync starts on its own. Each request is

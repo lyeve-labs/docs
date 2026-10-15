@@ -5,7 +5,7 @@ sidebar:
   order: 12
 ---
 
-> **Included free** on every install, with one captcha provider for the instance. A provider and keys of a tenant's own need a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with one captcha provider for the instance. A provider and keys of a tenant's own need a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing/).
 
 Captcha slows down password guessing on the admin sign-in. After a few failed
 attempts, the next attempt must carry a token from Cloudflare Turnstile,

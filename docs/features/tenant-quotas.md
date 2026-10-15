@@ -6,7 +6,7 @@ sidebar:
 capability_of: usage
 ---
 
-> **Requires** a license with the `usage-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `usage-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A tenant quota caps what one tenant may use: requests per month, media storage
 and bandwidth per month. A soft quota only warns the tenant's clients. A hard

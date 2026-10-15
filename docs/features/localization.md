@@ -5,7 +5,7 @@ sidebar:
   order: 39
 ---
 
-> **Included free** on every install, with two locales per tenant, your default locale included. More locales need a license with the `localization-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with two locales per tenant, your default locale included. More locales need a license with the `localization-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Localization keeps a translation of each entry per locale, beside the entry written in your
 default language. When your site reads content with a locale, LyEve serves the best

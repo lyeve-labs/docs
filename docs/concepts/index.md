@@ -108,7 +108,7 @@ You apply a license by setting `LYEVE_LICENSE_KEY`, or a super admin pastes it i
 **Settings > License** in the admin console. An expired license never takes a free feature
 away. [Licensing and tiers](licensing-and-tiers.md) lists what is free, what a license adds
 and what happens when one expires, and [Features](../features/index.md) lists every feature
-with its tier. Prices are at [lyeve.com/pricing](https://lyeve.com/pricing).
+with its tier. Prices are at [lyeve.com/pricing](https://lyeve.com/pricing/).
 
 ## The two APIs
 
