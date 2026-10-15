@@ -5,7 +5,7 @@ sidebar:
   order: 43
 ---
 
-> **Requires** a license with the `messagebroker` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `messagebroker` feature. See [pricing](https://lyeve.com/pricing/).
 
 Every time an entry is created, updated or deleted, LyEve publishes one message
 to your broker: NATS JetStream, Apache Kafka or RabbitMQ. Your services

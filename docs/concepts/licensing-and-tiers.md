@@ -10,7 +10,7 @@ the free tier: the core CMS and every free feature, for production use and with
 no time limit. A license adds the paid features and capabilities it names. This
 page covers what each side holds, how to apply a license, how to choose which
 features start, and how to check what is running. Prices and plans are at
-[lyeve.com/pricing](https://lyeve.com/pricing).
+[lyeve.com/pricing](https://lyeve.com/pricing/).
 
 | If you want to | Read |
 |---|---|
@@ -179,7 +179,7 @@ These names are in beta: `alerts-pro`, `analytics-pro`, `apikey-pro`,
 can still change before it is marked stable. Each page says what keeps working
 when the license lapses.
 
-Which names each plan carries is on [lyeve.com/pricing](https://lyeve.com/pricing).
+Which names each plan carries is on [lyeve.com/pricing](https://lyeve.com/pricing/).
 A feature can also be bought on its own, and however a name reached the license,
 it works the same.
 

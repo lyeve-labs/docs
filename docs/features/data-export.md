@@ -5,7 +5,7 @@ sidebar:
   order: 21
 ---
 
-> **Requires** a license with the `data-export` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `data-export` feature. See [pricing](https://lyeve.com/pricing/).
 
 Data export turns your content into a file. Pick the content types, the statuses and the
 format, and the export is built in the background. When it finishes you download the file or

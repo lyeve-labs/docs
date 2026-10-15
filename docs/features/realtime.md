@@ -5,7 +5,7 @@ sidebar:
   order: 58
 ---
 
-> **Requires** a license with the `realtime` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `realtime` feature. See [pricing](https://lyeve.com/pricing/).
 
 Realtime pushes a notice to connected browsers and apps the moment content
 changes, so a page updates without polling. A client subscribes to topics over

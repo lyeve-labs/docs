@@ -1,11 +1,11 @@
 ---
 title: Analytics
-description: Collect daily usage figures per tenant, forward events to GA4, Mixpanel, Plausible, Segment and more with a delivery log, and let users export or erase their data.
+description: Collect daily usage per tenant and forward events to GA4, Mixpanel, Plausible, Segment and more with a delivery log. Users can export or erase their data.
 sidebar:
   order: 3
 ---
 
-> **Included free** on every install, with the GA4, Mixpanel, Plausible and Segment destinations and a delivery log on every event. Retries, replaying a failed delivery, and the PostHog, Amplitude and webhook destinations need a license with the `analytics-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with the GA4, Mixpanel, Plausible and Segment destinations and a delivery log on every event. Retries, replaying a failed delivery, and the PostHog, Amplitude and webhook destinations need a license with the `analytics-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Analytics answers "how is this tenant using the product" and passes what
 happens in your content on to the analytics service you already use. It keeps

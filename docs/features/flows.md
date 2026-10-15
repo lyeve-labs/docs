@@ -5,7 +5,7 @@ sidebar:
   order: 29
 ---
 
-> **Included free** on every install, up to twenty flows per tenant on the free triggers and nodes. More flows, custom endpoint paths, webhooks, other protocols, outbound nodes and datasources need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, up to twenty flows per tenant on the free triggers and nodes. More flows, custom endpoint paths, webhooks, other protocols, outbound nodes and datasources need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A flow does a job for you when something happens. You draw it in the admin
 console as a few connected boxes: one thing starts it, the next boxes do the

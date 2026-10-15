@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-> **Requires** a license with the `ab-testing` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `ab-testing` feature. See [pricing](https://lyeve.com/pricing/).
 
 An experiment splits your signed-in users between variants and measures which one converts
 better. Your app asks LyEve which variant a user sees, shows it, and reports when the user does

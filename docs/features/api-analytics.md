@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-> **Requires** a license with the `apianalytics` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `apianalytics` feature. See [pricing](https://lyeve.com/pricing/).
 
 API analytics counts every request to both APIs and rolls the numbers up by
 hour. You can read totals, break them down by endpoint, tenant, method or

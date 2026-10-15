@@ -5,7 +5,7 @@ sidebar:
   order: 16
 ---
 
-> **Included free** on every install, with every revision kept and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with every revision kept and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 This is the Admin API behind the admin console's **Content** screens. It creates and edits
 entries, moves them between draft, published and archived, and keeps a numbered revision of

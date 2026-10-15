@@ -5,7 +5,7 @@ sidebar:
   order: 13
 ---
 
-> **Included free** on every install. Templates that call outside the instance require a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. Templates that call outside the instance require a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Every install ships eighteen starter flows. Each is a complete
 [flow](../features/flows.md) you create as a draft, point at your own content

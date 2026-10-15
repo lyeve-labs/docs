@@ -5,7 +5,7 @@ sidebar:
   order: 10
 ---
 
-> **Included free** on every install. A custom path, other protocols and the outbound nodes require a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. A custom path, other protocols and the outbound nodes require a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Your frontend wants every open order with its customer and its shipments in
 one call. This guide builds that endpoint as a [flow](../features/flows.md):

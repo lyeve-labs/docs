@@ -5,7 +5,7 @@ sidebar:
   order: 19
 ---
 
-> **Included free** on every install, with email alerts for a failing job. Slack, Discord, PagerDuty and webhook alerts need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with email alerts for a failing job. Slack, Discord, PagerDuty and webhook alerts need a license with the `alerts-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A scheduled job calls a URL of yours on a timetable. On each tick it sends a
 `POST` with a JSON body you choose, and it records whether the call worked, how

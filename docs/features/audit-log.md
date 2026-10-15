@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-> **Requires** a license with the `audit` feature. Streaming the log to an outside sink also needs `audit-pro`, which a license with `audit` does not include. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `audit` feature. Streaming the log to an outside sink also needs `audit-pro`, which a license with `audit` does not include. See [pricing](https://lyeve.com/pricing/).
 
 The audit log records the actions admins and the instance take: who acted,
 what they changed, when, and from which address. You can search it, export it

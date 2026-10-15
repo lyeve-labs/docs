@@ -6,7 +6,7 @@ sidebar:
 capability_of: apikey
 ---
 
-> **Requires** a license with the `apikey-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `apikey-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A request limit caps how many requests one [API key](api-keys.md) may make in a
 clock hour, a day or a calendar month. A key can carry any of the three. Once

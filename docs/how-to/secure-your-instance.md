@@ -5,7 +5,7 @@ sidebar:
   order: 8
 ---
 
-> **Included free** on every install. The web application firewall and trusted devices require a license with the `waf` and `device-fingerprint` features, and passkey enrollment needs `mfa-pro`. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. The web application firewall and trusted devices require a license with the `waf` and `device-fingerprint` features, and passkey enrollment needs `mfa-pro`. See [pricing](https://lyeve.com/pricing/).
 
 Walk these steps before you expose an instance to the internet. Each one says
 what to set, why, and how to check that it worked. Every setting is an

@@ -5,7 +5,7 @@ sidebar:
   order: 57
 ---
 
-> **Included free** on every install. Custom rules, changes to the sign-in protections, a tenant's own global limit, address allow and deny lists and the refusal history need a license with the `rate-limit-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. Custom rules, changes to the sign-in protections, a tenant's own global limit, address allow and deny lists and the refusal history need a license with the `rate-limit-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Rate limiting answers `429 Too Many Requests` when a client sends more
 requests than a limit allows. It keeps one client from crowding out the

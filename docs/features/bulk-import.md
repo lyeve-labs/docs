@@ -5,7 +5,7 @@ sidebar:
   order: 10
 ---
 
-> **Included free** on every install, every format included. Saved mapping templates and the date, split and lookup transforms need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, every format included. Saved mapping templates and the date, split and lookup transforms need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Bulk import turns a file into entries. You map the file's columns onto the fields of one
 content type, check every row with a dry run, then import. Each row becomes an entry with a

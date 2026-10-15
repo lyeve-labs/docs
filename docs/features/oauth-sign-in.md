@@ -5,7 +5,7 @@ sidebar:
   order: 49
 ---
 
-> **Included free** on every install, with one sign-in provider per install, added by hand or from the Google, GitHub and Apple templates. More providers, the Okta and Azure AD templates, role mapping and a backup provider need a license with the `oauth-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with one sign-in provider per install, added by hand or from the Google, GitHub and Apple templates. More providers, the Okta and Azure AD templates, role mapping and a backup provider need a license with the `oauth-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 OAuth sign-in puts a **Sign in with** button on the admin console's login page
 for each identity provider you configure. Your team signs in with the account

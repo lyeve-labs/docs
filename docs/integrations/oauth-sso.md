@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-> **Requires** a license with the `saml`, `scim` or `device-fingerprint` feature for those options. Passwords, magic links, OAuth sign-in, MFA and captcha are free, and OAuth sign-in and MFA have paid parts named in the tables. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `saml`, `scim` or `device-fingerprint` feature for those options. Passwords, magic links, OAuth sign-in, MFA and captcha are free, and OAuth sign-in and MFA have paid parts named in the tables. See [pricing](https://lyeve.com/pricing/).
 
 Every way of signing in ends the same way: the person holds a LyEve session
 token, the same one a password sign-in gets, and your services verify it the

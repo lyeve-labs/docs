@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-> **Included free** on every install. The types and options marked `Tier: pro` need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. The types and options marked `Tier: pro` need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 A flow definition is the document a [flow](../features/flows.md) runs. The
 canvas, the API, an exported file and the assistant all produce the same

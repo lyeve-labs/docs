@@ -52,4 +52,4 @@ license.
 - **[Configuration](reference/configuration.md)** and **[API endpoints](reference/api-endpoints.md)**:
   every setting and every route.
 - **[Glossary](reference/glossary.md)**: short definitions of the terms these pages use.
-- **[Pricing](https://lyeve.com/pricing)**: plans and prices.
+- **[Pricing](https://lyeve.com/pricing/)**: plans and prices.

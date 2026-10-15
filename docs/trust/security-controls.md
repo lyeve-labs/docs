@@ -1,6 +1,6 @@
 ---
 title: Security controls
-description: "Check the audit chain, API keys, rate limits, the web application firewall, sign-in controls and what the server never sends anywhere, through routes and settings on a running install."
+description: "Check the audit chain, API keys, rate limits, the web application firewall, sign-in controls and what the server never sends anywhere, on a running install."
 sidebar:
   order: 4
 ---
@@ -24,7 +24,7 @@ what is not built. Configuration lives on each feature's page.
 | Web application firewall | A license with `waf` |
 | SAML, SCIM | A license with `saml` or `scim` |
 
-See [pricing](https://lyeve.com/pricing). Data subject requests, holds,
+See [pricing](https://lyeve.com/pricing/). Data subject requests, holds,
 retention, residency and masking are on [Data Protection](data-protection.md).
 
 ## Is it enforcing?
@@ -72,7 +72,7 @@ enforcing. Check residency with a write instead, as
 
 ## Audit trail
 
-> **Requires** a license with the `audit` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `audit` feature. See [pricing](https://lyeve.com/pricing/).
 
 The [Audit log](../features/audit-log.md) records each entry with `sequence`,
 `tenant_id`, `user_id`, `action`, `resource_type`, `resource_id`, `ip`,
@@ -222,7 +222,7 @@ an account you can afford to lock for 15 minutes.
 
 ## Web application firewall
 
-> **Requires** a license with the `waf` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `waf` feature. See [pricing](https://lyeve.com/pricing/).
 
 The [web application firewall](../features/web-application-firewall.md)
 inspects the path and query (URL-decoded repeatedly), the body, the headers and

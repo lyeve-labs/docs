@@ -5,7 +5,7 @@ sidebar:
   order: 72
 ---
 
-> **Included free** on every install, scheduled export included. A metrics destination of a tenant's own needs a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, scheduled export included. A metrics destination of a tenant's own needs a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing/).
 
 Metrics export sends your instance's request, database pool and runtime
 metrics to the monitoring backend you already run, every 30 seconds by

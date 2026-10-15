@@ -5,7 +5,7 @@ sidebar:
   order: 23
 ---
 
-> **Requires** a license with the `device-fingerprint` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `device-fingerprint` feature. See [pricing](https://lyeve.com/pricing/).
 
 This feature watches admin sign-in. It recognizes the device behind each
 login, scores how risky the login looks, and asks for a second factor when

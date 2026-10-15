@@ -5,7 +5,7 @@ sidebar:
   order: 60
 ---
 
-> **Included free** on every install, replay and diff included, with every request kept for 24 hours. Capture rules, retention up to 30 days and saved replay sets need a license with the `request-capture-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, replay and diff included, with every request kept for 24 hours. Capture rules, retention up to 30 days and saved replay sets need a license with the `request-capture-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Request capture records each request to the Admin API and the Content API,
 with its response, for 24 hours. You can see exactly what a client sent and

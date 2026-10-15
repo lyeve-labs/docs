@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-> **Requires** a license with the `tenant-backup` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `tenant-backup` feature. See [pricing](https://lyeve.com/pricing/).
 
 This page takes one [tenant](../features/tenants.md) out of the instance and
 puts it back: as a portable SQL file you download, as an encrypted archive in an

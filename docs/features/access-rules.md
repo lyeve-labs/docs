@@ -5,7 +5,7 @@ sidebar:
   order: 77
 ---
 
-> **Included free** on every install, with rules for up to three roles. More roles need a license with the `rbac-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install, with rules for up to three roles. More roles need a license with the `rbac-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 An access rule says what one role may do with one resource. It names the role,
 the resource, the actions allowed, and the fields removed from what that role

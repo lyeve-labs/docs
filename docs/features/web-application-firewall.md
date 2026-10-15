@@ -5,7 +5,7 @@ sidebar:
   order: 77
 ---
 
-> **Requires** a license with the `waf` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `waf` feature. See [pricing](https://lyeve.com/pricing/).
 
 The web application firewall inspects every request to both APIs and blocks
 the ones that look like attacks. It ships with 37 built-in rules, scores each

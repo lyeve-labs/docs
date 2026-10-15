@@ -6,7 +6,7 @@ sidebar:
 capability_of: schema
 ---
 
-> **Requires** a license with the `config-sync` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `config-sync` feature. See [pricing](https://lyeve.com/pricing/).
 
 Build on staging, then make production match it in one step. An export writes
 an instance's configuration to one bundle file: content types, flows, access

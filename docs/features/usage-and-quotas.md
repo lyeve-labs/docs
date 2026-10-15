@@ -5,7 +5,7 @@ sidebar:
   order: 76
 ---
 
-> **Included free** on every install. Setting a tenant's quota limits, or turning a hard limit or blocking on, needs a license with the `usage-pro` feature. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. Setting a tenant's quota limits, or turning a hard limit or blocking on, needs a license with the `usage-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Usage and quotas counts what each tenant and each API key uses and keeps
 monthly records you can bill from. It is also what enforces the limits you put

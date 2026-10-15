@@ -5,7 +5,7 @@ sidebar:
   order: 65
 ---
 
-> **Included free** on every install. The schema canvas and saving presets of your own need a license with the `schema-pro` feature, and moving configuration between instances needs `config-sync`. See [pricing](https://lyeve.com/pricing).
+> **Included free** on every install. The schema canvas and saving presets of your own need a license with the `schema-pro` feature, and moving configuration between instances needs `config-sync`. See [pricing](https://lyeve.com/pricing/).
 
 A content type changes while your site keeps serving it. You send the new definition, and
 LyEve changes only what differs, so existing entries keep their values. Before anything

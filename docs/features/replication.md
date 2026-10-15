@@ -5,7 +5,7 @@ sidebar:
   order: 8
 ---
 
-> **Requires** a license with the `cluster` feature. See [pricing](https://lyeve.com/pricing).
+> **Requires** a license with the `cluster` feature. See [pricing](https://lyeve.com/pricing/).
 >
 > Beta. Keeping caches in step and the list of running replicas work. Known gaps:
 >
