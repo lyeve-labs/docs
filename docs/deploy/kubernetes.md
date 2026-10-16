@@ -280,7 +280,7 @@ metadata:
   name: lyeve-admin
   namespace: lyeve
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels: { app: lyeve-admin }
   template:
@@ -326,6 +326,13 @@ The console's server sends every `/api/*` call to `CORE_INTERNAL_URL`. A base of
 answers them with `404`, so point it at the Ingress host, which routes by path.
 `CORE_API_INTERNAL_URL` is where the API reference page sends the calls it runs under `/api/v1`.
 The console refuses to start without it, so it names the same Ingress host.
+
+The console runs as one replica. It renews a session by trading the session's refresh token
+with the engine, and the engine ends the session when a token it already traded comes back.
+Two replicas renewing one session at the same moment send that token twice, so the user is
+signed out. To run more than one, give the admin host cookie affinity at the Ingress, so each
+browser stays on one replica. On ingress-nginx that is the
+`nginx.ingress.kubernetes.io/affinity: cookie` annotation.
 
 ## Ingress
 
