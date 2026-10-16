@@ -372,6 +372,7 @@ The ones you meet most:
 | `400` | `` `at` query parameter is required (ISO 8601 timestamp) `` |
 | `400` | `target_id is required`, `field_name is required`, `invalid target_id` |
 | `404` | `content not found`, `revision not found`, `relationship not found`, `schedule not found or already fired` |
+| `404` | `failed to set entry schedule`, `failed to clear entry schedule`, for an entry that does not exist |
 | `409` | `slug is already taken by another entry of this content type`, or by another content type as above |
 | `422` | An `errors` list naming each field that breaks the content type's rules |
 | `422` | `scheduled_publish_at or scheduled_unpublish_at is required` on schedule-conflicts |

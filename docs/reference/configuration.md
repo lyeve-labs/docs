@@ -278,8 +278,8 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 |---|---|---|
 | `RATE_LIMIT_RPS` | See [Start here](#start-here). | unset |
 | `RATE_LIMIT_BURST` | Requests a client address may send at once above the steady rate. | twice `RATE_LIMIT_RPS`, at least `1` |
-| `MAX_BODY_BYTES` | Largest request body on any route, in bytes. Sized for uploads. | `10485760` (10 MiB) |
-| `MAX_JSON_BODY_BYTES` | Largest body on JSON routes. Only `Content-Length` is checked, so a chunked request without it meets `MAX_BODY_BYTES` instead. | `1048576` (1 MiB) |
+| `MAX_BODY_BYTES` | Largest request body on a route that sets no limit of its own, in bytes. Sized for uploads. A route that sets its own limit keeps it whatever this is, such as [bulk import](../features/bulk-import.md#a-file-over-50-mib) at 70,953,644 bytes. | `10485760` (10 MiB) |
+| `MAX_JSON_BODY_BYTES` | Largest body on JSON routes. A request without `Content-Length`, such as a chunked one, is cut off once it passes the same size. | `1048576` (1 MiB) |
 
 <details>
 <summary>Per-tenant limits, public routes and load shedding</summary>

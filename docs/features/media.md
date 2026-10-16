@@ -238,7 +238,7 @@ infected file is refused with `422`. When ClamAV cannot be reached, the file is 
 | Variable | What it does | Default |
 |---|---|---|
 | `MEDIA_MAX_UPLOAD_BYTES` | Largest file accepted. | `104857600` (100 MiB) |
-| `MAX_BODY_BYTES` | Largest request body the engine accepts, uploads included. | `10485760` (10 MiB) |
+| `MAX_BODY_BYTES` | Largest request body on a route that sets no limit of its own. The upload route sets none, so this caps every upload request. | `10485760` (10 MiB) |
 | `MEDIA_THUMBNAILS` | Make thumbnails for images. | `true` |
 | `MEDIA_THUMBNAIL_FORMAT` | `webp`, `avif` or `jpeg`. `avif` needs the `avifenc` tool on the server, and falls back to WebP without it. | `webp` |
 | `MEDIA_THUMBNAIL_QUALITY` | Thumbnail quality, from 1 to 100. | `85` |
