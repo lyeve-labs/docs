@@ -353,7 +353,8 @@ kind: Ingress
 metadata:
   name: lyeve
   namespace: lyeve
-  annotations: {}                                     # cluster-specific: cert-manager issuer, etc.
+  annotations:                                        # cluster-specific: cert-manager issuer, etc.
+    nginx.ingress.kubernetes.io/proxy-body-size: "68m"
 spec:
   ingressClassName: nginx                             # cluster-specific
   tls:
@@ -386,6 +387,18 @@ spec:
 TLS is terminated at the Ingress, which sets `X-Forwarded-Proto: https` for the engine. With
 `SECURE_COOKIE=true` the engine redirects any request that does not carry it, so TLS is not
 optional here.
+
+ingress-nginx refuses a request body over 1 MiB by default, which is less than the engine takes
+for uploads and imports. The `proxy-body-size` annotation raises that to 68 MiB, which admits
+the largest [bulk import](../features/bulk-import.md#a-file-over-50-mib) request, 70,953,644
+bytes. Two routes take more, and the Ingress refuses them above 68 MiB with `413`:
+
+- [Importing a tenant backup](../how-to/backup-and-restore.md) takes a dump of up to 500 MiB.
+- A [multipart upload](../features/object-storage.md#upload-from-the-client) part may be up to
+  5 GiB.
+
+Raise the annotation to the largest body you send through this Ingress, or keep each part
+under 68 MiB. On another controller, set its own request body limit.
 
 ## Verify
 

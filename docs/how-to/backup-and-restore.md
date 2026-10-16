@@ -24,11 +24,9 @@ your database provider's own tooling.
   [Licensing and tiers](../concepts/licensing-and-tiers.md).
 - `import` and `restore` replace a tenant's data, so they take a signed-in
   session. An admin token or an API key cannot call them.
-- `import` and `validate` carry the dump inside a JSON body, so the instance's
-  JSON limit applies first: `MAX_JSON_BODY_BYTES`, 1 MiB by default, answers
-  `413` above it. To load a larger dump, raise it (it applies to every JSON
-  route) and keep it within `MAX_BODY_BYTES`, 10 MiB by default. The routes'
-  own ceilings are 500 MiB for `import` and 50 MiB for `validate`.
+- `import` and `validate` carry the dump inside a JSON body. With `tenant-backup`
+  licensed, each sets its own limit: 500 MiB for `import` and 50 MiB for
+  `validate`. `MAX_JSON_BODY_BYTES` and `MAX_BODY_BYTES` do not apply to them.
 - With the [web application firewall](../features/web-application-firewall.md)
   running, its SQL injection rules refuse `validate` and `import` with `403`
   and `request blocked by WAF`, because the body is SQL. Add an exception for
