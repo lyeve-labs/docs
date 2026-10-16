@@ -25,11 +25,11 @@ Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.50.4` | Never. One release, exactly |
-| `0.50` | To the latest patch of that minor release |
+| `0.54.1` | Never. One release, exactly |
+| `0.54` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.50.4` is the image tag `0.50.4`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.54.1` is the image tag `0.54.1`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates
@@ -92,7 +92,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.50.4
+  ghcr.io/lyeve-labs/lyeve-core:0.54.1
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets

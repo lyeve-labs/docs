@@ -251,7 +251,7 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.50.4` and change the tag when you choose to.
+as `ghcr.io/lyeve-labs/lyeve-core:0.54.1` and change the tag when you choose to.
 
 ## Next
 
