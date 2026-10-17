@@ -55,7 +55,14 @@ Some Admin API paths return real values, because the console needs them to do
 its job: `/api/admin/auth`, `/api/admin/users`, `/api/admin/invitations`,
 `/api/admin/gdpr`, `/api/admin/api-keys` and `/api/admin/admin-tokens`. Reads on
 those paths are still recorded in the access log. The Content API has no such
-exceptions, and no role sees unmasked output on a masked path.
+exceptions.
+
+SCIM provisioning under `/api/v1/scim` is the one other exception. Masking
+leaves those answers as written, because the identity provider reads back the
+people it provisioned, and a masked address would read as a changed user on
+its next sync. Those reads are not recorded in the access log, because the
+provider signs in with a SCIM token rather than an account.
+On every other masked path, no role sees unmasked output.
 
 Matching is by pattern and cannot catch every form of personal data. Keep
 personal data out of fields that do not need it.
