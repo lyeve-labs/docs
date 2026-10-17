@@ -83,11 +83,11 @@ neither a container image nor a long-running server, so neither runs the console
 Run the image as its own service on a host that runs containers.
 The console's server sends every `/api` call to one base URL, `CORE_INTERNAL_URL`, so that URL
 must route `/api/admin` to the engine's port `3001` and every other `/api` path to port `3002`.
-A small proxy or an Ingress does that:
+A small proxy or a Gateway API route does that:
 
 - [Docker Compose](docker-compose.md): the engine, the console, Postgres and a TLS proxy on one
   host.
-- [Kubernetes](kubernetes.md): the same images on a cluster, routed by an Ingress.
+- [Kubernetes](kubernetes.md): the same images on a cluster, routed with the Gateway API.
 
 [The admin image](docker.md#the-admin-image) lists the console's settings.
 
