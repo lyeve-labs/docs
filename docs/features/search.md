@@ -211,6 +211,9 @@ curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
 
 - Public search returns published entries only, and only the fields a result needs: no body
   and no author. Snippets are always on.
+- A snippet, here and in the admin search, is HTML in which the text is escaped and each match
+  is wrapped in `<mark>` tags, so it is safe to render as HTML, while every other field in a
+  hit is plain text.
 - `q` is required and at most 256 characters. `tags` filters by up to 10 comma-separated tags,
   and any beyond 10 are dropped.
 - `limit` is 10 by default and at most 50, and `offset` is at most 1000.
