@@ -198,8 +198,8 @@ Each entry in `field_mappings` maps one source column to one target:
 | `transform` | `trim`, `lowercase` or `uppercase` on every install. `date`, `split` or `lookup` with `content-pro`. |
 | `transform_options` | The settings of a `date`, `split` or `lookup` transform, below. |
 
-- `entry.status` takes `draft`, `published` or `archived`. Without it, new entries are drafts
-  in the admin console. The Content API serves them as published today, as the
+- `entry.status` takes `draft`, `published` or `archived`. Without it, new entries are drafts,
+  and the Content API serves a draft only to a caller who may read drafts, as the
   [data model](../concepts/data-model.md#statuses) page explains.
 - A missing title is taken from a `title` field, then from the slug.
 - A missing slug is made from the title, with a short suffix when that slug is taken.

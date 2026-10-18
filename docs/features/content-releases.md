@@ -90,13 +90,6 @@ A release moves through these states:
 | `failed` | Nothing changed. The release carries the reason. |
 | `canceled` | Canceled before it went out. |
 
-:::caution[Drafts already show on the Content API]
-Today the Content API serves an entry written in the admin as published,
-whatever its status, so publishing a release of new drafts changes nothing a
-reader sees. Unpublishing does take an entry off the Content API. See
-[the data model](../concepts/data-model.md#statuses).
-:::
-
 ## Try it
 
 Run this on an install whose license carries `content-pro`. You need an admin
