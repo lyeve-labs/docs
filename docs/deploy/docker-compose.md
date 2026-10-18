@@ -251,7 +251,36 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.50.4` and change the tag when you choose to.
+as `ghcr.io/lyeve-labs/lyeve-core:0.55.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.20.2`, and change
+the tags when you choose to.
+
+### Upgrading to 0.55.0
+
+Read these before the first start of 0.55.0:
+
+- **Stop every engine replica first.** An older engine deletes and redacts audit entries
+  without sealing the hash chain, so the chain breaks wherever it runs beside 0.55.0. Run
+  `docker compose stop engine` before you pull.
+- **Review your retention policies.** Scheduled retention enforces every tenant's policies from
+  0.55.0, and the first pass runs at boot. Every entry a policy has kept past its period is
+  deleted or archived then. See [Audit log](../features/audit-log.md#retention-policies-and-legal-holds).
+- **Release legal holds before you delete a tenant.** A tenant with an active legal hold can no
+  longer be deleted. The delete answers `409` and removes nothing.
+- **List your mail relay's addresses.** The relay is checked at every send. If `SMTP_HOST`
+  resolves to loopback or a private network, list every address the name resolves to in
+  `SMTP_ALLOWED_PRIVATE_NETWORKS`, both `127.0.0.1` and `::1` for `localhost`, or every send
+  is refused. See [Email](../features/email.md#send-through-one-relay).
+- **Check your backup schedules.** Stored backup and restore test schedules run from 0.55.0.
+  Remove any outside trigger first. See
+  [Backup and restore](../how-to/backup-and-restore.md#back-up-to-s3).
+
+Then upgrade:
+
+```bash
+docker compose stop engine
+docker compose pull engine admin
+docker compose up -d
+```
 
 ## Next
 
