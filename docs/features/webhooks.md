@@ -140,7 +140,7 @@ To write the receiver that checks the signature, follow
 |---|---|---|
 | Outbound webhooks per tenant | 25, enabled or not | Unlimited |
 | Each webhook | Create, update, delete, test, rotate the secret, `schemas`, `events`, `headers` and the field lists | Also `payload_template`, `field_filters`, `jsonpath_filter` and its own retry numbers |
-| Retries | The default [retry policy](#retry-policy), which today sends no retry | A policy of your own per webhook |
+| Retries | The default [retry policy](#retry-policy) | A policy of your own per webhook |
 | Dead letters | List, read and delete | Also replay and dismiss |
 | History | Deliveries, stats, attempts and health | Also delivery search, the payload preview and retrying one delivery |
 | Incoming webhooks | List, read, delete, and receive on the ones you hold | Also create and update |
@@ -151,8 +151,11 @@ incoming webhooks keep receiving, and an update that resends what it already
 stores is accepted. The 26th webhook is refused:
 
 ```json
-{"error": "cap_exceeded", "cap": "webhook.endpoints", "limit": 25, "current": 25, "upgrade_url": ""}
+{"error": "cap_exceeded", "cap": "webhook.endpoints", "limit": 25, "current": 25, "upgrade_url": "https://app.lyeve.com/pricing?skus=plugin-webhook-pro&utm_campaign=webhook.endpoints&utm_medium=product&utm_source=admin"}
 ```
+
+`upgrade_url` opens the pricing page on the `webhook-pro` add-on, and the
+`X-Upgrade-URL` header carries the same link.
 
 A paid option on a free install answers
 `402` with `{"error": "payment_required", "plugin": "webhook", "feature": "feature:webhook-pro", "upgrade_url": ""}`.
@@ -225,7 +228,7 @@ replaces it with the same body. A field the API does not know is refused with
 | `jsonpath_filter` | Fire only when an expression on the envelope holds, such as `$.data.total > 100`. Needs `webhook-pro`. | none |
 | `include_fields`, `exclude_fields` | Fields to keep in, or drop from, `data`. Use one or the other. | all fields |
 | `max_response_size` | Bytes of your endpoint's answer to read. | 1 MiB |
-| `max_retries`, `retry_delay_seconds` | Stored with the webhook. Retries follow the [retry policy](#retry-policy), so set that instead. Needs `webhook-pro`. | none |
+| `max_retries`, `retry_delay_seconds` | The number of retries after the first delivery, and the wait in seconds before the first retry. They apply while the webhook has no [retry policy](#retry-policy) of its own, and a policy wins once you set one. Needs `webhook-pro`. | the default policy |
 
 An admin token sees every header value as `[redacted]`, and a URL with a path or
 query as its scheme and host followed by `/[redacted]`.
@@ -276,9 +279,9 @@ curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
 | Field | Meaning | Default | Range |
 |---|---|---|---|
 | `max_attempts` | Attempts before the delivery moves to the dead-letter queue | `5` | 1 to 100 |
-| `base_delay_ms` | The unit every wait is built from. The first retry waits twice this with `exponential` or `linear`, and this with `fixed`. | `30000` | up to 3600000 |
+| `base_delay_ms` | The wait before the first retry, which the strategy grows from there | `30000` | up to 3600000 |
 | `max_delay_ms` | Longest single wait | `600000` | up to 86400000 |
-| `strategy` | `exponential` doubles the wait each time, `linear` adds `base_delay_ms` each time, `fixed` keeps it | `exponential` | |
+| `strategy` | `exponential` doubles the wait each time, `linear` adds `base_delay_ms` each time, `fixed` keeps it. No wait passes `max_delay_ms`. | `exponential` | |
 | `enabled` | Whether failed deliveries are retried | `true` | |
 
 A `0` or a missing number takes the default. A value above its range answers
@@ -287,15 +290,9 @@ the same path reads the policy in force. A retry is sent at the first check
 after its wait ends, so the times in the history are rounded up to those
 checks.
 
-:::caution[Keep every wait under a minute]
-A retry whose wait is 60 seconds or longer is never sent, and its delivery
-stays failed without reaching the dead-letter queue. The waits of one check
-add up, so the limit is reached sooner when several deliveries fail at once.
-The default policy waits 60 seconds before the first retry, so with it no
-retry is ever sent. Without `webhook-pro` the policy cannot be changed, and a
-failed delivery stays failed. With `webhook-pro`, set `max_delay_ms` well under
-a minute, such as `20000` as above.
-:::
+With the defaults, a failed delivery is retried 30, 60, 120 and 240 seconds
+after each failed attempt before it. When the fifth attempt fails, the
+delivery moves to the dead-letter queue.
 
 ## Replay or dismiss a dead letter
 
@@ -333,7 +330,7 @@ count and error.
 
 | Route | Returns |
 |---|---|
-| `GET /api/admin/webhooks/{id}/deliveries` | The latest deliveries as a list, newest first. `limit` defaults to 50, at most 500. |
+| `GET /api/admin/webhooks/{id}/deliveries` | The latest deliveries as a list, newest first. `limit` defaults to 50, at most 500. With `offset`, it answers `{"data", "total_count", "limit", "offset"}` and `limit` is at most 200. |
 | `GET /api/admin/webhooks/{id}/deliveries/search` | Needs `webhook-pro`. `{"total", "limit", "offset", "items"}`, filtered by `event`, `schema`, `q`, `success`, `since`, `until` (RFC 3339), `limit` (at most 200) and `offset`. |
 | `GET /api/admin/webhooks/{id}/deliveries/stats` | `total`, `success_count`, `failure_count`, `success_rate`, `avg_latency_ms` and `last_24h`. `since` narrows it. |
 | `GET /api/admin/webhooks/{id}/attempts` | Each attempt of a failed delivery's retry chain, with `attempt_num` and `status`, paginated. |
@@ -413,7 +410,11 @@ curl -X POST "http://localhost:3002/api/v1/webhooks/in/$INCOMING_ID" \
   -d "$BODY"
 ```
 
-A good request answers `201` with `{"status": "accepted"}`.
+A good request answers `201` with `{"status": "accepted"}`. A field map target
+the content type does not define, or one the engine sets itself such as
+`created_at`, is left out of the entry, and the rest is stored. The answer then
+names those targets in a `left_out` list, such as
+`{"status": "accepted", "left_out": ["created_at"]}`.
 
 - With a secret, `X-Webhook-Timestamp` and `X-Webhook-Nonce` are required. The
   signature may also come in `X-Hub-Signature-256`, and a `sha384=` or
@@ -512,6 +513,8 @@ See [Admin tokens](../how-to/admin-tokens.md).
 | `409` | `dead letter entry is not pending` | The entry was already replayed or dismissed. |
 | `409` | `replayed request` | An incoming request reused a nonce. |
 | `422` | `failed to create content record` | An incoming payload left out a required field, or a value did not fit its field. |
+| `422` | `<field>: the related entry does not exist` | An incoming payload links a relation to an entry the webhook's tenant does not hold. |
+| `422` | `the webhook's content type is not defined` | The incoming webhook's content type does not exist in its tenant. |
 
 </details>
 
