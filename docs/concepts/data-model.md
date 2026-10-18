@@ -244,18 +244,22 @@ one. The `author` does not, so every author is live.
 
 On the Content API:
 
-- An entry created there is published.
+- An entry created there takes the `_status` its `data` names, and is published when it names
+  none.
 - `PUT /api/v1/content/{type}/{id}/unpublish` makes it a draft and
   `PUT /api/v1/content/{type}/{id}/publish` publishes it again. Both answer `204`.
 - A list returns published entries only. Add `?filters[_status]=draft` to list the drafts.
-- A read by id returns the entry whatever its status, so a status never hides an entry from a
-  caller who knows its id. Use [access rules](../features/access-rules.md) for that.
+- Drafts and archived entries reach only a caller who may read drafts: one that holds both the
+  read and the update permission on the content type. An API key with no `admin` or
+  `super_admin` role also needs the read and the update scope on it, such as `content:read` with
+  `content:write`. See [access rules](../features/access-rules.md).
+- Any other caller gets published entries only. A read by id of an entry that is not published
+  answers `404`, a status filter other than `published` answers `403`, and revisions and related
+  entries leave unpublished ones out.
+- A response that can carry drafts is served with `Cache-Control: private, no-store`, so no
+  shared cache keeps it.
 
-:::caution[Console drafts are served as published]
-An entry saved as a draft in the admin console, or through `/api/admin/content`, is served by
-the Content API as `published` today. Its status shows correctly in the console only. Keep
-unfinished work out of a content type your site reads until this is fixed.
-:::
+A status set in the admin console or through `/api/admin/content` holds on the Content API too.
 
 The admin console and the Admin API set the status directly and can schedule a publish. See
 [Drafts and publishing](../guides/user/drafts-and-publishing.md) for the console and

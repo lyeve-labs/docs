@@ -40,13 +40,9 @@ A content type can turn on draft and publish. Its entries then carry a status: `
 `published` or `archived`, and a list on the Content API holds published entries unless the
 request filters on the status. A new entry in the admin console starts as a draft, and
 publishing is a separate step that can also be scheduled. An entry created on the Content API
-is published at once.
-
-:::caution[Console drafts are readable today]
-An entry saved as a draft in the admin console reaches the Content API as `published`, so a
-list there shows it before you publish it. A single read by `id` returns a draft too. Keep
-unfinished text out of a content type your site reads.
-:::
+takes the status its body names, and is published when it names none. Only a caller who may
+both read and update the content type sees its drafts. Everyone else, such as a site reading
+with a `content:read` key, gets published entries only.
 
 Every save in the admin console is kept as a numbered revision. You can compare two
 revisions and restore an earlier one, and a restore adds a new revision rather than

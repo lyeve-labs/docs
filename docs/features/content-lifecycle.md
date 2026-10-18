@@ -59,11 +59,8 @@ An entry on this API has a few fields of its own beside the content type's field
 | `published_at` | When the entry last moved to published. |
 | `scheduled_publish_at`, `scheduled_unpublish_at`, `timezone` | Its schedule, when one is set. |
 
-:::caution[Drafts reach the Content API as published]
-Today the Content API serves an entry written here as `published`, whatever its `status`. The
-status holds in the console and on this API only. See
-[the data model](../concepts/data-model.md#statuses).
-:::
+The status holds on the Content API too, where only a caller who may read drafts sees an entry
+that is not published. See [the data model](../concepts/data-model.md#statuses).
 
 What statuses and revisions mean is explained on [the data model](../concepts/data-model.md)
 page. Every route takes the `admin` or `super_admin` role. An

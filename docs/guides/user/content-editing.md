@@ -41,11 +41,6 @@ You return to the collection's list, with the new entry at the top. In a collect
 draft and publish, the entry starts as a draft. See
 [Drafts and publishing](drafts-and-publishing.md).
 
-:::caution[A draft can already be live]
-Today your site's Content API serves a console draft as published. The draft status shows in
-the console only. Keep unfinished work out of collections your site reads until this is fixed.
-:::
-
 ## How the console names an entry
 
 The list and the entry page show an entry by its name, not its id. The console takes the name

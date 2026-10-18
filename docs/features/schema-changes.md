@@ -286,7 +286,7 @@ takes a signed-in session.
 | `POST` | `/api/admin/schemas/migrate` | `super_admin` | Apply every queue and report the count. |
 | `GET`, `PUT` | `/api/admin/schemas/canvas-layout` | `admin` | Read or save the canvas layout. Saving needs `schema-pro`. |
 | `POST` | `/api/admin/config-sync/export`, `.../diff`, `.../apply` | `super_admin` | Export, compare or apply a configuration bundle. Needs `config-sync`. See [Promote configuration](promote-configuration.md). |
-| `GET` | `/api/v1/schemas`, `/api/v1/schemas/{name}` | signed in | Read content types from the Content API. |
+| `GET` | `/api/v1/schemas`, `/api/v1/schemas/{name}` | signed in | Read content types from the Content API. The list holds only the types the caller may read, and a read of any other answers `403`. |
 
 </details>
 
