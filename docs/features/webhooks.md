@@ -286,7 +286,9 @@ curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
 
 A `0` or a missing number takes the default. A value above its range answers
 `400 invalid input`, and a negative one a `validation failed` error. `GET` on
-the same path reads the policy in force. A retry is sent at the first check
+the same path reads the policy the webhook stores, or the defaults when it
+stores none, so it does not show a webhook's own `max_retries` and
+`retry_delay_seconds`. A retry is sent at the first check
 after its wait ends, so the times in the history are rounded up to those
 checks.
 
