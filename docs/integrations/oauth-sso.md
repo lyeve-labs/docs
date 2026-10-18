@@ -96,8 +96,9 @@ each one is written to the [audit log](../features/audit-log.md) as
 When you upgrade to 0.55.0, accounts that OAuth created and accounts that an
 active SCIM user links count as signed in through their provider at the
 upgrade, so they keep their other ways in for one window. An account that
-SAML created without SCIM starts its window at its next SAML sign-in, and
-the window does not cover it until then.
+SAML created without SCIM starts its window at its next SAML sign-in. No
+window applies to it until then, so its password, password reset and magic
+link stay open.
 
 ## Extra checks at sign-in
 

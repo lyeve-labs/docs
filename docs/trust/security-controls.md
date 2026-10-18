@@ -68,9 +68,9 @@ questionnaire from this response.
 The `data-residency` row follows `INSTANCE_REGION`. Without it, the row reads
 `WARN` and says to set it. With it, the row reads `PASS` and names the region
 once the engine checks Content API writes against it. A `WARN` with
-`INSTANCE_REGION` set means the engine has not taken the write check into its
-routers yet, and a restart fixes it. [Data Protection](data-protection.md#residency) shows how to prove it
-with a write.
+`INSTANCE_REGION` set means the engine has not started checking writes yet,
+and a restart fixes it. [Data Protection](data-protection.md#residency) shows
+how to prove it with a write.
 
 ## Audit trail
 
