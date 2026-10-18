@@ -89,7 +89,11 @@ Every type has `id` and, when the content type keeps them, `created_at` and
 | `uid` | `ID` |
 | every other type, such as `text`, `rich_text`, `email`, `url` and `media` | `String` |
 
-A required field is non-null. A `belongs_to` relation appears as
+Every content field is nullable on output, required fields included, because
+an access rule can hide any field from a caller and a hidden field reads as
+`null`. If you generate typed clients from the schema, regenerate them. In a
+create input a required field is non-null unless it declares a default, and
+every field of an update input is optional. A `belongs_to` relation appears as
 `<field>_id`, the related entry's id, and can be filtered. Every type also has
 `resolved_locale`, set when the read asked for a locale.
 
@@ -264,7 +268,7 @@ mutation {
 - Starting a flow over GraphQL needs `flow-pro`.
 
 A refusal is a GraphQL error whose `extensions.code` is `NOT_FOUND`,
-`PAYMENT_REQUIRED`, `RATE_LIMITED`, `LOOP_DETECTED`, `BAD_USER_INPUT` (input
+`PAYMENT_REQUIRED`, `RATE_LIMITED`, `LOOP_DETECTED`, `INVALID_INPUT` (input
 is not an object) or `UNAVAILABLE`.
 
 The `graphql.query` node runs a query against the tenant's own schema from a

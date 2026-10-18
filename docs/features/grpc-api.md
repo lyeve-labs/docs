@@ -259,8 +259,9 @@ curl -X POST http://localhost:3001/api/admin/grpc/invoke \
 | `APP_ENV` | Outside `production`, server reflection is served. Nothing else changes. | `production` |
 | `INSTANCE_REGION` | With [data residency](data-residency.md), writes from a tenant assigned to another region are refused. | empty, so off |
 
-A gRPC message is at most 32 MiB each way, and calls in flight get up to 10
-seconds to finish on shutdown. If you set `LYEVE_PLUGINS` to choose which
+A gRPC request is at most 4 MiB, and a larger one is refused with
+`RESOURCE_EXHAUSTED` before it is read. A response is at most 32 MiB. Calls in
+flight get up to 10 seconds to finish on shutdown. If you set `LYEVE_PLUGINS` to choose which
 features start, include `grpc`. See
 [Licensing and tiers](../concepts/licensing-and-tiers.md).
 
@@ -283,7 +284,7 @@ On the JSON routes, gRPC codes map to HTTP statuses.
 | `ALREADY_EXISTS` | `409` | A conflicting entry. |
 | `RESOURCE_EXHAUSTED` | `429` | `rate limit exceeded`. Slow down or raise `GRPC_RATE_LIMIT`. |
 | `FAILED_PRECONDITION` | `421` | A write from a tenant that belongs in another region. The JSON answer is `{"error": "write routed to wrong region", "target_region": "<slug>"}`. |
-| `FAILED_PRECONDITION` | `500` | A content type served over gRPC in the other direction only. The JSON routes answer `500` with `{"error": "Internal Server Error"}` today, where gRPC itself names the reason. |
+| `FAILED_PRECONDITION` | `400` | A content type served over gRPC in the other direction only. The JSON answer's `error` says the content type is read-only or write-only over gRPC. |
 | `DEADLINE_EXCEEDED` | `504` | The call ran out of time. |
 | `UNAVAILABLE` | `503` | The tenant's region could not be read, or the database did not answer. |
 

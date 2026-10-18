@@ -80,15 +80,16 @@ You need an admin token in `TOKEN`. The
    }
    ```
 
-2. As a super admin, see hits and misses per kind of read:
+2. As a super admin, list the entries the cache holds:
 
    ```bash
-   curl http://localhost:3001/api/admin/cache/metrics \
+   curl http://localhost:3001/api/admin/cache/entries \
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   The answer has `query_caches`, keyed by kind of read such as
-   `content:item`, `content:list` and `schema:list`, and the overall `stats`.
+   The answer is a page of entries ordered by key, in `data`, with
+   `total_count`, `limit` and `offset`. Each entry has `key`, `size`,
+   `created_at`, `expires_at`, `ttl_mode` and `tags`.
 
 3. Cache the answers of a public route for five minutes:
 
@@ -288,9 +289,8 @@ rule past 10 is refused.
 |---|---|---|
 | `CACHE_DRIVER` | `memory` or `redis`, when no providers are listed. | `memory` |
 | `REDIS_URL` | The Redis address for `CACHE_DRIVER=redis`. | `redis://localhost:6379/0` |
-| `CACHE_TTL` | How long an entry is kept when it was stored without a lifetime of its own. Content, search, dashboard and schema reads carry their own lifetimes. | `60s` |
+| `CACHE_TTL` | How long an entry is kept when it was stored without a lifetime of its own. | `60s` |
 | `CACHE_MAX_ENTRIES` | Entry ceiling for the in-memory backend. | `10000` |
-| `CACHE_INVALIDATION_STRATEGY` | What a content write clears. `tenant` clears that tenant's cached reads. `keyspace` clears the affected kind of read for everyone. | `tenant` |
 | `CACHE_PROBE_INTERVAL` | How often providers are checked, such as `10s`. | `15s` |
 
 Caching runs on every install. If you set `LYEVE_PLUGINS` to choose which
@@ -305,10 +305,8 @@ features start, include `cache` in it. See
 | Method | Path | Who | Result |
 |---|---|---|---|
 | `GET` | `/api/admin/cache/stats` | Super admin | `hits`, `misses`, `sets`, `deletes`, `flushes`, `evictions`, `entries`, `max_size`. |
-| `GET` | `/api/admin/cache/metrics` | Super admin | Counts per kind of read, and the overall stats. |
-| `GET` | `/api/admin/cache/entries` | Super admin | Current entries with `key`, `size`, `expires_at` and `tags`. Where the backend cannot list them, the answer is an empty list with a `note`. |
+| `GET` | `/api/admin/cache/entries` | Super admin | A page of current entries ordered by key, in `data` with `total_count`, `limit` and `offset`. Each has `key`, `size`, `created_at`, `expires_at`, `ttl_mode` and `tags`. Only the in-memory provider can list its entries. Behind any other provider the page is empty and carries a `note`. |
 | `GET` | `/api/admin/cache/tags/{tag}` | Super admin | Keys carrying a tag. |
-| `POST` | `/api/admin/cache/warm` | Admin | Fills the cache ahead of traffic. |
 | `POST` | `/api/admin/cache/flush` | Admin | Clears your tenant's entries, or the whole cache on a single-tenant install. |
 | `POST` | `/api/admin/cache/flush/{tag}` | Admin | Clears every entry with a tag. |
 | `DELETE` | `/api/admin/cache/entries/{key}` | Admin | Clears one entry. |
