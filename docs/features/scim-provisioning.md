@@ -191,7 +191,7 @@ You need a super admin token in `TOKEN`. The
 | Field | Meaning | Default |
 |---|---|---|
 | `name` | A name for the connection | required |
-| `bearer_token` | The token the directory sends as `Authorization: Bearer <token>` | required |
+| `bearer_token` | The token the directory sends as `Authorization: Bearer <token>`, at least 32 characters | required |
 | `saml_provider_id` | The [SAML provider](saml-sso.md) the same directory signs users in through | none |
 | `attribute_map` | Which SCIM attributes feed `userName`, `displayName`, `externalId`, `active` and `groups` | each attribute maps to itself |
 | `deprovision_action` | What a SCIM delete does: `disable` marks the user inactive and is meant to clear the account's roles (see the caution above), `delete` removes the LyEve account. Any value other than `disable` deletes | `disable` |
@@ -208,7 +208,8 @@ curl -X POST http://localhost:3001/api/admin/scim/providers/$PROVIDER_ID/rotate 
   -d '{"new_token": "'"$(openssl rand -hex 32)"'"}'
 ```
 
-The answer is `{"bearer_token": "<the new token>"}`. The old token stops
+The new token needs at least 32 characters, as a new connection's does. The
+answer is `{"bearer_token": "<the new token>"}`. The old token stops
 working at once, so update the identity provider right after.
 
 ## What the directory calls
@@ -281,6 +282,8 @@ before SCIM reads the request.
 |---|---|---|
 | `400` | `name is required` or `bearer_token is required` | A connection field is missing. |
 | `400` | `new_token is required` | A rotation had no new token. |
+| `400` | `bearer_token must be at least 32 characters` | A new connection's token is shorter than 32 characters. |
+| `400` | `new_token must be at least 32 characters` | A rotation's new token is shorter than 32 characters. |
 | `400` | `invalid saml_provider_id` | The id is not a UUID. |
 | `404` | `provider not found` | No connection with that id in the tenant. |
 | `404` | `The requested endpoint does not exist.` | The instance started without a license that carries `scim`. |

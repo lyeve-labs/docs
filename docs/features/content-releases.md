@@ -45,8 +45,10 @@ for a **Name** and a **Description**.
 
 Open a release to work on it:
 
-1. **Include entry** adds an entry by its ID. **When the release goes out** chooses
-   **Publish it** or **Unpublish it**, and the **Does** column shows the choice for each entry.
+1. **Include entry** offers the most recently changed entries, by collection, and finds one by
+   title, slug or ID. Pick the **Entry**, choose **Publish it** or **Unpublish it** under
+   **When the release goes out**, and choose **Include**. An older entry is added from its own
+   page. The **Does** column shows the choice for each entry.
 2. Under **Schedule**, pick when it **Goes out at** and choose **Schedule**, or choose
    **Publish now**.
 3. A scheduled release shows when it goes out, with **Unschedule** beside it. **Cancel release**

@@ -275,6 +275,9 @@ lists the users, paginated:
 }
 ```
 
+The list is a Content API answer, so with [PII masking](pii-masking.md) on,
+each `email` reads `[redacted-email]`.
+
 ## Publish from a flow
 
 The `realtime.publish` node sends one event to a topic in the run's tenant.

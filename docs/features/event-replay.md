@@ -37,13 +37,15 @@ Open **Insight > Events**. **Recorded**, **Carrying an error** and
 **Recent replays** count the log and the runs.
 
 1. Under **Replay**, set **Replay from** and give the run a name in
-   **Handler**.
+   **Run name**. Left empty, the run takes one shared name. The name decides
+   only what a later run skips. A run for real reaches every listener,
+   whatever its name.
 2. Leave **Rehearse first, posting nothing** ticked and choose **Rehearse**.
    The run counts the events in the window and posts nothing.
 3. Untick it to send the events for real. The button then reads **Replay**.
 
-Each run is listed with its status, progress and result, and a rehearsal is
-marked **rehearsal**. **Published** lists the log, with a search and
+Each run is listed with its run name, status, progress and result, and a
+rehearsal is marked **rehearsal**. **Published** lists the log, with a search and
 **Only those carrying an error**.
 
 ![The Events page with a completed rehearsal named search-rebuild that posted nothing, above the log of published events with their topic, type, source and content type.](images/event-replay.png)

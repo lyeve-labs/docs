@@ -65,10 +65,12 @@ detection from [Trusted devices](../features/trusted-devices.md)). `FAIL` is the
 row that matters: a control that is configured and not enforcing. Start the
 questionnaire from this response.
 
-The `data-residency` row reads `WARN` whenever the feature runs, even on an
-engine started with `INSTANCE_REGION`, so it cannot show that residency is
-enforcing. Check residency with a write instead, as
-[Data Protection](data-protection.md#residency) describes.
+The `data-residency` row follows `INSTANCE_REGION`. Without it, the row reads
+`WARN` and says to set it. With it, the row reads `PASS` and names the region
+once the engine checks Content API writes against it. A `WARN` with
+`INSTANCE_REGION` set means the engine has not taken the write check into its
+routers yet, and a restart fixes it. [Data Protection](data-protection.md#residency) shows how to prove it
+with a write.
 
 ## Audit trail
 

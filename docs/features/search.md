@@ -215,7 +215,9 @@ curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
   and any beyond 10 are dropped.
 - `limit` is 10 by default and at most 50, and `offset` is at most 1000.
 - A content type that is not public answers `404`, the same as one that does not exist.
-- Browsers may cache a result for 30 seconds.
+- Browsers and caches in front of your site may keep a result for 30 seconds. A
+  [response cache rule](caching.md) can keep it on the instance as well, and a
+  search answered from that cache is not counted in the analytics.
 
 ## Match other words with synonyms
 
@@ -277,7 +279,10 @@ every public search is narrowed that way. The analytics count searches that use 
 ## Use Elasticsearch or Meilisearch
 
 Set `SEARCH_PROVIDER` and the settings for that backend below, restart, then rebuild the index
-once with `POST /api/admin/search/reindex`, which needs `super_admin`:
+once with `POST /api/admin/search/reindex`, which needs `super_admin`. The instance refuses to
+call a private, loopback or link-local address unless you list it, so a search engine on your
+own network or on the same machine needs its network in `SEARCH_ALLOWED_PRIVATE_NETWORKS`, such
+as `10.0.0.0/8` or `127.0.0.1`. The list opens that network to search and to nothing else.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/search/reindex \
@@ -302,6 +307,7 @@ rebuild is rarely needed, and answers `rebuilt: <n> indexed, ...` on PostgreSQL.
 | `SEARCH_MEILI_INDEX_PREFIX` | Prefix for Meilisearch index names. | `lyeve` |
 | `SEARCH_MEILI_API_KEY` | Meilisearch API key. | unset |
 | `SEARCH_REINDEX_BATCH_SIZE` | Changes sent to the external index per batch. | `200` |
+| `SEARCH_ALLOWED_PRIVATE_NETWORKS` | Private, loopback or link-local networks the search engine may be reached on, as CIDRs or addresses, comma-separated. | unset |
 
 Search needs a license with `search`. If you set `LYEVE_PLUGINS` to choose which features
 start, include `search` in it. See [licensing and tiers](../concepts/licensing-and-tiers.md).
