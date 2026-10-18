@@ -40,13 +40,14 @@ menu in the header and choose **Trusted devices**.
 - To trust the browser you are using, enter a name in **Name this device** and
   choose **Trust this browser**. Only the browser you are reading the page in
   can be trusted from here.
-- **Remembered devices** lists every trusted browser with when it was last
+- **Remembered devices** lists every trusted browser by its name and the
+  browser it was trusted from, such as Chrome on macOS, with when it was last
   seen and added. The trash button on a row forgets it.
 
 The console has no screen for login history or blocks. Use the API below for
 those.
 
-![The Trusted devices page of an editor's account, with the Trust this browser form and two remembered devices, Phone and Work laptop.](images/trusted-devices.png)
+![The Trusted devices page of an editor's account, with the Trust this browser form and two remembered devices: Phone, which is Safari on iOS, and Work laptop, which is Chrome on macOS.](images/trusted-devices.png)
 
 ## How it works
 
@@ -123,7 +124,7 @@ You need a token in `TOKEN`. The
    ```json
    {
      "data": [
-       { "id": "4c80c9ea-ebbe-4074-9073-d7dae73f89e5", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "label": "Work laptop", "last_seen_at": "2026-10-01T09:30:00Z", "created_at": "2026-10-01T09:30:00Z" }
+       { "id": "4c80c9ea-ebbe-4074-9073-d7dae73f89e5", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "label": "Work laptop", "last_seen_at": "2026-10-01T09:30:00Z", "created_at": "2026-10-01T09:30:00Z", "user_agent": "curl/8.9.1" }
      ],
      "limit": 50,
      "offset": 0,

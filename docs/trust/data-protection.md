@@ -92,6 +92,12 @@ anonymizes the subject's rows in each of them and answers:
 | `errors` | `["one or more erasers failed"]` when a feature failed. |
 | `holds` | The active legal holds that stopped the erasure, each with `id` and `reason`. Non-empty means nothing was erased. |
 
+An erasure by address reaches every account that address names, in every
+tenant. That includes accounts a tenant's identity provider, SCIM directory or
+magic link sign-up created, and what sign-in keeps about them: the SCIM
+directory record, with its external id and stored attributes, and the OAuth
+provider links.
+
 Erasure checks legal holds before it touches a row. A hold that cannot be
 checked is not treated as no hold: the server answers `503` with
 `legal hold status is unavailable; erasure was not attempted`, and the request
@@ -105,9 +111,21 @@ entries. An email address matches none.
 
 With the `audit` feature licensed, both routes write an audit entry
 (`gdpr.export`, `gdpr.export.all_tenants`, `gdpr.erase`) recording the actor,
-address, user agent and the identifier the request named. Without it the server
-logs a warning that the operation completed with no audit trail, so an
-unaudited export still leaves a trace.
+address and user agent. The entry names the subject by a digest rather than by
+the identifier, so the log proves the request happened without keeping who it
+was about: `sha256:` followed by the hex SHA-256 of the identifier exactly as
+the request sent it. To find the entry for a subject later, compute the digest
+and filter the audit log by it:
+
+```bash
+printf '%s' 'ada@example.com' | sha256sum
+curl "http://localhost:3001/api/admin/audit-log?resource_type=gdpr_dsar&resource_id=sha256:<digest>" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Entries an earlier version wrote name the identifier itself. Without the
+`audit` feature the server logs a warning that the operation completed with no
+audit trail, so an unaudited export still leaves a trace.
 
 ## Legal holds
 
@@ -194,9 +212,9 @@ and a summary with `unassigned_count`, which is the number a reviewer wants at
 zero.
 
 **Check it:** on an engine started with `INSTANCE_REGION`, write as a tenant
-assigned to a different region and expect the `421`. The security report cannot
-show this, because its `data-residency` row reads `WARN` whenever the feature
-runs.
+assigned to a different region and expect the `421`. The security report's
+`data-residency` row reads `PASS` and names the region once the engine checks
+writes.
 
 ## Masking
 
@@ -214,11 +232,15 @@ add up to 50 enabled rules of its own. A custom pattern is at most 512
 characters, compiled when it is saved, and RE2, which runs in linear time, so no
 pattern can stall a response.
 
-No role sees unmasked output on a masked path. On the Admin API these paths are
-never masked, because the personal data is the record being administered there:
-`/api/admin/gdpr`, `/api/admin/auth`, `/api/admin/users`,
-`/api/admin/invitations`, `/api/admin/admin-tokens` and `/api/admin/api-keys`.
-Reads there are still recorded. The access log records `viewer_user_id`,
+On the Admin API these paths are never masked, because the personal data is the
+record being administered there: `/api/admin/gdpr`, `/api/admin/auth`,
+`/api/admin/users`, `/api/admin/invitations`, `/api/admin/admin-tokens` and
+`/api/admin/api-keys`. Reads there are still recorded. A super admin also reads
+the audit log, the compliance export of a legal hold and a tenant's member list
+in full, and each of those reads is recorded. Everyone else gets them masked.
+Answers that hold only configuration or text the product ships are sent as
+written and not recorded, as [PII masking](../features/pii-masking.md#how-it-works)
+lists. The access log records `viewer_user_id`,
 `viewer_role`, `pii_type` and `accessed_at` for every response that carried
 personal data to a signed-in caller, kept for `PII_MASK_RETENTION_DAYS`.
 
@@ -252,14 +274,14 @@ nothing. `POST /api/admin/tenants/{id}/restore` brings an archived tenant back.
 `GET /api/admin/security/controls`, `super_admin`, reports each control's status
 live: `PASS` (enforcing), `WARN` (included but not configured), `FAIL`
 (configured but not enforcing) or `SKIP`, with a sentence on what turns it on.
-Its controls include `pii-mask` and `data-residency`, with the residency limit
-described above. See [Security Controls](security-controls.md).
+Its controls include `pii-mask` and `data-residency`. See
+[Security Controls](security-controls.md).
 
 ## Not yet
 
 - **SOC 2.** LyEve has no SOC 2 report.
-- **Unmasked access by role.** No role reads past the masking.
+- **Unmasked access by role.** No setting lets a role read past the masking.
+  Only a super admin does, on the audit log, a legal hold's compliance export
+  and a tenant's member list.
 - **Client geolocation.** Residency governs where a tenant's writes land, not
   where a request comes from.
-- **A residency row that can pass.** The security report shows `WARN` for
-  residency even when it is enforcing.

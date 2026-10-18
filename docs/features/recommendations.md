@@ -31,11 +31,12 @@ you ask, from the console or from your own scheduler.
 ## In the admin console
 
 Open **Settings > Recommendations**. **Trending now** lists the entries with the most activity
-this week, by entry id, with each one's **Score** and **Views**. New activity counts once a
+this week, by title and slug, with each one's **Score** and **Views**. An entry that is not
+published shows its id. New activity counts once a
 super admin chooses **Recompute**. **The split** reports how readers divide between the
 recommended feed and a random baseline, once readers have asked for a feed.
 
-![The Recommendations settings page. Trending now lists five entries by id, the first with a score of 12.0 and 6 views, and Recompute sits at the top right.](images/recommendations.png)
+![The Recommendations settings page. Trending now lists five entries with their score and views. The first, with a score of 12.0 and 6 views, shows only its id, and the other four show a title and slug. Recompute sits at the top right.](images/recommendations.png)
 
 ## How it works
 
@@ -106,7 +107,8 @@ entries in `A` and `B`.
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   The answer is `{"items": [...]}`, each with `content_id`, `score` and `view_count`.
+   The answer is `{"items": [...]}`, each with `content_id`, `title`, `slug`, `score` and
+   `view_count`.
 
 ## Record what readers do
 
@@ -121,7 +123,7 @@ Every route under `/api/v1/recommendations` needs a signed-in caller. Each answe
 | To show | Call | Answer |
 |---|---|---|
 | Entries similar to one entry | `GET /api/v1/recommendations/similar?content_id=<id>` | `{"similar": ["<id>", ...]}`. `limit` is 10 by default, at most 100. |
-| What is trending | `GET /api/v1/recommendations/trending` | `{"items": [{"content_id", "title", "slug", "score", "view_count"}]}`, up to the top 100. `limit` is 20 by default. `title` and `slug` are empty, so read the entry for them. |
+| What is trending | `GET /api/v1/recommendations/trending` | `{"items": [{"content_id", "title", "slug", "score", "view_count"}]}`, up to the top 100. `limit` is 20 by default. `title` and `slug` name a published entry, and are empty for an entry that is not published or was deleted. |
 | The caller's feed | `GET /api/v1/recommendations/feed` | `{"entries": [{"content_id", "score", "source", ...}], "total": n}`. `limit` is 20 by default, at most 100, and `offset` at most 10000. |
 
 Two entries are similar when the same readers acted on both in the last 30 days, with any

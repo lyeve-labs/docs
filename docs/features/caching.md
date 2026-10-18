@@ -8,14 +8,14 @@ sidebar:
 > **Included free** on every install, with one cache provider of any kind and up to 10 response cache rules per tenant. Several providers with failover, moving entries between providers, the provider benchmark and more rules need a license with the `cache-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Caching keeps the answers to frequent reads, such as content items, content
-lists, searches, the dashboard and the schema list, so repeated requests skip
-the database. A content change clears the affected entries, so readers do not
-see stale content after a write.
+lists and the schema list, so repeated requests skip the database. A response
+cache rule adds the answers of a public route such as search. A content change
+clears the affected entries, so readers do not see stale content after a write.
 
 :::tip[Best for]
-- **Taking read load off the database.** A content item is kept for 5
-  minutes, a content list for 2 minutes and a search for 1 minute, unless a
-  write clears it first.
+- **Taking read load off the database.** Each replica keeps a content item or
+  a content list in its own memory for `CACHE_TTL`, a minute by default, unless
+  a write clears it first.
 - **Sharing one cache across replicas.** Point every replica at the same
   Redis, Valkey or KeyDB.
 - **Serving public pages faster.** A response cache rule keeps the answers of
@@ -42,18 +42,21 @@ see stale content after a write.
 | `CACHE_DRIVER=redis` | One Redis, Valkey or KeyDB. | You run more than one replica. |
 | Listed providers | Several servers, tried in order. More than one needs `cache-pro`. | One cache server going down must not slow every read. |
 
-A content write clears that tenant's cached reads by default. Flushing the
+A content write clears the cached reads it changes, in its own tenant. Flushing the
 cache never signs anyone out, because sessions are kept apart from it.
 
 ## In the admin console
 
 Open **Insight > Observability > Cache**. The top row gives the **Hit rate**,
-**Entries**, **Evicted** and **Misses**. **Providers** lists each cache provider
-with the state of its circuit. **Response cache rules** lists each rule's
+**Entries**, **Evicted** and **Misses**. **Entries** counts what the provider
+serving reads holds. **Providers** lists each cache provider with the state of
+its circuit and its **Priority**. **Response cache rules** lists each rule's
 **Route**, **Time to live**, **Tags** and state, with **Purge all** and
 **Purge by tag** above them. **New rule** asks for the **Route**, the
 **Time to live, in seconds**, the **Tags** and **Serve from the cache**.
-**Stored**, at the bottom, has **Flush everything**.
+**Stored**, at the bottom for a super admin, has **Flush everything** and lists
+the stored entries a page at a time, with their **Key**, **Size**, **Tags** and
+**Expires**.
 
 ![The Cache page with the memory-primary provider healthy and one response cache rule serving /api/v1/search/{schema} for 5 minutes, tagged post.](images/caching.png)
 
@@ -72,7 +75,7 @@ You need an admin token in `TOKEN`. The
    ```json
    {
      "data": [
-       { "name": "memory-primary", "kind": "inmemory", "hits": 0, "misses": 0, "entries": 0, "max_size": 10000, "circuit_state": "closed", "connected": true, "active": true }
+       { "name": "memory-primary", "kind": "inmemory", "priority": 0, "hits": 0, "misses": 0, "entries": 0, "max_size": 10000, "circuit_state": "closed", "connected": true, "active": true }
      ],
      "limit": 50,
      "offset": 0,
@@ -80,15 +83,18 @@ You need an admin token in `TOKEN`. The
    }
    ```
 
-2. As a super admin, see hits and misses per kind of read:
+   `priority` is the provider's place in the failover order, `0` first.
+
+2. As a super admin, read the cache counters:
 
    ```bash
-   curl http://localhost:3001/api/admin/cache/metrics \
+   curl http://localhost:3001/api/admin/cache/stats \
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   The answer has `query_caches`, keyed by kind of read such as
-   `content:item`, `content:list` and `schema:list`, and the overall `stats`.
+   The answer carries `hits`, `misses`, `sets`, `deletes`, `flushes` and
+   `evictions`, summed over the providers, and the `entries` and `max_size` of
+   the provider serving reads.
 
 3. Cache the answers of a public route for five minutes:
 
@@ -230,8 +236,14 @@ practice rules serve the public routes that answer without one, such as
   from the cache when they arrive on its own domain, and the same read on the
   shared hostname passes through.
 
-The cache does not warm itself. After a clear, the next anonymous read of a
-path fills it again.
+The cache does not warm itself, and no route fills it ahead of traffic. After
+a clear, the next anonymous read of a path fills it again.
+
+A search answered from the cache is not counted in the
+[search analytics](search.md). An external search engine takes a change a few
+seconds after the write, so the cached searches of that content type are
+cleared again once the engine has it, and an answer read in between does not
+stand for the rule's whole lifetime.
 
 The first enabled rule, oldest first, whose pattern matches decides. The cache
 key is the tenant, the path, the query, `Accept-Language` and `Accept`. An
@@ -288,9 +300,8 @@ rule past 10 is refused.
 |---|---|---|
 | `CACHE_DRIVER` | `memory` or `redis`, when no providers are listed. | `memory` |
 | `REDIS_URL` | The Redis address for `CACHE_DRIVER=redis`. | `redis://localhost:6379/0` |
-| `CACHE_TTL` | How long an entry is kept when it was stored without a lifetime of its own. Content, search, dashboard and schema reads carry their own lifetimes. | `60s` |
-| `CACHE_MAX_ENTRIES` | Entry ceiling for the in-memory backend. | `10000` |
-| `CACHE_INVALIDATION_STRATEGY` | What a content write clears. `tenant` clears that tenant's cached reads. `keyspace` clears the affected kind of read for everyone. | `tenant` |
+| `CACHE_TTL` | How long an entry is kept when it was stored without a lifetime of its own, and how long each replica keeps a content item or list in its memory. | `60s` |
+| `CACHE_MAX_ENTRIES` | Entry ceiling for the in-memory backend. It also caps each replica's content item and content list caches, which hold `1000` each when it is unset. | `10000` |
 | `CACHE_PROBE_INTERVAL` | How often providers are checked, such as `10s`. | `15s` |
 
 Caching runs on every install. If you set `LYEVE_PLUGINS` to choose which
@@ -304,16 +315,14 @@ features start, include `cache` in it. See
 
 | Method | Path | Who | Result |
 |---|---|---|---|
-| `GET` | `/api/admin/cache/stats` | Super admin | `hits`, `misses`, `sets`, `deletes`, `flushes`, `evictions`, `entries`, `max_size`. |
-| `GET` | `/api/admin/cache/metrics` | Super admin | Counts per kind of read, and the overall stats. |
-| `GET` | `/api/admin/cache/entries` | Super admin | Current entries with `key`, `size`, `expires_at` and `tags`. Where the backend cannot list them, the answer is an empty list with a `note`. |
+| `GET` | `/api/admin/cache/stats` | Super admin | `hits`, `misses`, `sets`, `deletes`, `flushes` and `evictions` summed over the providers, with the `entries` and `max_size` of the provider serving reads. |
+| `GET` | `/api/admin/cache/entries` | Super admin | A page of the current entries, ordered by key, as `data`, `total_count`, `limit` and `offset`. Each entry has `key`, `size`, `expires_at` and `tags`. Only an in-memory provider can list its entries. Behind Redis, Valkey or KeyDB the page is empty and carries a `note`. |
 | `GET` | `/api/admin/cache/tags/{tag}` | Super admin | Keys carrying a tag. |
-| `POST` | `/api/admin/cache/warm` | Admin | Fills the cache ahead of traffic. |
-| `POST` | `/api/admin/cache/flush` | Admin | Clears your tenant's entries, or the whole cache on a single-tenant install. |
+| `POST` | `/api/admin/cache/flush` | Admin | Clears your tenant's cached responses, or the whole cache on a single-tenant install. |
 | `POST` | `/api/admin/cache/flush/{tag}` | Admin | Clears every entry with a tag. |
 | `DELETE` | `/api/admin/cache/entries/{key}` | Admin | Clears one entry. |
-| `GET` | `/api/admin/cache/providers` | Admin | Providers with their state, with `limit` and `offset`, plus `licensed` and the `inactive` providers. |
-| `GET` | `/api/admin/cache/providers/{name}` | Admin | One provider. |
+| `GET` | `/api/admin/cache/providers` | Admin | Providers with their state and `priority`, with `limit` and `offset`, plus `licensed` and the `inactive` providers. |
+| `GET` | `/api/admin/cache/providers/{name}` | Admin | One provider, with its `priority`. |
 | `POST` | `/api/admin/cache/providers/{name}/reset-circuit` | Super admin | Puts a skipped provider back in service now. |
 | `POST` | `/api/admin/cache/migrate` | Super admin | Copies entries from one provider to another. Needs `cache-pro`. |
 | `GET` | `/api/admin/cache/benchmark` | Super admin | Times each provider. Query: `provider`, `n` (at most 100). Needs `cache-pro`. |

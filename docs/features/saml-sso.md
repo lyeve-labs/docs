@@ -16,9 +16,11 @@ console session. Each tenant has its own providers.
 - **Companies that manage access in Okta, Azure AD or OneLogin.** Templates
   hold the settings each of those expects.
 - **Access that follows employment.** Turn a person off at the provider and
-  they can no longer sign in through it. Their LyEve account stays, so add
-  [SCIM provisioning](scim-provisioning.md) or disable the account in LyEve to
-  close the other ways in, such as a magic link.
+  they can no longer sign in through it. Their other ways in, such as a magic
+  link, close when the tenant's
+  [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider)
+  passes. Add [SCIM provisioning](scim-provisioning.md) or disable the account
+  in LyEve to close them at once.
 - **Several customers on one instance.** Each tenant brings its own identity
   provider.
 - **Certificate rotation without an outage.** Stage the next certificate,
@@ -54,7 +56,7 @@ are expired or close to expiry.
 |---|---|
 | Start | The browser opens `/api/admin/auth/saml/{provider}`. LyEve redirects it to the provider with a signed request. |
 | Sign in | The person signs in at the provider. |
-| Assertion | The provider posts its answer to `/api/admin/auth/saml/{provider}/acs`. LyEve checks it and finds or creates the account by email. |
+| Assertion | The provider posts its answer to `/api/admin/auth/saml/{provider}/acs`. LyEve checks it and finds or creates the tenant's account by email. |
 | Session | LyEve sets the session cookie and redirects to `/admin`, or to the path given in `?redirect=`. |
 
 What you can rely on:
@@ -72,6 +74,12 @@ What you can rely on:
   that account, with the roles stored in LyEve. The provider decides who may
   claim which email, so connect only a provider you trust with every account
   in the tenant.
+- An account SAML creates belongs to the tenant whose provider signed it in.
+  An address another tenant holds is a separate account there, and the answer
+  is the same as for an address nobody holds. See
+  [accounts a tenant's provider creates](../integrations/oauth-sso.md#accounts-a-tenants-provider-creates).
+- A SAML sign-in never signs in an account that holds `super_admin`. It is
+  refused as a failed sign-in is.
 
 ## Turn it on
 
@@ -270,7 +278,7 @@ refused on them with `403`.
 
 | Status | Message | Cause |
 |---|---|---|
-| `401` | `authentication failed` | The account is disabled or expired. |
+| `401` | `authentication failed` | The account is disabled or expired, holds `super_admin`, or the SCIM directory deactivated the person. |
 | `400` | `no next certificate configured` | `rollover-cert` was called before `prepare-cert`. |
 | `400` | `key is required` | `apply` was called without a template key. |
 | `404` | `template not found` | No template has that key. |
@@ -289,6 +297,8 @@ refused on them with `403`.
   `attributes_mapping.roles` against the attribute your provider sends. An
   existing account keeps its LyEve roles. `admin` and `super_admin` are never
   taken from the provider, so grant them in LyEve.
+- **A super admin cannot sign in through SAML.** That is by design. A super
+  admin signs in another way, such as a password.
 
 ## Related
 

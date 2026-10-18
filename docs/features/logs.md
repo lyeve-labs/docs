@@ -54,15 +54,17 @@ no tenant.
 
 Open **Insight > Logs**. **Volume and levels** counts the last 24 hours of
 entries by level, and a level chip shows only that level's entries. Under
-**Entries**, type words from a message and press **Search**, or pick a level
-and a page size. **Volume alerts** opens the rules described under
+**Entries**, the search box reads **Message words, a request ID or a trace ID**.
+Type words from a message, or paste a request ID or a trace ID on its own to
+find every line of that request or trace, and press **Search**. You can also
+pick a level and a page size. **Volume alerts** opens the rules described under
 [Watch log volume](#watch-log-volume).
 
 ![The Logs page searched for the word slow, listing WARN entries that read slow request detected, each with its time.](images/logs.png)
 
 **Insight > Observability** follows the live log under **Live log tail**, with
-a **Minimum level**, **Pause** and **Clear**. Finding the lines of one request
-or one trace, changing levels and shipping records go through the API below.
+a **Minimum level**, **Pause** and **Clear**. Changing levels and shipping
+records go through the API below.
 
 ## Try it
 
