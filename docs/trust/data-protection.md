@@ -180,11 +180,10 @@ of the caller's tenant and reports per policy `entries_archived`,
 `entries_deleted` and any `archive_error`. The body `{"cleanup_only": true}`
 deletes without archiving.
 
-:::caution[Scheduled enforcement]
-A scheduled run starts every 24 hours, but today it applies no policy, because
-it runs outside any tenant. Call `POST /api/admin/retention/enforce` as each
-tenant, for example from a scheduled job, until that is fixed.
-:::
+A scheduled pass enforces the policies of every tenant that holds one, once at
+start and then every 24 hours, or every `RETENTION_ENFORCE_INTERVAL` when set.
+A failure in one tenant is logged and the pass moves on to the next. The
+`enforce` route runs the caller's tenant at once.
 
 Two other windows are fixed by configuration rather than policy: the masking
 access log is kept for `PII_MASK_RETENTION_DAYS` (default 90), and a released

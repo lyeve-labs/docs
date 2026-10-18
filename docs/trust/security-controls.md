@@ -82,8 +82,8 @@ The [Audit log](../features/audit-log.md) records each entry with `sequence`,
 `chain_hash`.
 
 `chain_hash` is an HMAC-SHA256 over the previous entry's hash and every field
-above. Altering an entry breaks that entry's own hash, and removing one breaks
-the link from the entry after it.
+above. Altering an entry outside the API breaks its hash and every position
+after it up to the next seal.
 The first entry links to a fixed starting value. The key is
 `LYEVE_AUDIT_HMAC_KEY` (64 hex characters). An install without one hashes with a
 zero key and logs a warning at startup, and production refuses to start without
@@ -108,11 +108,14 @@ show:
 
 - No route edits an entry's content.
 - Subject erasure redacts the person in place: it clears `user_id`, sets `ip`
-  and `user_agent` to `[redacted]` and empties the before and after state.
-  Nothing rehashes the chain afterwards.
+  and `user_agent` to `[redacted]` and empties the before and after state. It
+  leaves a signed seal for each entry it redacts, and only for an entry that
+  verified first.
 - Entries are deleted by `POST /api/admin/audit-log/prune` (super admin), by a
-  retention policy, or by tenant deletion. A legal hold stops a retention policy
-  from deleting what it covers. It does not stop a prune.
+  retention policy, or by tenant deletion. Each leaves a signed seal for every
+  entry it removes, so the chain stays verifiable. A legal hold stops a prune
+  and a retention policy from deleting what it covers, and a tenant with an
+  active hold cannot be deleted.
 
 <details>
 <summary>Audit routes</summary>
@@ -121,14 +124,17 @@ show:
 |---|---|---|
 | `GET` | `/api/admin/audit-log` | admin. Anyone but a super admin sees only their tenant, with `ip` and `user_agent` masked |
 | `POST` | `/api/admin/audit-log/prune` | super_admin. Body `{"older_than": "<RFC3339>"}`, answers `{"deleted": n}` |
+| `GET` | `/api/admin/audit-log/verify` | super_admin. Answers `valid`, `entries`, `sealed`, `broken` and `broken_sequences` |
+| `POST` | `/api/admin/audit-log/rehash` | super_admin. Optional body `{"previous_key": "<64 hex>"}` after a key change |
 | `POST` | `/api/admin/audit-log/export` | admin |
 | `POST` | `/api/admin/audit-log/export-all` | super_admin |
 
 </details>
 
-**Check it:** the list route returns `chain_hash` per entry, but not the before
-and after state the hash covers, so the chain cannot be recomputed from the API.
-See the last section.
+**Check it:** call `GET /api/admin/audit-log/verify` as a super admin and expect
+`"valid": true`. The list route returns `chain_hash` per entry, but not the
+before and after state the hash covers, so the chain cannot be recomputed
+outside the server. See [Audit log](../features/audit-log.md#verify-the-chain).
 
 ## API keys
 
@@ -378,9 +384,7 @@ each to a destination that administrator chose:
 ## Not yet
 
 - **SOC 2.** LyEve has no SOC 2 report.
-- **Verifying the audit chain over the API.** No route walks the chain, and the
-  list route does not return the before and after state the hash covers.
-- **Rehashing after erasure.** An erased entry is redacted in place, and the
-  chain is not recomputed.
+- **Recomputing the audit chain yourself.** The list route does not return the
+  before and after state the hash covers, so only the verify route can check it.
 - **API key rotation in place.** Create, deploy, revoke.
 - **Mandatory MFA per role or tenant.** Enrollment is per user.
