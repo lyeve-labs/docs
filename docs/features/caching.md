@@ -316,7 +316,7 @@ features start, include `cache` in it. See
 | Method | Path | Who | Result |
 |---|---|---|---|
 | `GET` | `/api/admin/cache/stats` | Super admin | `hits`, `misses`, `sets`, `deletes`, `flushes` and `evictions` summed over the providers, with the `entries` and `max_size` of the provider serving reads. |
-| `GET` | `/api/admin/cache/entries` | Super admin | A page of the current entries, ordered by key, as `data`, `total_count`, `limit` and `offset`. Each entry has `key`, `size`, `expires_at` and `tags`. Only an in-memory provider can list its entries. Behind Redis, Valkey or KeyDB the page is empty and carries a `note`. |
+| `GET` | `/api/admin/cache/entries` | Super admin | A page of the current entries, ordered by key, as `data`, `total_count`, `limit` and `offset`. Each entry has `key`, `size`, `created_at`, `expires_at`, `ttl_mode` and `tags`. Only the in-memory provider can list its entries. Behind any other provider the page is empty and carries a `note`. |
 | `GET` | `/api/admin/cache/tags/{tag}` | Super admin | Keys carrying a tag. |
 | `POST` | `/api/admin/cache/flush` | Admin | Clears your tenant's cached responses, or the whole cache on a single-tenant install. |
 | `POST` | `/api/admin/cache/flush/{tag}` | Admin | Clears every entry with a tag. |

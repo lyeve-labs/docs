@@ -92,8 +92,8 @@ Every type has `id` and, when the content type keeps them, `created_at` and
 Every content field is nullable on output, required ones included, because an
 access rule can hide any field, and a hidden field reads as `null`. If you
 generate typed clients from the schema, generate them again. A required field
-is non-null in a create input unless it declares a `default`. A `belongs_to`
-relation appears as
+is non-null in a create input unless it declares a `default`. Every field of
+an update input is optional. A `belongs_to` relation appears as
 `<field>_id`, the related entry's id, and can be filtered. A create or update
 input sets it under the same `<field>_id`, so an entry you read can be written
 back as it reads. A relation kept on the other content type, such as

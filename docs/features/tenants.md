@@ -212,8 +212,8 @@ is gone.
 :::caution[Cold storage holds the tenant record, not its content]
 `POST /api/admin/tenants/{id}/cold-archive` writes the tenant's record (slug,
 name, plan and dates) as JSON to the configured storage. The tenant must be
-archived first, and today a tenant that is not answers `503` with
-`operation failed`. Restoring from that archive checks the file is readable and
+archived first, and a tenant that is not answers `409` with
+`tenant is not archived`. Restoring from that archive checks the file is readable and
 makes the tenant writable again. It loads no content. To keep a copy of the
 content, export a backup.
 :::
@@ -513,6 +513,7 @@ Every route above except the last needs the `super_admin` role.
 | `409` | `tenant slug already exists` | Choose another slug. |
 | `409` | `slug "<slug>" still holds data from a deleted tenant in: ...` | Purge those rows or choose another slug. |
 | `409` | `that domain is already mapped to a tenant` | Remove the other mapping first. |
+| `409` | `tenant is not archived` | Archive the tenant before a cold archive. |
 
 </details>
 
