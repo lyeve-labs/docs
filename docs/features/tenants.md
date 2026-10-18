@@ -266,6 +266,17 @@ client builds a tenant switcher.
 Granting and revoking need a super admin with a signed-in session. In the
 console, open a tenant under **Operations > Tenants** and use **New member**.
 
+When the domain a sign-in arrives on is mapped to a tenant, that tenant decides
+whose account the address reaches, and `tenant` in the body cannot point it at
+another tenant's account. The field still picks which of the account's own
+memberships the session acts in.
+
+An account that a tenant's identity provider, its SCIM directory or a magic
+link sign-up created belongs to that tenant alone, and the same address can be
+a different account in each tenant. Each tenant also sets how long such an
+account may sign in without its provider. See
+[accounts a tenant's provider creates](../integrations/oauth-sso.md#accounts-a-tenants-provider-creates).
+
 ## Choose what each tenant may use
 
 A super admin can withhold features from one tenant while the rest of the

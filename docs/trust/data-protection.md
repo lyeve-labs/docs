@@ -92,6 +92,12 @@ anonymizes the subject's rows in each of them and answers:
 | `errors` | `["one or more erasers failed"]` when a feature failed. |
 | `holds` | The active legal holds that stopped the erasure, each with `id` and `reason`. Non-empty means nothing was erased. |
 
+An erasure by address reaches every account that address names, in every
+tenant. That includes accounts a tenant's identity provider, SCIM directory or
+magic link sign-up created, and what sign-in keeps about them: the SCIM
+directory record, with its external id and stored attributes, and the OAuth
+provider links.
+
 Erasure checks legal holds before it touches a row. A hold that cannot be
 checked is not treated as no hold: the server answers `503` with
 `legal hold status is unavailable; erasure was not attempted`, and the request

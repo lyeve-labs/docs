@@ -38,7 +38,10 @@ the log: without a mail relay the logged link has its token replaced by
 ## In the admin console
 
 1. On the sign-in page, choose **Email me a sign-in link**.
-2. Enter the account's address and choose **Email me a link**.
+2. Enter the account's address and choose **Email me a link**. If your
+   organization's identity provider created the account and the console's
+   address does not already name your organization, enter its short name in
+   **Organization (optional)**.
 3. Open the link from the email. On **Sign in with your link**, choose
    **Continue** to finish signing in on that device.
 
@@ -48,7 +51,7 @@ the log: without a mail relay the logged link has its token replaced by
 
 | Step | What happens |
 |---|---|
-| Request | The console posts the address to `/api/admin/auth/magic-link/request`. The answer is the same whether or not the account exists. |
+| Request | The console posts the address, and the organization when one was entered, to `/api/admin/auth/magic-link/request`. The answer is the same whether or not the account exists, and whether or not another tenant holds the address. |
 | Email | The link `<LYEVE_CONSOLE_URL>/auth/magic-link/verify?token=<token>` is mailed, stating how long it works. |
 | Redeem | The person submits the page the link opens, and the console redeems the token for a session. A mail scanner that only opens the link does not use it up. |
 | Second factor | An account with MFA gets a challenge and is asked for its code on the same page. |
@@ -83,6 +86,12 @@ Both routes are public and need `Content-Type: application/json`.
    ```json
    { "message": "if the email exists, a magic link has been sent" }
    ```
+
+   An account that a tenant's identity provider created is reached only
+   through its tenant. When the hostname you call does not name that tenant,
+   add `"tenant": "<tenant slug>"` to the body. A tenant the hostname names
+   wins over the field, and with `MAGIC_LINK_REQUIRE_RESOLVED_TENANT=true` the
+   field is not read.
 
 2. Open the email and copy the `token` from the link.
 
@@ -130,6 +139,11 @@ address redeems creates the account, and the answer carries
 `"is_new_user": true`. If the list names `admin` or `super_admin`, the whole
 list is dropped and new accounts get no roles.
 
+The account belongs to the link's tenant alone, so the same address can sign up
+in each tenant. A link requested with `tenant` in the body never creates an
+account: under a tenant named that way, only an address that already has an
+account there gets a link.
+
 ## Settings
 
 | Variable | What it does | Default |
@@ -165,7 +179,7 @@ A super admin can change the first three under [rate limiting](rate-limiting.md)
 | Status | Message | Cause |
 |---|---|---|
 | `400` | `invalid or expired magic link` | The link was used, expired, or opened on another host or tenant. |
-| `403` | `authentication failed` | The account is disabled or expired, or unknown while `MAGIC_LINK_AUTO_CREATE` is off. |
+| `403` | `authentication failed` | The account is disabled or expired, its provider has not signed it in within the tenant's [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider), or it is unknown while `MAGIC_LINK_AUTO_CREATE` is off. |
 | `429` | `too many magic link requests - try again in 15 minutes` | Over a request limit. |
 
 <details>

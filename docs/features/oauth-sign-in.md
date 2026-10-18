@@ -69,6 +69,11 @@ What you can rely on:
   from whatever the provider sends.
 - An existing user keeps the roles stored in LyEve. A provider's roles apply
   only when the sign-in creates the user.
+- An account OAuth creates belongs to the tenant it signed up in. See
+  [accounts a tenant's provider creates](../integrations/oauth-sso.md#accounts-a-tenants-provider-creates).
+  Its password, reset and magic link sign-ins stay open for the tenant's
+  [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider)
+  after each sign-in through the provider.
 - Client secrets are encrypted at rest and never returned by any route.
 - A session from OAuth sign-in lasts `JWT_EXPIRY_SECS` and comes with no
   refresh token, so the person signs in again when it ends.
@@ -246,7 +251,9 @@ you send a new one.
 ## When an email already has an account
 
 When a provider identity signs in for the first time and a user with the same
-email already exists, the sign-in is refused with `409`. LyEve never links an
+email already exists in the tenant, the sign-in is refused with `409`. An
+address that only another tenant holds is not a conflict: the sign-in creates
+an account of this tenant's own. LyEve never links an
 existing account on its own, because someone holding that email at another
 provider could otherwise take the account over. Sign in through a provider
 before creating a password account for the same person, or remove the

@@ -17,8 +17,10 @@ are the people who can sign in.
 :::tip[Best for]
 - **Onboarding without tickets.** A new hire assigned to the LyEve app in your
   directory has an account before their first sign-in.
-- **Offboarding from one place.** With `"deprovision_action": "delete"`, a
-  user the directory deletes loses their LyEve account.
+- **Offboarding from one place.** A user the directory deactivates or removes
+  is refused at SAML sign-in, password reset and magic link from that moment,
+  and their sessions end. With `"deprovision_action": "delete"`, a user the
+  directory deletes loses their LyEve account.
 - **Several directories on one instance.** Each connection has its own token
   and sees only the users and groups it created.
 :::
@@ -60,7 +62,17 @@ What you can rely on:
 - Each connection authenticates with its own bearer token, and sees only the
   users and groups it created.
 - A connection belongs to the tenant it was created in, and everything it
-  provisions lands in that tenant.
+  provisions lands in that tenant. An account it creates belongs to that
+  tenant alone, so an address another tenant holds is a separate account
+  there. See
+  [accounts a tenant's provider creates](../integrations/oauth-sso.md#accounts-a-tenants-provider-creates).
+- Deactivating a user (`"active": false`) or removing one disables the account
+  and ends its sessions at once, whatever the tenant's
+  [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider)
+  says. This is the way to remove access immediately. Reactivating the user
+  enables the account again.
+- A SAML sign-in through a connection never signs in an account that holds
+  `super_admin`.
 - LyEve stores a hash of each token, never the token.
 - A SCIM `password` attribute is never stored.
 
