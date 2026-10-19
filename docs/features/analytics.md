@@ -300,9 +300,11 @@ case.
 
 :::danger
 Erasure applies to the account that calls it, so never run it with your own
-admin token. It runs in the background, soft-deletes the content the user
-created, deletes the media they uploaded, and anonymizes the account: the email
-becomes `erased+<user id>@localhost`, and the password and roles are cleared.
+admin token. It runs in the background through the content and media
+features' own erasure. Content entries stay with the user cleared as their
+author, and media files stay with the uploader, location and author removed
+from them, so the files remain reachable. It also anonymizes the account: the
+email becomes `erased+<user id>@localhost`, and the password and roles are cleared.
 API keys belong to the tenant and are kept.
 :::
 
