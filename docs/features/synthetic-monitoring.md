@@ -110,7 +110,8 @@ This works on a free install. You need an admin token in `TOKEN`. The
    ```
 
    The answer holds one result per region. `status` is `pass` or `fail`, and a
-   failure carries an `error_message`.
+   failure carries an `error_message`. The run counts toward the alert
+   threshold the same as a scheduled one.
 
 3. Read the response time trend for the last hour:
 
@@ -154,7 +155,7 @@ body.
 | `interval_seconds` | Seconds between runs. At least `300` on a free install, and at least `15` with `synthetic-monitoring-pro`. | `300` free, `60` with `synthetic-monitoring-pro` |
 | `timeout_seconds` | Seconds before a run counts as failed. | `30` |
 | `regions` | Labels for the runs. Each run happens once per label. | empty, which runs under `us-east`, `us-west`, `eu-west` and `ap-southeast` |
-| `alert_threshold` | Failures in a row before an alert. | `3` |
+| `alert_threshold` | Failed runs in a row before an alert. A run fails when any of its regions fails. | `3` |
 
 Set one region unless you want the same check repeated under several labels.
 
@@ -190,6 +191,17 @@ rename, disable or retarget it. A fourth probe on a free install answers:
 An interval under 300 seconds answers `402` with
 `{"error": "payment_required", "plugin": "synthetic-monitoring", "feature": "feature:synthetic-monitoring-pro", "upgrade_url": ""}`.
 
+`GET /api/admin/synthetic-monitoring/limits` says what a write will accept:
+the tenant's probes against their ceiling, and the shortest interval a new
+probe may be given. On a free install it answers:
+
+```json
+{"probes": {"limit": 3, "current": 1}, "min_interval_seconds": 300}
+```
+
+With `synthetic-monitoring-pro`, `limit` is `0`, which means no ceiling, and
+`min_interval_seconds` is `15`.
+
 ## Probe a private network
 
 A probe cannot reach private or internal addresses. To probe a service on your
@@ -209,9 +221,12 @@ with `400` when you save the probe.
 - `GET /api/admin/synthetic-monitoring/alerts` lists alerts, with
   `acknowledged=false` for open ones.
 
-When a probe reaches its `alert_threshold` and has no open alert, an alert is
-raised with the probe, the number of failures and the last error. The first
-passing run after that resolves it and sets its `resolved_at`. Mark one seen
+A run fails when any of its regions fails. When a probe's failed runs in a row
+reach its `alert_threshold` and it has no open alert, an alert is raised with
+the probe, the number of failed runs and the last error. The first passing run
+after that sets the count back to zero, resolves the alert and sets its
+`resolved_at`. A run started with **Run now** counts the same as a scheduled
+one. Mark one seen
 with `POST /api/admin/synthetic-monitoring/alerts/{id}/acknowledge`, which
 answers `{"status": "acknowledged"}`.
 
@@ -259,7 +274,8 @@ All routes need an admin and act on the caller's tenant.
 | `GET` | `/api/admin/synthetic-monitoring/probes/{id}` | Read a probe. |
 | `PUT` | `/api/admin/synthetic-monitoring/probes/{id}` | Replace a probe. |
 | `DELETE` | `/api/admin/synthetic-monitoring/probes/{id}` | Delete a probe with its results and alerts. Answers `204`. |
-| `POST` | `/api/admin/synthetic-monitoring/probes/{id}/run` | Run a probe now. |
+| `POST` | `/api/admin/synthetic-monitoring/probes/{id}/run` | Run a probe now. The run counts toward the alert threshold. |
+| `GET` | `/api/admin/synthetic-monitoring/limits` | The tenant's probes against their ceiling, and the shortest interval allowed. |
 | `GET` | `/api/admin/synthetic-monitoring/probes/{id}/results` | Recent results. |
 | `GET` | `/api/admin/synthetic-monitoring/probes/{id}/trends` | Response time trends. |
 | `GET` | `/api/admin/synthetic-monitoring/alerts` | List alerts. |

@@ -137,7 +137,8 @@ You need an admin token in `TOKEN`. The
    { "id1": "56cea807-47e3-413d-beca-28f6128a172e", "id2": "aa51f554-ab7a-4aca-8e89-a762fb626029", "status_match": true, "status_code1": 200, "status_code2": 200, "duration1_ms": 1.548, "duration2_ms": 1.344 }
    ```
 
-   The real answer also carries `headers_diff`, described below.
+   An unchanged answer carries neither `body_diff` nor `headers_diff`, as here.
+   [Read a diff](#read-a-diff) describes both.
 
 5. Delete the replay when you are done. The answer is `204`:
 
@@ -160,11 +161,23 @@ original scheme and host.
 
 `status_match` says whether the two statuses agree. `body_diff` is a line diff
 of the response bodies, and `headers_diff` lists the response headers that
-differ, ignoring `Date`, `X-Request-Id`, `X-Response-Time` and the rate limit
-counters. Each
-appears only when the two captures differ. `Content-Security-Policy` and
-`X-Csp-Nonce` carry a fresh value on every answer, so they always show in
-`headers_diff`.
+differ, sorted by name. Each appears only when the two captures differ.
+
+A replay is read the way its original was stored. It does not forward
+`Accept-Encoding`, so the answer comes back uncompressed, and its body is
+redacted and re-encoded the same way before the two are compared. A JSON
+answer whose keys come back in another order reads as unchanged.
+
+`headers_diff` skips the headers that change on every request:
+
+- `Date`, `X-Request-Id`, `X-Response-Time`, `Retry-After` and `X-Csp-Nonce`.
+- `ETag`, because the body comparison already catches a real change.
+- The quota and rate limit counters.
+- The transport headers: `Content-Length`, `Content-Encoding`,
+  `Transfer-Encoding`, `Connection`, `Keep-Alive`, `Via` and `Alt-Svc`.
+
+The nonce inside a `Content-Security-Policy` is masked before the two are
+compared, so a change to the rest of the policy still shows.
 
 ## Choose what is captured
 

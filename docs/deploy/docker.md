@@ -25,11 +25,11 @@ Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.50.4` | Never. One release, exactly |
-| `0.50` | To the latest patch of that minor release |
+| `0.55.0` | Never. One release, exactly |
+| `0.55` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.50.4` is the image tag `0.50.4`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.55.0` is the image tag `0.55.0`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates
@@ -92,7 +92,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.50.4
+  ghcr.io/lyeve-labs/lyeve-core:0.55.0
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -185,6 +185,15 @@ with `{"setup_required":true,"token_source":"log"}`: the token is the one the en
 which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETUP_TOKEN` set,
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
+
+## Upgrading to 0.55.0
+
+Stop every engine container before you start 0.55.0, because an older engine beside it breaks
+the audit hash chain. Review your retention policies first, because the first boot enforces
+them. A tenant with an active legal hold can no longer be deleted and answers `409`. A mail
+relay on loopback or a private network needs every address its name resolves to in
+`SMTP_ALLOWED_PRIVATE_NETWORKS`, both `127.0.0.1` and `::1` for `localhost`.
+[Docker Compose](docker-compose.md#upgrading-to-0550) explains each step.
 
 ## Next
 

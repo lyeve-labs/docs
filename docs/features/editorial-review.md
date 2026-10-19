@@ -43,15 +43,20 @@ Editorial review is in beta. Three limits apply:
 Open **Reviews**. **Definitions** lists each review with its content type, its stages in order
 and what happens **On approval**. **New definition** creates one: give it a **Name**, pick the
 **Content schema**, and fill in **Stages, in order**, each with a **Stage name**, a
-**Required role** and **SLA, hours**. **Assignments** lists every entry under review with its
+**Required role** and **SLA, hours**. With `review-pro`, a stage with an SLA can name who takes
+over when it passes: under **On an SLA breach, hand it to**, choose **A user** and pick the
+account by email, or **A role** and type the role. **Assignments** lists every entry under review with its
 stage, status, assignee and due time, and the tabs above it filter by status.
 
 ![The Reviews page. The Launch page review definition has two stages, Copy edit for the editor role within 24 hours and Legal for the legal role within 48 hours, and publishes on approval. Below it, two entries are under review, one in the Legal stage and one waiting for Copy edit.](images/editorial-review.png)
 
 On an entry's page, the **Review** card shows **Not under review.** until someone picks a
-**Definition**, gives the **Assignee** as a user id and chooses **Start review**. Under review,
-it shows the stage, status, assignee and due time, a **Comment** box, and the actions you may
-take, such as **Approve**, **Request changes** and **Reject**.
+**Definition**, picks the **Assignee** from the accounts, adds any **More assignees** in the
+picker below it and chooses **Start review**. The **Assignee** starts as you. A stage that needs
+several approvals takes them from the assignees. Someone who may not list the accounts types
+user ids instead. Under review, it shows the stage, status, assignee and due time, a
+**Comment** box, and the actions you may take, such as **Approve**, **Request changes** and
+**Reject**.
 
 ![The Review card of an entry in stage 2 of 2, Legal, with the status In review, assigned to you and due on October 13. Below a Comment box are Approve, Request changes and Reject.](images/editorial-review-entry.png)
 

@@ -45,13 +45,10 @@ kept.
 - Actions are named by area and verb, such as `mfa.admin.reset` or
   `ai.settings.update`. Resource types are plain names, such as `user`.
 
-:::caution[The chain is not checked for you]
-No route and no console screen verifies the chain, and the hash format is
-not published, so you cannot recompute it yourself. If an entry is edited
-outside the API, only that entry stops matching its stored hash. A privacy
-erasure rewrites entries without updating their hashes, so an erased entry
-no longer matches either.
-:::
+A prune, a retention pass and a tenant delete each leave a signed seal for
+every entry they remove, and an erasure seals each entry it anonymizes. The
+chain stays verifiable through all four, and a super admin checks it with
+[`GET /api/admin/audit-log/verify`](#verify-the-chain).
 
 ## In the admin console
 
@@ -80,7 +77,8 @@ hold removes it, and **Enforce now** runs enforcement at once. The
    protected by a secret.
 
 Keep `LYEVE_AUDIT_HMAC_KEY` stable. Changing it breaks the chain for entries
-written before the change. Without the license, the routes are not served and
+written before the change, until a [rehash](#verify-the-chain) given the old
+key re-signs it. Without the license, the routes are not served and
 answer `404`.
 
 ## Try it
@@ -233,10 +231,47 @@ curl -X POST http://localhost:3001/api/admin/audit-log/prune \
 { "deleted": 3812 }
 ```
 
-:::caution
-A prune deletes every entry before the cutoff, including entries a legal
-hold covers. Only retention enforcement skips held entries.
-:::
+A prune skips every entry a legal hold covers. A cutoff later than now
+answers `400`. Each prune records itself as an `audit.prune` entry with the
+cutoff, the count and the first and last sequence it removed.
+
+## Verify the chain
+
+`GET /api/admin/audit-log/verify` walks the whole chain, every tenant's
+entries and the seals left by deletions and erasures. It needs a super admin.
+
+```bash
+curl http://localhost:3001/api/admin/audit-log/verify \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "valid": true, "entries": 3812, "sealed": 140, "broken": 0, "broken_sequences": [] }
+```
+
+`entries` counts the entries read and `sealed` the positions that verified
+through a seal. A broken chain still answers `200`, with `valid` false,
+`broken` holding the number of broken positions and `broken_sequences` the
+first 100 of them. A changed entry breaks every position after it up to the
+next seal, so the first broken sequence is where to look.
+
+On an install that pruned, enforced retention, erased a subject or deleted a
+user before 0.55.0, verify reports those positions as broken.
+`POST /api/admin/audit-log/rehash` accepts every entry as it stands and
+re-signs the seals that still verify. A seal that does not verify stays broken
+and is listed in `left_broken`. After you change `LYEVE_AUDIT_HMAC_KEY`, send
+the old key so the seals signed under it are re-signed under the new one:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/audit-log/rehash \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"previous_key": "<the old 64 hex character key>"}'
+```
+
+The key serves that one request and is never stored, logged or returned. A
+rehash records itself as `audit.chain.rehash`, naming the positions that were
+broken before it ran. A body over 1 KiB answers `413`.
 
 ## Retention policies and legal holds
 
@@ -344,6 +379,8 @@ it.
 | `POST` | `/api/admin/audit-log/export` | Admin | Export your tenant. |
 | `POST` | `/api/admin/audit-log/export-all` | Super admin | Export every tenant. |
 | `POST` | `/api/admin/audit-log/prune` | Super admin | Delete entries before a cutoff. |
+| `GET` | `/api/admin/audit-log/verify` | Super admin | Check the hash chain. |
+| `POST` | `/api/admin/audit-log/rehash` | Super admin | Re-sign the chain after a deliberate reset. |
 
 ## Errors
 
@@ -354,6 +391,8 @@ it.
 | `400` | `'to' must be after 'from'` | Export range is reversed. |
 | `400` | `limit must be >= 0` | Export with a negative limit. |
 | `400` | `older_than must be RFC 3339 (e.g. 2024-01-01T00:00:00Z)` | Prune cutoff is not a timestamp. |
+| `400` | `older_than must not be later than now` | Prune cutoff is in the future. |
+| `400` | `previous_key must be 64 hexadecimal characters` | Rehash with a malformed old key. |
 | `400` | `name is required` | Legal hold without a name. |
 | `400` | `legal_hold_id is required` | Compliance export without a hold. |
 | `402` | `payment_required` | The license lapsed while the instance ran. |

@@ -29,6 +29,77 @@ that slows down attackers.
 |---|---|---|---|
 | SCIM provisioning | Creating, updating and removing accounts from Azure AD, Okta or another directory before anyone signs in. Pair it with SAML. | Requires `scim` | [SCIM provisioning](../features/scim-provisioning.md) |
 
+## Accounts a tenant's provider creates
+
+An account that SAML, OAuth or SCIM creates, or that a magic link sign-up
+creates, belongs to the tenant it was created in. LyEve finds it by that tenant
+and its address. On an install with several tenants, the same address can be
+a different account in each tenant, and a sign-up, password reset or magic link
+answers the same whether another tenant holds the address or nobody does. An
+account that signs in with a password under its own address works as before.
+The console's user list marks these accounts **Signs in through your identity
+provider**.
+
+Because an address can repeat across tenants, a session's `email` claim does
+not identify an account on its own. Identify an account by its id, the `sub`
+claim. See [validate tokens](validate-tokens-jwks.md#what-a-token-holds).
+
+### Name the organization
+
+Password sign-in, password reset and magic link take an optional `tenant`
+field in the request body. The tenant the request's hostname resolves always
+wins over it, so the field counts only where the hostname names no tenant. The
+console's sign-in, forgot password and email link pages show it as
+**Organization (optional)**. A reset link carries the account's tenant, and
+the sign-in page it leads to fills the field in.
+
+### Sign-in without the provider
+
+An account a provider signs in can also sign in with a password, reset its
+password or ask for a magic link. Each tenant decides how many days after the
+account's last sign-in through its provider those ways stay open. After that,
+they answer as they do for an unknown address or a wrong password.
+
+| Setting | Values | Default |
+|---|---|---|
+| Days since the last provider sign-in | `0` to `365`. `0` allows sign-in through the provider only. | `30` |
+
+Removing someone at your provider tells LyEve nothing, so the other ways close
+when the window passes. To close them at once, provision with
+[SCIM](../features/scim-provisioning.md). A person the directory deactivates
+is refused at SAML sign-in, password reset and magic link from that moment,
+whatever the window says. An account that a magic link sign-up created has no
+provider, so the window does not apply to it.
+
+A tenant admin sets the window in the console under **Settings > Sign-in**, or
+over the API:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/auth/provider-window \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"days": 7}'
+```
+
+```json
+{ "days": 7 }
+```
+
+`GET /api/admin/auth/provider-window` answers the same shape. Both routes need
+the `admin` or `super_admin` role and a signed-in session. An API key or an
+admin token is refused with `403`. An admin acts on their own tenant, and a
+super admin on the tenant named with `X-Tenant-ID`. A value that is not a whole
+number from 0 to 365 answers `422`. A change applies to the next sign-in, and
+each one is written to the [audit log](../features/audit-log.md) as
+`auth.provider_window.update` with the old and new values.
+
+When you upgrade to 0.55.0, accounts that OAuth created and accounts that an
+active SCIM user links count as signed in through their provider at the
+upgrade, so they keep their other ways in for one window. An account that
+SAML created without SCIM starts its window at its next SAML sign-in. No
+window applies to it until then, so its password, password reset and magic
+link stay open.
+
 ## Extra checks at sign-in
 
 | Option | Best for | Free or license | Page |

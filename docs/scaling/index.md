@@ -232,6 +232,14 @@ through [metrics export](../features/metrics-export.md).
 tokens the Content API accepts. The instance fetches each issuer's keys from
 `{issuer}/.well-known/jwks.json`.
 
+Each user of an issuer gets an account of their own in the tenant that the
+issuer's entry in `TRUSTED_ISSUER_POLICIES` names, created on their first
+request. The account keeps the address from the token only when the token
+marks that address verified. When the tenant already holds an account for
+that address, the token is refused and the request counts as anonymous, so a
+user of an issuer never takes over an account the tenant created. An account
+with the same address in another tenant does not affect any of this.
+
 ## Related
 
 - [Production checklist](../deploy/production-checklist.md): what to check

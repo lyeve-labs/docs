@@ -178,7 +178,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.50.4   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.55.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -308,7 +308,7 @@ spec:
     spec:
       containers:
         - name: lyeve-admin
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.17.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-admin:0.20.2   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -558,6 +558,38 @@ With two `ReadWriteOnce` claims named `lyeve-state` (1Gi) and `lyeve-uploads` (1
 creates its key on the state volume and keeps media on the uploads volume. Use
 `strategy: { type: Recreate }`, because a `ReadWriteOnce` claim cannot attach to the new pod
 while the old one holds it.
+
+## Upgrading to 0.55.0
+
+A rolling update runs old and new engine pods side by side, which 0.55.0 does not allow. Read
+these before the first start of 0.55.0:
+
+- **Stop every engine pod first.** An older engine deletes and redacts audit entries without
+  sealing the hash chain, so the chain breaks wherever it runs beside 0.55.0.
+- **Review your retention policies.** Scheduled retention enforces every tenant's policies from
+  0.55.0, and the first pass runs at boot. Every entry a policy has kept past its period is
+  deleted or archived then. See [Audit log](../features/audit-log.md#retention-policies-and-legal-holds).
+- **Release legal holds before you delete a tenant.** A tenant with an active legal hold can no
+  longer be deleted. The delete answers `409` and removes nothing.
+- **List your mail relay's addresses.** The relay is checked at every send. If `SMTP_HOST`
+  resolves to loopback or a private network, list every address the name resolves to in
+  `SMTP_ALLOWED_PRIVATE_NETWORKS`, both `127.0.0.1` and `::1` for `localhost`, or every send
+  is refused. See [Email](../features/email.md#send-through-one-relay).
+- **Check your backup schedules.** Stored backup and restore test schedules run from 0.55.0.
+  Remove any CronJob that calls a backup `trigger` route first. See
+  [Backup and restore](../how-to/backup-and-restore.md#back-up-to-s3).
+
+Scale the engine to zero, wait until no engine pod is left, then start 0.55.0:
+
+```bash
+kubectl -n lyeve scale deploy/lyeve-core --replicas=0
+kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.55.0
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.20.2
+kubectl -n lyeve scale deploy/lyeve-core --replicas=2
+```
+
+The engine answers nothing between the first and the last command, so plan a short outage.
 
 ## Before you go live
 

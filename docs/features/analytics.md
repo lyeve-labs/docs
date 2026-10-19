@@ -335,7 +335,7 @@ features start, include `analytics` in it. See
 | `GET` | `/api/admin/analytics/events/{id}` | Admin | One event, with its delivery outcome. |
 | `GET` | `/api/admin/analytics/deliveries` | Admin | Deliveries still owed, as `{"data": [...], "licensed": bool}`. Query: `status` (`pending` or `failed`), `limit` (at most 200). |
 | `POST` | `/api/admin/analytics/deliveries/{id}/replay` | Admin | Send one delivery again now. Needs `analytics-pro`. |
-| `GET` | `/api/admin/analytics/dashboard` | Admin | `total_content`, `total_media`, `total_users`, `api_calls_24h`. Today the first three are always `0`, and `api_calls_24h` holds the daily active users computed for today. |
+| `GET` | `/api/admin/analytics/dashboard` | Admin | `total_content`, `total_media`, `total_users`, `api_calls_24h`. Today the first three are always `0`, and `api_calls_24h` holds your tenant's API calls in the day computed for today. |
 | `GET` | `/api/v1/analytics` | Signed in | Your tenant's usage and activity. |
 | `POST` | `/api/v1/gdpr/export` | Signed in | Your data as NDJSON. |
 | `POST` | `/api/v1/gdpr/erase` | Signed in | Erases your data. `202`. |
