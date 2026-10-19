@@ -48,7 +48,9 @@ Records are written to the database within about a second. An admin reads
 only their own tenant's records in every view. A super admin reads one tenant
 in search and tail (the default tenant, or the one named in `tenant_id`), and
 every record in the stream, including the instance's own lines that belong to
-no tenant.
+no tenant. A super admin's work on another tenant, such as creating, cloning,
+restoring or deleting it, logs under no tenant, so no tenant admin sees it.
+Only a super admin reading the whole log does.
 
 ## In the admin console
 

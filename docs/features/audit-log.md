@@ -42,6 +42,9 @@ kept.
   entry and the hash stored on the entry before it.
 - A tenant admin sees only their own tenant, with IP addresses and user agents
   masked. A super admin sees full values and every tenant.
+- A super admin's work on a tenant other than their own, such as creating,
+  cloning, restoring, moving or deleting it, is filed under no tenant. Only a
+  super admin who is not scoped to a tenant sees those entries.
 - Actions are named by area and verb, such as `mfa.admin.reset` or
   `ai.settings.update`. Resource types are plain names, such as `user`.
 

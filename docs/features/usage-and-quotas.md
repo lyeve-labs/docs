@@ -46,8 +46,9 @@ requests are free too.
 
 Open **Operations > Quotas and usage** as a super admin. The **Quotas** table
 lists each tenant that has a quota, with its API calls, storage and bandwidth
-used and the share of each limit. **Requests for more** lists the increases
-tenants have asked for. The page has no snapshot or export, so take those
+used and the share of each limit. API calls and bandwidth count requests made
+with an API key only, and requests from a signed-in session are not counted.
+**Requests for more** lists the increases tenants have asked for. The page has no snapshot or export, so take those
 through the API below. Setting a quota is on
 [Tenant quotas](tenant-quotas.md#in-the-admin-console).
 

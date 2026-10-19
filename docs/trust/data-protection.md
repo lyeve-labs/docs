@@ -109,6 +109,13 @@ deleting them: the user id is cleared, the address and user agent become
 user id or IP address, so erase by the user id to reach a person's audit
 entries. An email address matches none.
 
+An export the [data export](../features/data-export.md) feature delivered to
+an S3 bucket you named is a file the instance cannot delete. For each finished
+export of that kind the erasure matches, it writes the audit entry
+`data_export.job.file_not_erased` with the bucket, region and object key,
+filed under the export's tenant, so you can remove the file yourself. Without
+an audit log, it logs a warning with the same location.
+
 With the `audit` feature licensed, both routes write an audit entry
 (`gdpr.export`, `gdpr.export.all_tenants`, `gdpr.erase`) recording the actor,
 address and user agent. The entry names the subject by a digest rather than by

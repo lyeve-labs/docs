@@ -300,6 +300,7 @@ The ones you meet most:
 | Status | Message |
 |---|---|
 | `400` | `invalid multipart form`, `invalid JSON`, `invalid request body`, `invalid search body` |
+| `400` | `request body could not be read` when an upload stops partway below the size limit. One that reaches the limit answers `413`. |
 | `400` | `folder may use a to z, 0 to 9, _, - and /` on a change |
 | `400` | `not an image` on reprocess |
 | `404` | `not found`, or `media not found` on reprocess and thumbnails |
