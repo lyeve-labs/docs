@@ -99,8 +99,13 @@ Both routes are public and take no `Authorization` header.
    ```
 
    ```json
-   { "error": "password must be at least 12 characters" }
+   { "error": "Password must be at least 12 characters.", "code": "AUTH_PASSWORD_TOO_SHORT" }
    ```
+
+   The answer is `422`. The new password has to pass the same policy as a new
+   account's: `PASSWORD_MIN_LENGTH`, `PASSWORD_REQUIRE_COMPLEXITY`,
+   `PASSWORD_CHECK_COMMON` and the 72-byte limit. A refusal names the rule in
+   `code`, and the link stays usable for a better password.
 
 4. Set the new password:
 
@@ -134,7 +139,7 @@ If you set `LYEVE_PLUGINS`, include `password-reset` in it.
 | Limit | Default |
 |---|---|
 | Link lifetime | 1 hour |
-| Minimum password length | 12 characters, whatever `PASSWORD_MIN_LENGTH` says |
+| New password | The install's password policy, as for a new account. See [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords). |
 | Reset requests per client address (`password-reset.ip`) | 10 per minute |
 | Reset mails per email address (`password-reset.email`) | 1 per 5 minutes |
 | Request route, per client address | 3 per second, burst 5 |
@@ -155,7 +160,7 @@ Errors answer a JSON body with an `error` message.
 | Status | Message | Cause |
 |---|---|---|
 | `400` | `invalid or expired reset token` | The token is wrong, expired or already used. Request a new link. |
-| `400` | `password must be at least 12 characters` | The new password is too short. |
+| `422` | `AUTH_PASSWORD_TOO_SHORT`, `AUTH_PASSWORD_NEEDS_COMPLEXITY`, `AUTH_PASSWORD_TOO_COMMON` or `AUTH_PASSWORD_TOO_LONG` in `code` | The new password fails the install's password policy. The link is not spent. |
 | `503` | `password reset is not configured` | `LYEVE_CONSOLE_URL` is not set. |
 
 <details>

@@ -63,6 +63,15 @@ What you can rely on:
   provisions lands in that tenant.
 - LyEve stores a hash of each token, never the token.
 - A SCIM `password` attribute is never stored.
+- A user whose address already has an account is linked to that account, unless the account holds `admin` or `super_admin` in any tenant.
+  Then the create answers `409` with `scimType` `uniqueness`, the same answer
+  as any duplicate, and nothing is stored. An account is linked to one
+  directory user at most.
+- The directory never deactivates, reactivates or deletes an account that
+  holds `admin` or `super_admin`, including one promoted after it was linked.
+  A change to `active`, or a delete on a connection with
+  `"deprovision_action": "delete"`, answers `409` before the directory's copy
+  of the user changes.
 
 ## Turn it on
 
@@ -272,6 +281,8 @@ before SCIM reads the request.
 |---|---|---|
 | `401` | `invalid provider credentials` | The directory sent no token or an unknown one. |
 | `404` | `user not found` | The user does not exist, or another connection created it. |
+| `409` | `user already exists` | Another user holds the same identity, the address belongs to an account that holds `admin` or `super_admin`, or another directory user already links that account. |
+| `409` | `the user's account is one the directory cannot manage` | The change would deactivate, reactivate or delete an account that holds `admin` or `super_admin`. |
 | `415` | `unsupported media type, expected application/json or multipart/form-data` | The body was sent as `application/scim+json` or another type. |
 
 <details>

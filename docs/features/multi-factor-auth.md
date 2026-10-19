@@ -46,6 +46,12 @@ Each person turns it on for their own account:
 To turn it off, enter a current code or a backup code on the same page and
 choose **Turn off**.
 
+To move to another authenticator app, enter a current code or a backup code on
+the same page and choose **Replace the authenticator app**, then scan the new QR
+code and verify a code from it. The old key keeps working until you do. An
+account that holds only a passkey confirms with **Confirm with a passkey**, or
+with a code, before it sets up an app.
+
 ![The Two-factor authentication page during enrollment, with the QR code, the manual entry secret and the field for the six-digit code.](images/multi-factor-auth.png)
 
 ## How it works
@@ -169,6 +175,46 @@ own, and keep its token in `TOKEN`. The
 turning TOTP on or off or replacing backup codes accepted is refused, so wait
 for the app to show the next code.
 
+## Add or remove a factor
+
+The first factor an account enrolls needs only the signed-in session. Once the
+account holds one (an authenticator app, a backup code or a passkey), setting
+up an authenticator app, registering a passkey and removing a passkey each
+need proof of a factor it already holds, in the request body:
+
+- `{"code": "123456"}`: a current code from the authenticator app, or an
+  unused backup code in the same field. A backup code used this way is spent.
+- `{"proof_session_id": "<session_id>", "assertion": {...}}`: a passkey
+  assertion. Get its challenge from `POST /api/admin/mfa/proof/begin`, which
+  answers a `session_id` and the `options` for `navigator.credentials.get()`.
+  The challenge proves a factor once and signs nobody in. The route answers
+  `404` when the account has no passkey.
+
+To replace an authenticator app, send the proof to
+`POST /api/admin/mfa/totp/setup`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/mfa/totp/setup \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "123456"}'
+```
+
+The new key replaces the old one once `POST /api/admin/mfa/totp/verify`
+accepts a code from it. A wrong proof counts toward the same lockout as a wrong
+code.
+
+Removing a passkey with `DELETE /api/admin/mfa/webauthn/credentials/{id}` takes
+the same body. When that passkey is the last factor the account holds, with no
+authenticator app and no backup codes, removing it turns two-factor
+authentication off for the account.
+
+A setup or a passkey registration started while the account held no factor
+does not finish once the account holds one: start it again with a proof. TOTP
+verify then answers `409` with `mfa.totp.setup_unproven`, and passkey
+registration answers `409` with `mfa.webauthn.factor_added` at the complete
+call.
+
 ## Use passkeys
 
 Registering a passkey and marking one as the backup key need `mfa-pro`. Every
@@ -266,6 +312,7 @@ each with its own rate limit.
 | `POST` | `/api/admin/mfa/backup-codes/regenerate` | signed in | Replace the backup codes |
 | `POST` | `/api/admin/mfa/webauthn/register/begin` | signed in | Start registering a passkey |
 | `POST` | `/api/admin/mfa/webauthn/register/complete` | signed in | Finish registering a passkey. `201` |
+| `POST` | `/api/admin/mfa/proof/begin` | signed in | Start a passkey check that proves a factor before one is added or removed |
 | `POST` | `/api/admin/mfa/webauthn/auth/begin` | signed in | Start a passkey step-up check |
 | `POST` | `/api/admin/mfa/webauthn/auth/complete` | signed in | Finish a passkey step-up check |
 | `GET` | `/api/admin/mfa/webauthn/credentials` | signed in | List the person's passkeys |
@@ -303,6 +350,18 @@ On the routes under `/api/admin/mfa`:
 | `429` | `too many verification attempts, try again later` | More than 5 code checks in 5 minutes. |
 | `429` | `account temporarily locked due to too many failed attempts` | 10 failures in a row lock code checks for 30 minutes. |
 
+Adding or removing a factor on an account that already holds one answers these
+codes in the `code` field:
+
+| Status | Code | Cause |
+|---|---|---|
+| `400` | `mfa.totp.current_code_required` | Authenticator setup sent no proof. |
+| `422` | `mfa.totp.current_code_invalid` | Authenticator setup sent a proof that matches no factor the account holds. |
+| `400` | `mfa.webauthn.proof_required` | Passkey registration or removal sent no proof. |
+| `422` | `mfa.webauthn.proof_invalid` | Passkey registration or removal sent a proof that matches no factor the account holds. |
+| `409` | `mfa.totp.setup_unproven` | The authenticator setup started without proof, before the account held a factor. Start it again. |
+| `409` | `mfa.webauthn.factor_added` | The passkey registration started without proof, and the account gained a factor before it finished. Start it again. |
+
 <details>
 <summary>Every other error</summary>
 
@@ -315,6 +374,8 @@ On the routes under `/api/admin/mfa`:
 | `403` | `admin-reset requires platform-level super_admin (no tenant scope)` | A super admin acting in one tenant called the reset. |
 | `503` | `WebAuthn not configured` | A passkey route was called while passkeys cannot run. |
 | `402` | `payment_required` | Registering a passkey, or marking one as the backup key, without `mfa-pro`. |
+| `404` | `no passkey is registered on this account` | A passkey proof was started on an account with no passkey. |
+| `503` | `failed to delete credential` | Removing a passkey failed on the server. Nothing was removed, so try again. |
 
 </details>
 

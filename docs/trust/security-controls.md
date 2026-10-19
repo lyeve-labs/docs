@@ -373,6 +373,36 @@ each to a destination that administrator chose:
   Transcripts are stored in your database under the retention window you set,
   and are covered by tenant deletion and by subject export and erasure.
 
+## Where outbound requests may go
+
+Webhooks, flows, identity providers, JWKS fetches and alert channels resolve
+the host they call and refuse an address in any of these ranges:
+
+| Range | What it is |
+|---|---|
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | Private networks |
+| `100.64.0.0/10` | Shared address space, used by carrier NAT, Tailscale and some cloud metadata services |
+| `127.0.0.0/8`, `::1/128` | Loopback |
+| `169.254.0.0/16`, `fe80::/10` | Link-local, where cloud metadata services answer |
+| `0.0.0.0/8`, `::/128` | This network, and the unspecified address |
+| `224.0.0.0/4`, `ff00::/8` | Multicast |
+| `240.0.0.0/4` | Reserved |
+| `fc00::/7` | IPv6 unique local |
+| `::/96`, `::ffff:0:0:0/96` | IPv6 forms that carry an IPv4 address |
+| `64:ff9b:1::/48` | Local-use NAT64 |
+
+A NAT64 address under `64:ff9b::/96`, or a 6to4 address under `2002::/16`, is
+judged by the IPv4 address it carries, so `64:ff9b::a9fe:a9fe` is refused as
+`169.254.169.254` while the NAT64 form of a public address passes. A
+network-specific NAT64 prefix is not recognized, so its addresses are judged as
+plain IPv6.
+
+An install that reaches its own services over Tailscale sets
+`LYEVE_OUTBOUND_ALLOW_CGNAT=true` to allow `100.64.0.0/10` for every tenant.
+[Email](../features/email.md) runs its own check and reads
+`SMTP_ALLOWED_PRIVATE_NETWORKS` instead, so a relay in that range needs
+`100.64.0.0/10` listed there.
+
 ## Not yet
 
 - **SOC 2.** LyEve has no SOC 2 report.

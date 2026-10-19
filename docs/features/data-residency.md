@@ -161,6 +161,10 @@ the region. `is_default` marks the default region, and marking one clears the
 mark from the others. `PUT` also takes `enabled`. Only enabled regions are
 listed publicly.
 
+A region with `enabled: false` is closed to new tenants. Assigning a tenant to
+it answers `409` with the code `data_residency.region_closed`, even for a
+tenant already there. Tenants already assigned to it keep their assignment.
+
 An admin can read and set their own tenant's region. A super admin can do it for
 any tenant. `GET /api/admin/tenants/{id}/region` returns the assignment, or `404`
 with `no region assigned`.
@@ -239,6 +243,7 @@ Replica and migration entries are records you keep, and they move no data.
 | `400` | `invalid status: must be one of syncing, synced, failed, paused` | Unknown replication status. |
 | `404` | `region not found`, `no region assigned`, `replication not found`, `migration not found` | Wrong id. |
 | `409` | `region with slug "<slug>" already exists` | Duplicate slug. |
+| `409` | `This region is closed to new tenants.`, with the code `data_residency.region_closed` | The region is not enabled. |
 | `503` | `cannot determine the tenant's data region` | The tenant's region could not be read during a write. |
 
 </details>

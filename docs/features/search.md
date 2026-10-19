@@ -53,7 +53,7 @@ from the console step by step.
 
 | Part | What it does |
 |---|---|
-| Index | Every entry's title, body and tags, kept up to date as entries change. On PostgreSQL the tags are searched too. On MySQL and SQL Server only the title and the body are. |
+| Index | Every entry's title, body and tags, kept up to date as entries change. On PostgreSQL the tags are searched too. On MySQL and SQL Server only the title and the body are, matched with `LIKE` and no full-text index, so each search reads every entry and takes longer as entries grow. An external search engine keeps its own index. On SQL Server the instance logs this once at start. |
 | Full-text search | Ranks entries by how well they match, with filters, facets and marked snippets. Admins search every status. |
 | Instant search | Titles that match what the reader has typed so far, published entries only. |
 | Public search | Published entries of the content types you list, for anyone, on your tenant's own host. |
