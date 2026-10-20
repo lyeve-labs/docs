@@ -73,7 +73,7 @@ first account, created at setup, is one of the three. Editors and viewers never
 count. A license that is `active` or in `grace` lifts that
 ceiling, whatever names it carries. Creating a fourth admin, promoting an account
 to either role, or granting a membership with either role answers
-`{"error": "cap_exceeded", "cap": "admin.seats", "limit": 3, "current": 3, "upgrade_url": ""}`.
+`{"error": "cap_exceeded", "cap": "admin.seats", "limit": 3, "current": 3, "upgrade_url": "https://app.lyeve.com/pricing?plan=starter&utm_campaign=admin.seats&utm_medium=product&utm_source=admin"}`.
 When a license lapses, every admin keeps their role and keeps signing in.
 
 Every install also holds these capabilities, which are about where a free
@@ -98,8 +98,11 @@ names it, and nothing you already hold is taken away. Only the next object is
 refused:
 
 ```json
-{"error": "cap_exceeded", "cap": "rbac.roles", "limit": 3, "current": 3, "upgrade_url": ""}
+{"error": "cap_exceeded", "cap": "rbac.roles", "limit": 3, "current": 3, "upgrade_url": "https://app.lyeve.com/pricing?skus=plugin-rbac-pro&utm_campaign=rbac.roles&utm_medium=product&utm_source=admin"}
 ```
+
+`upgrade_url`, repeated in the `X-Upgrade-URL` header, opens the pricing page on
+the plan or the add-on that lifts that ceiling.
 
 ## What a license adds
 

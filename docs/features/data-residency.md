@@ -163,7 +163,10 @@ listed publicly.
 
 A region with `enabled: false` is closed to new tenants. Assigning a tenant to
 it answers `409` with the code `data_residency.region_closed`, even for a
-tenant already there. Tenants already assigned to it keep their assignment.
+tenant already there. Tenants already assigned to it keep their assignment. A
+closed region cannot be the default: marking a closed region `is_default`, or
+closing the default region, answers `400`. Make another region the default
+first.
 
 An admin can read and set their own tenant's region. A super admin can do it for
 any tenant. `GET /api/admin/tenants/{id}/region` returns the assignment, or `404`
@@ -239,6 +242,7 @@ Replica and migration entries are records you keep, and they move no data.
 | Status | Message | Cause |
 |---|---|---|
 | `400` | `slug is required`, `display_name is required` | Region created without them. |
+| `400` | `a closed region cannot be the default` | A closed region marked `is_default`, or the default region closed. |
 | `400` | `region_id is required`, `to_region_id is required` | Assignment or migration without a region. |
 | `400` | `invalid status: must be one of syncing, synced, failed, paused` | Unknown replication status. |
 | `404` | `region not found`, `no region assigned`, `replication not found`, `migration not found` | Wrong id. |

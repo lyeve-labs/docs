@@ -57,7 +57,7 @@ created or changed. For a content type named `post`:
 
 | Field | Arguments | Returns |
 |-------|-----------|---------|
-| `post` | `limit` (default 50, 1 to 500), `offset`, `where`, `locale` | A list of `Post` |
+| `post` | `limit` (default 50, 1 to 500), `offset`, `where`, `locale` | A list of `Post`, newest first |
 | `post_one` | `id`, `locale` | One `Post`, or `null` when it does not exist |
 | `createPost` | `input` | The created `Post` |
 | `updatePost` | `id`, `input` | The updated `Post`, or `null` when it does not exist |
@@ -229,13 +229,18 @@ subprotocol, the protocol of the `graphql-ws` client library. A connection that
 does not offer it is closed with `1008` right after the upgrade.
 
 - Authenticate the upgrade request itself, with an `Authorization` header or
-  the session cookie, like any other call. Then send `connection_init` with an
-  empty payload, and the server answers `connection_ack`.
+  the session cookie, like any other call, and send `connection_init` with an
+  empty payload. A client that cannot set a header on the upgrade sends
+  `{"Authorization": "Bearer <token>"}` as the first `connection_init`
+  payload instead. The server answers `connection_ack`.
 - The upgrade needs an `Origin` header that is in `CORS_ORIGINS` or matches the
   instance's own host, or it is refused with `403 origin not allowed`.
 - The socket carries subscriptions only. A query or a mutation sent over it is
   refused with an `error` message whose `extensions.code` is
   `OPERATION_NOT_SUPPORTED`. Send those as a POST to `/api/v1/graphql`.
+- One socket runs at most 32 subscriptions at once. One more is refused with
+  an `error` message whose `extensions.code` is `TOO_MANY_SUBSCRIPTIONS`, and
+  the others carry on. Complete one before you start another.
 - With `GRAPHQL_REQUIRE_PERSISTED=true`, a subscription has to be an approved
   persisted query too. See
   [Lock clients to persisted queries](#lock-clients-to-persisted-queries).

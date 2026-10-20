@@ -126,6 +126,11 @@ the content type, so a `null` or empty value for a required field answers `422` 
 value another entry holds answers `409`. A rule that spans fields is checked against the stored
 entry with the update laid over it, whenever the body names one of its fields.
 
+An update, or a restored revision, never changes an entry's `_status`. A `_status` in an update
+body is left out, so a client that writes back a body it read earlier cannot publish an entry an
+editor has since taken back to draft. Move an entry between draft and published with the
+`publish` and `unpublish` routes.
+
 ### Serve a content type over some transports only
 
 A content type is served over REST, and over [GraphQL](../features/graphql-api.md) and

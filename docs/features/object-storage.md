@@ -310,6 +310,7 @@ choose which features start, include `storage`. See
 | Status | Message | Cause |
 |---|---|---|
 | `400` | `content_length is required (no server-side max configured)` | Send `content_length`, or set `MAX_PRESIGN_UPLOAD_BYTES`. |
+| `400` | `key contains a '.' segment` | A presigned or multipart upload named a key with a `.` segment, such as `reports/./q3.pdf`. An object already stored under such a key stays readable and removable. |
 | `400` | `storage: endpoint SSRF blocked: ...` | The endpoint resolves to a private or internal address. |
 | `400` | `storage: an Azure endpoint must not carry a SAS token or any other query, so put the account key in the provider's key fields` | An `azure_blob` endpoint holds a `?`. Nothing is saved. |
 | `501` | `failed to generate presigned upload URL` | The chosen provider is local, which cannot presign. |

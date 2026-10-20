@@ -289,6 +289,8 @@ All routes need an admin and act on the caller's tenant.
 
 | Status | Message | Cause |
 |---|---|---|
+| `400` | `headers name the same header more than once` | A create or update listed one header twice, in any mix of capitals. |
+| `400` | `a secret cannot be the mask a read returns` | A create sent `***`, the mask a read shows, as a token, a password or a sensitive header. |
 | `400` | `name is required` | The probe has no name. |
 | `400` | `type must be one of: health_check, api_canary, login_flow, webhook_delivery` | Unknown type. |
 | `400` | `url is required for health_check probes` | A required setting for the type is missing. Each type names its own. |

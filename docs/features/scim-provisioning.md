@@ -215,7 +215,7 @@ You need a super admin token in `TOKEN`. The
 | `bearer_token` | The token the directory sends as `Authorization: Bearer <token>`, at least 32 characters | required |
 | `saml_provider_id` | The [SAML provider](saml-sso.md) the same directory signs users in through | none |
 | `attribute_map` | Which SCIM attributes feed `userName`, `displayName`, `externalId`, `active` and `groups` | each attribute maps to itself |
-| `deprovision_action` | What a SCIM delete does: `disable` marks the user inactive and is meant to clear the account's roles (see the caution above), `delete` removes the LyEve account. Any value other than `disable` deletes | `disable` |
+| `deprovision_action` | What a SCIM delete does: `disable` marks the user inactive and is meant to clear the account's roles (see the caution above), `delete` removes the LyEve account. Any other value answers `400` | `disable` |
 
 With `saml_provider_id` set, the first SAML sign-in of a provisioned user
 creates their LyEve account.
@@ -308,6 +308,7 @@ before SCIM reads the request.
 | `400` | `bearer_token must be at least 32 characters` | A new connection's token is shorter than 32 characters. |
 | `400` | `new_token must be at least 32 characters` | A rotation's new token is shorter than 32 characters. |
 | `400` | `invalid saml_provider_id` | The id is not a UUID. |
+| `400` | `deprovision_action must be disable or delete` | A connection named another action. |
 | `404` | `provider not found` | No connection with that id in the tenant. |
 | `404` | `The requested endpoint does not exist.` | The instance started without a license that carries `scim`. |
 | `402` | `payment_required` | The license stopped carrying `scim` while the instance was running. |

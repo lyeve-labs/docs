@@ -164,6 +164,10 @@ holds several content types, only the rows of `content_type` are imported.
   link-local addresses are refused, after a redirect too. The fetch gives up after 60 seconds
   and follows at most three redirects. The job keeps the address without its query string, so
   a signed link's signature is not stored.
+- An import for any tenant but the default one holds a database connection of its own while it
+  runs. On an install whose `DATABASE_MAX_CONNECTIONS` is below 4 (the default is 25), such an
+  import answers `409` and nothing is imported. A running import that cannot confirm its tenant
+  still exists ends failed with `the import could not confirm its tenant`.
 
 ### A file over 50 MiB
 
@@ -323,6 +327,7 @@ call them. `{id}` is the job id.
 | `404` | `import job not found` |
 | `409` | `job is already <status>` on cancel |
 | `409` | `only completed jobs can be rolled back (current status: <status>)` |
+| `409` | `imports for a tenant need DATABASE_MAX_CONNECTIONS of at least 4` |
 | `413` | `Request body exceeds the 70953644 byte limit.`, for a request over 70,953,644 bytes |
 | `413` | `decoded file exceeds maximum size of 52428800 bytes` |
 | `413` | `request body too large`, for a chunked request that runs past 70,953,644 bytes |

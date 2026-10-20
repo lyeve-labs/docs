@@ -305,6 +305,11 @@ curl -X POST http://localhost:3001/api/admin/retention-policies \
 everything. `retention_days` defaults to `365` when you leave it out. An
 explicit `0` deletes matching entries on the next run.
 
+Each archive is a CSV object under
+`<archival_path_prefix>/<event_type>/<time>/policy-<id>-<run id>.csv`, where
+`<time>` reads like `20261020-030000` in UTC. The run id keeps two runs in the
+same second from writing one object.
+
 Create a hold:
 
 ```bash

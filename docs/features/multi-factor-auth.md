@@ -370,6 +370,7 @@ codes in the `code` field:
 | `429` | `too many setup attempts, try again later` | More than 3 setup calls in an hour. |
 | `400` | `no pending TOTP enrollment` | Verify was called before setup on an account that never started enrollment. After a turn-off, the same call answers `503` with `mfa verification error`. |
 | `400` | `MFA not enabled` | Disable or regenerate was called on an account without MFA. |
+| `409` | `The authenticator setup changed while this code was checked. Start setup again.` | Another setup, verify or turn-off changed the pending key while TOTP verify checked the code. |
 | `401` | `The MFA challenge has expired. Please log in again.` | The challenge was used already or ran out. |
 | `403` | `admin-reset requires platform-level super_admin (no tenant scope)` | A super admin acting in one tenant called the reset. |
 | `503` | `WebAuthn not configured` | A passkey route was called while passkeys cannot run. |
