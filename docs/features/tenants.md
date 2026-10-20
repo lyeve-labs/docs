@@ -32,6 +32,8 @@ tenant, `default`. With a license you create as many as your plan allows.
 
 ## How a request picks its tenant
 
+![Four requests reach one instance with three tenants. The visitor's domain, the app's API key, the editor's membership and the super admin's X-Tenant-ID header each pick one tenant.](images/tenant-resolution.svg)
+
 Every request runs in exactly one tenant, decided before it is handled:
 
 | Caller | Tenant the request runs in |

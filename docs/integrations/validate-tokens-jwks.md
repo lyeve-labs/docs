@@ -15,6 +15,8 @@ key once, caches it, and verifies tokens itself. This is the pattern OIDC
 providers use, so a library that validates Google or Auth0 tokens works here
 too.
 
+![Your app signs in and sends the token to your service. The service fetches the key set from the engine once, caches it, and verifies each token itself.](images/token-validation.svg)
+
 :::tip[Best for]
 - **An API of your own behind LyEve.** Accept the same token the admin console
   holds, and read the caller's roles and tenant from it.

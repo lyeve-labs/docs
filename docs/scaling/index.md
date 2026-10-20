@@ -62,6 +62,8 @@ token you present.
 
 ### What is per replica and what is shared
 
+![A load balancer spreads requests over three engine replicas. They share the database, Redis for sessions, caches and limits, and object storage for media.](images/replicas.svg)
+
 | State | Across replicas |
 |---|---|
 | Token signing key | Per replica unless every replica has the same key file. |

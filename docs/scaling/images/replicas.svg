@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="496" viewBox="0 0 720 496">
+  <title>What each replica keeps and what the replicas share</title>
+  <desc>A load balancer spreads requests over three engine replicas. Each replica keeps its own profiler, logs held in memory and concurrency settings. Every replica shares the database, which holds content and settings, schema changes and license renewals, and makes each job run on one replica. With Redis set up for each feature, they also share sessions and lockouts, the response cache, idempotency keys, per-IP rate limits and realtime fan-out, which are otherwise per replica. Object storage on S3, GCS or Azure Blob shares uploaded media, which local disk keeps per replica. With replication, the cluster license feature, cache and job changes reach every replica within about a second. Mount one signing key file on every replica, so a token from one replica is valid on all.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .note, .frame-label { font-size: 13px; fill: #525866; }
+    .item { font-size: 13px; fill: #111827; }
+    .warn { font-size: 13px; fill: #904207; }
+    .node { fill: #f6f7f9; stroke: #767d8e; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .frame { fill: none; stroke: #767d8e; stroke-dasharray: 5 4; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text, .item { fill: #e6e8ee; }
+      .sub, .note, .frame-label { fill: #9aa1ad; }
+      .warn { fill: #f59e0b; }
+      .node { fill: #162233; stroke: #616d80; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .frame { stroke: #616d80; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="496"/>
+
+  <rect class="node" x="280" y="12" width="160" height="40" rx="8"/>
+  <text class="title" x="360" y="37" text-anchor="middle">Load balancer</text>
+  <path class="edge" d="M360 52V68M130 68H590"/>
+  <path class="edge" d="M130 68V100" marker-end="url(#head)"/>
+  <path class="edge" d="M360 68V100" marker-end="url(#head)"/>
+  <path class="edge" d="M590 68V100" marker-end="url(#head)"/>
+
+  <rect class="node-brand" x="40" y="100" width="180" height="52" rx="8"/>
+  <text class="title" x="130" y="122" text-anchor="middle">Engine</text>
+  <text class="sub" x="130" y="141" text-anchor="middle">replica 1</text>
+  <rect class="node-brand" x="270" y="100" width="180" height="52" rx="8"/>
+  <text class="title" x="360" y="122" text-anchor="middle">Engine</text>
+  <text class="sub" x="360" y="141" text-anchor="middle">replica 2</text>
+  <rect class="node-brand" x="500" y="100" width="180" height="52" rx="8"/>
+  <text class="title" x="590" y="122" text-anchor="middle">Engine</text>
+  <text class="sub" x="590" y="141" text-anchor="middle">replica 3</text>
+
+  <path class="edge" d="M130 204H590"/>
+  <path class="edge" d="M130 152V228" marker-end="url(#head)"/>
+  <path class="edge" d="M360 152V228" marker-end="url(#head)"/>
+  <path class="edge" d="M590 152V228" marker-end="url(#head)"/>
+
+  <rect class="node" x="22" y="228" width="216" height="184" rx="8"/>
+  <text class="title" x="38" y="254">Database</text>
+  <text class="sub" x="38" y="272">required</text>
+  <text class="item" x="38" y="298">Content and settings</text>
+  <text class="item" x="38" y="317">Schema changes</text>
+  <text class="item" x="38" y="336">License renewals</text>
+  <text class="item" x="38" y="355">Jobs run on one replica</text>
+
+  <rect class="node" x="252" y="228" width="216" height="184" rx="8"/>
+  <text class="title" x="268" y="254">Redis</text>
+  <text class="sub" x="268" y="272">optional, set per feature</text>
+  <text class="item" x="268" y="298">Sessions and lockouts</text>
+  <text class="item" x="268" y="317">Response cache</text>
+  <text class="item" x="268" y="336">Idempotency keys</text>
+  <text class="item" x="268" y="355">Per-IP rate limits</text>
+  <text class="item" x="268" y="374">Realtime fan-out</text>
+  <text class="warn" x="268" y="398">Otherwise per replica</text>
+
+  <rect class="node" x="482" y="228" width="216" height="184" rx="8"/>
+  <text class="title" x="498" y="254">Object storage</text>
+  <text class="sub" x="498" y="272">S3, GCS or Azure Blob</text>
+  <text class="item" x="498" y="298">Uploaded media</text>
+  <text class="warn" x="498" y="398">Local disk is per replica</text>
+
+  <text class="note" x="22" y="440">Each replica keeps its own profiler, logs held in memory and concurrency settings.</text>
+  <text class="note" x="22" y="460">With replication (the cluster feature), cache and job changes reach every replica in a second.</text>
+  <text class="note" x="22" y="480">Mount one signing key file on every replica, so a token from one replica is valid on all.</text>
+</svg>

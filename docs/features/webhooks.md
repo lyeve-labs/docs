@@ -64,6 +64,8 @@ your endpoint receives and the retry policy.
 
 ## How it works
 
+![After an entry is saved, each matching webhook sends a POST to its URL. A 2xx is delivered, a failure is retried after growing waits, and a delivery that runs out of attempts waits in the dead-letter queue.](images/webhook-delivery.svg)
+
 | Step | What happens |
 |---|---|
 | Change | An entry is created, updated or deleted, and the write is saved. |
