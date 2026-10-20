@@ -4,6 +4,19 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.5.0] - 2026-10-20
+
+### Added
+
+- Eight pages carry a diagram beside the text it explains: how the quickstart stack routes requests, which API a caller uses, how an entry moves between draft, published and archived, how a flow runs, what happens to a webhook delivery, how a request picks its tenant, what replicas share, and how a service verifies a token. Each one follows the site's light or dark theme and says where a step needs a license.
+
+### Fixed
+
+- The tenants page said an `X-Tenant-ID` header from anyone but a super admin is ignored. An admin token that names another tenant is refused with a 403.
+- The webhooks page gives the 30 seconds a retry or a replay has to answer, and says that replaying or dismissing a dead letter needs `webhook-pro`.
+- The scaling page names the response cache, says that a job saved on another replica reaches the schedule within about a second only with replication, and says that broker delivery is at least once.
+- The token validation page said a service stops accepting tokens signed with the old key as soon as the key is rotated. A service keeps accepting such a token until it expires or the service fetches the key set again.
+
 ## [0.4.0] - 2026-10-20
 
 ### Added
