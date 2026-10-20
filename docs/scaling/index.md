@@ -68,7 +68,7 @@ token you present.
 |---|---|
 | Token signing key | Per replica unless every replica has the same key file. |
 | Sessions, sign-in lockouts and two-factor limits | Per replica unless `CACHE_DRIVER=redis` and `REDIS_URL` are set. Per replica, a refresh that reaches another replica answers `401` and signs the user out, N replicas admit N times the failed sign-in and two-factor limits, and a restart lifts a lockout. With Redis, replicas share one limit, a restart keeps a lockout, and a sign-in is refused while Redis cannot be read. The boot log's `refresh token store` line says which applies. |
-| Content cache | Per replica unless `CACHE_DRIVER=redis`. See [caching](../features/caching.md). |
+| Response cache | Per replica unless `CACHE_DRIVER=redis`. See [caching](../features/caching.md). |
 | Idempotency keys | Per replica unless `REDIS_URL` reaches a Redis at start. See [idempotent requests](../features/idempotent-requests.md). |
 | Per-IP rate limit | Per replica unless `RATE_LIMIT_BACKEND=redis`, which counts in Redis at `RATE_LIMIT_REDIS_URL`, or `REDIS_URL` when that is unset. Per replica, N replicas admit N times the limit. See [rate limiting](../features/rate-limiting.md). |
 | Realtime fan-out | Per replica unless `REALTIME_BACKEND=redis`, which relays events through `REALTIME_REDIS_URL`, or `REDIS_URL` when that is unset. Per replica, a client hears only what its own replica published. The `Last-Event-ID` resume buffer stays per replica. See [realtime](../features/realtime.md). |
@@ -76,9 +76,9 @@ token you present.
 | Schema changes | Shared. Every replica sees a schema change within about a second. |
 | Permission, content and query caches | Shared within about a second with [replication](../features/replication.md), which needs a license with the `cluster` feature. Without it a change reaches other replicas when their cache entries expire. |
 | License renewals | Shared. A renewal is stored in the database, and a replica that starts later applies it at boot. A newer key in `LYEVE_LICENSE_KEY` wins. |
-| Scheduled jobs | One replica runs the schedule at a time. A job created on any replica reaches the schedule within about a second. |
+| Scheduled jobs | One replica runs the schedule at a time. With [replication](../features/replication.md), a job saved on any replica reaches the schedule within about a second. Without it, a job saved on another replica waits until a job is saved on the replica running the schedule, or that replica restarts. |
 | Webhook retries, scheduled publishing, synthetic probes and data export schedules | Each run happens on one replica. |
-| Message broker relay | One replica publishes at a time, and each event is published once. See [message broker events](../features/message-broker-events.md). |
+| Message broker relay | One replica publishes at a time. Delivery is at least once, so deduplicate on `event_id`. See [message broker events](../features/message-broker-events.md). |
 | Profiler, logs held in memory, concurrency settings | Per replica. Each replica answers for itself. |
 
 ### Migrations and schema changes

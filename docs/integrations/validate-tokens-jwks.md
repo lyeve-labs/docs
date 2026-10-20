@@ -247,10 +247,11 @@ unknown `kid`.
 The signing key lives in the file at `JWT_KEY_PATH`
 (`/var/lib/lyeve/jwt_key.json` by default), and LyEve creates it on first
 start when the file is missing. To rotate, replace the file and restart. The
-instance verifies with one key at a time, so every token signed with the old
-key stops working, at the instance and at your services: people sign in again,
-and new tokens carry the new `kid`. A service that fetches the key set again
-on an unknown `kid` picks up the new key without a change.
+instance verifies with one key at a time, so it refuses every token signed
+with the old key, and new tokens carry the new `kid`. A service that fetches
+the key set again on an unknown `kid` picks up the new key without a change.
+A service keeps accepting a token signed with the old key until the token
+expires or the service fetches the key set again.
 
 ## Related
 
