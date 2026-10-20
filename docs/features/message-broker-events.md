@@ -196,7 +196,7 @@ counters cover the whole instance, not one tenant.
 | Field | Meaning |
 |---|---|
 | `backend` | `nats`, `kafka`, `rabbitmq`, or empty or `noop` when nothing is configured |
-| `connected` | Whether a publisher is set up. It reads `true` with no broker too. |
+| `connected` | For Kafka, whether a broker answered within two seconds of this read. For NATS and RabbitMQ, whether a publisher is set up, which reads `true` with no broker too. |
 | `degraded` | The license no longer carries `messagebroker`, so events are dropped on purpose |
 | `target` | Where events go, with credentials removed |
 | `stream`, `topic_prefix` | The NATS stream or the Kafka topic prefix |

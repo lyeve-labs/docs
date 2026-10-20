@@ -17,8 +17,10 @@ are the people who can sign in.
 :::tip[Best for]
 - **Onboarding without tickets.** A new hire assigned to the LyEve app in your
   directory has an account before their first sign-in.
-- **Offboarding from one place.** With `"deprovision_action": "delete"`, a
-  user the directory deletes loses their LyEve account.
+- **Offboarding from one place.** A user the directory deactivates or removes
+  is refused at SAML sign-in, password reset and magic link from that moment,
+  and their sessions end. With `"deprovision_action": "delete"`, a user the
+  directory deletes loses their LyEve account.
 - **Several directories on one instance.** Each connection has its own token
   and sees only the users and groups it created.
 :::
@@ -60,9 +62,28 @@ What you can rely on:
 - Each connection authenticates with its own bearer token, and sees only the
   users and groups it created.
 - A connection belongs to the tenant it was created in, and everything it
-  provisions lands in that tenant.
+  provisions lands in that tenant. An account it creates belongs to that
+  tenant alone, so an address another tenant holds is a separate account
+  there. See
+  [accounts a tenant's provider creates](../integrations/oauth-sso.md#accounts-a-tenants-provider-creates).
+- Deactivating a user (`"active": false`) or removing one disables the account
+  and ends its sessions at once, whatever the tenant's
+  [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider)
+  says. This is the way to remove access immediately. Reactivating the user
+  enables the account again.
+- A SAML sign-in through a connection never signs in an account that holds
+  `super_admin`.
 - LyEve stores a hash of each token, never the token.
 - A SCIM `password` attribute is never stored.
+- A user whose address already has an account is linked to that account, unless the account holds `admin` or `super_admin` in any tenant.
+  Then the create answers `409` with `scimType` `uniqueness`, the same answer
+  as any duplicate, and nothing is stored. An account is linked to one
+  directory user at most.
+- The directory never deactivates, reactivates or deletes an account that
+  holds `admin` or `super_admin`, including one promoted after it was linked.
+  A change to `active`, or a delete on a connection with
+  `"deprovision_action": "delete"`, answers `409` before the directory's copy
+  of the user changes.
 
 ## Turn it on
 
@@ -191,10 +212,10 @@ You need a super admin token in `TOKEN`. The
 | Field | Meaning | Default |
 |---|---|---|
 | `name` | A name for the connection | required |
-| `bearer_token` | The token the directory sends as `Authorization: Bearer <token>` | required |
+| `bearer_token` | The token the directory sends as `Authorization: Bearer <token>`, at least 32 characters | required |
 | `saml_provider_id` | The [SAML provider](saml-sso.md) the same directory signs users in through | none |
 | `attribute_map` | Which SCIM attributes feed `userName`, `displayName`, `externalId`, `active` and `groups` | each attribute maps to itself |
-| `deprovision_action` | What a SCIM delete does: `disable` marks the user inactive and is meant to clear the account's roles (see the caution above), `delete` removes the LyEve account. Any value other than `disable` deletes | `disable` |
+| `deprovision_action` | What a SCIM delete does: `disable` marks the user inactive and is meant to clear the account's roles (see the caution above), `delete` removes the LyEve account. Any other value answers `400` | `disable` |
 
 With `saml_provider_id` set, the first SAML sign-in of a provisioned user
 creates their LyEve account.
@@ -208,7 +229,8 @@ curl -X POST http://localhost:3001/api/admin/scim/providers/$PROVIDER_ID/rotate 
   -d '{"new_token": "'"$(openssl rand -hex 32)"'"}'
 ```
 
-The answer is `{"bearer_token": "<the new token>"}`. The old token stops
+The new token needs at least 32 characters, as a new connection's does. The
+answer is `{"bearer_token": "<the new token>"}`. The old token stops
 working at once, so update the identity provider right after.
 
 ## What the directory calls
@@ -272,6 +294,8 @@ before SCIM reads the request.
 |---|---|---|
 | `401` | `invalid provider credentials` | The directory sent no token or an unknown one. |
 | `404` | `user not found` | The user does not exist, or another connection created it. |
+| `409` | `user already exists` | Another user holds the same identity, the address belongs to an account that holds `admin` or `super_admin`, or another directory user already links that account. |
+| `409` | `the user's account is one the directory cannot manage` | The change would deactivate, reactivate or delete an account that holds `admin` or `super_admin`. |
 | `415` | `unsupported media type, expected application/json or multipart/form-data` | The body was sent as `application/scim+json` or another type. |
 
 <details>
@@ -281,7 +305,10 @@ before SCIM reads the request.
 |---|---|---|
 | `400` | `name is required` or `bearer_token is required` | A connection field is missing. |
 | `400` | `new_token is required` | A rotation had no new token. |
+| `400` | `bearer_token must be at least 32 characters` | A new connection's token is shorter than 32 characters. |
+| `400` | `new_token must be at least 32 characters` | A rotation's new token is shorter than 32 characters. |
 | `400` | `invalid saml_provider_id` | The id is not a UUID. |
+| `400` | `deprovision_action must be disable or delete` | A connection named another action. |
 | `404` | `provider not found` | No connection with that id in the tenant. |
 | `404` | `The requested endpoint does not exist.` | The instance started without a license that carries `scim`. |
 | `402` | `payment_required` | The license stopped carrying `scim` while the instance was running. |

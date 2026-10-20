@@ -57,7 +57,7 @@ created or changed. For a content type named `post`:
 
 | Field | Arguments | Returns |
 |-------|-----------|---------|
-| `post` | `limit` (default 50, 1 to 500), `offset`, `where`, `locale` | A list of `Post` |
+| `post` | `limit` (default 50, 1 to 500), `offset`, `where`, `locale` | A list of `Post`, newest first |
 | `post_one` | `id`, `locale` | One `Post`, or `null` when it does not exist |
 | `createPost` | `input` | The created `Post` |
 | `updatePost` | `id`, `input` | The updated `Post`, or `null` when it does not exist |
@@ -89,9 +89,16 @@ Every type has `id` and, when the content type keeps them, `created_at` and
 | `uid` | `ID` |
 | every other type, such as `text`, `rich_text`, `email`, `url` and `media` | `String` |
 
-A required field is non-null. A `belongs_to` relation appears as
-`<field>_id`, the related entry's id, and can be filtered. Every type also has
-`resolved_locale`, set when the read asked for a locale.
+Every content field is nullable on output, required ones included, because an
+access rule can hide any field, and a hidden field reads as `null`. If you
+generate typed clients from the schema, generate them again. A required field
+is non-null in a create input unless it declares a `default`. Every field of
+an update input is optional. A `belongs_to` relation appears as
+`<field>_id`, the related entry's id, and can be filtered. A create or update
+input sets it under the same `<field>_id`, so an entry you read can be written
+back as it reads. A relation kept on the other content type, such as
+`has_many`, is not part of an input. Every type also has `resolved_locale`,
+set when the read asked for a locale.
 
 A content type's `transports` block decides whether GraphQL serves it: `r`
 gives queries only, `w` mutations only, and `off` removes the type from the
@@ -177,6 +184,30 @@ soft delete, `delete` sets `deleted_at` instead of removing the row, and
 its own gets no `create` mutation. Queries
 and mutations only reach the caller's tenant.
 
+Creates and updates follow the content type's validation rules, as REST writes
+do. A create fills in each field's `default` first, so a required field with a
+default can be left out. An update checks only the fields it sets, and checks a
+rule across two fields against the stored entry. A refusal answers
+`INVALID_INPUT` with the same message REST gives, `field` and `rule` beside the
+code, and every failure under `extensions.validation`, each with `field`,
+`rule`, `code` and `message`.
+
+To clear a field, send `null` for it in a variable. A field the input leaves
+out keeps its value, and a required field refuses `null` with `INVALID_INPUT`.
+A `null` written in the query text is refused as a syntax error, so pass it in
+a variable:
+
+```bash
+curl -X POST http://localhost:3002/api/v1/graphql \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation($id: ID!, $input: PostUpdateInput!) { updatePost(id: $id, input: $input) { id body author_id } }", "variables": {"id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "input": {"body": null, "author_id": null}}}'
+```
+
+```json
+{ "data": { "updatePost": { "id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "body": null, "author_id": null } } }
+```
+
 ## Who may call it
 
 Every `/api/v1/graphql` route needs a signed-in caller or an API key, with the
@@ -194,13 +225,39 @@ same token you use for REST.
 ## Subscribe to changes
 
 Connect a WebSocket to `/api/v1/graphql/ws` with the `graphql-transport-ws`
-subprotocol, the protocol of the `graphql-ws` client library.
+subprotocol, the protocol of the `graphql-ws` client library. A connection that
+does not offer it is closed with `1008` right after the upgrade.
 
 - Authenticate the upgrade request itself, with an `Authorization` header or
-  the session cookie, like any other call. Then send `connection_init` with an
-  empty payload, and the server answers `connection_ack`.
+  the session cookie, like any other call, and send `connection_init` with an
+  empty payload. A client that cannot set a header on the upgrade sends
+  `{"Authorization": "Bearer <token>"}` as the first `connection_init`
+  payload instead. The server answers `connection_ack`.
 - The upgrade needs an `Origin` header that is in `CORS_ORIGINS` or matches the
   instance's own host, or it is refused with `403 origin not allowed`.
+- The socket carries subscriptions only. A query or a mutation sent over it is
+  refused with an `error` message whose `extensions.code` is
+  `OPERATION_NOT_SUPPORTED`. Send those as a POST to `/api/v1/graphql`.
+- One socket runs at most 32 subscriptions at once. One more is refused with
+  an `error` message whose `extensions.code` is `TOO_MANY_SUBSCRIPTIONS`, and
+  the others carry on. Complete one before you start another.
+- With `GRAPHQL_REQUIRE_PERSISTED=true`, a subscription has to be an approved
+  persisted query too. See
+  [Lock clients to persisted queries](#lock-clients-to-persisted-queries).
+- The server answers a `ping` with a `pong` that carries the same payload, so a
+  client's keep-alive works.
+- A subscriber that reads too slowly is dropped, and the server sends
+  `complete` for it. Subscribe again to continue.
+- When the connection itself is at fault, the server closes the socket with the
+  protocol's code, which the `graphql-ws` client reads:
+
+  | Code | Cause |
+  |------|-------|
+  | `4400` | A message the protocol does not allow, such as an unknown `type`. |
+  | `4401` | A `subscribe` before `connection_ack`. |
+  | `4403` | The server refused `connection_init`, such as for a token that does not verify. |
+  | `4409` | A `subscribe` whose `id` is already running. |
+  | `4429` | A second `connection_init`. |
 
 | Subscription | Fires when | Fields |
 |--------------|------------|--------|
@@ -220,10 +277,15 @@ has its own list.
 - An unknown hash answers an error whose `extensions.code` is
   `PERSISTED_QUERY_NOT_FOUND`.
 - With `GRAPHQL_REQUIRE_PERSISTED=true`, a request without a hash answers
-  `PERSISTED_QUERY_REQUIRED`, so only approved operations run.
+  `PERSISTED_QUERY_REQUIRED`. A hash that is not on the list, or that you
+  turned off, answers `PERSISTED_QUERY_NOT_FOUND` even when the text comes
+  with it. Only approved operations run.
 - With `GRAPHQL_ALLOW_AUTO_REGISTER=true`, a client that sends the hash and the
   text together adds the query itself, up to `GRAPHQL_MAX_AUTO_REGISTERED` per
   tenant. Keep it off in production.
+- The same rules hold for subscriptions. Over the WebSocket, put the hash in
+  the `extensions` of the `subscribe` payload, with the text or with an empty
+  `query`.
 
 <details>
 <summary>Persisted query routes</summary>
@@ -264,13 +326,15 @@ mutation {
 - Starting a flow over GraphQL needs `flow-pro`.
 
 A refusal is a GraphQL error whose `extensions.code` is `NOT_FOUND`,
-`PAYMENT_REQUIRED`, `RATE_LIMITED`, `LOOP_DETECTED`, `BAD_USER_INPUT` (input
+`PAYMENT_REQUIRED`, `RATE_LIMITED`, `LOOP_DETECTED`, `INVALID_INPUT` (input
 is not an object) or `UNAVAILABLE`.
 
 The `graphql.query` node runs a query against the tenant's own schema from a
 flow, with `query`, `variables` and `operation_name`, and outputs
 `{ data, errors }`. It refuses mutations, so writes from a flow go through its
-content node.
+content node. When the schema cannot be read, as while the database is down,
+the step fails with `the GraphQL schema is unavailable`, and the flow can run
+again later.
 
 ## Settings
 
@@ -303,6 +367,20 @@ Errors arrive as `{"errors": [{"message": "..."}]}`.
 | `403` | `mutation requires editor, admin, or super_admin role` | A viewer sent a mutation. |
 | `415` | `unsupported media type, expected application/json or multipart/form-data`, or `Content-Type must be application/json` | The body is not `application/json`. |
 
+A query or mutation that fails on the content itself still answers `200`, with
+an error whose `extensions.code` says why. The message never names a table, a
+column or the database.
+
+| `extensions.code` | Message | Cause |
+|---|---|---|
+| `INVALID_INPUT` | The rule's message, such as `The field title is required.` | A value breaks a validation rule of the content type. |
+| `INVALID_INPUT` | `a value in the input was refused` | The database refused a value, such as a relation to an entry that does not exist. |
+| `INVALID_INPUT` | `invalid id` | An `id` argument that is not a UUID. |
+| `CONFLICT` | `the input conflicts with an existing entry` | A unique field already holds the value. |
+| `NOT_FOUND` | `content type not found` | The content type has no table, as while it is being deleted. |
+| `UNAVAILABLE` | `content is unavailable` | The database could not be reached. Try again. |
+| `UNAVAILABLE` | `the entry was saved but could not be read back` | The write went through. Read the entry rather than sending the write again. |
+
 <details>
 <summary>Every other error</summary>
 
@@ -313,7 +391,8 @@ Errors arrive as `{"errors": [{"message": "..."}]}`.
 | `400` | `introspection is disabled` | Introspection with `GRAPHQL_INTROSPECTION=off`. |
 | `400` | `invalid request body`, `query is required` | The body does not parse, or has no query. |
 | `200` | code `PERSISTED_QUERY_REQUIRED` | A plain query while persisted queries are required. |
-| `200` | code `PERSISTED_QUERY_NOT_FOUND` | An unknown hash. |
+| `200` | code `PERSISTED_QUERY_NOT_FOUND` | A hash alone that is unknown or turned off. With persisted queries required, also a hash sent with its text that is not on the list or is turned off. |
+| `200` | code `PERSISTED_QUERY_HASH_MISMATCH` | A hash sent with a text it is not the hash of. |
 | `404` | `The requested endpoint does not exist.` | The license does not include `graphql`, so the feature does not start. |
 | `403` | `mutation requires the graphql:write scope` | An API key without write scope sent a mutation. |
 | `404` | `persisted query not found` | A wrong hash on the admin routes. |

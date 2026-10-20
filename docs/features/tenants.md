@@ -212,8 +212,8 @@ is gone.
 :::caution[Cold storage holds the tenant record, not its content]
 `POST /api/admin/tenants/{id}/cold-archive` writes the tenant's record (slug,
 name, plan and dates) as JSON to the configured storage. The tenant must be
-archived first, and today a tenant that is not answers `503` with
-`operation failed`. Restoring from that archive checks the file is readable and
+archived first, and a tenant that is not answers `409` with
+`tenant is not archived`. Restoring from that archive checks the file is readable and
 makes the tenant writable again. It loads no content. To keep a copy of the
 content, export a backup.
 :::
@@ -265,6 +265,17 @@ client builds a tenant switcher.
 
 Granting and revoking need a super admin with a signed-in session. In the
 console, open a tenant under **Operations > Tenants** and use **New member**.
+
+When the domain a sign-in arrives on is mapped to a tenant, that tenant decides
+whose account the address reaches, and `tenant` in the body cannot point it at
+another tenant's account. The field still picks which of the account's own
+memberships the session acts in.
+
+An account that a tenant's identity provider, its SCIM directory or a magic
+link sign-up created belongs to that tenant alone, and the same address can be
+a different account in each tenant. Each tenant also sets how long such an
+account may sign in without its provider. See
+[accounts a tenant's provider creates](../integrations/oauth-sso.md#accounts-a-tenants-provider-creates).
 
 ## Choose what each tenant may use
 
@@ -502,6 +513,7 @@ Every route above except the last needs the `super_admin` role.
 | `409` | `tenant slug already exists` | Choose another slug. |
 | `409` | `slug "<slug>" still holds data from a deleted tenant in: ...` | Purge those rows or choose another slug. |
 | `409` | `that domain is already mapped to a tenant` | Remove the other mapping first. |
+| `409` | `tenant is not archived` | Archive the tenant before a cold archive. |
 
 </details>
 

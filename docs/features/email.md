@@ -191,7 +191,14 @@ SMTP_HOST=localhost
 SMTP_PORT=1025
 SMTP_FROM=noreply@example.com
 SMTP_TLS=false
+SMTP_ALLOWED_PRIVATE_NETWORKS=127.0.0.1,::1
 ```
+
+The relay is checked at every send. Its host is resolved once, and the send
+connects to the address it checked. A relay that resolves to loopback or a
+private network is refused unless `SMTP_ALLOWED_PRIVATE_NETWORKS` lists every
+address its name resolves to. `localhost` resolves to both `127.0.0.1` and
+`::1`, so list both.
 
 `SMTP_TLS=true` uses implicit TLS, usually on port 465. Any other value
 connects in plain text and upgrades with STARTTLS when the relay offers it, so
@@ -237,7 +244,8 @@ apply to both. The example host does not resolve, so put your provider's host
 in its place before you send it. Passwords, API keys and webhook secrets are never returned: send
 a new one on `PUT /api/admin/email/providers/{id}` to rotate it, or leave it
 out to keep it. A host must resolve to a public address unless
-`SMTP_ALLOWED_PRIVATE_NETWORKS` allows it.
+`SMTP_ALLOWED_PRIVATE_NETWORKS` lists every address it resolves to. The same
+check runs at every send, and the send connects to the address it checked.
 
 ### Use any HTTP mail API
 
@@ -451,7 +459,7 @@ the feature's form in the admin console. The environment variable wins.
 | `SMTP_USER`, `SMTP_PASS` | Relay credentials. Leave them out to send unauthenticated. | none |
 | `SMTP_FROM` | Default `From` address, such as `noreply@example.com` or `Name <addr>` | none |
 | `SMTP_TLS` | Exactly `true` for implicit TLS, usually on port 465. Any other value uses STARTTLS when the relay offers it. | `false` |
-| `SMTP_ALLOWED_PRIVATE_NETWORKS` | CIDRs or addresses a provider host may resolve to although they are private | none |
+| `SMTP_ALLOWED_PRIVATE_NETWORKS` | Comma-separated CIDRs or addresses that the relay and provider hosts may resolve to although they are private. Every address a name resolves to must be listed. An entry that does not parse is dropped. | none |
 | `ENCRYPTION_KEY` | Encrypts provider passwords, API keys and webhook secrets at rest | none |
 | `JWT_SECRETS` | The first secret signs click links. Without it, a tracked link answers `500`. | none |
 | `EMAIL_RETENTION_DAYS` | Days kept for sent and failed mail, delivery attempts, webhook events, opens, clicks and bounces. A daily job deletes older rows, and `0` turns it off. | `365` |

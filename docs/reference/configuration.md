@@ -221,6 +221,7 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 |---|---|---|
 | `LYEVE_CONSOLE_URL` | The admin console's public URL, such as `https://admin.example.com`. Password reset and magic-link emails link to pages the console serves, and device sign-in shows its approval page there. It must be an absolute URL with no query or fragment. In production it must be `https`, and while it is unset password reset and magic-link sign-in refuse to start and device sign-in answers `503`. | `http://localhost:5173` outside production |
 | `LYEVE_BASE_URL` | The public base URL of the engine. Features that build an absolute link to it use this value instead of the request's `Host` header: OAuth and SAML callback URLs, data export downloads and file links. Set it in production. | unset |
+| `LYEVE_OUTBOUND_ALLOW_CGNAT` | `true` lets webhooks, flows, identity providers, JWKS fetches and alert channels reach the shared address space `100.64.0.0/10`, which Tailscale hands out, and the NAT64 or 6to4 form of an address in it. It opens the range to every tenant's outbound targets, cloud metadata services in that range included. Email does not read it: list `100.64.0.0/10` in `SMTP_ALLOWED_PRIVATE_NETWORKS` for a relay there. Read once at boot, and the admin console cannot set it. See [where outbound requests may go](../trust/security-controls.md#where-outbound-requests-may-go). | `false` |
 | `TRUSTED_PROXIES` | Comma-separated CIDRs of the reverse proxies in front. `X-Forwarded-For` is honored only from these, so rate limits and audit entries see the real client address. Unset, every request counts as the proxy's. | unset |
 | `CORS_ORIGINS` | Comma-separated origins of the browser apps that call the APIs cross-origin. `*` is refused. | `http://localhost:5173` |
 | `ADMIN_LISTEN_ADDR` | Bind address of the Admin API. | `0.0.0.0:3001` |
@@ -278,8 +279,8 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 |---|---|---|
 | `RATE_LIMIT_RPS` | See [Start here](#start-here). | unset |
 | `RATE_LIMIT_BURST` | Requests a client address may send at once above the steady rate. | twice `RATE_LIMIT_RPS`, at least `1` |
-| `MAX_BODY_BYTES` | Largest request body on any route, in bytes. Sized for uploads. | `10485760` (10 MiB) |
-| `MAX_JSON_BODY_BYTES` | Largest body on JSON routes. Only `Content-Length` is checked, so a chunked request without it meets `MAX_BODY_BYTES` instead. | `1048576` (1 MiB) |
+| `MAX_BODY_BYTES` | Largest request body on a route that sets no limit of its own, in bytes. Sized for uploads. A route that sets its own limit keeps it whatever this is, such as [bulk import](../features/bulk-import.md#a-file-over-50-mib) at 70,953,644 bytes. | `10485760` (10 MiB) |
+| `MAX_JSON_BODY_BYTES` | Largest body on JSON routes. A request without `Content-Length`, such as a chunked one, is cut off once it passes the same size. | `1048576` (1 MiB) |
 
 <details>
 <summary>Per-tenant limits, public routes and load shedding</summary>

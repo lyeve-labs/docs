@@ -77,9 +77,9 @@ one.
        {
          "instance_id": "lyeve-7f4c9b2-1",
          "hostname": "lyeve-7f4c9b2",
-         "started_at": "2026-09-28T04:11:02Z",
-         "last_heartbeat": "2026-09-28T04:19:57Z",
-         "version": "v0.50.4",
+         "started_at": "2026-10-20T04:11:02Z",
+         "last_heartbeat": "2026-10-20T04:19:57Z",
+         "version": "v0.55.0",
          "listen_addr": ":3002",
          "status": "running"
        }

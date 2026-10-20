@@ -138,8 +138,9 @@ shows how to get one) and a content type named `post`, such as the one in
 
 `GET /api/v1/realtime/events`, with `topic` repeated for each topic. The
 `event` field of each message is the topic, and its `id` is what a reconnect
-sends back as `Last-Event-ID`. A comment line keeps the stream open every 30
-seconds.
+sends back as `Last-Event-ID`. A comment line keeps the stream open every 10
+seconds, which is inside the usual idle timeout of a proxy in front of the
+instance.
 
 In a browser signed in to the instance, the session cookie authenticates the
 stream, and the browser sends `Last-Event-ID` itself when it reconnects:
@@ -274,6 +275,9 @@ lists the users, paginated:
   "offset": 0
 }
 ```
+
+The list is a Content API answer, so with [PII masking](pii-masking.md) on,
+each `email` reads `[redacted-email]`.
 
 ## Publish from a flow
 

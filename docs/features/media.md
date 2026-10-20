@@ -85,13 +85,15 @@ get one. Any PNG or JPEG works as `hero.png`.
        "metadata": { "width": 400, "height": 300, "color_depth": 8, "has_alpha": true },
        "tags": ["image"],
        "created_at": "2026-10-02T09:20:09.512818Z",
+       "updated_at": "2026-10-02T09:20:09.512818Z",
        "url": "/api/v1/storage/local/20d35ec0-bd5c-53a3-8111-b122a0d7ba4e?expires=1791019209&key=...&sig=...",
        "public": false
      }
    ]
    ```
 
-   Copy the `id` into `MEDIA_ID`.
+   Copy the `id` into `MEDIA_ID`. `updated_at` is when the item last changed. An item
+   stored before the server recorded it starts at its `created_at`.
 
 2. Read it back with its thumbnails:
 
@@ -238,7 +240,7 @@ infected file is refused with `422`. When ClamAV cannot be reached, the file is 
 | Variable | What it does | Default |
 |---|---|---|
 | `MEDIA_MAX_UPLOAD_BYTES` | Largest file accepted. | `104857600` (100 MiB) |
-| `MAX_BODY_BYTES` | Largest request body the engine accepts, uploads included. | `10485760` (10 MiB) |
+| `MAX_BODY_BYTES` | Largest request body on a route that sets no limit of its own. The upload route sets none, so this caps every upload request. | `10485760` (10 MiB) |
 | `MEDIA_THUMBNAILS` | Make thumbnails for images. | `true` |
 | `MEDIA_THUMBNAIL_FORMAT` | `webp`, `avif` or `jpeg`. `avif` needs the `avifenc` tool on the server, and falls back to WebP without it. | `webp` |
 | `MEDIA_THUMBNAIL_QUALITY` | Thumbnail quality, from 1 to 100. | `85` |
@@ -298,6 +300,7 @@ The ones you meet most:
 | Status | Message |
 |---|---|
 | `400` | `invalid multipart form`, `invalid JSON`, `invalid request body`, `invalid search body` |
+| `400` | `request body could not be read` when an upload stops partway below the size limit. One that reaches the limit answers `413`. |
 | `400` | `folder may use a to z, 0 to 9, _, - and /` on a change |
 | `400` | `not an image` on reprocess |
 | `404` | `not found`, or `media not found` on reprocess and thumbnails |

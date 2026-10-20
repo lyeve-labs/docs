@@ -260,9 +260,10 @@ and `next_retry_at`. In the admin console the same list is under
 
 ## 6. Recover a failed delivery
 
-This step needs `webhook-pro`. The default retry policy sends no retry today,
-so first set a policy whose waits stay under a minute, as
-[Retry policy](../features/webhooks.md#retry-policy) explains:
+Without a retry policy, the default retries a failed delivery after 30, 60,
+120 and 240 seconds, as [Retry policy](../features/webhooks.md#retry-policy)
+explains. For shorter waits while you test, set a policy of your own. The
+policy, the manual retry and the replay below need `webhook-pro`:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
@@ -272,8 +273,10 @@ curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
 ```
 
 Stop the receiver and create another `post`. The delivery fails. With this
-policy its four retries wait 10, 20, 20 and 20 seconds, each counted from the
-30-second check that picks it up, so they arrive about half a minute apart. Start the receiver again and either wait for the next retry,
+policy its four retries wait 5, 10, 20 and 20 seconds, each counted from the
+attempt before it. A retry goes at the first 30-second check after its wait
+ends, and every wait here is shorter than that, so the retries arrive about
+half a minute apart. Start the receiver again and either wait for the next retry,
 which carries `X-Webhook-Retry: true`, or send the delivery yourself with its
 `id` from the history:
 

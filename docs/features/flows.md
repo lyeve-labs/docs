@@ -334,7 +334,13 @@ name, so a credential lives in one place:
   credentials auth.
 - A Google service account for Sheets.
 
-Secrets are stored encrypted and never returned. A datasource can never point
+Secrets are stored encrypted and never returned. A datasource read lists
+`secret_headers`, the names of its secret headers without their values. An
+update keeps every secret part it leaves out: `"secret": {}` keeps them all
+and `"secret": null` clears them. When the stored secret can no longer be
+decrypted, an update answers `409` with
+`the stored secret cannot be read and must be entered again` unless it clears
+the secret or sends a complete new one. A datasource can never point
 at the instance's own database, and private network addresses are refused
 unless the datasource sets `allow_private`. Only a super admin can set
 `allow_private`, or `allow_writes`, which lets a `db.query` node commit.

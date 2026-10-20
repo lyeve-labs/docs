@@ -65,10 +65,12 @@ detection from [Trusted devices](../features/trusted-devices.md)). `FAIL` is the
 row that matters: a control that is configured and not enforcing. Start the
 questionnaire from this response.
 
-The `data-residency` row reads `WARN` whenever the feature runs, even on an
-engine started with `INSTANCE_REGION`, so it cannot show that residency is
-enforcing. Check residency with a write instead, as
-[Data Protection](data-protection.md#residency) describes.
+The `data-residency` row follows `INSTANCE_REGION`. Without it, the row reads
+`WARN` and says to set it. With it, the row reads `PASS` and names the region
+once the engine checks Content API writes against it. A `WARN` with
+`INSTANCE_REGION` set means the engine has not started checking writes yet,
+and a restart fixes it. [Data Protection](data-protection.md#residency) shows
+how to prove it with a write.
 
 ## Audit trail
 
@@ -80,8 +82,8 @@ The [Audit log](../features/audit-log.md) records each entry with `sequence`,
 `chain_hash`.
 
 `chain_hash` is an HMAC-SHA256 over the previous entry's hash and every field
-above. Altering an entry breaks that entry's own hash, and removing one breaks
-the link from the entry after it.
+above. Altering an entry outside the API breaks its hash and every position
+after it up to the next seal.
 The first entry links to a fixed starting value. The key is
 `LYEVE_AUDIT_HMAC_KEY` (64 hex characters). An install without one hashes with a
 zero key and logs a warning at startup, and production refuses to start without
@@ -106,11 +108,14 @@ show:
 
 - No route edits an entry's content.
 - Subject erasure redacts the person in place: it clears `user_id`, sets `ip`
-  and `user_agent` to `[redacted]` and empties the before and after state.
-  Nothing rehashes the chain afterwards.
+  and `user_agent` to `[redacted]` and empties the before and after state. It
+  leaves a signed seal for each entry it redacts, and only for an entry that
+  verified first.
 - Entries are deleted by `POST /api/admin/audit-log/prune` (super admin), by a
-  retention policy, or by tenant deletion. A legal hold stops a retention policy
-  from deleting what it covers. It does not stop a prune.
+  retention policy, or by tenant deletion. Each leaves a signed seal for every
+  entry it removes, so the chain stays verifiable. A legal hold stops a prune
+  and a retention policy from deleting what it covers, and a tenant with an
+  active hold cannot be deleted.
 
 <details>
 <summary>Audit routes</summary>
@@ -119,14 +124,17 @@ show:
 |---|---|---|
 | `GET` | `/api/admin/audit-log` | admin. Anyone but a super admin sees only their tenant, with `ip` and `user_agent` masked |
 | `POST` | `/api/admin/audit-log/prune` | super_admin. Body `{"older_than": "<RFC3339>"}`, answers `{"deleted": n}` |
+| `GET` | `/api/admin/audit-log/verify` | super_admin. Answers `valid`, `entries`, `sealed`, `broken` and `broken_sequences` |
+| `POST` | `/api/admin/audit-log/rehash` | super_admin. Optional body `{"previous_key": "<64 hex>"}` after a key change |
 | `POST` | `/api/admin/audit-log/export` | admin |
 | `POST` | `/api/admin/audit-log/export-all` | super_admin |
 
 </details>
 
-**Check it:** the list route returns `chain_hash` per entry, but not the before
-and after state the hash covers, so the chain cannot be recomputed from the API.
-See the last section.
+**Check it:** call `GET /api/admin/audit-log/verify` as a super admin and expect
+`"valid": true`. The list route returns `chain_hash` per entry, but not the
+before and after state the hash covers, so the chain cannot be recomputed
+outside the server. See [Audit log](../features/audit-log.md#verify-the-chain).
 
 ## API keys
 
@@ -307,8 +315,9 @@ under it keeps signing in after a license lapses. Routes are under
 TOTP secrets are encrypted with a per-tenant key derived from `ENCRYPTION_KEY`
 (HKDF-SHA256, AES-256-GCM). The server does not start without that key, and it
 must differ from `JWT_SECRET`. Backup codes are stored as SHA-256 hashes. `POST /api/admin/mfa/admin-reset` disables a
-user's MFA, takes an optional reason, needs a super admin not scoped to a
-tenant, and is audited as `mfa.admin.reset`. A login answers
+user's MFA, requires a reason, needs a super admin not scoped to a
+tenant, and is audited as `mfa.admin.reset` under the tenant the reset account
+belongs to. A login answers
 `mfa_required: true` when the user has a factor enrolled. There is no setting
 that makes MFA mandatory for a role or a tenant. Enrollment is per user.
 
@@ -373,12 +382,40 @@ each to a destination that administrator chose:
   Transcripts are stored in your database under the retention window you set,
   and are covered by tenant deletion and by subject export and erasure.
 
+## Where outbound requests may go
+
+Webhooks, flows, identity providers, JWKS fetches and alert channels resolve
+the host they call and refuse an address in any of these ranges:
+
+| Range | What it is |
+|---|---|
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | Private networks |
+| `100.64.0.0/10` | Shared address space, used by carrier NAT, Tailscale and some cloud metadata services |
+| `127.0.0.0/8`, `::1/128` | Loopback |
+| `169.254.0.0/16`, `fe80::/10` | Link-local, where cloud metadata services answer |
+| `0.0.0.0/8`, `::/128` | This network, and the unspecified address |
+| `224.0.0.0/4`, `ff00::/8` | Multicast |
+| `240.0.0.0/4` | Reserved |
+| `fc00::/7` | IPv6 unique local |
+| `::/96`, `::ffff:0:0:0/96` | IPv6 forms that carry an IPv4 address |
+| `64:ff9b:1::/48` | Local-use NAT64 |
+
+A NAT64 address under `64:ff9b::/96`, or a 6to4 address under `2002::/16`, is
+judged by the IPv4 address it carries, so `64:ff9b::a9fe:a9fe` is refused as
+`169.254.169.254` while the NAT64 form of a public address passes. A
+network-specific NAT64 prefix is not recognized, so its addresses are judged as
+plain IPv6.
+
+An install that reaches its own services over Tailscale sets
+`LYEVE_OUTBOUND_ALLOW_CGNAT=true` to allow `100.64.0.0/10` for every tenant.
+[Email](../features/email.md) runs its own check and reads
+`SMTP_ALLOWED_PRIVATE_NETWORKS` instead, so a relay in that range needs
+`100.64.0.0/10` listed there.
+
 ## Not yet
 
 - **SOC 2.** LyEve has no SOC 2 report.
-- **Verifying the audit chain over the API.** No route walks the chain, and the
-  list route does not return the before and after state the hash covers.
-- **Rehashing after erasure.** An erased entry is redacted in place, and the
-  chain is not recomputed.
+- **Recomputing the audit chain yourself.** The list route does not return the
+  before and after state the hash covers, so only the verify route can check it.
 - **API key rotation in place.** Create, deploy, revoke.
 - **Mandatory MFA per role or tenant.** Enrollment is per user.

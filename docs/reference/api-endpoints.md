@@ -66,11 +66,11 @@ travel under `data`.
 
 | Method | Path | Who | Does |
 |---|---|---|---|
-| `GET` | `/api/v1/schemas` | Any credential | List the content types and their fields |
-| `GET` | `/api/v1/schemas/{name}` | Any credential | One content type |
+| `GET` | `/api/v1/schemas` | Any credential | List the content types the caller may read, with their fields. The others are left out |
+| `GET` | `/api/v1/schemas/{name}` | A caller who may read the type | One content type. Any other caller gets `403` |
 | `GET` | `/api/v1/content/{schema}` | Any credential | List entries. Answers a bare array |
 | `GET` | `/api/v1/content/{schema}/cursor` | Any credential | List with a cursor, for walking a large set |
-| `GET` | `/api/v1/content/{schema}/{id}` | Any credential | One entry, a draft included |
+| `GET` | `/api/v1/content/{schema}/{id}` | Any credential | One entry. An entry that is not published answers `404` unless the caller may read drafts |
 | `POST` | `/api/v1/content/{schema}` | `editor`, `admin`, `super_admin` | Create an entry from `{"data": {...}}` |
 | `POST` | `/api/v1/content/{schema}/bulk` | `editor`, `admin`, `super_admin` | Create several entries in one call |
 | `PUT` | `/api/v1/content/{schema}/{id}` | `editor`, `admin`, `super_admin` | Update the fields the body carries |
@@ -83,6 +83,15 @@ travel under `data`.
 | `PUT` | `/api/v1/content/{schema}/{id}/revisions/{rev_id}/restore` | `editor`, `admin`, `super_admin` | Restore a revision as a new one |
 
 [Access rules](../features/access-rules.md) can narrow any of these per role and content type.
+
+On a content type with draft and publish, a caller may read drafts when it holds both the read
+and the update permission on that type. An API key with no `admin` or `super_admin` role also
+needs the read and the update scope on it, which `content:read` with `content:write`, or
+`content.<schema>:read` with `content.<schema>:update`, grant. Every other caller gets
+published entries only. A read by id of a draft or an archived entry answers `404`, and
+revisions and related entries leave them out. For a caller who may read drafts, the cursor list
+holds entries of every status. A response that can carry drafts is served with
+`Cache-Control: private, no-store`, so no shared cache keeps it.
 
 ```bash
 curl -X POST http://localhost:3002/api/v1/content/article \
@@ -97,7 +106,7 @@ curl -X POST http://localhost:3002/api/v1/content/article \
 |---|---|---|
 | `limit`, `offset` | The list | Page by offset. `limit` runs from 1 to 200 and defaults to 25 |
 | `limit`, `cursor` | The cursor list | Page by cursor. `limit` runs from 1 to 1000 and defaults to 20. A value over 1000 gives 20 |
-| `filters[<field>]=<value>` | The list | Keep entries whose field equals the value. On a content type with draft and publish, the list holds published entries unless you name `filters[_status]` |
+| `filters[<field>]=<value>` | The list | Keep entries whose field equals the value. On a content type with draft and publish, the list holds published entries unless you name `filters[_status]`. A status other than `published` answers `403` unless the caller may read drafts |
 | `populate`, `depth` | The list and single reads | Return related entries inline. See [the data model](../concepts/data-model.md) |
 | `locale` | The list, the cursor list and single reads | Read the entry in a language, such as `fr` or `pt-BR`. Without it, the `Accept-Language` header decides. It takes effect when [localization](../features/localization.md) runs, which it does on every install unless `LYEVE_PLUGINS` leaves it out |
 
@@ -116,6 +125,11 @@ keeps its stored value and no default is filled in. A field that is present gets
 the content type, so a `null` or empty value for a required field answers `422` and a unique
 value another entry holds answers `409`. A rule that spans fields is checked against the stored
 entry with the update laid over it, whenever the body names one of its fields.
+
+An update, or a restored revision, never changes an entry's `_status`. A `_status` in an update
+body is left out, so a client that writes back a body it read earlier cannot publish an entry an
+editor has since taken back to draft. Move an entry between draft and published with the
+`publish` and `unpublish` routes.
 
 ### Serve a content type over some transports only
 

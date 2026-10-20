@@ -96,9 +96,10 @@ segment, so `/api/v1/content/post/42` needs `content.post:<action>` and
 A scope on the bare resource always covers every name under it, so a key made
 before named scopes keeps everything it reached.
 
-A key held to some content types reads them through the content routes.
-GraphQL reads every content type the key's roles allow, whatever the key is
-held to, so leave the `graphql` scopes off such a key.
+GraphQL holds a key to the same content types and access rules as the content
+routes. A query or mutation on a content type outside the key's `schemas`
+list, or one its access rules refuse, answers a GraphQL error with the code
+`FORBIDDEN`.
 
 To see every route a key can be scoped to on your instance, with the scope each
 one needs, ask as an admin:

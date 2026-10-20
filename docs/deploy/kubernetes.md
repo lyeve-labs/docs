@@ -1,6 +1,6 @@
 ---
 title: Kubernetes
-description: "Deploy the engine and the admin console on Kubernetes with replicas, a shared signing key, probes and an Ingress."
+description: "Deploy the engine and the admin console on Kubernetes with replicas, a shared signing key, probes and a Gateway API route."
 sidebar:
   order: 15
 ---
@@ -13,7 +13,7 @@ LyEve runs on Kubernetes as two Deployments, one per image:
   engine for the browser. It holds no database connection.
 
 :::tip[Best for]
-- **Several engine replicas** behind one Ingress, with rolling deploys and no downtime.
+- **Several engine replicas** behind one Gateway, with rolling deploys and no downtime.
 - **A cluster you already run**, with its secret store and certificate manager.
 :::
 
@@ -28,10 +28,10 @@ Every value marked `# cluster-specific` must be replaced before you apply the ma
 
 | Workload | Image | Ports | Reached through |
 |---|---|---|---|
-| `lyeve-core` | `ghcr.io/lyeve-labs/lyeve-core` | 3001, 3002 | The Ingress: `/api` on the admin host, everything on the API host |
-| `lyeve-admin` | `ghcr.io/lyeve-labs/lyeve-admin` | 3002 | The Ingress: the admin host |
+| `lyeve-core` | `ghcr.io/lyeve-labs/lyeve-core` | 3001, 3002 | The Gateway: `/api` on the admin host, everything on the API host |
+| `lyeve-admin` | `ghcr.io/lyeve-labs/lyeve-admin` | 3002 | The Gateway: the admin host |
 
-Both Services are `ClusterIP`. Only the Ingress faces the internet. Give port 3001 no public
+Both Services are `ClusterIP`. Only the Gateway faces the internet. Give port 3001 no public
 host or `LoadBalancer` of its own: the admin host routes `/api/admin` to it, which is all the
 admin console needs.
 
@@ -102,9 +102,11 @@ stringData:
 `APP_ENV` is absent because it defaults to `production`, which refuses a weak configuration.
 [Configuration](../reference/configuration.md#what-production-refuses) lists every check.
 
-`TRUSTED_PROXIES` names the addresses your Ingress controller connects from. The engine then
-reads the client address from `X-Forwarded-For`. Without it every request counts as the
-controller's, and the per-IP limits apply to all users together.
+`TRUSTED_PROXIES` names the CIDRs the Gateway's proxy pods connect from. The engine reads
+`X-Forwarded-For` only from those addresses. Without it every request counts as the proxy's, and
+the per-IP limits apply to all users together. Once it is set, the engine ignores
+`X-Forwarded-Proto` from anything else, so a range that misses the proxy pods redirects every
+request.
 
 `ADMIN_CONSOLE_KEY` is shared with the admin console Deployment below. The console signs each call with
 the browser's address, so sign-in limits count each user rather than the console pods.
@@ -176,7 +178,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.50.4   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.55.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -268,8 +270,25 @@ GRPC_HEALTH_ADDR: "0.0.0.0:3004"
 - { name: grpc-health, port: 3004, targetPort: grpc-health }
 ```
 
-The gRPC listener speaks plaintext HTTP/2. Terminate TLS at the Ingress, with an `h2c` backend
-on most controllers, or keep it inside the cluster. Port 3004 is for probes, not a public route.
+The gRPC listener speaks plaintext HTTP/2. Terminate TLS at the Gateway and route to port 3003
+with a GRPCRoute, or keep it inside the cluster. Port 3004 is for probes, not a public route.
+
+Give the GRPCRoute a host of its own. A Gateway listener accepts only one of an HTTPRoute and a
+GRPCRoute that share a hostname, and the other is rejected, so the API host cannot serve both.
+The route attaches to the `https-grpc` listener of the [Gateway](#gateway):
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute                                       # delete this route without the gRPC API
+metadata:
+  name: lyeve-grpc
+  namespace: lyeve
+spec:
+  parentRefs: [{ name: lyeve, sectionName: https-grpc }]
+  hostnames: ["grpc.example.com"]                     # cluster-specific
+  rules:
+    - backendRefs: [{ name: lyeve-core, port: 3003 }]
+```
 
 ## Admin console Deployment and Service
 
@@ -280,7 +299,7 @@ metadata:
   name: lyeve-admin
   namespace: lyeve
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels: { app: lyeve-admin }
   template:
@@ -289,13 +308,13 @@ spec:
     spec:
       containers:
         - name: lyeve-admin
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.17.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-admin:0.21.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
             - { name: ORIGIN, value: "https://admin.example.com" }                 # cluster-specific
             # Must route /api/admin to port 3001 and the rest of /api to 3002.
-            # The Ingress host does.
+            # The admin host on the Gateway does.
             - { name: CORE_INTERNAL_URL, value: "https://admin.example.com" }      # cluster-specific
             - { name: CORE_API_INTERNAL_URL, value: "https://admin.example.com" }  # cluster-specific
             - { name: ADDRESS_HEADER, value: "X-Forwarded-For" }
@@ -323,14 +342,27 @@ spec:
 
 The console's server sends every `/api/*` call to `CORE_INTERNAL_URL`. A base of
 `http://lyeve-core.lyeve.svc:3001` would send Content API calls to the Admin API listener, which
-answers them with `404`, so point it at the Ingress host, which routes by path.
+answers them with `404`, so point it at the admin host, which routes by path.
 `CORE_API_INTERNAL_URL` is where the API reference page sends the calls it runs under `/api/v1`.
-The console refuses to start without it, so it names the same Ingress host.
+The console refuses to start without it, so it names the same host.
 
-## Ingress
+The console runs as one replica. It renews a session by trading the session's refresh token
+with the engine, and the engine ends the session when a token it already traded comes back.
+Two replicas renewing one session at the same moment send that token twice, so the user is
+signed out. To run more than one, the Gateway must pin each browser to one replica with a
+cookie. [What the Gateway must do](#what-the-gateway-must-do) says where that is set.
+
+## Gateway
+
+Route traffic with the [Gateway API](https://gateway-api.sigs.k8s.io/): one Gateway with an
+HTTPS listener per host, and one HTTPRoute per host. Each listener names its hostname, because
+cert-manager issues a certificate only for a listener that does. A listener on port 80 redirects
+plain HTTP to HTTPS. Install the Gateway API CRDs from the standard
+channel and an implementation of your choice first. Its GatewayClass name goes in
+`gatewayClassName`.
 
 The browser loads the console and also calls the engine on the console's own origin, so the
-admin host routes by path. Kubernetes matches the longest prefix first.
+admin host routes by path. The Gateway matches the longest prefix first.
 
 | Host | Path | Service |
 |---|---|---|
@@ -341,44 +373,150 @@ admin host routes by path. Kubernetes matches the longest prefix first.
 | api | `/` | `lyeve-core` 3002 |
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
 metadata:
   name: lyeve
   namespace: lyeve
   annotations: {}                                     # cluster-specific: cert-manager issuer, etc.
 spec:
-  ingressClassName: nginx                             # cluster-specific
-  tls:
-    - hosts: ["admin.example.com", "api.example.com"] # cluster-specific
-      secretName: lyeve-tls                           # cluster-specific
+  gatewayClassName: nginx                             # cluster-specific
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+    - name: https-admin
+      protocol: HTTPS
+      port: 443
+      hostname: admin.example.com                     # cluster-specific
+      tls: { mode: Terminate, certificateRefs: [{ name: lyeve-tls }] }  # cluster-specific
+    - name: https-api
+      protocol: HTTPS
+      port: 443
+      hostname: api.example.com                       # cluster-specific
+      tls: { mode: Terminate, certificateRefs: [{ name: lyeve-tls }] }  # cluster-specific
+    - name: https-grpc                                # delete this listener without the gRPC API
+      protocol: HTTPS
+      port: 443
+      hostname: grpc.example.com                      # cluster-specific
+      tls: { mode: Terminate, certificateRefs: [{ name: lyeve-grpc-tls }] }  # cluster-specific
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lyeve-https-redirect
+  namespace: lyeve
+spec:
+  parentRefs: [{ name: lyeve, sectionName: http }]
   rules:
-    - host: admin.example.com                         # cluster-specific
-      http:
-        paths:
-          - path: /api/admin
-            pathType: Prefix
-            backend: { service: { name: lyeve-core, port: { number: 3001 } } }
-          - path: /api
-            pathType: Prefix
-            backend: { service: { name: lyeve-core, port: { number: 3002 } } }
-          - path: /.well-known
-            pathType: Prefix
-            backend: { service: { name: lyeve-core, port: { number: 3002 } } }
-          - path: /
-            pathType: Prefix
-            backend: { service: { name: lyeve-admin, port: { number: 80 } } }
-    - host: api.example.com                           # cluster-specific
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend: { service: { name: lyeve-core, port: { number: 3002 } } }
+    - filters:
+        - type: RequestRedirect
+          requestRedirect: { scheme: https, statusCode: 301 }
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lyeve-admin
+  namespace: lyeve
+spec:
+  parentRefs: [{ name: lyeve, sectionName: https-admin }]
+  hostnames: ["admin.example.com"]                    # cluster-specific
+  rules:
+    - matches: [{ path: { type: PathPrefix, value: /api/admin } }]
+      backendRefs: [{ name: lyeve-core, port: 3001 }]
+    - matches: [{ path: { type: PathPrefix, value: /api } }]
+      backendRefs: [{ name: lyeve-core, port: 3002 }]
+    - matches: [{ path: { type: PathPrefix, value: /.well-known } }]
+      backendRefs: [{ name: lyeve-core, port: 3002 }]
+    - matches: [{ path: { type: PathPrefix, value: / } }]
+      backendRefs: [{ name: lyeve-admin, port: 80 }]
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lyeve-api
+  namespace: lyeve
+spec:
+  parentRefs: [{ name: lyeve, sectionName: https-api }]
+  hostnames: ["api.example.com"]                      # cluster-specific
+  rules:
+    - matches: [{ path: { type: PathPrefix, value: / } }]
+      backendRefs: [{ name: lyeve-core, port: 3002 }]
 ```
 
-TLS is terminated at the Ingress, which sets `X-Forwarded-Proto: https` for the engine. With
-`SECURE_COOKIE=true` the engine redirects any request that does not carry it, so TLS is not
-optional here.
+TLS is terminated at the Gateway, which must send `X-Forwarded-Proto: https` to the engine.
+With `SECURE_COOKIE=true` the engine redirects any request that does not carry it, so TLS is not
+optional here. NGINX Gateway Fabric sends the header on every request. On another
+implementation, check that it does.
+
+### What the Gateway must do
+
+Three things LyEve needs are missing from the Gateway API standard channel or left to each
+implementation, so you set them with your implementation's own settings.
+
+**A request body limit large enough for imports and uploads.** The largest
+[bulk import](../features/bulk-import.md#a-file-over-50-mib) request is 70,953,644 bytes, so the
+limit must be at least 68 MiB. Two routes take more, and a Gateway that stops at 68 MiB refuses
+them with `413`:
+
+- [Importing a tenant backup](../how-to/backup-and-restore.md) takes a dump of up to 500 MiB.
+- A [multipart upload](../features/object-storage.md#upload-from-the-client) part may be up to
+  5 GiB.
+
+Raise the limit to the largest body you send through this Gateway, or keep each part under
+68 MiB.
+
+**One console replica, unless the Gateway pins a session to one replica.** The Admin console
+section above explains why two replicas sign users out. The Gateway API's own field for cookie
+session persistence is in its experimental channel only, so it needs the experimental CRDs, and
+it may change. Keep `replicas: 1` on the console unless your implementation pins each browser to
+one replica with a cookie.
+
+**A read timeout longer than the slowest answer.** Importing a 500 MiB tenant backup runs for
+minutes before the engine answers. A Gateway that stops waiting first answers `504` while the
+import keeps running, so allow it several minutes.
+
+### Example: NGINX Gateway Fabric
+
+NGINX Gateway Fabric refuses a request body over 1 MiB by default. A ClientSettingsPolicy on the
+Gateway raises the limit for every route attached to it:
+
+```yaml
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: lyeve-body-size
+  namespace: lyeve
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: lyeve
+  body:
+    maxSize: "68m"
+```
+
+NGINX Gateway Fabric also waits only 60 seconds for the engine to answer by default. A
+ProxySettingsPolicy on the Gateway raises that for every route:
+
+```yaml
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ProxySettingsPolicy
+metadata:
+  name: lyeve-timeouts
+  namespace: lyeve
+spec:
+  targetRefs:
+    - { group: gateway.networking.k8s.io, kind: Gateway, name: lyeve }
+  timeout:
+    read: "10m"
+```
+
+For more than one console replica, NGINX Gateway Fabric reads the experimental
+`sessionPersistence` field with `type: Cookie` on the admin route's `/` rule. It needs the
+experimental CRDs and the controller's experimental features turned on. Other implementations
+have their own body limit and session persistence settings. Look them up in that
+implementation's documentation.
 
 ## Verify
 
@@ -420,6 +558,47 @@ With two `ReadWriteOnce` claims named `lyeve-state` (1Gi) and `lyeve-uploads` (1
 creates its key on the state volume and keeps media on the uploads volume. Use
 `strategy: { type: Recreate }`, because a `ReadWriteOnce` claim cannot attach to the new pod
 while the old one holds it.
+
+## Upgrading to 0.55.0 and console 0.21.0
+
+Console 0.21.0 needs engine 0.55.0 or later, so upgrade the engine first and the console once
+the engine is ready. A rolling update runs old and new engine pods side by side, which 0.55.0
+does not allow. Read these before the first start of 0.55.0:
+
+- **Stop every engine pod first.** An older engine deletes and redacts audit entries without
+  sealing the hash chain, so the chain breaks wherever it runs beside 0.55.0.
+- **Review your retention policies.** Scheduled retention enforces every tenant's policies from
+  0.55.0, and the first pass runs at boot. Every entry a policy has kept past its period is
+  deleted or archived then. See [Audit log](../features/audit-log.md#retention-policies-and-legal-holds).
+- **Release legal holds before you delete a tenant.** A tenant with an active legal hold can no
+  longer be deleted. The delete answers `409` and removes nothing.
+- **List your mail relay's addresses.** The relay is checked at every send. If `SMTP_HOST`
+  resolves to loopback or a private network, list every address the name resolves to in
+  `SMTP_ALLOWED_PRIVATE_NETWORKS`, both `127.0.0.1` and `::1` for `localhost`, or every send
+  is refused. See [Email](../features/email.md#send-through-one-relay).
+- **Check your backup schedules.** Stored backup and restore test schedules run from 0.55.0.
+  Remove any CronJob that calls a backup `trigger` route first. See
+  [Backup and restore](../how-to/backup-and-restore.md#back-up-to-s3).
+- **Keep the console at one replica.** Two requests that renew one session on different console
+  pods at the same moment can end that session. If you scale it, give the route cookie
+  affinity.
+- **Update your API clients.** [Docker Compose](docker-compose.md#upgrading-to-0550-and-console-0210)
+  lists the changes they see.
+
+Scale the engine to zero, wait until no engine pod is left, start 0.55.0, and move the console
+once the engine is ready:
+
+```bash
+kubectl -n lyeve scale deploy/lyeve-core --replicas=0
+kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.55.0
+kubectl -n lyeve scale deploy/lyeve-core --replicas=2
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.21.0
+```
+
+The engine answers nothing between the first command and the end of the rollout, so plan a short
+outage.
 
 ## Before you go live
 

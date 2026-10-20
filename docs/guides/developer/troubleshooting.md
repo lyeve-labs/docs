@@ -38,8 +38,9 @@ follow the request id into the engine's log, which names the cause.
 | `503` `another instance is applying DDL for this schema; retry in 1s` | Another replica is changing the same content type | Retry after the second in `Retry-After` |
 | `503` `{"status":"starting", ...}` | The engine has not finished starting | Retry after the seconds in `Retry-After` |
 | `503` with the code `DATABASE_ERROR` | The database is unreachable | Check the database and `GET /api/admin/pool/health` |
-| An entry is missing from a list | It belongs to another tenant, it is a draft, or it was soft deleted | A list holds published entries unless you name `filters[_status]`. Check `tenant_id` in the log line |
+| An entry is missing from a list | It belongs to another tenant, it is a draft, or it was soft deleted | A list holds published entries unless you name `filters[_status]`, and naming another status needs a caller who may read drafts. Check `tenant_id` in the log line |
 | The engine refuses to start | A required setting is missing or a production check failed | The start error names every problem. See [Installation](../../getting-started/installation.md) |
+| The engine stops at start with `open the DML guard pool` or `open the lock session pool` | The engine could not open one of its database connections within five seconds of starting | Check that the database is reachable and accepts more connections. Then start again |
 
 ## Read the error body
 

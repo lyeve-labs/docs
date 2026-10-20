@@ -83,9 +83,9 @@ in the first two rows of the table.
    accept the rows it rejects.
 
 4. Post the same body to `POST /api/admin/imports`. The answer is `201` with a `pending` job,
-   and the rows are written in the background. Imported entries are drafts in the admin console
-   unless you map `entry.status`. The Content API serves them as published today, as the
-   [data model](../concepts/data-model.md#statuses) page explains.
+   and the rows are written in the background. Imported entries are drafts unless you map
+   `entry.status`, and the Content API serves a draft only to a caller who may read drafts, as
+   the [data model](../concepts/data-model.md#statuses) page explains.
 
 5. Check the result with `GET /api/admin/imports/{id}` until it is `completed`, and list any
    rejected rows with `GET /api/admin/imports/{id}/rows?status=errored`. If it went wrong,

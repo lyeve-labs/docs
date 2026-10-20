@@ -24,11 +24,9 @@ your database provider's own tooling.
   [Licensing and tiers](../concepts/licensing-and-tiers.md).
 - `import` and `restore` replace a tenant's data, so they take a signed-in
   session. An admin token or an API key cannot call them.
-- `import` and `validate` carry the dump inside a JSON body, so the instance's
-  JSON limit applies first: `MAX_JSON_BODY_BYTES`, 1 MiB by default, answers
-  `413` above it. To load a larger dump, raise it (it applies to every JSON
-  route) and keep it within `MAX_BODY_BYTES`, 10 MiB by default. The routes'
-  own ceilings are 500 MiB for `import` and 50 MiB for `validate`.
+- `import` and `validate` carry the dump inside a JSON body. With `tenant-backup`
+  licensed, each sets its own limit: 500 MiB for `import` and 50 MiB for
+  `validate`. `MAX_JSON_BODY_BYTES` and `MAX_BODY_BYTES` do not apply to them.
 - With the [web application firewall](../features/web-application-firewall.md)
   running, its SQL injection rules refuse `validate` and `import` with `403`
   and `request blocked by WAF`, because the body is SQL. Add an exception for
@@ -117,7 +115,7 @@ copied to each enabled target.
    curl -X POST http://localhost:3001/api/admin/tenant-backup/jobs \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "nightly", "cron_expr": "0 3 * * *", "include_data": true,
+     -d '{"name": "nightly", "cron_expr": "0 3 * * *", "include_data": true, "enabled": true,
           "retention_days": 30, "s3_bucket": "lyeve-backups", "s3_prefix": "backups"}'
    ```
 
@@ -153,12 +151,23 @@ copied to each enabled target.
    The answer carries `checksum_ok` and `sql_valid`. List archives with
    `GET /api/admin/tenant-backup/archives`.
 
-:::caution[Nothing runs a job on its schedule]
-A job stores `cron_expr`, but the instance does not run it on that schedule.
-Call the `trigger` route from your own scheduler, such as a Kubernetes CronJob,
-at the cadence you want. Archives past `retention_days` are deleted only when
-you call `POST /api/admin/tenant-backup/retention/cleanup`. The job, run and
-archive records are kept.
+An enabled job runs on its `cron_expr`, five fields in UTC or a descriptor such
+as `@daily`, within a minute of each slot. A job is disabled unless you send
+`"enabled": true`, and a job with no `cron_expr` runs only when you call
+`trigger`. With several engine replicas, one of them runs each slot. A job that
+missed slots while the instance was down runs once, for the newest. Archives
+past `retention_days` are deleted only when you call
+`POST /api/admin/tenant-backup/retention/cleanup`. The job, run and archive
+records are kept.
+
+:::caution[Before you upgrade to 0.55.0]
+Releases before 0.55.0 stored `cron_expr` and `schedule_cron` but never ran
+them, so you may trigger jobs from a scheduler of your own, such as a
+Kubernetes CronJob. From 0.55.0 every enabled job and restore test schedule
+runs on its stored expression. Before you upgrade, remove the outside trigger,
+or disable the stored schedules with `PUT` and `{"enabled": false}`, or each
+backup runs twice. A job or schedule saved before the upgrade counts its next
+slot from the upgrade.
 :::
 
 Archives are encrypted with a key derived for each tenant from the instance's
@@ -190,8 +199,9 @@ container or instance credentials. Grant the engine's role
 ## Test restores
 
 A restore test takes the tenant's newest archive that is at least an hour old,
-checks its checksum and SQL, and loads it into a test tenant, then records
-`passed` or `failed` with the tables and rows it imported.
+checks its checksum and SQL, and runs its restore as a dry run against a test
+tenant, then records `passed` or `failed`. It writes nothing, so
+`rows_imported` reads `0`.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/tenant-backup/restore-tests/schedules \
@@ -204,11 +214,8 @@ Run it with `POST .../restore-tests/schedules/{id}/trigger`, which answers with
 the result once the test finishes, and read past results at
 `GET .../restore-tests/results`. `timeout_sec` defaults to 600.
 
-:::danger[A restore test empties its test tenant]
-The test truncates every table it loads in `test_tenant`. Point it at a tenant
-that holds nothing you need, never at a live one. Like a backup job, a schedule
-stores `schedule_cron` but runs only when you call `trigger`.
-:::
+An enabled schedule runs on its `schedule_cron` the way a backup job runs on
+its `cron_expr`. The test changes no rows in `test_tenant`.
 
 ## Clone a tenant
 
