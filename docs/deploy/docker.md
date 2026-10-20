@@ -186,14 +186,16 @@ which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETU
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
 
-## Upgrading to 0.55.0
+## Upgrading to 0.55.0 and console 0.21.0
 
-Stop every engine container before you start 0.55.0, because an older engine beside it breaks
-the audit hash chain. Review your retention policies first, because the first boot enforces
-them. A tenant with an active legal hold can no longer be deleted and answers `409`. A mail
-relay on loopback or a private network needs every address its name resolves to in
-`SMTP_ALLOWED_PRIVATE_NETWORKS`, both `127.0.0.1` and `::1` for `localhost`.
-[Docker Compose](docker-compose.md#upgrading-to-0550) explains each step.
+Upgrade the engine before the console: console 0.21.0 needs engine 0.55.0 or later. Stop every
+engine container before you start 0.55.0, because an older engine beside it breaks the audit
+hash chain. Review your retention policies first, because the first boot enforces them. A tenant
+with an active legal hold can no longer be deleted and answers `409`. A mail relay on loopback or
+a private network needs every address its name resolves to in `SMTP_ALLOWED_PRIVATE_NETWORKS`,
+both `127.0.0.1` and `::1` for `localhost`. Run one console container, or give your proxy cookie
+affinity when you run several. [Docker Compose](docker-compose.md#upgrading-to-0550-and-console-0210)
+explains each step and the changes your API clients see.
 
 ## Next
 

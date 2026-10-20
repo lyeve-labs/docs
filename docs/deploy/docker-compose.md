@@ -251,12 +251,17 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.55.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.20.2`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.55.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.21.0`, and change
 the tags when you choose to.
 
-### Upgrading to 0.55.0
+Upgrade the engine before the console. A console release can call routes that only the engine
+release beside it serves, so a new console in front of an older engine shows errors on those
+pages.
 
-Read these before the first start of 0.55.0:
+### Upgrading to 0.55.0 and console 0.21.0
+
+Console 0.21.0 needs engine 0.55.0 or later, so upgrade the engine first. Read these before the
+first start of 0.55.0:
 
 - **Stop every engine replica first.** An older engine deletes and redacts audit entries
   without sealing the hash chain, so the chain breaks wherever it runs beside 0.55.0. Run
@@ -273,13 +278,25 @@ Read these before the first start of 0.55.0:
 - **Check your backup schedules.** Stored backup and restore test schedules run from 0.55.0.
   Remove any outside trigger first. See
   [Backup and restore](../how-to/backup-and-restore.md#back-up-to-s3).
+- **Run one console replica.** Two requests that renew one session on different console
+  replicas at the same moment can end that session. If you run several, give the proxy cookie
+  affinity.
+- **Update your API clients.** Content fields are nullable on
+  [GraphQL](../features/graphql-api.md) output, so regenerate typed clients. A refused password
+  on [password reset](../features/password-reset.md) answers `422` instead of `400`. Updating an
+  entry no longer changes its status, so publish and unpublish through their own routes in
+  [API endpoints](../reference/api-endpoints.md).
+- **Expect new error alerts.** [Error tracking](../features/error-tracking.md) opens a new alert
+  for each panic site after the upgrade. Resolve or ignore the old alerts once their panics
+  have come back as new ones.
 
-Then upgrade:
+Then upgrade the engine, wait until it reports healthy, and upgrade the console:
 
 ```bash
 docker compose stop engine
 docker compose pull engine admin
-docker compose up -d
+docker compose up -d --wait engine
+docker compose up -d admin
 ```
 
 ## Next

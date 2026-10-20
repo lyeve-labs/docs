@@ -308,7 +308,7 @@ spec:
     spec:
       containers:
         - name: lyeve-admin
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.20.2   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-admin:0.21.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -559,10 +559,11 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 `strategy: { type: Recreate }`, because a `ReadWriteOnce` claim cannot attach to the new pod
 while the old one holds it.
 
-## Upgrading to 0.55.0
+## Upgrading to 0.55.0 and console 0.21.0
 
-A rolling update runs old and new engine pods side by side, which 0.55.0 does not allow. Read
-these before the first start of 0.55.0:
+Console 0.21.0 needs engine 0.55.0 or later, so upgrade the engine first and the console once
+the engine is ready. A rolling update runs old and new engine pods side by side, which 0.55.0
+does not allow. Read these before the first start of 0.55.0:
 
 - **Stop every engine pod first.** An older engine deletes and redacts audit entries without
   sealing the hash chain, so the chain breaks wherever it runs beside 0.55.0.
@@ -578,18 +579,26 @@ these before the first start of 0.55.0:
 - **Check your backup schedules.** Stored backup and restore test schedules run from 0.55.0.
   Remove any CronJob that calls a backup `trigger` route first. See
   [Backup and restore](../how-to/backup-and-restore.md#back-up-to-s3).
+- **Keep the console at one replica.** Two requests that renew one session on different console
+  pods at the same moment can end that session. If you scale it, give the route cookie
+  affinity.
+- **Update your API clients.** [Docker Compose](docker-compose.md#upgrading-to-0550-and-console-0210)
+  lists the changes they see.
 
-Scale the engine to zero, wait until no engine pod is left, then start 0.55.0:
+Scale the engine to zero, wait until no engine pod is left, start 0.55.0, and move the console
+once the engine is ready:
 
 ```bash
 kubectl -n lyeve scale deploy/lyeve-core --replicas=0
 kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.55.0
-kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.20.2
 kubectl -n lyeve scale deploy/lyeve-core --replicas=2
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.21.0
 ```
 
-The engine answers nothing between the first and the last command, so plan a short outage.
+The engine answers nothing between the first command and the end of the rollout, so plan a short
+outage.
 
 ## Before you go live
 
