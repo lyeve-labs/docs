@@ -118,7 +118,8 @@ an audit log, it logs a warning with the same location.
 
 With the `audit` feature licensed, both routes write an audit entry
 (`gdpr.export`, `gdpr.export.all_tenants`, `gdpr.erase`) recording the actor,
-address and user agent. The entry names the subject by a digest rather than by
+address and user agent. Each entry is filed under no tenant, so only a super
+admin reading every tenant's log sees it, never a tenant's admins. The entry names the subject by a digest rather than by
 the identifier, so the log proves the request happened without keeping who it
 was about: `sha256:` followed by the hex SHA-256 of the identifier exactly as
 the request sent it. To find the entry for a subject later, compute the digest

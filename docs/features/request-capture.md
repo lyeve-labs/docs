@@ -154,6 +154,18 @@ A replay sends the stored request again, with your own `Authorization` and
 `"confirm_replay": true`. Replaying a `POST`, `PUT`, `PATCH` or `DELETE`
 changes data again, so it also needs `"confirm_mutating": true`.
 
+A capture of a call to this instance is replayed to the engine itself, never
+to the host a request header names. A path under `/api/admin` goes to the admin
+listener and every other path to the API listener, so behind a proxy the replay
+skips the proxy. A redirect in the answer is recorded as the replay's result
+and is not followed.
+
+Your credentials go to this engine only. A capture whose request line named an
+outside host is replayed there without `Authorization` or `X-Api-Key`.
+
+A super admin's replay of another tenant's capture runs in that tenant. A
+capture that belongs to no tenant cannot be replayed and answers `422`.
+
 `override_url` sends the request to a different path. It must keep the
 original scheme and host.
 
@@ -282,6 +294,7 @@ in it. See [licensing and tiers](../concepts/licensing-and-tiers.md).
 | `404` | `capture record not found` | Unknown id, or another tenant's capture. |
 | `404` | `capture rule not found`, `replay set not found` | Unknown id, or another tenant's rule or set. |
 | `409` | `failed to create replay set` | Your tenant already has a set with that name. |
+| `422` | `a capture with no tenant cannot be replayed, because the replay would run in your own tenant` | A super admin replayed a capture that belongs to no tenant. |
 | `422` | `route_pattern must be an absolute path such as /api/v1/orders/{id} or /api/v1/**` | The pattern does not parse. `route_pattern may use ** only as its last segment` is the same cause. |
 | `422` | `sample_rate must be between 0 and 1`, `retention_seconds must be between 3600 (one hour) and 2592000 (30 days)`, `method must be one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS or *` | A rule field is out of range. |
 | `422` | `name must be 1 to 255 characters`, `capture_ids must hold 1 to 50 captures`, `every capture id must name a capture this tenant holds` | A set is not valid. |

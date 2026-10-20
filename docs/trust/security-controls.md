@@ -315,8 +315,9 @@ under it keeps signing in after a license lapses. Routes are under
 TOTP secrets are encrypted with a per-tenant key derived from `ENCRYPTION_KEY`
 (HKDF-SHA256, AES-256-GCM). The server does not start without that key, and it
 must differ from `JWT_SECRET`. Backup codes are stored as SHA-256 hashes. `POST /api/admin/mfa/admin-reset` disables a
-user's MFA, takes an optional reason, needs a super admin not scoped to a
-tenant, and is audited as `mfa.admin.reset`. A login answers
+user's MFA, requires a reason, needs a super admin not scoped to a
+tenant, and is audited as `mfa.admin.reset` under the tenant the reset account
+belongs to. A login answers
 `mfa_required: true` when the user has a factor enrolled. There is no setting
 that makes MFA mandatory for a role or a tenant. Enrollment is per user.
 

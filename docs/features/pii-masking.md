@@ -209,6 +209,11 @@ rule, so send every field.
 rule name, or several joined by commas), `accessed_at` and `tenant_id`. An admin
 sees their own tenant. A super admin sees every tenant.
 
+A super admin's read is filed under the tenant the request names: the tenant
+in the member list's path, or the audit log's `tenant_id` filter. Every other
+read by a super admin is filed under no tenant, so a tenant's admins never
+learn whose personal data a super admin read.
+
 Entries older than `PII_MASK_RETENTION_DAYS` are deleted every hour. Deleting a
 tenant deletes its entries.
 

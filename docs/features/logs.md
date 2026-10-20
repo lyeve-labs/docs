@@ -45,10 +45,10 @@ Elasticsearch as well.
 | **Tail** | Records as they are written, starting with the last 100. | Follow the live log with pause and resume. |
 
 Records are written to the database within about a second. An admin reads
-only their own tenant's records in every view. A super admin reads one tenant
-in search and tail (the default tenant, or the one named in `tenant_id`), and
-every record in the stream, including the instance's own lines that belong to
-no tenant. A super admin's work on another tenant, such as creating, cloning,
+only their own tenant's records in every view. A super admin who has not
+picked a tenant reads the default tenant's records and the instance's own
+records that belong to no tenant in search, tail and the volume view. Naming
+`tenant_id` reads that one tenant alone. The stream reads every record. A super admin's work on another tenant, such as creating, cloning,
 restoring or deleting it, logs under no tenant, so no tenant admin sees it.
 Only a super admin reading the whole log does.
 
