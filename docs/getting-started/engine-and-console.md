@@ -15,6 +15,8 @@ You need Docker with Compose (Docker Desktop, or Docker Engine with the Compose 
 
 ## How the pieces fit
 
+![The browser reaches the proxy on port 8080, which sends each path to the engine's Admin API, its Content API or the admin console. The engine keeps content and settings in Postgres.](images/stack.svg)
+
 Your browser talks to one address, `http://localhost:8080`. The proxy sends each request to the
 piece that answers it:
 

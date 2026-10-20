@@ -32,6 +32,8 @@ tenant, `default`. With a license you create as many as your plan allows.
 
 ## How a request picks its tenant
 
+![Four requests reach one instance with three tenants. The visitor's domain, the app's API key, the editor's membership and the super admin's X-Tenant-ID header each pick one tenant.](images/tenant-resolution.svg)
+
 Every request runs in exactly one tenant, decided before it is handled:
 
 | Caller | Tenant the request runs in |
@@ -42,9 +44,10 @@ Every request runs in exactly one tenant, decided before it is handled:
 | A super admin | Their own tenant, or any tenant they name with `X-Tenant-ID`. An unknown or disabled slug answers `404` with `{"error":"tenant not found"}`. |
 | A request with no credential | The tenant mapped to the `Host` header's domain. With one tenant on the install, that tenant. With `MULTI_TENANT=true`, several tenants and no mapping for the host, `404`. |
 
-`X-Tenant-ID` from anyone but a super admin is ignored, so a client cannot reach
-another tenant by sending one. Every read and write is then limited to the
-resolved tenant.
+Only a super admin picks a tenant with `X-Tenant-ID`. With an admin token, a
+header naming another tenant answers `403`. From anyone else the header is
+ignored, so a client cannot reach another tenant by sending one. Every read
+and write is then limited to the resolved tenant.
 
 ## In the admin console
 

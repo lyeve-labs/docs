@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="458" viewBox="0 0 720 458">
+  <title>How your service verifies a LyEve token</title>
+  <desc>Your app signs in with POST /api/admin/auth/login and receives a session token. It calls your service with Authorization: Bearer and the token. Your service fetches the key set once from GET /.well-known/jwks.json and caches it for up to an hour. It picks the key by the token's kid, verifies the EdDSA signature, checks exp, iss, aud and typ, and answers from sub, roles and tenant_id. On a kid it does not have, it fetches the key set again and never falls back to another key.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .label, .note { font-size: 13px; fill: #525866; }
+    .path { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; fill: #111827; }
+    .node-you { fill: #e7eafd; stroke: #5544da; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .node-ok { fill: #e3ede5; stroke: #126c34; }
+    .life { fill: none; stroke: #767d8e; stroke-dasharray: 4 4; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .edge-dash { stroke-dasharray: 5 4; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text, .path { fill: #e6e8ee; }
+      .sub, .label, .note { fill: #9aa1ad; }
+      .node-you { fill: #202843; stroke: #9587f2; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .node-ok { fill: #152f34; stroke: #22c55e; }
+      .life { stroke: #616d80; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="458"/>
+
+  <rect class="node-you" x="30" y="14" width="160" height="42" rx="8"/>
+  <text class="title" x="110" y="40" text-anchor="middle">Your app</text>
+  <rect class="node-brand" x="275" y="14" width="160" height="42" rx="8"/>
+  <text class="title" x="355" y="40" text-anchor="middle">LyEve engine</text>
+  <rect class="node-you" x="520" y="14" width="160" height="42" rx="8"/>
+  <text class="title" x="600" y="40" text-anchor="middle">Your service</text>
+
+  <path class="life" d="M110 56V414M355 56V414M600 56V296M600 364V414"/>
+
+  <text class="label" x="232" y="78" text-anchor="middle">Sign in</text>
+  <text class="path" x="232" y="95" text-anchor="middle">POST /api/admin/auth/login</text>
+  <path class="edge" d="M110 104H355" marker-end="url(#head)"/>
+
+  <text class="label" x="232" y="132" text-anchor="middle">session token</text>
+  <path class="edge edge-dash" d="M355 140H110" marker-end="url(#head)"/>
+
+  <text class="label" x="478" y="162" text-anchor="middle">Your request, with</text>
+  <text class="path" x="478" y="179" text-anchor="middle">Authorization: Bearer &lt;token&gt;</text>
+  <path class="edge" d="M110 188H600" marker-end="url(#head)"/>
+
+  <text class="label" x="478" y="210" text-anchor="middle">Fetch once, then cache</text>
+  <text class="path" x="478" y="227" text-anchor="middle">GET /.well-known/jwks.json</text>
+  <path class="edge" d="M600 236H355" marker-end="url(#head)"/>
+
+  <text class="label" x="478" y="264" text-anchor="middle">key set, cacheable for an hour</text>
+  <path class="edge edge-dash" d="M355 272H600" marker-end="url(#head)"/>
+
+  <rect class="node-ok" x="500" y="296" width="200" height="68" rx="8"/>
+  <text class="title" x="600" y="318" text-anchor="middle">Verify the token</text>
+  <text class="sub" x="600" y="337" text-anchor="middle">key by its kid, EdDSA</text>
+  <text class="sub" x="600" y="355" text-anchor="middle">exp, iss, aud and typ</text>
+
+  <text class="label" x="478" y="390" text-anchor="middle">answer from sub, roles, tenant_id</text>
+  <path class="edge edge-dash" d="M600 398H110" marker-end="url(#head)"/>
+
+  <text class="note" x="14" y="442">A kid you do not have: fetch the key set again. Never fall back to another key.</text>
+</svg>

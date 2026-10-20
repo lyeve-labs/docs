@@ -236,6 +236,8 @@ and names the content type that holds it.
 A content type with `with_draft_publish` gives each entry a status. The blog's `post` has
 one. The `author` does not, so every author is live.
 
+![An entry moves between draft, published and archived. Publish and Unpublish move it between draft and published, and a scheduled unpublish archives it. Every reader sees published entries, and only callers who may read drafts see the others.](images/entry-statuses.svg)
+
 | Status | Meaning |
 |---|---|
 | `draft` | Work in progress. A new entry in the admin console starts here. |

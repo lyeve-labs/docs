@@ -52,6 +52,8 @@ one on the canvas step by step.
 
 Every flow has the same three parts.
 
+![One trigger starts a flow. Its nodes run one step each, a branch picks a path, and a response answers an HTTP caller. Every run is recorded step by step.](images/flow-run.svg)
+
 | Part | What it does | Examples |
 |---|---|---|
 | **Trigger** | Starts the flow. A flow has exactly one. | An HTTP request, a signed webhook, a cron schedule, an event such as an entry being created, or a manual run. |

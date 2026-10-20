@@ -108,6 +108,8 @@ with its tier. Prices are at [lyeve.com/pricing](https://lyeve.com/pricing/).
 
 ## The two APIs
 
+![The admin console and your scripts call the Admin API on port 3001, and your sites and apps call the Content API on port 3002. Both run in one engine over one database.](images/two-apis.svg)
+
 The engine serves two HTTP APIs, each on its own port:
 
 | API | Default port | Base path | Used for | Credential |
