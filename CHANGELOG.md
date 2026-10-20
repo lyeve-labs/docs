@@ -4,6 +4,30 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.4.0] - 2026-10-20
+
+### Added
+
+- The pages describe engine 0.55.0 and console 0.21.0: draft and access rules on every content transport, proof before a second factor is added or removed, accounts a tenant's identity provider creates and how long they may sign in without it, audit chain checks with scheduled retention, backup schedules, webhook retries, caching, and the outbound address guard with the setting that opens the shared address space to outbound requests.
+- The command reference covers `lyeve migrate mark-applied`.
+- A super admin with no tenant picked can search, tail and measure the logs, and the pages say where a super admin's read of personal data is filed and that subject export and erasure audit entries go under no tenant.
+- Request capture replay goes only to the engine's own API or admin listener and does not follow redirects, so credentials reach no other host. A super admin's replay of a capture that belongs to no tenant answers 422.
+- The feature pages list the new refusals and limits: bulk import into another tenant when the database pool holds fewer than four connections, a storage key with a `.` segment, a probe that names a header twice or sends the mask, `$env` in a flow expression, a closed region as the default, and a SCIM deprovision action other than disable or delete. They also cover flow datasource secret updates and secret headers, the MFA verify 409, the limit of 32 GraphQL subscriptions, the object key each audit retention archive is written under, the pricing link on a free ceiling refusal, and that an update never changes an entry's status.
+
+### Changed
+
+- The deployment guides pin engine 0.55.0 and console 0.21.0 and upgrade the engine first, because console 0.21.0 needs engine 0.55.0 or later. The Compose and Kubernetes steps start the engine and wait for it before they move the console, and the upgrade notes list the changes API clients see and the new error alerts.
+- The Kubernetes guide routes with the Gateway API instead of an Ingress controller that Kubernetes retired in March 2026. It names what the routing layer must provide: a request body limit of at least 68 MiB, a read timeout long enough for a large backup import, and one console replica unless the gateway keeps each browser on one replica.
+- The Kubernetes guide runs one console replica, because two replicas with no session affinity sign users out when both renew the same session at once. Cookie affinity at the gateway allows more.
+
+### Fixed
+
+- The security page called the reason for a second factor reset optional. The reset requires one.
+- The configuration reference, the media settings and the tenant backup guide said the general body limits apply to every route. A route that sets its own limit keeps it, so bulk import accepts close to 68 MiB and tenant backup import up to 500 MiB, and a chunked request is cut off at the same size as any other.
+- The content lifecycle errors table lists the 404 answers for scheduling an entry that does not exist.
+- The PII masking page names its one exception: SCIM provisioning answers are left as written, so an identity provider reads back the people it provisioned, and those reads are not in the access log.
+- The message broker status table says what the connected field means for each backend. For Kafka it says whether a broker answered within two seconds, and NATS and RabbitMQ keep the old meaning.
+
 ## [0.3.3] - 2026-10-15
 
 ### Fixed
