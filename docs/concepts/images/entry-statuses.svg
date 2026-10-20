@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="358" viewBox="0 0 720 358">
+  <title>Entry statuses and who sees each</title>
+  <desc>An entry is draft, published or archived. A new entry in the console is a draft. A new entry on the Content API is published unless its _status names another status. Publish, or a scheduled publish, moves a draft to published, and Unpublish moves it back to draft. A scheduled unpublish moves a published entry to archived, and Publish brings it back. Every reader sees published entries. Drafts and archived entries reach only callers who may read drafts. In the console and the Admin API, an admin can set any status directly, and restoring a revision restores its status. On the Content API, a restore keeps the current status. A content type without with_draft_publish has no statuses, so its entries are always live.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .label, .note, .heading { font-size: 13px; fill: #525866; }
+    .heading { font-weight: 600; }
+    .path { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; fill: #111827; }
+    .node { fill: #f6f7f9; stroke: #767d8e; }
+    .node-ok { fill: #e3ede5; stroke: #126c34; }
+    .node-warn { fill: #f3e7e2; stroke: #904207; }
+    .pill { fill: none; stroke: #767d8e; stroke-dasharray: 4 3; }
+    .pill-ok { fill: none; stroke: #126c34; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text, .path { fill: #e6e8ee; }
+      .sub, .label, .note, .heading { fill: #9aa1ad; }
+      .node { fill: #162233; stroke: #616d80; }
+      .node-ok { fill: #152f34; stroke: #22c55e; }
+      .node-warn { fill: #2c2c31; stroke: #f59e0b; }
+      .pill { stroke: #616d80; }
+      .pill-ok { stroke: #22c55e; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="358"/>
+
+  <text class="label" x="88" y="34" text-anchor="middle">New in the console</text>
+  <path class="edge" d="M88 44V120" marker-end="url(#head)"/>
+  <text class="label" x="360" y="34" text-anchor="middle">New on the Content API</text>
+  <text class="label" x="360" y="52" text-anchor="middle">unless its <tspan class="path">_status</tspan> names another</text>
+  <path class="edge" d="M360 62V120" marker-end="url(#head)"/>
+
+  <rect class="node-warn" x="14" y="120" width="148" height="60" rx="8"/>
+  <text class="title" x="88" y="155" text-anchor="middle">Draft</text>
+  <rect class="node-ok" x="286" y="120" width="148" height="60" rx="8"/>
+  <text class="title" x="360" y="155" text-anchor="middle">Published</text>
+  <rect class="node" x="558" y="120" width="148" height="60" rx="8"/>
+  <text class="title" x="632" y="155" text-anchor="middle">Archived</text>
+
+  <text class="label" x="224" y="112" text-anchor="middle">Publish, or a</text>
+  <text class="label" x="224" y="128" text-anchor="middle">scheduled publish</text>
+  <path class="edge" d="M162 138H286" marker-end="url(#head)"/>
+  <path class="edge" d="M286 164H162" marker-end="url(#head)"/>
+  <text class="label" x="224" y="198" text-anchor="middle">Unpublish</text>
+
+  <text class="label" x="496" y="112" text-anchor="middle">a scheduled</text>
+  <text class="label" x="496" y="128" text-anchor="middle">unpublish</text>
+  <path class="edge" d="M434 138H558" marker-end="url(#head)"/>
+  <path class="edge" d="M558 164H434" marker-end="url(#head)"/>
+  <text class="label" x="496" y="198" text-anchor="middle">Publish</text>
+
+  <text class="heading" x="14" y="230">Who sees it</text>
+  <rect class="pill" x="14" y="240" width="148" height="44" rx="8"/>
+  <text class="sub" x="88" y="258" text-anchor="middle">callers who may</text>
+  <text class="sub" x="88" y="276" text-anchor="middle">read drafts</text>
+  <rect class="pill-ok" x="286" y="240" width="148" height="44" rx="8"/>
+  <text class="sub" x="360" y="267" text-anchor="middle">every reader</text>
+  <rect class="pill" x="558" y="240" width="148" height="44" rx="8"/>
+  <text class="sub" x="632" y="258" text-anchor="middle">callers who may</text>
+  <text class="sub" x="632" y="276" text-anchor="middle">read drafts</text>
+
+  <text class="note" x="14" y="310">In the console and the Admin API, an admin can set any status directly, and restoring a</text>
+  <text class="note" x="14" y="328">revision restores its status. On the Content API, a restore keeps the current status.</text>
+  <text class="note" x="14" y="346">A type without <tspan class="path">with_draft_publish</tspan> has no statuses: its entries are always live.</text>
+</svg>

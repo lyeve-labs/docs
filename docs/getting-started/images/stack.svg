@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="388" viewBox="0 0 720 388">
+  <title>How the pieces of the stack fit</title>
+  <desc>Your browser talks to one address, localhost:8080, which is the proxy. The proxy sends /api/admin/* to the engine's Admin API on port 3001, /api/* and /.well-known/* to its Content API on port 3002, and everything else to the admin console. The engine keeps content and settings in Postgres. The console's server calls the engine through the proxy too. Only the proxy has a port on your machine.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .label, .frame-label { font-size: 13px; fill: #525866; }
+    .path { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; fill: #111827; }
+    .node { fill: #f6f7f9; stroke: #767d8e; }
+    .node-you { fill: #e7eafd; stroke: #5544da; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .node-inner { fill: #ffffff; stroke: #005a77; }
+    .frame { fill: none; stroke: #767d8e; stroke-dasharray: 5 4; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .edge-dash { stroke-dasharray: 5 4; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text, .path { fill: #e6e8ee; }
+      .sub, .label, .frame-label { fill: #9aa1ad; }
+      .node { fill: #162233; stroke: #616d80; }
+      .node-you { fill: #202843; stroke: #9587f2; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .node-inner { fill: #101a2b; stroke: #00d4ff; }
+      .frame { stroke: #616d80; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="388"/>
+
+  <rect class="frame" x="160" y="14" width="546" height="360" rx="12"/>
+  <text class="frame-label" x="176" y="36">Docker Compose. Only the proxy has a port on your machine.</text>
+
+  <rect class="node-you" x="14" y="140" width="128" height="72" rx="8"/>
+  <text class="title" x="78" y="171" text-anchor="middle">Your browser</text>
+  <text class="sub" x="78" y="191" text-anchor="middle">localhost:8080</text>
+
+  <rect class="node" x="176" y="140" width="128" height="72" rx="8"/>
+  <text class="title" x="240" y="171" text-anchor="middle">Proxy</text>
+  <text class="sub" x="240" y="191" text-anchor="middle">Caddy, port 8080</text>
+
+  <rect class="node-brand" x="446" y="44" width="140" height="176" rx="10"/>
+  <text class="title" x="516" y="66" text-anchor="middle">Engine</text>
+  <rect class="node-inner" x="458" y="80" width="116" height="56" rx="6"/>
+  <text class="title" x="516" y="103" text-anchor="middle">Admin API</text>
+  <text class="sub" x="516" y="123" text-anchor="middle">port 3001</text>
+  <rect class="node-inner" x="458" y="148" width="116" height="56" rx="6"/>
+  <text class="title" x="516" y="171" text-anchor="middle">Content API</text>
+  <text class="sub" x="516" y="191" text-anchor="middle">port 3002</text>
+
+  <path class="node" d="M610 140a45 10 0 0 1 90 0v84a45 10 0 0 1 -90 0z"/>
+  <path class="edge" d="M610 140a45 10 0 0 0 90 0" style="stroke-width:1"/>
+  <text class="title" x="655" y="176" text-anchor="middle">Postgres</text>
+  <text class="sub" x="655" y="195" text-anchor="middle">content and</text>
+  <text class="sub" x="655" y="212" text-anchor="middle">settings</text>
+
+  <rect class="node" x="446" y="262" width="140" height="60" rx="8"/>
+  <text class="title" x="516" y="287" text-anchor="middle">Admin console</text>
+  <text class="sub" x="516" y="307" text-anchor="middle">the web screens</text>
+
+  <path class="edge" d="M142 176H176" marker-end="url(#head)"/>
+  <path class="edge" d="M304 160H326V108H458" marker-end="url(#head)"/>
+  <text class="path" x="334" y="100">/api/admin/*</text>
+  <path class="edge" d="M304 176H458" marker-end="url(#head)"/>
+  <text class="path" x="334" y="150">/api/*</text>
+  <text class="path" x="334" y="167">/.well-known/*</text>
+  <path class="edge" d="M304 192H326V292H446" marker-end="url(#head)"/>
+  <text class="label" x="334" y="284">everything else</text>
+  <path class="edge" d="M586 176H610" marker-end="url(#head)"/>
+
+  <path class="edge edge-dash" d="M516 322V346H240V212" marker-end="url(#head)"/>
+  <text class="label" x="248" y="366">The console's server calls the engine through the proxy too.</text>
+</svg>

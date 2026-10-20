@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="298" viewBox="0 0 720 298">
+  <title>The two APIs</title>
+  <desc>One engine serves two HTTP APIs over one database. The admin console and your scripts call the Admin API at /api/admin/ on port 3001 with a session token or an admin token. Your sites and apps call the Content API at /api/v1/ on port 3002 with an API key or a session token. A token from POST /api/admin/auth/login works on both. GraphQL and gRPC reach the same content, each with a license feature of its own.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .label, .note { font-size: 13px; fill: #525866; }
+    .path { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; fill: #111827; }
+    .node { fill: #f6f7f9; stroke: #767d8e; }
+    .node-you { fill: #e7eafd; stroke: #5544da; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .node-inner { fill: #ffffff; stroke: #005a77; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text, .path { fill: #e6e8ee; }
+      .sub, .label, .note { fill: #9aa1ad; }
+      .node { fill: #162233; stroke: #616d80; }
+      .node-you { fill: #202843; stroke: #9587f2; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .node-inner { fill: #101a2b; stroke: #00d4ff; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="298"/>
+
+  <rect class="node" x="14" y="62" width="156" height="56" rx="8"/>
+  <text class="title" x="92" y="85" text-anchor="middle">Admin console</text>
+  <text class="sub" x="92" y="104" text-anchor="middle">and your scripts</text>
+
+  <rect class="node-you" x="14" y="150" width="156" height="56" rx="8"/>
+  <text class="title" x="92" y="173" text-anchor="middle">Your sites</text>
+  <text class="sub" x="92" y="192" text-anchor="middle">and apps</text>
+
+  <rect class="node-brand" x="300" y="14" width="240" height="216" rx="10"/>
+  <text class="title" x="420" y="38" text-anchor="middle">Engine</text>
+  <rect class="node-inner" x="316" y="54" width="208" height="76" rx="6"/>
+  <text class="title" x="420" y="78" text-anchor="middle">Admin API</text>
+  <text class="path" x="420" y="98" text-anchor="middle">/api/admin/</text>
+  <text class="sub" x="420" y="118" text-anchor="middle">port 3001</text>
+  <rect class="node-inner" x="316" y="140" width="208" height="76" rx="6"/>
+  <text class="title" x="420" y="164" text-anchor="middle">Content API</text>
+  <text class="path" x="420" y="184" text-anchor="middle">/api/v1/</text>
+  <text class="sub" x="420" y="204" text-anchor="middle">port 3002</text>
+
+  <path class="node" d="M592 92a52 11 0 0 1 104 0v80a52 11 0 0 1 -104 0z"/>
+  <path class="edge" d="M592 92a52 11 0 0 0 104 0" style="stroke-width:1"/>
+  <text class="title" x="644" y="136" text-anchor="middle">Database</text>
+  <text class="sub" x="644" y="155" text-anchor="middle">one for both</text>
+
+  <path class="edge" d="M170 96H316" marker-end="url(#head)"/>
+  <text class="label" x="243" y="72" text-anchor="middle">session or</text>
+  <text class="label" x="243" y="88" text-anchor="middle">admin token</text>
+  <path class="edge" d="M170 184H316" marker-end="url(#head)"/>
+  <text class="label" x="243" y="160" text-anchor="middle">API key or</text>
+  <text class="label" x="243" y="176" text-anchor="middle">session token</text>
+  <path class="edge" d="M540 132H592" marker-end="url(#head)"/>
+
+  <text class="note" x="14" y="262">A token from POST /api/admin/auth/login works on both APIs.</text>
+  <text class="note" x="14" y="282">GraphQL and gRPC reach the same content, each with a license feature of its own.</text>
+</svg>

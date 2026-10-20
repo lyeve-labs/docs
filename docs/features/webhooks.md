@@ -64,13 +64,15 @@ your endpoint receives and the retry policy.
 
 ## How it works
 
+![After an entry is saved, each matching webhook sends a POST to its URL. A 2xx is delivered, a failure is retried after growing waits, and a delivery that runs out of attempts waits in the dead-letter queue.](images/webhook-delivery.svg)
+
 | Step | What happens |
 |---|---|
 | Change | An entry is created, updated or deleted, and the write is saved. |
 | Match | Each enabled webhook of the tenant checks the event, the content type and its filters. |
 | Deliver | A `POST` goes to the URL, signed when the webhook has a secret, with 10 seconds to answer. Any `2xx` is a success. |
-| Retry | A failure is retried in the background by the webhook's retry policy. |
-| Dead letter | A delivery that runs out of attempts waits in the dead-letter queue, where you replay or dismiss it. |
+| Retry | A failure is retried in the background by the webhook's retry policy. A retry, like a replay from the dead-letter queue, has 30 seconds to answer. |
+| Dead letter | A delivery that runs out of attempts waits in the dead-letter queue, where you can read or delete it. With `webhook-pro` you can also replay or dismiss it. |
 
 A webhook fires after the change is saved, so a slow or failing endpoint never
 delays or blocks a write. A tenant's webhooks see only that tenant's content.

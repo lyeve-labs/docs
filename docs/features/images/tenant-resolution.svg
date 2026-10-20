@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="374" viewBox="0 0 720 374">
+  <title>How a request picks its tenant</title>
+  <desc>Four requests reach one instance that holds the tenants acme, beta and gamma, each with its own content, users, keys and settings. A site visitor on acme.example.com runs in acme by its domain. An app with an API key from acme runs in acme by its key. An editor signed in to beta runs in beta by membership. A signed-in super admin who names gamma in the X-Tenant-ID header runs in gamma. A request runs in exactly one tenant and never reads another tenant's data. More than one tenant needs a license with the multitenant-provisioning feature.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .label, .note, .frame-label { font-size: 13px; fill: #525866; }
+    .node-you { fill: #e7eafd; stroke: #5544da; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .frame { fill: none; stroke: #767d8e; stroke-dasharray: 5 4; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text { fill: #e6e8ee; }
+      .sub, .label, .note, .frame-label { fill: #9aa1ad; }
+      .node-you { fill: #202843; stroke: #9587f2; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .frame { stroke: #616d80; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="374"/>
+
+  <rect class="node-you" x="14" y="44" width="196" height="52" rx="8"/>
+  <text class="title" x="112" y="65" text-anchor="middle">Site visitor</text>
+  <text class="sub" x="112" y="84" text-anchor="middle">on acme.example.com</text>
+
+  <rect class="node-you" x="14" y="108" width="196" height="52" rx="8"/>
+  <text class="title" x="112" y="129" text-anchor="middle">Your app</text>
+  <text class="sub" x="112" y="148" text-anchor="middle">with an API key from acme</text>
+
+  <rect class="node-you" x="14" y="176" width="196" height="52" rx="8"/>
+  <text class="title" x="112" y="197" text-anchor="middle">Editor</text>
+  <text class="sub" x="112" y="216" text-anchor="middle">signed in to beta</text>
+
+  <rect class="node-you" x="14" y="244" width="196" height="52" rx="8"/>
+  <text class="title" x="112" y="265" text-anchor="middle">Super admin</text>
+  <text class="sub" x="112" y="284" text-anchor="middle">signed in, names gamma</text>
+
+  <rect class="frame" x="310" y="12" width="396" height="300" rx="12"/>
+  <text class="frame-label" x="326" y="32">One instance</text>
+
+  <rect class="node-brand" x="330" y="44" width="356" height="116" rx="8"/>
+  <text class="title" x="508" y="97" text-anchor="middle">Tenant acme</text>
+  <text class="sub" x="508" y="117" text-anchor="middle">own content, users, keys and settings</text>
+
+  <rect class="node-brand" x="330" y="176" width="356" height="52" rx="8"/>
+  <text class="title" x="508" y="197" text-anchor="middle">Tenant beta</text>
+  <text class="sub" x="508" y="216" text-anchor="middle">own content, users, keys and settings</text>
+
+  <rect class="node-brand" x="330" y="244" width="356" height="52" rx="8"/>
+  <text class="title" x="508" y="265" text-anchor="middle">Tenant gamma</text>
+  <text class="sub" x="508" y="284" text-anchor="middle">own content, users, keys and settings</text>
+
+  <path class="edge" d="M210 70H330" marker-end="url(#head)"/>
+  <text class="label" x="262" y="62" text-anchor="middle">its domain</text>
+  <path class="edge" d="M210 134H330" marker-end="url(#head)"/>
+  <text class="label" x="262" y="126" text-anchor="middle">its key</text>
+  <path class="edge" d="M210 202H330" marker-end="url(#head)"/>
+  <text class="label" x="262" y="194" text-anchor="middle">membership</text>
+  <path class="edge" d="M210 270H330" marker-end="url(#head)"/>
+  <text class="label" x="262" y="262" text-anchor="middle">X-Tenant-ID</text>
+
+  <text class="note" x="14" y="340">A request runs in exactly one tenant and never reads another tenant's data.</text>
+  <text class="note" x="14" y="358">More than one tenant needs a license with the multitenant-provisioning feature.</text>
+</svg>

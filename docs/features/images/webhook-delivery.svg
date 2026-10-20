@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="408" viewBox="0 0 720 408">
+  <title>What happens to a webhook delivery</title>
+  <desc>An entry is saved. In the background, each webhook that matches the event, the content type and its filters sends a POST to its URL, signed when it has a secret. Any 2xx answer is delivered. An error, a timeout or another status is retried, by default after waits of at least 30, 60, 120 and 240 seconds. A delivery that runs out of attempts waits in the dead-letter queue, where you can delete it, or with webhook-pro replay or dismiss it. The write never waits for a delivery.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .sub, .note, .label, .frame-label { font-size: 13px; fill: #525866; }
+    .label-ok { fill: #126c34; font-weight: 600; }
+    .label-bad { fill: #ab1a1a; }
+    .node { fill: #f6f7f9; stroke: #767d8e; }
+    .node-ok { fill: #e3ede5; stroke: #126c34; }
+    .node-warn { fill: #f3e7e2; stroke: #904207; }
+    .node-bad { fill: #f8e5e2; stroke: #ab1a1a; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .frame { fill: none; stroke: #767d8e; stroke-dasharray: 5 4; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .edge-ok { stroke: #126c34; }
+    .edge-warn { stroke: #904207; }
+    .edge-bad { stroke: #ab1a1a; }
+    .head { fill: #616774; }
+    .head-ok { fill: #126c34; }
+    .head-warn { fill: #904207; }
+    .head-bad { fill: #ab1a1a; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text { fill: #e6e8ee; }
+      .sub, .note, .label, .frame-label { fill: #9aa1ad; }
+      .label-ok { fill: #22c55e; }
+      .label-bad { fill: #f87171; }
+      .node { fill: #162233; stroke: #616d80; }
+      .node-ok { fill: #152f34; stroke: #22c55e; }
+      .node-warn { fill: #2c2c31; stroke: #f59e0b; }
+      .node-bad { fill: #2e2736; stroke: #f87171; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .frame { stroke: #616d80; }
+      .edge { stroke: #8b94a7; }
+      .edge-ok { stroke: #22c55e; }
+      .edge-warn { stroke: #f59e0b; }
+      .edge-bad { stroke: #f87171; }
+      .head { fill: #8b94a7; }
+      .head-ok { fill: #22c55e; }
+      .head-warn { fill: #f59e0b; }
+      .head-bad { fill: #f87171; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+    <marker id="head-ok" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head-ok" d="M0 1L10 5L0 9z"/></marker>
+    <marker id="head-warn" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head-warn" d="M0 1L10 5L0 9z"/></marker>
+    <marker id="head-bad" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head-bad" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="408"/>
+
+  <rect class="frame" x="196" y="14" width="510" height="380" rx="12"/>
+  <text class="frame-label" x="212" y="36">In the background, after the save</text>
+
+  <rect class="node" x="14" y="48" width="160" height="72" rx="8"/>
+  <text class="title" x="94" y="72" text-anchor="middle">Entry saved</text>
+  <text class="sub" x="94" y="92" text-anchor="middle">created, updated</text>
+  <text class="sub" x="94" y="110" text-anchor="middle">or deleted</text>
+  <text class="note" x="94" y="160" text-anchor="middle">Your write never</text>
+  <text class="note" x="94" y="178" text-anchor="middle">waits for a delivery.</text>
+
+  <rect class="node-brand" x="212" y="48" width="158" height="72" rx="8"/>
+  <text class="title" x="291" y="72" text-anchor="middle">Webhooks match</text>
+  <text class="sub" x="291" y="92" text-anchor="middle">event, content type</text>
+  <text class="sub" x="291" y="110" text-anchor="middle">and filters</text>
+
+  <rect class="node-brand" x="390" y="48" width="164" height="72" rx="8"/>
+  <text class="title" x="472" y="72" text-anchor="middle">POST to your URL</text>
+  <text class="sub" x="472" y="92" text-anchor="middle">signed when it</text>
+  <text class="sub" x="472" y="110" text-anchor="middle">has a secret</text>
+
+  <rect class="node-ok" x="588" y="48" width="110" height="72" rx="8"/>
+  <text class="title" x="643" y="80" text-anchor="middle">Delivered</text>
+  <text class="sub" x="643" y="100" text-anchor="middle">any 2xx</text>
+
+  <rect class="node-warn" x="354" y="176" width="236" height="80" rx="8"/>
+  <text class="title" x="472" y="201" text-anchor="middle">Retry after a wait</text>
+  <text class="sub" x="472" y="221" text-anchor="middle">by default, at least</text>
+  <text class="sub" x="472" y="239" text-anchor="middle">30, 60, 120 and 240 s</text>
+
+  <rect class="node-bad" x="354" y="304" width="236" height="74" rx="8"/>
+  <text class="title" x="472" y="327" text-anchor="middle">Dead-letter queue</text>
+  <text class="sub" x="472" y="347" text-anchor="middle">delete it, or with webhook-pro</text>
+  <text class="sub" x="472" y="365" text-anchor="middle">replay or dismiss it</text>
+
+  <path class="edge" d="M174 84H212" marker-end="url(#head)"/>
+  <path class="edge" d="M370 84H390" marker-end="url(#head)"/>
+  <path class="edge edge-ok" d="M554 84H588" marker-end="url(#head-ok)"/>
+  <text class="label label-ok" x="571" y="74" text-anchor="middle">2xx</text>
+
+  <path class="edge edge-bad" d="M452 120V176" marker-end="url(#head-bad)"/>
+  <text class="label label-bad" x="444" y="145" text-anchor="end">error, timeout</text>
+  <text class="label label-bad" x="444" y="163" text-anchor="end">or not 2xx</text>
+  <path class="edge edge-warn" d="M492 176V120" marker-end="url(#head-warn)"/>
+  <text class="label" x="500" y="154" text-anchor="start">next attempt</text>
+
+  <path class="edge edge-bad" d="M472 256V304" marker-end="url(#head-bad)"/>
+  <text class="label" x="480" y="284" text-anchor="start">out of attempts</text>
+</svg>

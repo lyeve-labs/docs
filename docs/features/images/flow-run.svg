@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="346" viewBox="0 0 720 346">
+  <title>How a flow runs</title>
+  <desc>A flow has exactly one trigger: an HTTP request, a schedule, an event, a manual run or, with flow-pro, a signed webhook. The trigger starts the nodes, which do the work one step each, each fed by the steps before it. In this example a node queries content and a branch either writes a record or goes straight on. A response answers the caller of an HTTP flow. Every run is recorded step by step, with each node's input and output. Steps never loop back on themselves, so every run finishes. Triggers run the published version, and a test runs the draft.</desc>
+  <style>
+    .canvas { fill: #ffffff; }
+    text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
+    .title { font-size: 15px; font-weight: 600; }
+    .row { font-size: 14px; font-weight: 600; }
+    .sub, .label, .note, .frame-label { font-size: 13px; fill: #525866; }
+    .pill-pro { stroke-dasharray: 4 3; }
+    .pill-text { font-size: 13px; fill: #111827; }
+    .node { fill: #f6f7f9; stroke: #767d8e; }
+    .node-brand { fill: #e2eaee; stroke: #005a77; }
+    .node-ok { fill: #e3ede5; stroke: #126c34; }
+    .pill { fill: #ffffff; stroke: #005a77; }
+    .frame { fill: none; stroke: #767d8e; stroke-dasharray: 5 4; }
+    .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
+    .head { fill: #616774; }
+    @media (prefers-color-scheme: dark) {
+      .canvas { fill: #101a2b; }
+      text, .pill-text { fill: #e6e8ee; }
+      .sub, .label, .note, .frame-label { fill: #9aa1ad; }
+      .node { fill: #162233; stroke: #616d80; }
+      .node-brand { fill: #173045; stroke: #00d4ff; }
+      .node-ok { fill: #152f34; stroke: #22c55e; }
+      .pill { fill: #101a2b; stroke: #00d4ff; }
+      .frame { stroke: #616d80; }
+      .edge { stroke: #8b94a7; }
+      .head { fill: #8b94a7; }
+    }
+  </style>
+  <defs>
+    <marker id="head" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path class="head" d="M0 1L10 5L0 9z"/></marker>
+  </defs>
+  <rect class="canvas" width="720" height="346"/>
+
+  <rect class="node-brand" x="14" y="24" width="172" height="272" rx="10"/>
+  <text class="title" x="100" y="50" text-anchor="middle">Trigger</text>
+  <text class="sub" x="100" y="68" text-anchor="middle">exactly one per flow</text>
+  <rect class="pill" x="30" y="84" width="140" height="28" rx="14"/>
+  <text class="pill-text" x="100" y="103" text-anchor="middle">HTTP request</text>
+  <rect class="pill" x="30" y="120" width="140" height="28" rx="14"/>
+  <text class="pill-text" x="100" y="139" text-anchor="middle">Schedule</text>
+  <rect class="pill" x="30" y="156" width="140" height="28" rx="14"/>
+  <text class="pill-text" x="100" y="175" text-anchor="middle">Event</text>
+  <rect class="pill" x="30" y="192" width="140" height="28" rx="14"/>
+  <text class="pill-text" x="100" y="211" text-anchor="middle">Manual run</text>
+  <text class="sub" x="100" y="244" text-anchor="middle">with flow-pro</text>
+  <rect class="pill pill-pro" x="30" y="254" width="140" height="28" rx="14"/>
+  <text class="pill-text" x="100" y="273" text-anchor="middle">Signed webhook</text>
+
+  <rect class="frame" x="200" y="24" width="394" height="196" rx="12"/>
+  <text class="frame-label" x="216" y="208">Nodes, one step each, fed by the steps before</text>
+
+  <rect class="node" x="214" y="126" width="128" height="48" rx="8"/>
+  <text class="row" x="278" y="155" text-anchor="middle">Query content</text>
+  <rect class="node" x="366" y="126" width="80" height="48" rx="8"/>
+  <text class="row" x="406" y="155" text-anchor="middle">Branch</text>
+  <rect class="node" x="462" y="60" width="124" height="48" rx="8"/>
+  <text class="row" x="524" y="89" text-anchor="middle">Write record</text>
+
+  <rect class="node-ok" x="606" y="114" width="100" height="72" rx="8"/>
+  <text class="row" x="656" y="145" text-anchor="middle">Response</text>
+  <text class="sub" x="656" y="164" text-anchor="middle">HTTP flows</text>
+
+  <path class="edge" d="M186 150H214" marker-end="url(#head)"/>
+  <path class="edge" d="M342 150H366" marker-end="url(#head)"/>
+  <path class="edge" d="M406 126V84H462" marker-end="url(#head)"/>
+  <text class="label" x="414" y="106">yes</text>
+  <path class="edge" d="M446 150H606" marker-end="url(#head)"/>
+  <text class="label" x="526" y="143" text-anchor="middle">no</text>
+  <path class="edge" d="M586 84H656V114" marker-end="url(#head)"/>
+
+  <rect class="node" x="200" y="236" width="506" height="56" rx="8"/>
+  <text class="row" x="453" y="259" text-anchor="middle">Run history</text>
+  <text class="sub" x="453" y="278" text-anchor="middle">each node's input and output, step by step</text>
+
+  <text class="note" x="14" y="316">Steps never loop back on themselves, so every run finishes.</text>
+  <text class="note" x="14" y="334">Triggers run the published version, and a test runs the draft.</text>
+</svg>
