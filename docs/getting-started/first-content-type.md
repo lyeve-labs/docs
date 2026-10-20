@@ -147,7 +147,8 @@ export POST_ID="<the id from the answer>"
 ```
 
 The answer carries the link as `author_id` under `data`, and `_status` is `published`. A post
-created through the Content API is always published, whatever the body says about its status.
+created through the Content API takes the `_status` its `data` names, such as `"_status": "draft"`,
+and is published when it names none.
 
 ## 6. Take it back to draft, then publish it
 
@@ -208,8 +209,9 @@ curl -g "http://localhost:3002/api/v1/content/post?filters[slug]=notes-on-the-en
 ]
 ```
 
-`GET /api/v1/content/post/$POST_ID` reads one post by its `id`, drafts included, and takes
-`populate` too.
+`GET /api/v1/content/post/$POST_ID` reads one post by its `id`, and takes `populate` too.
+Your account may read drafts, so a draft comes back as well. A caller who may not read drafts
+gets `404` for one.
 
 :::tip[A post with several authors]
 Give `author` the `relation_type` `many_to_many` instead. The authors are then set with

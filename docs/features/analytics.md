@@ -14,9 +14,10 @@ event to the services you connect, records whether each one arrived, and lets
 a signed-in user download or erase their own data.
 
 :::tip[Best for]
-- **Reporting usage per tenant.** Daily active users, API calls, storage and
-  new users, one row per tenant per day, with totals over any range and a CSV
-  export. Computing a day needs the [audit log](audit-log.md).
+- **Reporting usage per tenant.** Daily active users, storage and new users,
+  one row per tenant per day, computed on its own after each day ends, with
+  totals over any range and a CSV export. Daily active users are counted from
+  the [audit log](audit-log.md).
 - **Seeing content activity in the analytics tool your team already reads.**
   Every content create, update and delete is sent as an event to the services
   you connect.
@@ -40,7 +41,7 @@ a signed-in user download or erase their own data.
 
 | Part | What it gives you | Where |
 |---|---|---|
-| **Daily figures** | `dau`, `api_calls`, `storage` and `new_users` for one tenant and one day, computed when you ask. | Admin API |
+| **Daily figures** | `dau`, `storage` and `new_users` for one tenant and one day, computed for every tenant after the day ends. | Admin API |
 | **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API and admin console |
 | **Tenant usage** | A super admin's view of usage and activity across tenants, and each tenant's own view. | Admin and Content API |
 | **Privacy requests** | A user's own export and erasure. | Content API |
@@ -119,8 +120,10 @@ You need an admin token in `TOKEN`. The
 
 ## Compute daily figures
 
-Figures for a day exist once you compute them. Call the aggregate route for
-the day you want, or once a day from your own scheduler:
+The figures for a UTC day are computed for every tenant on their own, within
+15 minutes after midnight, or within 15 minutes of a later start when the
+instance was down at midnight. To compute a day by hand, such as one before
+the instance ran, call the aggregate route:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/analytics/aggregate \
@@ -130,17 +133,20 @@ curl -X POST http://localhost:3001/api/admin/analytics/aggregate \
 ```
 
 ```json
-{ "id": "fc6d4bd7-32cc-4191-8517-b1e1ff72ac01", "tenant_id": "default", "date": "2026-09-30", "dau": 42, "api_calls": 18250, "storage": 73400320, "new_users": 3, "computed_at": "2026-10-01T00:05:12Z" }
+{ "id": "fc6d4bd7-32cc-4191-8517-b1e1ff72ac01", "tenant_id": "default", "date": "2026-09-30", "dau": 42, "api_calls": null, "storage": 73400320, "new_users": 3, "computed_at": "2026-10-01T00:05:12Z" }
 ```
 
-With no body, the date is today in UTC. Running it again for the same day
+`api_calls` is always `null`, because nothing collects API calls for these
+figures. With no body, the date is today in UTC. Running it again for the same day
 replaces that day's row. A super admin can compute one day for every tenant
 with `POST /api/admin/analytics/aggregate-all`.
 
 :::caution
 Daily active users are counted from the [audit log](audit-log.md), which needs
-a license with the `audit` feature. Without it, computing a day answers `503`
-with `aggregation failed`.
+a license with the `audit` feature. Without it, a day is still computed with
+`dau` at `0`, and the answer of the aggregate route lists it as
+`"unavailable": ["dau"]`. Without the media feature, `storage` is `0` and
+listed there the same way.
 :::
 
 Read the stored days back, newest first, or the totals over a range:
@@ -154,7 +160,7 @@ curl "http://localhost:3001/api/admin/analytics/summary?from=2026-09-01&to=2026-
 ```
 
 ```json
-{ "days": 30, "total_dau": 1260, "total_api_calls": 547500, "total_storage": 73400320, "total_new_users": 41 }
+{ "days": 30, "total_dau": 1260, "total_api_calls": null, "total_storage": 73400320, "total_new_users": 41 }
 ```
 
 `from` and `to` take `YYYY-MM-DD`. `GET /api/admin/analytics/export` downloads
@@ -288,11 +294,17 @@ The download is one JSON object per line, each tagged with `data_type`:
 { "erase_id": "5a0f9c2e-1b7d-4e3a-8c6f-2d9e0a4b7c15", "message": "GDPR erasure initiated. Your data will be removed shortly." }
 ```
 
+Erasure checks for a legal hold first. An account under an active hold gets
+`409`, and a hold check that fails answers `503`. Nothing is erased in either
+case.
+
 :::danger
 Erasure applies to the account that calls it, so never run it with your own
-admin token. It runs in the background, soft-deletes the content the user
-created, deletes the media they uploaded, and anonymizes the account: the email
-becomes `erased+<user id>@localhost`, and the password and roles are cleared.
+admin token. It runs in the background through the content and media
+features' own erasure. Content entries stay with the user cleared as their
+author, and media files stay with the uploader, location and author removed
+from them, so the files remain reachable. It also anonymizes the account: the
+email becomes `erased+<user id>@localhost`, and the password and roles are cleared.
 API keys belong to the tenant and are kept.
 :::
 
@@ -335,7 +347,7 @@ features start, include `analytics` in it. See
 | `GET` | `/api/admin/analytics/events/{id}` | Admin | One event, with its delivery outcome. |
 | `GET` | `/api/admin/analytics/deliveries` | Admin | Deliveries still owed, as `{"data": [...], "licensed": bool}`. Query: `status` (`pending` or `failed`), `limit` (at most 200). |
 | `POST` | `/api/admin/analytics/deliveries/{id}/replay` | Admin | Send one delivery again now. Needs `analytics-pro`. |
-| `GET` | `/api/admin/analytics/dashboard` | Admin | `total_content`, `total_media`, `total_users`, `api_calls_24h`. Today the first three are always `0`, and `api_calls_24h` holds the daily active users computed for today. |
+| `GET` | `/api/admin/analytics/dashboard` | Admin | Your tenant's own `total_content`, `total_media` and `total_users`. `total_content` or `total_media` is `null` when the content or media feature is not installed. `api_calls_24h` is always `null`. |
 | `GET` | `/api/v1/analytics` | Signed in | Your tenant's usage and activity. |
 | `POST` | `/api/v1/gdpr/export` | Signed in | Your data as NDJSON. |
 | `POST` | `/api/v1/gdpr/erase` | Signed in | Erases your data. `202`. |
@@ -355,10 +367,12 @@ features start, include `analytics` in it. See
 | `402` | `payment_required`, naming `feature:analytics-pro` |
 | `403` | `super_admin required` |
 | `404` | `daily metric not found`, `provider not found`, `event not found`, `tenant not found`, `delivery not found` |
+| `409` | `erasure is deferred by a legal hold on this account` on `POST /api/v1/gdpr/erase` |
 | `422` | `retry_policy.max_attempts must be between 1 and 10`, `retry_policy.backoff_seconds must be between 1 and 3600 when max_attempts is above 1` |
 | `422` | `config.url must be an absolute https:// URL of at most 2048 characters`, `the destination address is not allowed` |
 | `429` | `rate limit exceeded (<n> req/min per tenant)` on `GET /api/v1/analytics` |
 | `503` | `aggregation failed` |
+| `503` | `erasure is temporarily unavailable` on `POST /api/v1/gdpr/erase`, when the legal hold check fails |
 | `503` | `provider secrets cannot be stored right now`, code `analytics.secrets_unavailable`, when the instance has no `ENCRYPTION_KEY` |
 
 ## Related

@@ -45,24 +45,28 @@ Elasticsearch as well.
 | **Tail** | Records as they are written, starting with the last 100. | Follow the live log with pause and resume. |
 
 Records are written to the database within about a second. An admin reads
-only their own tenant's records in every view. A super admin reads one tenant
-in search and tail (the default tenant, or the one named in `tenant_id`), and
-every record in the stream, including the instance's own lines that belong to
-no tenant.
+only their own tenant's records in every view. A super admin who has not
+picked a tenant reads the default tenant's records and the instance's own
+records that belong to no tenant in search, tail and the volume view. Naming
+`tenant_id` reads that one tenant alone. The stream reads every record. A super admin's work on another tenant, such as creating, cloning,
+restoring or deleting it, logs under no tenant, so no tenant admin sees it.
+Only a super admin reading the whole log does.
 
 ## In the admin console
 
 Open **Insight > Logs**. **Volume and levels** counts the last 24 hours of
 entries by level, and a level chip shows only that level's entries. Under
-**Entries**, type words from a message and press **Search**, or pick a level
-and a page size. **Volume alerts** opens the rules described under
+**Entries**, the search box reads **Message words, a request ID or a trace ID**.
+Type words from a message, or paste a request ID or a trace ID on its own to
+find every line of that request or trace, and press **Search**. You can also
+pick a level and a page size. **Volume alerts** opens the rules described under
 [Watch log volume](#watch-log-volume).
 
 ![The Logs page searched for the word slow, listing WARN entries that read slow request detected, each with its time.](images/logs.png)
 
 **Insight > Observability** follows the live log under **Live log tail**, with
-a **Minimum level**, **Pause** and **Clear**. Finding the lines of one request
-or one trace, changing levels and shipping records go through the API below.
+a **Minimum level**, **Pause** and **Clear**. Changing levels and shipping
+records go through the API below.
 
 ## Try it
 

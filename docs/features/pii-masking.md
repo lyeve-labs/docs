@@ -44,9 +44,24 @@ apply to responses only.
 | `TOKEN` | `[redacted-token]` | 5 |
 | `EMAIL` | `[redacted-email]` | 10 |
 | `PHONE` | `[redacted-phone]` | 20 |
-| `IP` | `[redacted-ip]`, for IPv4 addresses | 30 |
+| `IP` | `[redacted-ip]`, for IPv4 and IPv6 addresses | 30 |
 | `CREDIT_CARD` | `[redacted-cc]`, only for numbers that start with a card issuer's prefix and pass the Luhn check | 40 |
 | `SSN` | `[redacted-ssn]` | 50 |
+
+The `IP` rule masks an IPv4 address such as `203.0.113.7`, and an IPv6 address
+in any of the forms it is written in:
+
+- Full or compressed, such as `2001:db8::7`, in either case.
+- The loopback address `::1`.
+- An IPv4 address mapped into IPv6, such as `::ffff:203.0.113.7`, which is
+  replaced whole.
+- An address with a zone, such as `fe80::1%eth0`.
+
+A port or a prefix length stays. `[2001:db8::7]:8080` reads
+`[redacted-ip]:8080`, as `203.0.113.7:8080` does, and `10.0.0.0/24` reads
+`[redacted-ip]/24`. Times, timestamps, UUIDs, MAC addresses and code such as
+`std::vector` are left alone, and so is `::`, which names no address. Log lines
+are masked the same way.
 
 Bodies of type JSON, XML, form data, JavaScript and any `text/*` type are
 scanned. Server-sent event streams and binary bodies pass through.
@@ -54,14 +69,35 @@ scanned. Server-sent event streams and binary bodies pass through.
 Some Admin API paths return real values, because the console needs them to do
 its job: `/api/admin/auth`, `/api/admin/users`, `/api/admin/invitations`,
 `/api/admin/gdpr`, `/api/admin/api-keys` and `/api/admin/admin-tokens`. Reads on
-those paths are still recorded in the access log. The Content API has no such
-exceptions.
+those paths are still recorded in the access log.
 
-SCIM provisioning under `/api/v1/scim` is the one other exception. Masking
-leaves those answers as written, because the identity provider reads back the
-people it provisioned, and a masked address would read as a changed user on
-its next sync. Those reads are not recorded in the access log, because the
-provider signs in with a SCIM token rather than an account.
+A super admin reads three more answers in full: the audit log, the compliance
+export of a legal hold and a tenant's member list. Each of those reads is
+recorded in the access log, and everyone else gets them masked.
+
+Admin API answers that hold configuration or text the product ships are sent
+as written and are not recorded, because none of it is personal data. These
+are:
+
+- Instance settings, configuration bundles and listen addresses.
+- Address allow and deny lists, and the firewall's settings, rules and
+  exemptions.
+- The settings of webhooks, incoming webhooks, flows, email, logging, alerts,
+  storage, AI providers, metrics export, probes and scheduled jobs.
+- The Prometheus metrics scrapes.
+- Where the audit log is streamed.
+- This feature's own page, so the presets read with their descriptions as
+  written.
+- The API description and the sign-in provider templates.
+
+What those features record about people stays masked: webhook deliveries, flow
+runs, firewall violations, probe results and job runs.
+
+On the Content API, SCIM provisioning under `/api/v1/scim` is the one
+exception. Masking leaves those answers as written, because the identity
+provider reads back the people it provisioned, and a masked address would read
+as a changed user on its next sync. Those reads are not recorded in the access
+log, because the provider signs in with a SCIM token rather than an account.
 On every other masked path, no role sees unmasked output.
 
 Matching is by pattern and cannot catch every form of personal data. Keep
@@ -172,6 +208,11 @@ rule, so send every field.
 `offset`. Each entry carries `viewer_user_id`, `viewer_role`, `pii_type` (one
 rule name, or several joined by commas), `accessed_at` and `tenant_id`. An admin
 sees their own tenant. A super admin sees every tenant.
+
+A super admin's read is filed under the tenant the request names: the tenant
+in the member list's path, or the audit log's `tenant_id` filter. Every other
+read by a super admin is filed under no tenant, so a tenant's admins never
+learn whose personal data a super admin read.
 
 Entries older than `PII_MASK_RETENTION_DAYS` are deleted every hour. Deleting a
 tenant deletes its entries.

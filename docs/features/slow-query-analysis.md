@@ -38,6 +38,10 @@ content type or an endpoint got slow, and what to index.
   intercepted, so the statement stored beside a slow request is the
   database's most expensive recent one, which is usually, but not always, the
   one that request ran.
+- A server-sent event stream or a WebSocket is never captured, because it
+  stays open as long as its client does, so its time measures the client.
+  [Request profiling](request-profiling.md) leaves streams out of its timings
+  too.
 - Literals are removed from stored SQL and plans. Strings and numbers become
   `?`, so no customer data or secret is kept.
 - Each entry belongs to the tenant whose request triggered it. Deleting a
@@ -107,8 +111,18 @@ The [quickstart](../getting-started/quickstart.md) shows how to get one.
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   The answer is `{"engine": "postgres", "entries": [...]}`. On MySQL, call
-   `analyze-mysql` instead.
+   The answer is `{"engine": "postgres", "entries": [...], "plans_read": n}`,
+   where `plans_read` counts the entries that carry a plan. On MySQL, call
+   `analyze-mysql` instead. When `plans_read` is `0`, `no_plans_reason` says
+   why:
+
+   | `no_plans_reason` | Meaning |
+   |---|---|
+   | `other_dialect` | The instance runs another database. |
+   | `capture_disabled` | `QUERY_MONITOR_DISABLE_PG_STAT_CAPTURE` is set. |
+   | `source_missing` | `pg_stat_statements` is not installed, or MySQL's `performance_schema` digest table is missing. |
+   | `source_unreadable` | Checking for the source failed. |
+   | `none_captured` | The source is there, and no captured statement carries a plan yet. |
 
 3. On SQL Server, read the server's own ranking:
 
@@ -150,7 +164,8 @@ An entry from `analyze-pg` looks like this:
         ]
       }
     }
-  ]
+  ],
+  "plans_read": 1
 }
 ```
 

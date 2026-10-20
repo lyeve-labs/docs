@@ -31,14 +31,18 @@ signs the account out of every device.
 :::
 
 :::caution[Beta]
-Password reset is in beta. An account created by OAuth or SAML sign-in can
-use it too, and then has a password it can sign in with.
+Password reset is in beta. An account created by OAuth, SAML or SCIM can use
+it too, and then has a password it can sign in with, both within the tenant's
+[sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider).
 :::
 
 ## In the admin console
 
 1. On the sign-in page, choose **Forgot password?**.
-2. Enter the account's address and choose **Email me a reset link**.
+2. Enter the account's address and choose **Email me a reset link**. If your
+   organization's identity provider created the account and the console's
+   address does not already name your organization, enter its short name in
+   **Organization (optional)**.
 3. Open the link from the email. On **Choose a new password**, enter the
    password in **New password** and **Confirm new password**, then choose
    **Save**.
@@ -52,9 +56,9 @@ sends the token, so a password that is too short does not spend the link.
 
 | Step | What happens |
 |---|---|
-| Request | The console posts the address to `/api/admin/auth/password-reset/request`. The answer is the same, in about the same time, whether or not the account exists. A new request cancels the account's earlier unused links. |
-| Email | The link `<LYEVE_CONSOLE_URL>/reset-password?token=<token>` is mailed. |
-| Confirm | The person chooses a new password of at least 12 characters, and the console sends it with the token. |
+| Request | The console posts the address, and the organization when one was entered, to `/api/admin/auth/password-reset/request`. The answer is the same, in about the same time, whether or not the account exists, and whether or not another tenant holds the address. A new request cancels the account's earlier unused links. |
+| Email | The link `<LYEVE_CONSOLE_URL>/reset-password?token=<token>` is mailed. When the account has a tenant, the link adds `&tenant=<tenant>`, and the console carries it on to the sign-in page, which fills in the organization. |
+| Confirm | The person chooses a new password of at least 12 characters, and the console sends it with the token. The account is checked again, so a link mailed before the account was disabled, or before its sign-in window closed, sets no password. |
 | Sign-out | Every session and refresh token the account held ends. |
 
 ## Turn it on
@@ -88,6 +92,11 @@ Both routes are public and take no `Authorization` header.
    { "message": "If an account with that email exists, a password reset link has been sent." }
    ```
 
+   An account that a tenant's identity provider created is reached only
+   through its tenant. When the hostname you call does not name that tenant,
+   add `"tenant": "<tenant slug>"` to the body. A tenant the hostname names
+   wins over the field.
+
 2. Open the email and copy the `token` from the link.
 
 3. Try a password that is too short. The token is not spent:
@@ -99,8 +108,13 @@ Both routes are public and take no `Authorization` header.
    ```
 
    ```json
-   { "error": "password must be at least 12 characters" }
+   { "error": "Password must be at least 12 characters.", "code": "AUTH_PASSWORD_TOO_SHORT" }
    ```
+
+   The answer is `422`. The new password has to pass the same policy as a new
+   account's: `PASSWORD_MIN_LENGTH`, `PASSWORD_REQUIRE_COMPLEXITY`,
+   `PASSWORD_CHECK_COMMON` and the 72-byte limit. A refusal names the rule in
+   `code`, and the link stays usable for a better password.
 
 4. Set the new password:
 
@@ -134,7 +148,7 @@ If you set `LYEVE_PLUGINS`, include `password-reset` in it.
 | Limit | Default |
 |---|---|
 | Link lifetime | 1 hour |
-| Minimum password length | 12 characters, whatever `PASSWORD_MIN_LENGTH` says |
+| New password | The install's password policy, as for a new account. See [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords). |
 | Reset requests per client address (`password-reset.ip`) | 10 per minute |
 | Reset mails per email address (`password-reset.email`) | 1 per 5 minutes |
 | Request route, per client address | 3 per second, burst 5 |
@@ -154,8 +168,8 @@ Errors answer a JSON body with an `error` message.
 
 | Status | Message | Cause |
 |---|---|---|
-| `400` | `invalid or expired reset token` | The token is wrong, expired or already used. Request a new link. |
-| `400` | `password must be at least 12 characters` | The new password is too short. |
+| `400` | `invalid or expired reset token` | The token is wrong, expired or already used, or the account was disabled or left its sign-in window after the link was sent. Request a new link. |
+| `422` | `AUTH_PASSWORD_TOO_SHORT`, `AUTH_PASSWORD_NEEDS_COMPLEXITY`, `AUTH_PASSWORD_TOO_COMMON` or `AUTH_PASSWORD_TOO_LONG` in `code` | The new password fails the install's password policy. The link is not spent. |
 | `503` | `password reset is not configured` | `LYEVE_CONSOLE_URL` is not set. |
 
 <details>
@@ -177,6 +191,11 @@ Errors answer a JSON body with an `error` message.
   `failed to send email`.
 - **The link points to the wrong address.** Set `LYEVE_CONSOLE_URL` to the
   console's public URL.
+- **No email arrives for an account an identity provider created.** The
+  request has to name the account's tenant, by hostname or by `tenant`. The
+  account also gets no mail when the provider has not signed it in within the
+  tenant's [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider),
+  or when the directory deactivated it.
 - **Password reset is missing.** In production it does not start without
   `LYEVE_CONSOLE_URL`. The server log names the setting at startup.
 

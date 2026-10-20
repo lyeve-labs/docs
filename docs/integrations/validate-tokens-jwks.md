@@ -103,7 +103,7 @@ against such an instance. See
 | Claim | Type | Notes |
 |---|---|---|
 | `sub` | string | User ID (UUID) |
-| `email` | string | The user's email |
+| `email` | string | The user's email. On an install with several tenants, the same address can belong to a different account in each tenant, so identify an account by `sub` |
 | `roles` | string[] | The user's roles in the tenant the session acts in |
 | `tenant_id` | string | The tenant. Absent for an account with no tenant, such as the first super admin |
 | `typ` | string | `session` for a normal token, `challenge` for one waiting on a second factor |

@@ -46,14 +46,14 @@ total below 100 does not hold anyone out: the remainder goes to the variant crea
 Open **Delivery > Experiments**. Each experiment shows the question it tests, its status, the
 exposures it needs and when it was created. A draft has **Start**, a running one has **Pause**
 and **Stop**, and the row buttons edit, duplicate or delete it. **New experiment** asks for a
-**Name**, **What it is testing**, a **Confidence level**, the **Minimum exposures per variant**
+**Name**, **What it is testing**, a **Confidence level**, the **Minimum exposures**
 and whether to **Stop automatically once significant**.
 
 ![The Experiments page with signup-button running and pricing-headline still a draft, each with the question it tests and the exposures it needs.](images/ab-testing.png)
 
 **Confidence level** is the `significance_threshold` below, so `0.95` means a p-value below
-0.05. **Minimum exposures per variant** and the **Needs per variant** column are counted across
-all variants together, the same as `min_sample_size`.
+0.05. **Minimum exposures** and the **Exposures needed** column count exposures across all
+variants together, the same as `min_sample_size`.
 
 ## Try it
 

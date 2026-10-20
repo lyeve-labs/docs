@@ -63,7 +63,7 @@ endpoints** ranks paths by request count, with each one's error rate, latency
 and average size. **HTTP methods**, **Top user agents** and **Anomalies**
 follow.
 
-![The API analytics page for the last 24 hours, with the request total, the error rates and the latency percentiles at the top, the responses split by status class, one path under Where the errors are, and the top endpoints ranked by request count.](images/api-analytics.png)
+![The API analytics page for the last 24 hours, with the request total, the error rates and the latency percentiles at the top, the responses split by status class, three paths under Where the errors are, and the top endpoints ranked by request count.](images/api-analytics.png)
 
 The breakdown by tenant and the hourly trend are read through the API below.
 

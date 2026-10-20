@@ -174,7 +174,10 @@ A config key whose type below is `expression` takes a bare expression with no
 `{{ }}` around it. Every other string key may carry `{{ }}` segments.
 
 An expression reads and never writes: it has no I/O and no assignment, and one
-source is at most 64 KiB.
+source is at most 64 KiB. It reads only the names below. An expression that
+reads `$env` is refused with `$env is not available, name the value instead`,
+and a draft that holds one cannot be published. Read a tenant value through
+`vars` instead.
 
 | Name | Value |
 | --- | --- |

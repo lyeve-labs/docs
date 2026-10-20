@@ -14,11 +14,8 @@ What each status means, and how revisions are kept, is explained on
 [the data model](../../concepts/data-model.md#statuses) page. The same steps over the Admin
 API, with archiving and scheduling, are in [Content lifecycle](../../features/content-lifecycle.md).
 
-:::caution[A draft can already be live]
-Today your site's Content API serves an entry saved in the console as published, even while
-the console shows it as a draft. Keep unfinished work out of collections your site reads
-until this is fixed.
-:::
+Your site sees a draft only when its credential may also edit the collection. A site that reads
+with a read-only key shows published entries alone.
 
 ## See an entry's status
 

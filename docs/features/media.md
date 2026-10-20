@@ -85,13 +85,15 @@ get one. Any PNG or JPEG works as `hero.png`.
        "metadata": { "width": 400, "height": 300, "color_depth": 8, "has_alpha": true },
        "tags": ["image"],
        "created_at": "2026-10-02T09:20:09.512818Z",
+       "updated_at": "2026-10-02T09:20:09.512818Z",
        "url": "/api/v1/storage/local/20d35ec0-bd5c-53a3-8111-b122a0d7ba4e?expires=1791019209&key=...&sig=...",
        "public": false
      }
    ]
    ```
 
-   Copy the `id` into `MEDIA_ID`.
+   Copy the `id` into `MEDIA_ID`. `updated_at` is when the item last changed. An item
+   stored before the server recorded it starts at its `created_at`.
 
 2. Read it back with its thumbnails:
 
@@ -298,6 +300,7 @@ The ones you meet most:
 | Status | Message |
 |---|---|
 | `400` | `invalid multipart form`, `invalid JSON`, `invalid request body`, `invalid search body` |
+| `400` | `request body could not be read` when an upload stops partway below the size limit. One that reaches the limit answers `413`. |
 | `400` | `folder may use a to z, 0 to 9, _, - and /` on a change |
 | `400` | `not an image` on reprocess |
 | `404` | `not found`, or `media not found` on reprocess and thumbnails |

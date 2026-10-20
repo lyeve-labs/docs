@@ -129,7 +129,7 @@ You need an admin token for a super admin in `TOKEN`. The
 | `provider_type` | `s3`, `minio`, `gcs`, `azure_blob` or `local`. | required |
 | `bucket` | Bucket or container. | |
 | `region` | Region. | |
-| `endpoint` | Endpoint URL, for MinIO and other S3-compatible stores. | |
+| `endpoint` | Endpoint URL, for MinIO and other S3-compatible stores. An Azure endpoint takes no query, so no SAS token. Put the account name in `access_key` and the account key in `secret_key`, which sign every request. | |
 | `access_key`, `secret_key` | Credentials. Stored encrypted and never returned. On update, leave them out to keep the stored ones. | |
 | `use_ssl` | Use TLS. | `false` |
 | `path_style` | Path-style bucket addressing, which MinIO needs. | `false` |
@@ -310,7 +310,9 @@ choose which features start, include `storage`. See
 | Status | Message | Cause |
 |---|---|---|
 | `400` | `content_length is required (no server-side max configured)` | Send `content_length`, or set `MAX_PRESIGN_UPLOAD_BYTES`. |
+| `400` | `key contains a '.' segment` | A presigned or multipart upload named a key with a `.` segment, such as `reports/./q3.pdf`. An object already stored under such a key stays readable and removable. |
 | `400` | `storage: endpoint SSRF blocked: ...` | The endpoint resolves to a private or internal address. |
+| `400` | `storage: an Azure endpoint must not carry a SAS token or any other query, so put the account key in the provider's key fields` | An `azure_blob` endpoint holds a `?`. Nothing is saved. |
 | `501` | `failed to generate presigned upload URL` | The chosen provider is local, which cannot presign. |
 
 <details>
