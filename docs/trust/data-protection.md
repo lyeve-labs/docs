@@ -185,6 +185,36 @@ directory record, with its external id and stored attributes, and the OAuth
 provider links. The account row itself stays, with its address replaced by
 `erased-<user id>@localhost` and its roles cleared.
 
+Some data is kept under an email address rather than an account. An erasure by
+user id looks for it under both addresses the account holds: its own and the
+one its identity provider asserted. An erasure by address looks under that
+address alone. It reaches:
+
+- Mail sent to the address, in every tenant: the recipient of each sent
+  message, delivery events, opens and clicks with their IP address and user
+  agent, bounces and suppressions. A suppression is deleted. Everywhere else
+  the recipient is replaced with `[redacted]`, and the subject and body of a
+  sent message stay.
+- Magic link sign-in links and the record of each sign-in attempt, in every
+  tenant. Both are deleted.
+- Comments in a `comments` content type, such as the one the
+  [`comments` preset](../reference/schema-presets.md) creates, whose
+  `author_email` is the address. Their `author_name` and `author_email` are
+  cleared and the comment stays.
+- Rows of a `form_submissions` content type, such as the one the `forms`
+  preset creates, whose `data` holds the address as a whole value. They are
+  deleted. A submission that names the address inside a longer value, such as
+  a message asking for a reply to it, stays.
+
+Comments and form submissions are erased in one tenant only, because the same
+address may belong to someone else in another: the account's own tenant for an
+erasure by user id, and the tenant the request is made in for an erasure by
+address.
+
+An address the person used in the past and no longer holds is out of reach.
+No record keeps an account's earlier addresses, so data kept under one is
+erased only by a request that names that address.
+
 Erasure checks legal holds before it touches a row. A hold that cannot be
 checked is not treated as no hold: the server answers `503` with
 `legal hold status is unavailable; erasure was not attempted`, and the request
