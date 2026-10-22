@@ -199,8 +199,9 @@ address alone. It reaches:
   tenant. Both are deleted.
 - Comments in a `comments` content type, such as the one the
   [`comments` preset](../reference/schema-presets.md) creates, whose
-  `author_email` is the address. Their `author_name` and `author_email` are
-  cleared and the comment stays.
+  `author_email` is the address. The `author_email` becomes
+  `erased-<id>@erased.invalid`, where `<id>` is the comment's id, the
+  `author_name` is left empty, and the comment stays.
 - Rows of a `form_submissions` content type, such as the one the `forms`
   preset creates, whose `data` holds the address as a whole value. They are
   deleted. A submission that names the address inside a longer value, such as
