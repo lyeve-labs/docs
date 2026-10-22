@@ -16,9 +16,9 @@ for the code in it:
 
 Three parts are commercial, and their source is not public:
 
-- **License verification.** The server in the engine image includes it. It
-  holds no secret, because verification is an offline Ed25519 signature check
-  against a public key.
+- **License verification.** The server in the engine image includes it, under
+  the [EULA](https://lyeve.com/legal/eula/). It holds no secret, because
+  verification is an offline Ed25519 signature check against a public key.
 - **Every feature beyond the engine, including the ones included free.** They
   are commercial software under the [EULA](https://lyeve.com/legal/eula/). Free
   means free of charge, not open source. Content types, entries, draft and
@@ -26,9 +26,9 @@ Three parts are commercial, and their source is not public:
   [schema changes](../features/schema-changes.md) and
   [content lifecycle](../features/content-lifecycle.md). Access rules are a
   feature too.
-- **The visual flow and schema editors in the admin image.** They carry a
-  commercial license of their own, which the admin image ships beside the MIT
-  one as `LICENSE-COMMERCIAL.md`.
+- **The visual flow and schema editors in the admin image.** They are under
+  the [EULA](https://lyeve.com/legal/eula/), and the admin image ships a summary
+  of it beside the MIT license as `LICENSE-COMMERCIAL.md`.
 
 ## Check the licenses in the images
 
