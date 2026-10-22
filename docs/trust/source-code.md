@@ -12,7 +12,7 @@ for the code in it:
   PostgreSQL, MySQL and SQL Server support. It answers the Admin API and the
   Content API. On its own it serves no content, because content types come
   from a feature.
-- **The admin console.**
+- **The admin console's public source.**
 
 Three parts are commercial, and their source is not public:
 
