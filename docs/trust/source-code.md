@@ -14,7 +14,7 @@ for the code in it:
   from a feature.
 - **The admin console's public source.**
 
-Three parts are commercial, and their source is not public:
+These parts are commercial, and their source is not public:
 
 - **License verification.** The server in the engine image includes it, under
   the [EULA](https://lyeve.com/legal/eula/). It holds no secret, because
@@ -29,6 +29,8 @@ Three parts are commercial, and their source is not public:
 - **The visual flow and schema editors in the admin image.** They are under
   the [EULA](https://lyeve.com/legal/eula/), and the admin image ships a summary
   of it beside the MIT license as `LICENSE-COMMERCIAL.md`.
+- **Any other LyEve code in the images whose source is not public.** It is
+  under the [EULA](https://lyeve.com/legal/eula/) too.
 
 ## Check the licenses in the images
 
