@@ -206,10 +206,13 @@ address alone. It reaches:
   deleted. A submission that names the address inside a longer value, such as
   a message asking for a reply to it, stays.
 
-Comments and form submissions are erased in one tenant only, because the same
-address may belong to someone else in another: the account's own tenant for an
-erasure by user id, and the tenant the request is made in for an erasure by
-address.
+Comments and form submissions are erased only in the person's own tenant,
+because the same address may belong to someone else in another. An erasure by
+user id uses the account's tenant. An erasure by address uses the tenant of
+each account whose address, or address from its identity provider, is the one
+named. When no account holds the address, it uses the tenant the request is
+made in: your own, or the tenant you name with `X-Tenant-ID` (see
+[Tenants](../features/tenants.md)).
 
 An address the person used in the past and no longer holds is out of reach.
 No record keeps an account's earlier addresses, so data kept under one is
