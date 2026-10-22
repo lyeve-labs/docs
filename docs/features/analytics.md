@@ -375,22 +375,72 @@ The download is one JSON object per line, each tagged with `data_type`:
 `POST /api/v1/gdpr/erase` answers `202`:
 
 ```json
-{ "erase_id": "5a0f9c2e-1b7d-4e3a-8c6f-2d9e0a4b7c15", "message": "GDPR erasure initiated. Your data will be removed shortly." }
+{
+  "erase_id": "5a0f9c2e-1b7d-4e3a-8c6f-2d9e0a4b7c15",
+  "message": "GDPR erasure initiated. Your account is signed out and locked as the erasure starts, and it will be anonymized once the rest of your data is erased. The files you uploaded will be deleted. Content you wrote is kept, with you removed as its author."
+}
 ```
 
 Erasure checks for a legal hold first. An account under an active hold gets
 `409`, and a hold check that fails answers `503`. Nothing is erased in either
 case.
 
+The erasure runs in the background and is the same erasure an admin runs from
+[data protection](../trust/data-protection.md#right-to-erasure): every feature
+erases the person's data, and the account is anonymized last. A legal hold
+placed after the `202` defers the erasure until the hold is released, and a
+run the hold stops is not counted as a failed one.
+
+A run that does not finish is retried. Every 15 minutes the server looks for
+unfinished erasures and runs again each one that has waited at least 15
+minutes. An erasure runs at most three times, the first run and two retries.
+A legal hold check that cannot answer counts as a failed run. After the third
+failed run the erasure waits for a super admin to
+[run it again](#finish-an-erasure-that-stopped), and with the
+[audit log](audit-log.md) licensed it writes the entry `gdpr.erase_incomplete`.
+
 :::danger
 Erasure applies to the account that calls it, so never run it with your own
-admin token. It runs in the background through the content and media
-features' own erasure. Content entries stay with the user cleared as their
-author, and media files stay with the uploader, location and author removed
-from them, so the files remain reachable. It also anonymizes the account: the
-email becomes `erased+<user id>@localhost`, and the password and roles are cleared.
-API keys belong to the tenant and are kept.
+admin token. The account is signed out and locked as the erasure starts. The
+files the user uploaded in the tenants they belong to are deleted. Content
+entries stay with the user removed as their author. Once everything else is
+erased the account is anonymized: the email becomes
+`erased-<user id>@localhost`, and the password and roles are cleared. API keys
+belong to the tenant and are kept.
 :::
+
+### Finish an erasure that stopped
+
+A super admin lists the erasures that have not finished, across every tenant,
+oldest first and at most 500:
+
+```bash
+curl http://localhost:3002/api/admin/analytics/gdpr/erasures \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `{"erasures": [...]}`, and each erasure carries:
+
+| Field | Meaning |
+|---|---|
+| `id` | The erasure. |
+| `user_id` | The account being erased. |
+| `failed_erasers` | The parts that failed or never ran on the last run, named by the feature they belong to. When another part failed, the account is among them, because it is anonymized last. |
+| `attempts` | The runs so far. An erasure that has not run yet shows `0`. |
+| `requested_at` | When this run of the erasure was requested. |
+
+Fix what failed, such as a storage provider that was down, then run the
+erasure again by the account's id:
+
+```bash
+curl -X POST http://localhost:3002/api/admin/analytics/gdpr/erasures/3e7cc859-1207-4c7c-9af2-363fa5079e0b/rerun \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+It answers `202` with `{"erase_id": "..."}`, writes the audit entry
+`gdpr.erase`, and runs in the background with three runs again. It answers
+`404` for an account with no unfinished erasure, and `409` while another run of
+that erasure is going.
 
 ## Settings
 
@@ -435,6 +485,8 @@ features start, include `analytics` in it. See
 | `GET` | `/api/v1/analytics` | Signed in | Your tenant's usage and activity. |
 | `POST` | `/api/v1/gdpr/export` | Signed in | Your data as NDJSON. |
 | `POST` | `/api/v1/gdpr/erase` | Signed in | Erases your data. `202`. |
+| `GET` | `/api/admin/analytics/gdpr/erasures` | Super admin | Erasures that have not finished, as `{"erasures": [...]}`. |
+| `POST` | `/api/admin/analytics/gdpr/erasures/{user_id}/rerun` | Super admin | Runs one again. `202`. |
 
 </details>
 
@@ -451,12 +503,15 @@ features start, include `analytics` in it. See
 | `402` | `payment_required`, naming `feature:analytics-pro` |
 | `403` | `super_admin required` |
 | `404` | `daily metric not found`, `provider not found`, `event not found`, `tenant not found`, `delivery not found` |
+| `400` | `invalid user ID` on a rerun |
+| `404` | `no incomplete erasure for this account` on a rerun |
 | `409` | `erasure is deferred by a legal hold on this account` on `POST /api/v1/gdpr/erase` |
+| `409` | `this erasure is running` on a rerun |
 | `422` | `retry_policy.max_attempts must be between 1 and 10`, `retry_policy.backoff_seconds must be between 1 and 3600 when max_attempts is above 1` |
 | `422` | `config.url must be an absolute https:// URL of at most 2048 characters`, `the destination address is not allowed` |
 | `429` | `rate limit exceeded (<n> req/min per tenant)` on `GET /api/v1/analytics` |
 | `503` | `aggregation failed` |
-| `503` | `erasure is temporarily unavailable` on `POST /api/v1/gdpr/erase`, when the legal hold check fails |
+| `503` | `erasure is temporarily unavailable` on `POST /api/v1/gdpr/erase`, when the legal hold check fails, or on a rerun |
 | `503` | `provider secrets cannot be stored right now`, code `analytics.secrets_unavailable`, when the instance has no `ENCRYPTION_KEY` |
 
 ## Related

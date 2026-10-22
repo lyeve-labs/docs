@@ -127,14 +127,56 @@ curl -X POST http://localhost:3001/api/admin/gdpr/erase \
 </div>
 
 Every feature that contributes to an export also erases. Erasure removes or
-anonymizes the subject's rows in each of them and answers:
+anonymizes the subject's rows in each of them.
+
+The person is signed out and their account locked as the erasure starts,
+before anything is erased, so nobody can sign in and write new rows behind it.
+The account itself is anonymized last, only after every other part has
+erased. Until then it keeps the address the other parts find the person by.
+
+The status says whether the erasure finished:
+
+| Status | Meaning |
+|---|---|
+| `200` | Every part erased, and `complete` is `true`. When a legal hold stopped the erasure, `complete` is `false`, `holds` names the holds and nothing was erased. |
+| `207` | Part of the erasure did not finish, and `complete` is `false`. The account is not erased: it stays signed out and locked. Repeat the request to finish the erasure. |
+| `503` | Nothing was erased, because the legal hold check could not answer or the person could not be signed out. Repeat the request. |
+
+The answer carries:
 
 | Field | Meaning |
 |---|---|
 | `identifier` | The identifier erased. |
 | `total_rows` | Rows removed or anonymized across every feature. |
-| `errors` | `["one or more erasers failed"]` when a feature failed. |
+| `complete` | `true` only when every part erased. |
+| `failed` | On a `207`, the parts that failed or never ran, named by the feature they belong to. The account is among them. |
+| `errors` | On a `207`, what is unfinished, that the account was not erased, and that repeating the request finishes it. `null` otherwise. |
 | `holds` | The active legal holds that stopped the erasure, each with `id` and `reason`. Non-empty means nothing was erased. |
+
+A `207` reads like this:
+
+```json
+"errors": [
+  "not finished: <the parts named in failed>",
+  "the account was not erased: it is signed out and locked until every other part has erased",
+  "repeat the request to finish the erasure"
+]
+```
+
+Erasure deletes the files the person uploaded in their account's tenant and in
+every tenant they are a member of: the stored file, its thumbnails and its
+transformed versions, on every storage provider the file may be on. Some
+things stay:
+
+- A file they uploaded in another tenant, which they could reach only as a
+  super admin, stays in that tenant's library, with them removed as its
+  uploader and the personal fields stripped from its metadata.
+- A copy a CDN or a browser already cached is out of reach.
+- Content they wrote is kept, with them removed as its author.
+
+A file whose storage provider is unavailable or refuses the delete is kept, and
+the erasure answers `207`. Repeating the request deletes the files that are
+left.
 
 An erasure by address reaches every account that address names, in every
 tenant. That includes accounts a tenant's identity provider, SCIM directory or
@@ -147,6 +189,9 @@ Erasure checks legal holds before it touches a row. A hold that cannot be
 checked is not treated as no hold: the server answers `503` with
 `legal hold status is unavailable; erasure was not attempted`, and the request
 can be retried. `LYEVE_GDPR_HOLD_CHECK=proceed` changes that to erase anyway.
+When the person cannot be signed out, the server answers `503` with
+`the subject could not be signed out; erasure was not attempted`, and nothing
+is erased either. Repeat the request.
 
 In the audit log, erasure redacts the subject's entries in place rather than
 deleting them: the user id is cleared, the address and user agent become
