@@ -154,6 +154,10 @@ are, one content type at a time.
 | `flatten_json` | Write a nested CSV value as `key=value; key=value` in its cell instead of JSON. | `false` |
 | `s3` | `{"bucket", "key", "region"}`. Upload the result instead of keeping it for download. The file lands at `data-exports/<tenant>/<key>.<ext>`, so `key` names only the part after the tenant's prefix and tenants that share a bucket cannot write over each other's exports. | none |
 
+An export that already ran keeps its S3 `key` when a person's data is erased. Keep personal
+data such as a name or an email address out of a key, and use a ticket number or an opaque id
+instead.
+
 ## Follow, download and cancel an export
 
 `GET /api/admin/data-export/jobs/{id}` answers the job with its progress: `status`, `stage`,
