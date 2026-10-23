@@ -173,15 +173,33 @@ In setup mode the engine connects to no database and serves only setup:
 | `GET /api/admin/setup/status` | What is missing, with the `X-Setup-Token` header |
 | Anything else | `503` with the code `SETUP_REQUIRED` |
 
-Open the admin console. It asks for the setup token from the engine's log, then lists what
-is missing, with the environment lines and a `lyeve.yaml` snippet to paste. A missing secret
-comes with a value the engine generated for this start, shown once. Set the values where your
-deployment keeps them, restart the engine, and the console moves on to creating the first
-administrator. The same report is available without the console:
+To see what is missing, you need the setup token: the one in the engine's log, or
+`LYEVE_SETUP_TOKEN` when you set it.
+
+<div class="paths">
+<div data-path="console">
+
+Open the admin console. The setup page says the engine is missing settings. Paste the token
+into **Setup token** and choose **Show what to set**. The console lists what is missing, with
+the environment lines and a `lyeve.yaml` snippet to paste.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -H "X-Setup-Token: <token>" http://localhost:3001/api/admin/setup/status
 ```
+
+The answer lists each missing setting under `missing`, with its variable and its YAML key, and
+carries the lines to paste under `env` and `yaml`.
+
+</div>
+</div>
+
+A missing secret comes with a value the engine generated for this start, shown once. Set the
+values where your deployment keeps them and restart the engine. The setup page then moves on
+to creating the first administrator, and over the API `GET /api/admin/setup` reports
+`"setup_required":true` without `"mode":"setup"`.
 
 Setup mode covers those three settings only. A production engine still refuses to start on
 the other checks above, and the error names them. The engine never writes the values

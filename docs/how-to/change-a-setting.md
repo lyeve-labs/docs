@@ -16,7 +16,8 @@ Docker Compose, plain Docker and Kubernetes, and lists the settings that need ca
 
 - A running instance. [Run the engine and the console together](../getting-started/engine-and-console.md)
   starts one on your computer.
-- A `super_admin` account, to read **Settings > Configuration**.
+- A `super_admin` account, to read **Settings > Configuration** or
+  `GET /api/admin/config`.
 
 ## 1. Find where the setting lives
 
@@ -28,14 +29,37 @@ The engine reads each setting from up to three places. The first one that has it
 | The YAML file, `lyeve.yaml` | Whoever deploys the engine | At the next restart |
 | The admin console | A `super_admin`, on **Settings > Configuration** or a feature's own settings page | At once for most settings, otherwise at the next restart |
 
-A setting none of them sets takes the engine's default. Open **Settings > Configuration** to see
-which place each value came from:
+A setting none of them sets takes the engine's default. To see which place each value came
+from:
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Configuration**.
 
 ![The Configuration page: counts of settings from the environment, the files and the console, a search box, and each setting with its value and source.](images/configuration.png)
 
 Each row names the setting, its current value and its source. A secret shows
 **Stored, not shown**. A value set by an environment variable or the file is read-only on this
 page, because the higher place would win anyway. Search by a variable's name or by what it does.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:8080/api/admin/config \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Each entry under `settings` carries the `key`, its `value`, its `source` (`env`, `file` or
+`admin`) and whether it is `editable` in the console. A secret carries no value. `counts` says
+how many come from each place.
+
+</div>
+</div>
+
+Both list the settings one of the three places sets. A setting that only has its default is
+not listed.
 
 The console has a few settings of its own, which only the console container reads: `ORIGIN`,
 `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL`, `PORT`, `ADMIN_CONSOLE_KEY`, `ADDRESS_HEADER` and
@@ -90,40 +114,79 @@ variable's name in lower case, so `JWT_EXPIRY_SECS` is `jwt_expiry_secs`.
 [The YAML file](../reference/configuration.md#the-yaml-file) covers nesting, includes and
 `!overridable`.
 
-### In the console
+### In the console layer
 
-Some settings can be saved in the console, as long as no environment variable or file sets them:
+A feature's settings can be saved in the console layer, as long as no environment variable or
+file sets them. A setting the feature reads each time it uses it applies at once, and one it
+reads only at start applies at the next restart.
+[Where settings come from](../reference/configuration.md#where-settings-come-from) names the
+three that always wait for a restart. The engine's own settings, such as `JWT_EXPIRY_SECS`, are
+read from the environment or the file when the engine starts, so change those there.
 
-- **Settings > Configuration** saves a setting nothing higher sets. A setting the engine reads
-  each time it uses it applies at once, and one it reads only at start applies at the next
-  restart. [Where settings come from](../reference/configuration.md#where-settings-come-from)
-  names the three that always wait for a restart.
+<div class="paths">
+<div data-path="console">
+
 - A feature's settings page, such as **Settings > Email** or **Settings > Storage**, saves that
   feature's settings and credentials. A credential is encrypted and never shown again.
+- **Settings > Configuration** edits a value already saved in the console layer: change it in
+  its row and choose **Save**.
 - **Settings > License** activates a license. The paid parts of features that are running apply
   at once, and a paid feature that was not running starts at the next restart.
 
 ![The License page: the current plan and status, links to plans and to the customer portal, and a box to paste a license token or key.](../concepts/images/license.png)
+
+</div>
+<div data-path="api">
+
+`PUT /api/admin/config` saves settings into the console layer:
+
+```bash
+curl -X PUT http://localhost:8080/api/admin/config \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"values": {"flow_run_retention": "168h"}}'
+```
+
+The answer is `200` and lists each saved setting under `saved`. A setting an environment
+variable or the file holds is listed under `refused` with the reason, and when every setting is
+refused the answer is `409`. A license goes to `POST /api/admin/license/renew`, as
+[Licensing and tiers](../concepts/licensing-and-tiers.md#apply-a-license) shows.
+
+</div>
+</div>
+
+On console v0.21.0, **Settings > Configuration** lists only the settings one of the three places
+sets, so it cannot save a setting for the first time. Save that one with the API, or on its
+feature's own settings page.
 
 To let the console take over a setting the environment sets, name it in `LYEVE_OVERRIDABLE` on
 the engine. The environment value then stays in force until someone saves another one.
 
 ## 3. Check the value the engine uses
 
-After the restart, confirm the engine came back and took the value:
+After the restart, confirm the engine came back and took the value. First, `docker compose ps`
+shows the engine `(healthy)`, or `kubectl rollout status` finishes. An engine that refuses to
+start prints every problem at once in its log (`docker compose logs engine`), so one restart
+shows all of them. Then read the value:
 
-1. `docker compose ps` shows the engine `(healthy)`, or `kubectl rollout status` finishes.
-2. **Settings > Configuration** shows the new value and the place it came from.
+<div class="paths">
+<div data-path="console">
 
-An engine that refuses to start prints every problem at once in its log
-(`docker compose logs engine`), so one restart shows all of them.
+**Settings > Configuration** shows the new value and the place it came from. Search for the
+setting by its name.
 
-The same list is available to a script, with a `super_admin` token. Secrets show no value:
+</div>
+<div data-path="api">
+
+With a `super_admin` token, find the setting in the list. Secrets show no value:
 
 ```bash
-curl http://localhost:8080/api/admin/config \
-  -H "Authorization: Bearer $TOKEN"
+curl -s http://localhost:8080/api/admin/config \
+  -H "Authorization: Bearer $TOKEN" | grep -o '{"key":"JWT_EXPIRY_SECS"[^}]*}'
 ```
+
+</div>
+</div>
 
 ## Settings that need care
 

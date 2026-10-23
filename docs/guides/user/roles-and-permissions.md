@@ -44,10 +44,27 @@ accounts. See [access rules](../../features/access-rules.md#try-it).
 
 ## Manage users
 
+A super admin manages accounts, in the console or through the Admin API from a signed-in
+session. Roles are held per membership, so one person can be an `editor` in one tenant and an
+`admin` in another.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Access > Users**. The list shows each account with its roles and the day it was created,
+and the role filters above it narrow the list.
 
 ![Access > Users: each account with its roles and creation date, filters by role and a New user button.](images/users.png)
-A super admin manages accounts in **Access > Users**, or through these routes
-from a signed-in session:
+
+To create an editor:
+
+1. Choose **New user**.
+2. Enter `sam@example.com` in **Email** and a password in **Password**.
+3. Under **Roles**, keep **editor**, which is ticked already, or tick other roles.
+4. Choose **Create**. The account appears in the list with its roles.
+
+</div>
+<div data-path="api">
 
 | Method | Path | Does |
 |---|---|---|
@@ -61,16 +78,6 @@ from a signed-in session:
 | `PUT` | `/api/admin/users/{id}/memberships` | Give a user membership of a tenant. |
 | `DELETE` | `/api/admin/users/{id}/memberships/{tenant}` | Remove a membership. |
 
-Roles are held per membership, so one person can be an `editor` in one tenant
-and an `admin` in another.
-
-A free install holds three admin seats: accounts with the `admin` or
-`super_admin` role, counted across every tenant. Creating a fourth, or giving a
-fourth account one of those roles, answers `402` with `cap_exceeded` until a
-license is in force. Access rules cover three roles until a license carries
-`rbac-pro`. See
-[licensing and tiers](../../concepts/licensing-and-tiers.md#what-runs-free).
-
 Create an editor:
 
 ```bash
@@ -80,9 +87,20 @@ curl -X POST http://localhost:3001/api/admin/users \
   -d '{"email": "sam@example.com", "password": "Editor-Account-2026"}'
 ```
 
-The answer is `201` with the user and `"roles": ["editor"]`. The password must
-meet the policy: by default at least 12 characters, with an upper-case letter,
-a lower-case letter and a digit, and not a common password.
+The answer is `201` with the user and `"roles": ["editor"]`.
+
+</div>
+</div>
+
+The password must meet the policy: by default at least 12 characters, with an upper-case
+letter, a lower-case letter and a digit, and not a common password.
+
+A free install holds three admin seats: accounts with the `admin` or
+`super_admin` role, counted across every tenant. Creating a fourth, or giving a
+fourth account one of those roles, answers `402` with `cap_exceeded` until a
+license is in force. Access rules cover three roles until a license carries
+`rbac-pro`. See
+[licensing and tiers](../../concepts/licensing-and-tiers.md#what-runs-free).
 
 ## `super_admin` and the tenant boundary
 
@@ -102,7 +120,7 @@ Treat `super_admin` like root and give it to as few people as possible. See
 
 ## How access is checked
 
-![Access > Permissions: rules by role, with create, read, update, delete and activate for each content type or flow.](images/permissions.png)
+![Access > Permissions: rules by role, with create, read, update, delete and activate for each content type or flow, and how the engine reads the rules.](images/permissions.png)
 
 Every request goes through the same steps, in order:
 
