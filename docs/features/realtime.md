@@ -39,13 +39,16 @@ events. A client that reconnects picks up the events it missed.
 Open **Insight > Realtime** to see who is connected right now.
 **Server-sent events** counts the streams **Open now** and those accepted
 recently, the **Events pushed** and the **Rejected** ones.
-**WebSocket** counts the sockets **Open now** and **Idle**, the **Broadcasts**
-and the **Reconnections**. **Connections by tenant** lists each tenant holding
-a stream open, with its share. **Refresh** reads the counts again.
+**WebSocket** counts the sockets **Open now**, the **Broadcasts** and the
+**Reconnections**, and **Sockets by state** splits the open ones. **Connections
+by tenant** lists each tenant holding a stream open, with its share. **Refresh**
+reads the counts again.
 
 ![The Realtime page with two server-sent event streams and two WebSocket connections open, all held by the default tenant, and the events pushed and broadcasts sent so far.](images/realtime.png)
 
-The sections below open streams and sockets, broadcast and list who is online.
+**Delivery > API labs** opens a socket and shows what arrives, as [Try it](#try-it)
+shows. Console v0.21.0 has no screen to broadcast or to list who is online, so
+those sections use the engine API.
 
 ## How it works
 
@@ -87,15 +90,39 @@ An API key that holds `ws:read` receives every content notice of its tenant on
 :::
 
 Every connection must come from an allowed origin: its `Origin` header must be
-in `CORS_ORIGINS` or match the instance's own host. Browsers send it on their
-own. A server-side client sets it, or it is refused with
+in `CORS_ORIGINS` or match the instance's own host. Browsers send it on every
+WebSocket and on a stream opened from another origin. An SSE stream opened
+from a page on the instance's own origin carries none, and engine v0.55.0
+refuses it. A server-side client sets it, or it is refused with
 `403 origin not allowed`.
 
 ## Try it
 
-You need a token in `TOKEN` (the [quickstart](../getting-started/quickstart.md)
-shows how to get one) and a content type named `post`, such as the one in
+You need a content type named `post`, such as the one in
 [Create your first content type](../getting-started/first-content-type.md).
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Delivery > API labs** and choose **Streams**. Choose **WebSocket**,
+   enter `content:post` in **Topics** and choose **Connect**. The state reads
+   **open**, and an `ack` line arrives. Choose WebSocket, because the
+   **Server-sent events** choice answers *The stream was refused* on these
+   releases.
+
+2. In a second tab, open **Content**, pick **post** and choose **New entry**.
+   Enter `Realtime check` in **Title** and `realtime-check` in **Slug**, and
+   choose **Create**.
+
+   The API labs tab lists the event under **What arrives**, with the topic
+   `content:post` and the payload
+   `{"action":"create","record_id":"...","schema":"post"}`.
+
+</div>
+<div data-path="api">
+
+You need a token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+shows how to get one.
 
 1. Open a stream on the topic of `post`. The `Origin` header names the
    instance's own host:
@@ -132,7 +159,11 @@ shows how to get one) and a content type named `post`, such as the one in
      -H "Authorization: Bearer $TOKEN"
    ```
 
-   You are on the list, with `connection_count: 1`.
+   You are on the list, with `connection_count: 1`. The list counts SSE
+   streams, and the console has no screen for it.
+
+</div>
+</div>
 
 ## Server-Sent Events
 

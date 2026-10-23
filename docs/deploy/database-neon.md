@@ -54,7 +54,9 @@ connection limit even while a redeploy runs the old and new engine side by side.
 
 The engine's `/readyz` answers `503` while the database cannot be reached, and `/healthz` does
 too. A host that restarts the container on a failed liveness check may restart it while Neon
-resumes. Give the check a grace period of at least the time Neon takes to resume.
+resumes. Give the check a grace period of at least the time Neon takes to resume. A restart
+also signs everyone out once their access token expires, 15 minutes by default, because refresh
+tokens live in the engine's memory unless `CACHE_DRIVER=redis` is set.
 
 ## Verify
 
@@ -72,5 +74,7 @@ resuming.
 
 - [Database on Supabase](database-supabase.md): another free managed Postgres.
 - [Free-tier stack](free-tier-overview.md): the $0 recipe with an engine host.
+- [Run the engine and the console together](../getting-started/engine-and-console.md): the admin
+  console in front of the engine, on one address.
 - [Supported databases](index.md#supported-databases): why SQLite, Turso and libSQL are not an
   option.

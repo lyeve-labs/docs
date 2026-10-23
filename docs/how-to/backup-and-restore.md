@@ -12,7 +12,8 @@ puts it back: as a portable SQL file you download, as an encrypted archive in an
 S3 bucket, or as a clone into a new tenant on the same instance. A file taken on
 PostgreSQL loads on MySQL or SQL Server, and the other way round. These routes
 cover one tenant's content types and entries. Back up the whole database with
-your database provider's own tooling.
+your database provider's own tooling. Admin console v0.21.0 has no screen for
+backups, restores or clones, so every step uses the engine API.
 
 ## Before you start
 
@@ -27,10 +28,9 @@ your database provider's own tooling.
 - `import` and `validate` carry the dump inside a JSON body. With `tenant-backup`
   licensed, each sets its own limit: 500 MiB for `import` and 50 MiB for
   `validate`. `MAX_JSON_BODY_BYTES` and `MAX_BODY_BYTES` do not apply to them.
-- With the [web application firewall](../features/web-application-firewall.md)
-  running, its SQL injection rules refuse `validate` and `import` with `403`
-  and `request blocked by WAF`, because the body is SQL. Add an exception for
-  these paths before you load a dump.
+- The [web application firewall](../features/web-application-firewall.md)
+  does not inspect the `sql` field of `validate` and `import`, so a dump loads
+  with the firewall running.
 - The feature is in beta.
 
 ## Export a tenant to a file

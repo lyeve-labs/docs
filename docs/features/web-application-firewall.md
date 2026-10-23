@@ -73,6 +73,10 @@ If you set `LYEVE_PLUGINS`, include `waf` in it.
 
 ## Try it
 
+Admin console v0.21.0 shows whether the firewall is enforcing under **Settings > Security**. It
+has no screen for the rules, the violation log, exceptions or settings, so the steps on this page
+use the engine API.
+
 You need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -237,12 +241,12 @@ curl -X PUT http://localhost:3001/api/admin/waf/config \
 Inspecting whole bodies costs CPU on requests that need no credential. Raise
 the limit with care.
 
+Saved settings apply again after a restart. `GET /api/admin/waf/config`
+shows the ones in force.
+
 :::caution
-- These settings do not survive a restart. They are saved, but the instance
-  starts with the defaults above, so send them again after each restart and
-  check them with `GET /api/admin/waf/config`.
-- If the license lapses, the firewall's routes answer `402`, but inspection
-  and blocking go on with the rules already loaded.
+If the license lapses, the firewall's routes answer `402`, but inspection and
+blocking go on with the rules already loaded.
 :::
 
 ## Routes

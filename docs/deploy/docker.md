@@ -74,7 +74,9 @@ The image sets `ADMIN_LISTEN_ADDR=0.0.0.0:3001`, `API_LISTEN_ADDR=0.0.0.0:3002` 
 Mount a volume at `/var/lib/lyeve`. The engine creates its Ed25519 signing key there on first
 boot. Without the volume, a replaced container creates a new key and every token issued before
 it stops working. A named Docker volume is writable by uid `65532`, because the image prepares
-the directory with that owner.
+the directory with that owner. The volume keeps the key, not the sessions: refresh tokens live
+in the engine's memory unless `CACHE_DRIVER=redis` is set, so a new container still signs
+everyone out once their access token expires, 15 minutes by default.
 
 Mount a second volume at `/app/uploads` if media stays on local disk, or send media to an
 S3-compatible bucket. See [Object storage](../features/object-storage.md).

@@ -17,7 +17,8 @@ monthly allotment of requests, CPU and memory covers a low-traffic engine.
 - A Cloud Run service publishes one port, so it serves the Admin API or the Content API, not
   both. For both, use [Railway](engine-railway.md) or [Fly.io](engine-fly.md).
 - An instance has no persistent disk, so every new instance creates its own signing key. After
-  a scale to zero, users sign in again.
+  a scale to zero, users sign in again. Refresh tokens also live in the engine's memory unless
+  `CACHE_DRIVER=redis` is set, so a new instance cannot renew a session either way.
 :::
 
 ## Before you start
@@ -107,4 +108,6 @@ With `--port=3002`, fetch `/.well-known/jwks.json` instead. Only the Content API
 ## Next
 
 - [Free-tier stack](free-tier-overview.md): the $0 recipe and its limits.
+- [Run the engine and the console together](../getting-started/engine-and-console.md): the admin
+  console in front of the engine, on one address.
 - [Production checklist](production-checklist.md): what to confirm before real traffic.
