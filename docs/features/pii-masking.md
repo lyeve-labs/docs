@@ -115,7 +115,8 @@ built-in rules, which cannot be edited. **New rule** opens a form with
 access log.
 
 On console v0.21.0 the rule form has no button that saves it, so a new rule,
-or a change to one, is saved over the API. Testing a pattern, reading the
+or a change to one, is saved over the API. To change a rule there, find its id
+in `custom[].id` of `GET /api/admin/pii/rules`. Testing a pattern, reading the
 access log and deleting a rule work in the console.
 
 ![The PII masking page with one rule of the tenant's own, EMPLOYEE_ID, replacing EMP- and six digits with a redacted-employee placeholder, above the built-in presets in the order they run.](images/pii-masking.png)

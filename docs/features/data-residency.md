@@ -112,11 +112,19 @@ The answer is `201` with the region. Copy its `id` into `REGION`.
 Assign the tenant. Only the API does this on this release. If you work in the
 console, sign in over the API to get a token, as
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
-shows, and keep it in `TOKEN`. Then find the region's `id` in the list from
-`GET /api/admin/regions` and copy it into `REGION`.
+shows, and keep it in `TOKEN`.
 
-1. Find the tenant's id with `GET /api/admin/tenants` and copy it into
-   `TENANT`. A tenant is assigned by its id, not its slug.
+1. Find the region's id and the tenant's id. A tenant is assigned by its id,
+   not its slug:
+
+   ```bash
+   REGION=$(curl -s http://localhost:3001/api/admin/regions \
+     -H "Authorization: Bearer $TOKEN" \
+     | jq -r '.data[] | select(.slug == "eu-west-1") | .id')
+   TENANT=$(curl -s http://localhost:3001/api/admin/tenants \
+     -H "Authorization: Bearer $TOKEN" \
+     | jq -r '.data[] | select(.slug == "northwind") | .id')
+   ```
 
 2. Assign it:
 

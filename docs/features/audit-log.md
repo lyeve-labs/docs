@@ -62,8 +62,10 @@ action, resource type or user id in the search box, or pick an action under
 super admin also sees **Prune**.
 
 **Export JSON**, and **Export all** for a super admin, sit beside **Prune**. On
-console v0.21.0 these buttons answer with an error instead of a file, so export
-the log with the API, as [Export the log](#export-the-log) shows.
+console v0.21.0, behind a proxy that sends `/api/admin` to the engine, as the
+[Docker Compose guide](../deploy/docker-compose.md) sets up, these buttons
+answer with an error instead of a file. Export the log with the API there, as
+[Export the log](#export-the-log) shows.
 
 ![The Entries tab of the audit log listing recent actions, newest first, each with its time, action, resource and the user who acted.](images/audit-log.png)
 
@@ -121,20 +123,20 @@ curl "http://localhost:3001/api/admin/audit-log?limit=1" \
 {
   "data": [
     {
-      "id": "1170a17f-5e00-4193-87ab-49d20fdef6c6",
-      "sequence": 92,
+      "id": "ae2e0796-abb9-4fe9-a5c7-4d60e0f7966e",
+      "sequence": 1,
       "tenant_id": "default",
-      "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b",
-      "action": "ai.settings.update",
-      "resource_type": "ai_settings",
-      "resource_id": "default",
-      "ip": "[::1]:35606",
+      "user_id": "caeb8ec2-5c16-4d9d-96dd-a5b1b19f8fd8",
+      "action": "schema.create",
+      "resource_type": "schema",
+      "resource_id": "post",
+      "ip": "172.31.184.5:38982",
       "user_agent": "curl/8.18.0",
-      "created_at": "2026-10-01T12:09:44.045612Z",
-      "chain_hash": "8fd607e5a35021e3667cea11fb867ed75eac7802270ea75a3444ffb3f9ec9e34"
+      "created_at": "2026-10-23T16:53:34.819104Z",
+      "chain_hash": "8fabd4295ac7fadc4520f577fbbb0731f6da13f69c3e24a9bcd0777807ac10ee"
     }
   ],
-  "total": 92,
+  "total": 1,
   "limit": 1,
   "offset": 0
 }
@@ -167,8 +169,9 @@ The answer holds the `schema.create` entry with `"resource_id": "post"`.
 </div>
 </div>
 
-Download two rows as CSV. Only the API exports on console v0.21.0. If you
-work in the console, sign in over the API to get a token, as
+Download the newest rows as CSV, two at most. Use the API for this behind a proxy that
+sends `/api/admin` to the engine, where the console's export buttons fail on
+v0.21.0. If you work in the console, sign in over the API to get a token, as
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows, and keep it in `TOKEN`:
 
@@ -181,9 +184,11 @@ curl -X POST http://localhost:3001/api/admin/audit-log/export \
 
 ```text
 id,user_id,action,resource_type,resource_id,ip,user_agent,ts
-1170a17f-5e00-4193-87ab-49d20fdef6c6,3e7cc859-1207-4c7c-9af2-363fa5079e0b,ai.settings.update,ai_settings,default,****:****:****:35606,curl/8.18.0,2026-10-01T12:09:44.045612Z
-5ab83683-a564-4900-8115-a68dd5c27dc0,3e7cc859-1207-4c7c-9af2-363fa5079e0b,schema.delete,schema,post,****:****:****:35590,curl/8.18.0,2026-10-01T12:09:41.813285Z
+ae2e0796-abb9-4fe9-a5c7-4d60e0f7966e,caeb8ec2-5c16-4d9d-96dd-a5b1b19f8fd8,schema.create,schema,post,***.***.***.5:38982,curl/8.18.0,2026-10-23T16:53:34.819104Z
 ```
+
+On an install where creating `post` is the only entry so far, as here, the file
+holds that one row. The address is masked in the export.
 
 List the retention policies. A new install has none:
 
@@ -455,14 +460,28 @@ each policy with `entries_archived`, `entries_deleted` and `elapsed`.
 </div>
 </div>
 
-Export what a hold preserves. Only the API does this on this release:
+Export what a hold preserves. Only the API does this on this release, with a
+super admin token in `TOKEN`. A hold made in the console works the same way.
 
-```bash
-curl -X POST http://localhost:3001/api/admin/retention/compliance-export \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"legal_hold_id": "7e2a4b9c-1d05-4e68-b3f7-90a6c2d8e1f5", "format": "csv"}' -o hold.csv
-```
+1. List the holds and copy the hold's `id` into `HOLD_ID`:
+
+   ```bash
+   HOLD_ID=$(curl -s http://localhost:3001/api/admin/legal-holds \
+     -H "Authorization: Bearer $TOKEN" \
+     | jq -r '.data[] | select(.name == "Case 2026-114") | .id')
+   ```
+
+2. Export it:
+
+   ```bash
+   curl -X POST http://localhost:3001/api/admin/retention/compliance-export \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d "{\"legal_hold_id\": \"$HOLD_ID\", \"format\": \"csv\"}" -o hold.csv
+   ```
+
+The answer is `200` with a CSV file of the entries the hold matches. A hold
+that matches no entry yet gives a file with the header line only.
 
 <details>
 <summary>Retention and hold routes</summary>

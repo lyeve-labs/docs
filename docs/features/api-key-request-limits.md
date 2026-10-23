@@ -87,7 +87,7 @@ Create a key that may make three requests an hour:
 </div>
 <div data-path="api">
 
-You need a super admin token in `TOKEN`. The quickstart shows how to get one.
+You need an admin or super admin token in `TOKEN`. The quickstart shows how to get one.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/api-keys \

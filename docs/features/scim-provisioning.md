@@ -16,7 +16,8 @@ are the people who can sign in.
 
 :::tip[Best for]
 - **Onboarding without tickets.** A new hire assigned to the LyEve app in your
-  directory has an account before their first sign-in.
+  directory gets an account at their first SAML sign-in, with no ticket and
+  no invitation.
 - **Offboarding from one place.** A user the directory deactivates or removes
   is refused at SAML sign-in, password reset and magic link from that moment,
   and their sessions end. With `"deprovision_action": "delete"`, a user the
@@ -38,9 +39,11 @@ directory, `/api/v1/scim/v2`, with **Copy base path**, and each connection
 with what happens to an account the directory removes. The refresh button on a
 connection replaces its token, and the trash button removes the connection.
 
-Linking a connection to a [SAML provider](saml-sso.md) with
-`saml_provider_id` is done with the API. The console form has no field for it
-on this release.
+A connection is linked to a [SAML provider](saml-sso.md) only when it is
+created over the API with `saml_provider_id`, as
+[Link a connection to SAML](#link-a-connection-to-saml) shows. The console
+form has no field for it on this release, and no route changes a connection
+later, so a connection made in the console stays unlinked.
 
 ![Access > SCIM provisioning with the base path and two connections, one that disables removed accounts and one that deletes them.](images/scim-provisioning.png)
 
@@ -90,16 +93,6 @@ What you can rely on:
 4. In your identity provider, set the SCIM base URL to
    `https://lyeve.example.com/api/v1/scim/v2` and the token to the one you
    chose.
-
-:::caution
-- **`disable` does not reliably end access.** When the directory deletes a
-  user, `disable` marks the SCIM user inactive and is meant to remove every
-  role from the LyEve account. On PostgreSQL the account keeps its roles. On
-  every database, an inactive user who can still sign in through the linked
-  SAML provider gets roles again at that sign-in (`editor` when the provider
-  sends none). Use `"deprovision_action": "delete"`, or remove the person
-  under **Access > Users**, when someone must lose access at once.
-:::
 
 ## Try it
 
@@ -231,10 +224,39 @@ paths.
 | `bearer_token` | The token the directory sends as `Authorization: Bearer <token>`, at least 32 characters | required |
 | `saml_provider_id` | The [SAML provider](saml-sso.md) the same directory signs users in through | none |
 | `attribute_map` | Which SCIM attributes feed `userName`, `displayName`, `externalId`, `active` and `groups` | each attribute maps to itself |
-| `deprovision_action` | What a SCIM delete does: `disable` marks the user inactive and is meant to clear the account's roles (see the caution above), `delete` removes the LyEve account. Any other value answers `400` | `disable` |
+| `deprovision_action` | What a SCIM delete does: `disable` disables the account and ends its sessions, and keeps its roles so reactivating the user restores them. `delete` removes the LyEve account. Any other value answers `400` | `disable` |
 
 With `saml_provider_id` set, the first SAML sign-in of a provisioned user
 creates their LyEve account.
+
+## Link a connection to SAML
+
+Only the API sets the link on this release, and only when it creates the
+connection. To link a connection you made in the console, remove it and
+create it again this way. You need a super admin token in `TOKEN` and the
+directory's token in `SCIM_TOKEN`.
+
+1. Find the SAML provider's id and copy it into `SAML_ID`. Here the provider
+   is named `okta`:
+
+   ```bash
+   SAML_ID=$(curl -s http://localhost:3001/api/admin/saml-providers \
+     -H "Authorization: Bearer $TOKEN" \
+     | jq -r '.data[] | select(.name == "okta") | .id')
+   ```
+
+2. Create the connection with the link:
+
+   ```bash
+   curl -X POST http://localhost:3001/api/admin/scim/providers \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "azure-ad", "bearer_token": "'"$SCIM_TOKEN"'", "saml_provider_id": "'"$SAML_ID"'"}'
+   ```
+
+The answer is `201`, and `provider.saml_provider_id` holds the id. A user the
+directory then creates has no LyEve account until they first sign in through
+that provider. That sign-in creates the account with `editor`.
 
 ## Rotate the token
 
@@ -352,7 +374,7 @@ before SCIM reads the request.
 | `404` | `user not found` | The user does not exist, or another connection created it. |
 | `409` | `user already exists` | Another user holds the same identity, the address belongs to an account that holds `admin` or `super_admin`, or another directory user already links that account. |
 | `409` | `the user's account is one the directory cannot manage` | The change would deactivate, reactivate or delete an account that holds `admin` or `super_admin`. |
-| `415` | `unsupported media type, expected application/json or multipart/form-data` | The body is neither JSON nor form data, such as `text/plain`. `application/scim+json` is accepted. |
+| `415` | `unsupported media type, expected application/json or multipart/form-data` | The body is not `application/json`, `multipart/form-data` or `application/scim+json`, such as `text/plain`. |
 
 <details>
 <summary>Errors from the connection routes</summary>

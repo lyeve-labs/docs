@@ -246,7 +246,8 @@ Rotate in two steps so sign-in never breaks:
    ```
 
 2. Wait until the provider has read the new metadata, or upload the new
-   certificate there by hand. Then promote it:
+   certificate there by hand. A token expires while you wait, so sign in
+   again and put the new token in `TOKEN`. Then promote it:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/saml-providers/$PROVIDER_ID/rollover-cert \

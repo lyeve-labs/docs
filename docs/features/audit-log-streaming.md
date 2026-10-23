@@ -196,7 +196,8 @@ The answer is `204`.
 On the **Streaming** tab, choose **New destination**. Pick **Splunk HEC** or
 **Datadog logs** under **Destination** for those services. The form asks for
 the same fields as the API below, and **Send the existing log too** is
-`backfill`.
+`backfill`. The console's **URL** field is required for every kind, so for
+Datadog enter the intake URL of your site, which the API lets you leave out.
 
 </div>
 <div data-path="api">
