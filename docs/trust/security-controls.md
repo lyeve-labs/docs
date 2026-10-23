@@ -113,7 +113,7 @@ What is recorded includes:
 - schema and schema preset changes
 - API key create, revoke, delete and monthly limit changes
 - admin token changes
-- tenant creation and deletion, and new domain mappings
+- tenant creation, changes, cloning and deletion, and domain mapping changes
 - sign-in factor changes: TOTP and passkey enrollment and removal, backup codes,
   an administrator's MFA reset (`mfa.admin.reset`)
 - password reset requests and completions
@@ -122,7 +122,7 @@ What is recorded includes:
 - subject export and erasure
 
 Not recorded on v0.55.0: creating or deleting an account, changing its roles,
-setting its password, granting a tenant membership, a password or SAML sign-in,
+a super admin setting its password, granting a tenant membership, a password or SAML sign-in,
 archiving a tenant and withholding a tenant's features.
 
 How entries change or leave, so a reviewer knows what the chain can and cannot
@@ -445,6 +445,7 @@ An install that reaches its own services over Tailscale sets
 - **Recomputing the audit chain yourself.** The list route does not return the
   before and after state the hash covers, so only the verify route can check it.
 - **API key rotation in place.** Create, deploy, revoke.
-- **Account changes in the audit trail.** Account, role, password and membership
-  changes and sign-ins leave no audit entry.
+- **Account changes in the audit trail.** Creating or deleting an account,
+  changing its roles or memberships, a super admin setting its password, and a
+  password or SAML sign-in leave no audit entry.
 - **Mandatory MFA per role or tenant.** Enrollment is per user.

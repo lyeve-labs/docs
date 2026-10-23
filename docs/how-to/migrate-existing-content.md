@@ -288,8 +288,9 @@ API only on v0.21.0.
    The answer is `202` with the job. `batch_size` is 1 to 100,000, and 1,000 by default.
 
 3. Follow `GET /api/admin/migration/jobs/{id}` for `progress`, `migrated_rows` and
-   `failed_rows`. `POST .../cancel` stops a pending or running job, and `POST .../rollback`
-   drops only the tables the job created, answering
+   `failed_rows`. `POST .../cancel` stops a pending or running job and answers
+   `{"status": "canceled"}`, and the job then reads `failed` with `canceled by user`.
+   `POST .../rollback` drops only the tables the job created, answering
    `{"dropped_tables": 262, "status": "rolled_back"}` with its own count.
 
 Connection strings that point at loopback, private, link-local or cloud metadata addresses are

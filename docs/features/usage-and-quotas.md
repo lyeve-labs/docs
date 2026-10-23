@@ -122,7 +122,9 @@ reads one key's `requests`, `bytes_in` and `bytes_out` for a month.
 
 The tenant route and `GET /api/admin/usage/snapshots/{id}` answer for a tenant
 that holds nothing yet, with zero counts and an empty list. An unknown tenant
-answers `404` with `tenant not found`. Both reads are API only on v0.21.0.
+answers `404` with `tenant not found`. Both reads are API only for a super admin
+reading one tenant. An admin's **Quotas and usage** page shows their own tenant's usage once
+the tenant has a quota.
 
 ## Quotas and key limits
 

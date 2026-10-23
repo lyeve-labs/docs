@@ -238,8 +238,8 @@ While the hold stands, an erasure of `person@example.com` erases nothing. The AP
 names the hold and says to release it first. A user's own erasure on the Content API,
 under a hold whose `filter_actor` is their user id, answers `409`.
 
-A hold does not stop `POST /api/admin/audit-log/prune`, which a super admin can
-run by date.
+A super admin prunes the audit log by date with `POST /api/admin/audit-log/prune`. A prune
+skips every entry a hold covers.
 
 `POST /api/admin/retention/compliance-export` (super_admin) with
 `{"legal_hold_id": "...", "format": "json"}` (or `csv`) returns the entries a

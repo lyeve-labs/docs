@@ -153,7 +153,7 @@ license the console has no **New rule** button, and the API answers `402` with
 4. Choose **Create**. The page confirms **Created** with the endpoint, and **Custom rules**
    lists it for **Signed-out callers, per address**.
 
-![The Rate limits page counting two custom rules, with the global limit turned off at 50 per second and a burst of 100, and the sign-in protections at 5 attempts per address every 15 minutes.](images/rate-limiting.png)
+![The Rate limits page counting one custom rule, with the global limit on at 50 per second and a burst of 100, and the sign-in protections at 5 attempts per address every 15 minutes.](images/rate-limiting.png)
 
 </div>
 <div data-path="api">
@@ -342,7 +342,7 @@ address or a CIDR range, up to 500 per tenant.
    `scraper` in **Note**.
 3. Choose **Create**. The page confirms **Added 203.0.113.0/24 to the deny list**.
 
-![Tenant rate limits with no limit of the tenant's own, one allowed and one denied IPv6 range, each with a note, and the refusal history for the last day.](images/rate-limiting-tenant.png)
+![Tenant rate limits with no limit of the tenant's own, an empty allow list, 203.0.113.0/24 on the deny list with the note scraper, and nothing refused in the last day.](images/rate-limiting-tenant.png)
 
 </div>
 <div data-path="api">
@@ -407,7 +407,8 @@ curl "http://localhost:3001/api/admin/rate-limits/history?hours=24" \
 The answer carries `hours`, `total_refused` and `minutes`, newest first and at
 most 5,000, each with `minute`, `rule_id`, `kind`, `endpoint` and `refused`.
 `hours` goes from 1 to 168 and defaults to 24. The route reads the caller's own
-tenant. A super admin switches into a tenant to read that tenant's history.
+tenant. A super admin reads another tenant's history by naming it in the
+`X-Tenant-ID` header.
 
 ## What a limited client sees
 

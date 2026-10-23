@@ -22,7 +22,7 @@ tenant, `default`. With a license you create as many as your plan allows.
 - **A staging copy of real content.** Clone a tenant into a new one on the same
   instance and try a change there first.
 - **Offboarding a customer.** Archive a tenant to freeze it read-only, or delete
-  everything it holds in one step.
+  its data in one step.
 :::
 
 :::note[Use something else when]
@@ -58,9 +58,12 @@ reads **Tenant provisioning** and **Not enabled on this instance**, and has no
 **New tenant** button. The tenant's name opens its page, with **Archive**,
 **What this tenant may use**, and its **Members** with **New member**.
 
-The console has no tenant switcher, so the steps that act inside another
-tenant are API only on v0.21.0. An account with a membership in another tenant signs in to it by
-entering its slug in **Organization (optional)** on the sign-in page.
+The console has no tenant switcher. A super admin creates an account in any
+tenant from **Access > Users** with **New user**, choosing the tenant under
+**Tenant**. An account with a membership in another tenant works in it by
+entering its slug in **Organization (optional)** on the sign-in page. A super
+admin's own session stays in its home tenant, so steps 3 to 5 below, which act
+inside `acme` from that session, are API only on v0.21.0.
 
 **Operations > Tenant costs**, which admins open too, shows what the tenant's
 usage costs this month in total and by resource, then its budgets and prices.
@@ -142,8 +145,8 @@ The answer is `201` with the tenant.
 
 `plan` defaults to `free`.
 
-**3. Define a content type inside `acme`.** This is API only on v0.21.0, because the console
-has no tenant switcher. As a super admin, `X-Tenant-ID` picks
+**3. Define a content type inside `acme`.** This is API only on v0.21.0 for a super admin's
+own session, because the console has no tenant switcher. As a super admin, `X-Tenant-ID` picks
 the tenant:
 
 ```bash
@@ -231,9 +234,10 @@ data. Purge those rows or choose another slug.
   and keeps its data. Every write to it answers `423` with
   `{"error":"tenant is archived - read-only"}`. Reads still work.
 - **Restore** (`POST /api/admin/tenants/{id}/restore`) makes it writable again.
-- **Delete** (`DELETE /api/admin/tenants/{id}`) removes everything the tenant
-  holds, across every feature, in one transaction. If any part fails, nothing
-  is deleted and the tenant stays. The answer is `204`. There is no undo.
+- **Delete** (`DELETE /api/admin/tenants/{id}`) removes the tenant's rows across
+  every feature, its media records included, in one transaction. The stored
+  files stay in your storage backend for you to remove. If any part fails,
+  nothing is deleted and the tenant stays. The answer is `204`. There is no undo.
 
 These routes take a signed-in session. An admin token or an API key cannot call
 them.
@@ -611,7 +615,7 @@ Tenants are in beta. Plan around these limits:
 | `GET` | `/api/admin/tenants/provisioning` | `{"enabled": true}` when this install may create tenants. |
 | `GET` | `/api/admin/tenants/{id}` | One tenant. |
 | `PUT` | `/api/admin/tenants/{id}` | Change `name`, `plan` or `enabled`. |
-| `DELETE` | `/api/admin/tenants/{id}` | Delete a tenant and all its data. Session only. |
+| `DELETE` | `/api/admin/tenants/{id}` | Delete a tenant and its rows. Stored files stay. Session only. |
 | `POST` | `/api/admin/tenants/{id}/archive` | Make a tenant read-only. Session only. |
 | `POST` | `/api/admin/tenants/{id}/restore` | Make an archived tenant writable again. Session only. |
 | `POST` | `/api/admin/tenants/{id}/cold-archive` | Write an archived tenant's record to storage. Session only. |
