@@ -63,8 +63,7 @@ In the admin console, request capture is under **Insight > Observability > Reque
   them as a set.
 
 Without the `request-capture-pro` feature, the page says that capture rules and replay sets
-are not included, and **New rule** and **New replay set** are turned off. Rules and sets
-already saved keep working. Reading one capture in full, replaying it on its own and comparing
+are not included, and **New rule** and **New replay set** are turned off. Reading one capture in full, replaying it on its own and comparing
 two captures are done with the API on v0.21.0.
 
 ## Try it
@@ -117,12 +116,11 @@ curl "http://localhost:3001/api/admin/request-captures?method=GET&limit=2" \
 }
 ```
 
-Copy an `id` into `CAPTURE_ID`.
-
 </div>
 </div>
 
-The rest of the steps are API only on v0.21.0.
+The rest of the steps are API only on v0.21.0. They need a capture id, which the console list
+does not show, so take one from the API list above: copy an `id` into `CAPTURE_ID`.
 
 **2. Fetch that one capture in full:**
 

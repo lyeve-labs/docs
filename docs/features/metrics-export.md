@@ -73,7 +73,7 @@ until one is set. Configuring a backend is done with settings, as step 3 shows.
 ## Try it
 
 For the console steps, you are signed in to the admin console as a super admin. For the API
-steps, you need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+steps, you need a super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
 shows how to get one.
 
 **1. Read the request metrics.**

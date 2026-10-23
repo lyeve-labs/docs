@@ -9,7 +9,7 @@ sidebar:
 
 Caching keeps the answers to frequent reads, such as content items, content
 lists and the schema list, so repeated requests skip the database. A response
-cache rule adds the answers of a public route such as search. A content change
+cache rule adds the answers of a public route, such as media files. A content change
 clears the affected entries, so readers do not see stale content after a write.
 
 :::tip[Best for]
@@ -19,7 +19,7 @@ clears the affected entries, so readers do not see stale content after a write.
 - **Sharing one cache across replicas.** Point every replica at the same
   Redis, Valkey or KeyDB.
 - **Serving public pages faster.** A response cache rule keeps the answers of
-  a public route such as search, and a content change clears them.
+  a public route, such as media files, and a content change clears them.
 - **Surviving a cache server outage.** With `cache-pro`, list several servers,
   and requests move to the next one while the first is down.
 - **Moving to a new cache server.** With `cache-pro`, copy the entries across
@@ -50,8 +50,11 @@ the **Hit rate**, **Entries**, **Evicted** and **Misses**. **Entries** counts wh
 serving reads holds. **Providers** lists each cache provider with the state of its circuit and
 its **Priority**. **Response cache rules** lists each rule's **Route**, **Time to live**,
 **Tags** and state, with **Purge all**, and **Purge by tag** with its **Purge tag** button, above
-them. **Stored**, at the bottom for a super admin, has **Flush the cache** and lists the stored
-entries a page at a time, with their **Key**, **Size**, **Tags** and **Expires**.
+them. **Stored**, at the bottom, has **Flush the cache** for a super admin and lists the stored
+entries a page at a time, with their **Key**, **Size**, **Tags** and **Expires**. A tenant
+admin sees **Flush this tenant's responses** there instead, which flushes only that tenant's
+cached responses after a confirmation, and no entry list, because the store holds every
+tenant's keys.
 
 ## Try it
 

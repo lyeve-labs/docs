@@ -118,6 +118,9 @@ Copy the `id` into `PROBE_ID`.
 Choose the run button on its row, labeled **Run Public site now**. The page reports
 `Public site passed in` with the response time, and **Last run** updates.
 
+On v0.21.0, **Run now** on a failing probe can stop before it records its results, so wait
+for the schedule or use the API.
+
 </div>
 <div data-path="api">
 
@@ -133,14 +136,20 @@ curl -X POST http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_
 ```
 
 The answer holds one result per region. `status` is `pass` or `fail`, and a failure carries
-an `error_message`.
+an `error_message`. The run counts toward the alert threshold the same as a scheduled one.
 
 </div>
 </div>
 
-The run counts toward the alert threshold the same as a scheduled one.
+**3. Read the response time trend for the last hour.** This is API only on v0.21.0. If you
+created the probe in the console, list the probes and copy its `id` into `PROBE_ID`:
 
-**3. Read the response time trend for the last hour.** This is API only on v0.21.0:
+```bash
+curl http://localhost:3001/api/admin/synthetic-monitoring/probes \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Then read the trend:
 
 ```bash
 curl "http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/trends?bucket=15m" \
@@ -283,7 +292,7 @@ A run fails when any of its regions fails. When a probe's failed runs in a row
 reach its `alert_threshold` and it has no open alert, an alert is raised with
 the probe, the number of failed runs and the last error. The first passing run
 after that sets the count back to zero, resolves the alert and sets its
-`resolved_at`. A run started with **Run now** counts the same as a scheduled
+`resolved_at`. A run started with the API's run route counts the same as a scheduled
 one. Mark one seen
 with `POST /api/admin/synthetic-monitoring/alerts/{id}/acknowledge`, which
 answers `{"status": "acknowledged"}`.

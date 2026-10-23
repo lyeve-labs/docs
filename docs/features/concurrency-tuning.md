@@ -132,8 +132,8 @@ curl http://localhost:3001/api/admin/debug/goroutines/async-hooks \
 </div>
 </div>
 
-**4. Grow the pool.** This needs a super admin and a license with `goroutine-engine-pro`. On
-the API, the answer is the new state, and without the license it is `402`:
+**4. Grow the pool.** This needs a super admin and a license with `goroutine-engine-pro`.
+Without the license the answer is `402`:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/debug/goroutines/pool \
@@ -142,9 +142,8 @@ curl -X PUT http://localhost:3001/api/admin/debug/goroutines/pool \
   -d '{"size": 200}'
 ```
 
-In the console, **Resize the pool** takes the **Pool size** and **Apply** sends it. Without the
-license, the section says that changing these settings needs a license, and the three forms
-are turned off.
+In the console, without the license, the section says that changing these settings needs a
+license, and the three forms are turned off.
 
 ## Read the numbers
 

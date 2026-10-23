@@ -63,8 +63,8 @@ super admin can open it.
   p50, p99 and maximum. **By plugin** groups the same timings by feature.
 - **Flamegraph** records a CPU profile over a **Window** of seconds and draws it.
 - **pprof export** lists a **CPU**, **Goroutines**, **Heap** and **Allocations** profile. On
-  v0.21.0 these buttons do not download a profile, so a profile file comes from the API, as
-  step 3 shows.
+  v0.21.0 these buttons answer with an error instead of a file, so download a profile with
+  the API, as the Engine API tab of step 3 shows.
 
 **Insight > Observability** also ranks endpoints by latency, under **Latency rankings**.
 
