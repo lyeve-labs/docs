@@ -344,23 +344,104 @@ and the preview need `webhook-pro`, and the rest is free:
 
 A `payload_template` replaces the envelope with your own JSON. It sees the
 entry as `.Data` and the previous values as `.OldData`, and it has the helpers
-`toJSON`, `defaultVal`, `ifSet`, `ifCond`, `ifEq`, `ifNeq` and `dict`. This
-template posts a chat message:
+`toJSON`, `defaultVal`, `ifSet`, `ifCond`, `ifEq`, `ifNeq` and `dict`.
 
-```json
-{ "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}" }
+For example, a webhook that posts a chat message for one title only:
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Delivery > Webhooks**, choose **New webhook**. Enter `Chat notice` in
+   **Name** and the chat service's address in **URL**, tick `after_create`
+   under **Events**, and pick `post` in **Schemas**.
+2. Open **Delivery options**. Enter `{"text": "New post: {{.Data.title}}"}`
+   in **Payload template** and `title=Launch` in **Field filters**, one
+   `field=value` per line. A condition such as `$.data.title == "Launch"`
+   goes in **JSONPath filter** instead.
+3. Choose **Create**.
+
+A post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post
+with any other title sends nothing.
+
+![The New webhook form on an install licensed for webhook-pro, with post picked under Schemas and Delivery options open, showing a payload template and the field filter title=Launch.](images/webhooks-delivery-options.png)
+
+</div>
+<div data-path="api">
+
+Put the chat service's address in place of the example URL, which does not
+resolve:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/webhooks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Chat notice", "url": "https://chat.example.com/hooks/lyeve", "events": ["after_create"], "schemas": ["post"], "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}", "field_filters": {"title": "Launch"}}'
 ```
 
-Preview it with `POST /api/admin/webhooks/{id}/preview`, which renders the
-template and the headers against the `event`, `schema`, `data` and `old_data`
-you send. Send `{}` to use sample values. An empty request answers
-`400 invalid JSON`. The preview applies the field lists but not the filters.
+The answer is `201` with the new webhook. Copy its `id` into `CHAT_ID`. A
+post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post with
+any other title sends nothing.
+
+An update replaces the whole record, so send every writable field. A field
+you leave out is cleared, and only `secret` keeps its stored value when left
+out. This update swaps the field filter for a JSONPath condition, and its
+retry and size values are the defaults:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/webhooks/$CHAT_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Chat notice",
+        "url": "https://chat.example.com/hooks/lyeve",
+        "events": ["after_create"],
+        "schemas": ["post"],
+        "enabled": true,
+        "headers": {},
+        "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}",
+        "field_filters": {},
+        "jsonpath_filter": "$.data.title == \"Release\"",
+        "include_fields": [],
+        "exclude_fields": [],
+        "max_retries": 4,
+        "retry_delay_seconds": 30,
+        "max_response_size": 1048576
+      }'
+```
+
+The answer is `200`. A post titled `Release` now sends
+`{"text":"New post: Release"}`, and a post titled `Launch` sends nothing.
+
+</div>
+</div>
+
+The console has no preview, so preview a template over the API with
+`POST /api/admin/webhooks/{id}/preview`, which renders the template and the
+headers against the `event`, `schema`, `data` and `old_data` you send. Send
+`{}` to use sample values. An empty request answers `400 invalid JSON`. The
+preview applies the field lists but not the filters:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/webhooks/$CHAT_ID/preview \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"event": "after_create", "schema": "post", "data": {"title": "Release"}}'
+```
+
+```json
+{"payload": "{\"text\": \"New post: Release\"}", "fields_used": ["title"]}
+```
 
 ## Retry policy
 
 A failed delivery (an error, a timeout, or a status outside `2xx`) is retried
 in the background. The worker looks for due retries every 30 seconds. With
-`webhook-pro`, set the policy per webhook. Without it the defaults below apply:
+`webhook-pro`, set the policy per webhook. Without it the defaults below apply.
+
+In the console, **Delivery options** on the webhook's form sets the webhook's
+own **Retries** and **Retry delay (seconds)**, the `max_retries` and
+`retry_delay_seconds` fields. The policy itself is set over the API, and it
+wins once a webhook has one:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
@@ -417,20 +498,45 @@ or `dismissed`.
 Replaying and dismissing need `webhook-pro`. Reading and deleting an entry are
 free.
 
+<div class="paths">
+<div data-path="console">
+
+In the **Dead letter queue**, each pending entry has three buttons:
+
+- **Replay** sends the same body again. The row reads **Delivered (HTTP 200)**
+  when the endpoint takes it.
+- **Dismiss** marks the entry handled without sending. The row reads
+  **Dismissed**.
+- **Delete** removes the entry for good.
+
+Neither **Replay** nor **Dismiss** asks for confirmation. Without the license,
+the queue says that replaying and dismissing need it, and deleting stays open.
+
+</div>
+<div data-path="api">
+
 - `POST /api/admin/webhook-dead-letters/{id}/replay` sends the same body again,
   signed afresh. The answer is
   `{"id": "...", "status": "replayed", "http_status": 200}`. Read
   `http_status`: the entry is marked replayed only when it is `2xx`, and stays
   pending otherwise.
 - `POST /api/admin/webhook-dead-letters/{id}/dismiss` marks it handled without
-  sending.
+  sending, and answers `{"id": "...", "status": "dismissed"}`.
 - Either answers `409 dead letter entry is not pending` once the entry has left
   `pending`.
+
+</div>
+</div>
 
 ## Read the history
 
 Every attempt is recorded with its status code, duration, request body, retry
 count and error.
+
+In the console, **Delivery history** on a webhook's row lists its deliveries,
+and **Retry this delivery**, on a failed one, sends it again and shows the
+result, such as `OK`. Retrying needs `webhook-pro`. Delivery search and the
+payload preview have no screen in console v0.21.0.
 
 <details>
 <summary>History and health routes</summary>
@@ -496,7 +602,25 @@ required: an empty request answers `400 invalid JSON`.
 ## Take in webhooks from other services
 
 An incoming webhook turns a JSON payload from another service into a new entry.
-Creating or changing one needs the `super_admin` role and `webhook-pro`:
+Creating or changing one needs the `super_admin` role and `webhook-pro`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Delivery > Incoming webhooks** and choose **New incoming webhook**.
+2. Enter `Guest notes` in **Name** and pick `post` in **Target schema**.
+3. Enter a long random secret in **Signing secret**, and give it to the other
+   service.
+4. In **Field map**, enter `{"headline": "title", "text": "body"}`, which maps
+   the payload's `headline` to the entry's `title` and `text` to `body`.
+5. Leave **IP allowlist** empty to take requests from any address, or enter
+   one address or CIDR range per line. Choose **Create**.
+
+The list shows the webhook as **Enabled**, with **Schema: post** and the
+address the other service posts to, `POST /api/v1/webhooks/in/` and its id.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/incoming-webhooks \
@@ -510,6 +634,11 @@ curl -X POST http://localhost:3001/api/admin/incoming-webhooks \
         "allowed_ips": ["198.51.100.0/24"]
       }'
 ```
+
+The answer is `201` with the webhook and its `id`, and without the secret.
+
+</div>
+</div>
 
 `field_map` maps a key of the incoming JSON to a field of the content type, and
 it cannot be empty. Keys you do not map are ignored. `allowed_ips` takes

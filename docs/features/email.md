@@ -346,6 +346,31 @@ An `api` provider describes the provider's send request and how its webhook
 reads, so any HTTP mail API works without a release. Creating one, or switching
 a provider to `api`, needs `email-pro`:
 
+<div class="paths">
+<div data-path="console">
+
+1. Open **Settings > Email** and choose **New provider**.
+2. Enter `mail-api` in **Name**, pick **Provider API** under **Transport** and
+   enter `no-reply@example.com` in **From address**.
+3. Under **Provider API**, enter your key in **API key**,
+   `https://api.mail.example.com` in **API base URL** and `/v1/send` in
+   **Path**. Keep **Method** at **POST**.
+4. Choose **Add header**, and enter `Authorization` in **Header** and
+   `Bearer {{api_key}}` in **Value**.
+5. Enter the send request in **Body template**:
+   `{"from": "{{from}}", "to": {{to}}, "subject": "{{subject}}", "html": "{{html}}", "text": "{{text}}"}`.
+   Leave **Message id path (optional)** empty to keep the engine's own id, or
+   enter the path the provider's answer uses, such as `id`.
+6. Choose **Create**.
+
+The list shows the provider as **API** with its base URL, and under
+**Delivery webhook** the path on this instance to give the provider. Each
+message then goes out as a `POST` to the base URL and path, with the key in
+the `Authorization` header.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/email/providers \
   -H "Authorization: Bearer $TOKEN" \
@@ -363,6 +388,9 @@ curl -X POST http://localhost:3001/api/admin/email/providers \
         "priority": 1
       }'
 ```
+
+</div>
+</div>
 
 <details>
 <summary>Every api field</summary>

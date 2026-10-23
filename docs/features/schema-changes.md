@@ -321,23 +321,44 @@ On the canvas you can:
   the diagram.
 - **Add a field.** Start it from the box it belongs to.
 - **Add a relation.** Draw it from one box to the content type it points at.
-- **Arrange the diagram.** Drag the boxes where you want them. The layout saves a moment after
-  you stop, and every admin of the tenant opens the same diagram, after a reload too.
+- **Arrange the diagram.** Drag the boxes where you want them, as below.
 
 Without `schema-pro`, choosing **Canvas** shows what the canvas does and that it comes with
 Schema Pro, and the list editor works as before. If a license lapses, the saved layout stays.
 The canvas opens in the same arrangement once the license is back.
 
-Over the Admin API, `PUT /api/admin/schemas/canvas-layout` replaces the saved layout, up to
-256 KiB, and answers `402` without `schema-pro`:
+To arrange the diagram:
 
-```json
-{ "positions": { "article": { "x": 120, "y": 40 }, "author": { "x": 420, "y": 40 } } }
+<div class="paths">
+<div data-path="console">
+
+Open **Schema builder** and pick **Canvas** beside **List**. Drag a box by its title to where
+you want it. The layout saves a moment after you stop, and every admin of the tenant opens
+the same diagram, after a reload too.
+
+</div>
+<div data-path="api">
+
+`PUT /api/admin/schemas/canvas-layout` replaces the saved layout, up to 256 KiB, keyed by
+content type name, and answers `402` without `schema-pro`:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/schemas/canvas-layout \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"positions": {"article": {"x": 120, "y": 40}, "author": {"x": 420, "y": 40}}}'
 ```
 
-`GET` on the same path reads the saved layout on any install. Its answer also carries
-`licensed`, which says whether this install has `schema-pro`. `schema-pro` is in beta, so the
-layout's fields can still change before it is marked stable.
+The answer is `200` with the stored layout, its `updated_at` and `updated_by`, and
+`licensed`.
+
+</div>
+</div>
+
+`GET` on the same path reads the saved layout on any install, the one a console drag saved
+included. Its answer also carries `licensed`, which says whether this install has
+`schema-pro`. `schema-pro` is in beta, so the layout's fields can still change before it is
+marked stable.
 
 ## Move configuration between instances
 

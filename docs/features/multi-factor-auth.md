@@ -69,11 +69,12 @@ session. It returns a challenge:
 {
   "mfa_required": true,
   "challenge_token": "eyJhbGciOi...",
-  "mfa_methods": ["totp", "webauthn"]
+  "mfa_methods": ["totp"]
 }
 ```
 
-`mfa_methods` lists `webauthn` only when the person has a passkey. The
+`mfa_methods` is `["totp"]` for every account, with or without a passkey,
+because a passkey cannot finish a password sign-in's challenge. The
 challenge is exchanged for a session at `POST /api/admin/auth/mfa-verify`. Each
 challenge works once and expires five minutes after it is issued. TOTP secrets are encrypted at rest with the
 instance's `ENCRYPTION_KEY`.
@@ -88,8 +89,9 @@ instance's `ENCRYPTION_KEY`.
    registers a passkey.
 3. Restart the instance.
 
-Each person then enrolls in the admin console. See
-[In the admin console](#in-the-admin-console).
+Each person then turns on an authenticator app in the admin console, as
+[In the admin console](#in-the-admin-console) shows. Passkeys are registered
+over the API, as [Use passkeys](#use-passkeys) shows.
 
 ## Try it
 
@@ -280,6 +282,10 @@ call.
 
 ## Use passkeys
 
+Console v0.21.0 has no screen to register a passkey or to sign in with one, so
+this is done over the API, from a page of your own that calls the browser's
+`navigator.credentials` functions.
+
 Registering a passkey and marking one as the backup key need `mfa-pro`. Every
 sign-in with a passkey stays free, so a passkey enrolled while the license
 covered it keeps working after a lapse, through step-up, passwordless,
@@ -287,6 +293,23 @@ cross-device and recovery sign-in alike. Listing, renaming and removing a
 passkey, and clearing its backup mark, are free too. Without `mfa-pro` the
 register routes answer
 `402` with `{"error": "payment_required", "plugin": "mfa", "feature": "feature:mfa-pro", "upgrade_url": ""}`.
+
+:::caution[Turn on an authenticator app before the first passkey]
+A password sign-in challenges an account that holds a passkey, and the
+challenge takes only a code from an authenticator app or a backup code. An
+account whose only factor is a passkey has neither, so it signs in only
+through passwordless sign-in, which the admin console does not offer. Turn on
+the authenticator app first, which also gives the account its backup codes,
+and register the passkey after it.
+
+An account that is already passkey-only adds the app over the API. Sign in
+with the passkey through passwordless sign-in, send a passkey proof to
+`POST /api/admin/mfa/totp/setup` as
+[Add or remove a factor](#add-or-remove-a-factor) shows, and verify a code
+from the new key with `POST /api/admin/mfa/totp/verify`. The answer carries
+eight backup codes, and a password sign-in then finishes with a code from the
+app.
+:::
 
 Every WebAuthn route comes in a begin and complete pair:
 
@@ -310,6 +333,11 @@ session:
 ```
 
 The token lives for `JWT_EXPIRY_SECS`.
+
+`GET /api/admin/mfa/webauthn/credentials` lists the person's passkeys as
+`{"data": [...], "limit", "offset", "total_count"}`, each with its `id`,
+`name`, `is_backup`, `created_at` and `last_used_at`, and
+`GET /api/admin/mfa/status` then reads `"has_passkeys": true`.
 
 Mark a passkey as the backup key with
 `PUT /api/admin/mfa/webauthn/credentials/{id}/backup` and the body

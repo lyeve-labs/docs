@@ -84,9 +84,34 @@ preset you saved and only stops you saving more.
 <div class="paths">
 <div data-path="console">
 
-Saving your own preset in the console needs Schema Pro. Without it, **Use a preset** says
-that saving your own presets from a URL or a file is not included in the license, and lists
-only the built-in presets.
+1. Open **Schema builder** and choose **Presets**.
+2. In **Use a preset**, open **Save a preset from a URL or a file**.
+3. Enter the document's address in **URL**, pick it in **Or a file**, or paste it in
+   **Or paste the document**. This one is an events calendar:
+
+   ```json
+   {
+     "id": "events",
+     "name": "Events",
+     "description": "Events at a venue.",
+     "schemas": [
+       { "name": "venue", "fields": [{ "name": "name", "field_type": "text", "required": true }] },
+       { "name": "event", "fields": [
+         { "name": "title", "field_type": "text", "required": true },
+         { "name": "venue", "field_type": "relation", "relation_to": "venue", "relation_type": "belongs_to" }
+       ] }
+     ]
+   }
+   ```
+
+4. Choose **Save**. The page confirms **Preset saved**, and the preset joins the list with a
+   **Saved** badge and the content types it creates.
+5. Choose **Create** on it, as on a built-in preset.
+
+![The Use a preset drawer on an install licensed for schema-pro, with the saved Events preset listed under its Saved badge beside the built-in presets, creating venue and event.](images/schema-presets-saved.png)
+
+Without `schema-pro`, **Use a preset** says that saving your own presets from a URL or a
+file is not included in this instance's license, and lists the presets already there.
 
 </div>
 <div data-path="api">

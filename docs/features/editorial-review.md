@@ -348,6 +348,100 @@ more settings. The console's **New definition** form shows them on each stage as
   skips every stage left approves the entry, and a start that skips every stage answers
   `409`. `review.transitioned` lists the skipped stages in `skipped_stage_ids`.
 
+For example, a legal stage that two people approve. Both reviewers here are admins. An admin
+may act on any review until a rule says otherwise, but on a quorum stage only the assignees
+may approve. Anyone else gets `403` `only an assignee may approve a quorum stage`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Reviews** and choose **New definition**. Enter `Legal sign-off` in **Name** and
+   pick `blog_post` in **Content schema**.
+2. On the stage, enter `Legal` in **Stage name**, `editor` in **Required role** and `2` in
+   **Approvals needed**, then choose **Create**. The page says **Definition created.**, and
+   the definition's row shows **2 approvals**.
+3. Open a draft `blog_post` entry. In its **Review** card, pick **Legal sign-off** in
+   **Definition**, keep yourself in **Assignee**, pick the second admin in
+   **More assignees**, and choose **Start review**. The card says
+   **0 of 2 approvals on this stage.**
+4. Choose **Approve**. The card says **1 of 2 approvals on this stage, from You.**, and the
+   entry stays in review.
+5. The second admin opens the entry and chooses **Approve**. The quorum is reached, the
+   status turns **Published**, and **Unpublish** appears. On v0.55.0, when the first
+   approval came from a super admin, who belongs to no tenant, the second admin's card names
+   that reviewer by the first characters of their id.
+
+![The Review card of an entry on an install licensed for review-pro, in the Legal stage with two assignees and 1 of 2 approvals recorded, from you.](images/editorial-review-quorum.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/definitions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Legal sign-off", "content_schema": "blog_post", "stages": [{"name": "Legal", "required_role": "editor", "quorum": 2}]}'
+```
+
+The answer is `201` with the new definition. Copy its `id` into `DEF`, which still holds the
+one from step 3.
+
+The entry from step 2 is published by now, so create another draft and copy its `id` into
+`ENTRY`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"schema": "blog_post", "slug": "legal", "title": "Legal post", "body": {"text": "Body."}}'
+```
+
+Read your own id, and copy `id` from the answer into `ME`:
+
+```bash
+curl http://localhost:3001/api/admin/auth/me \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+In a second terminal, sign in as the second admin. Their token lasts 15 minutes, so finish
+the steps below within that time or sign in again:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "reviewer@example.com", "password": "Second-Reviewer-2026"}'
+```
+
+In that terminal, copy `token` from the answer into `TOKEN`. Back in the first terminal, copy
+`user.id` from the same answer into `SECOND`, and start the assignment with both reviewers:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/assignments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"entry_id\": \"$ENTRY\", \"definition_id\": \"$DEF\", \"assignee_id\": \"$ME\", \"assignee_ids\": [\"$SECOND\"]}"
+```
+
+The answer is `201` with both ids in `assignee_ids` and `"required_approvals": 2`. Copy its
+`id` into `ASSIGNMENT` in both terminals. With only one assignee it answers `422`
+`a quorum stage needs more approvals than the assignment names assignees`.
+
+Approve from the first terminal:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/assignments/$ASSIGNMENT/transition \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "approve", "comment": "Cleared by legal."}'
+```
+
+The answer is `200` with the status still `pending_review` and your id in `approvals`. Run
+the same call in the second terminal. It reaches the quorum, and the status turns
+`published`.
+
+</div>
+</div>
+
 Without `review-pro`, a definition create or update that sets any of these answers `402`
 naming `feature:review-pro`. If the license lapses, every definition keeps running as it is:
 stored escalations still escalate, quorums still count and conditions still route. An update
