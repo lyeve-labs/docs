@@ -34,20 +34,6 @@ by accident: the data stays until a super admin applies it.
 What a content type holds, its fields, field types and relations, is explained on
 [the data model](../concepts/data-model.md) page.
 
-## In the admin console
-
-Open **Schema builder** and pick a content type under **Content types**. Edit its fields, then
-choose **Preview DDL** to read the statements a save would run, each with its **Down SQL**.
-Nothing changes until you choose **Save**.
-
-![The Preview DDL dialog for the Note content type, after an unsaved edit that adds a subtitle field and removes pinned. It lists two statements, add column _note.subtitle and drop column _note.pinned, each with its SQL and a Down SQL toggle.](images/schema-changes.png)
-
-**History**, at the foot of the editor, lists the statements recorded for the content type.
-A save that removes a field leaves the removal there as a queued change. Until a super admin
-chooses **Apply**, every console page shows the count at the top, such as
-**1 pending migration**. **List** and **Canvas** switch between the editor and the diagram
-described in [Work on the schema canvas](#work-on-the-schema-canvas).
-
 ## How it works
 
 Each save compares the new definition with the stored one and acts on the difference:
@@ -62,83 +48,163 @@ Each save compares the new definition with the stored one and acts on the differ
 
 ## Try it
 
-This adds a field to a content type, removes another, and applies the removal. You need a
-token in `TOKEN` for a `super_admin`. The [quickstart](../getting-started/quickstart.md)
-shows how to get one.
+This adds a field to a content type, removes another, and applies the removal. Applying it
+takes a `super_admin`. For the console steps, sign in to the admin console as one. For the
+API steps, you need a token in `TOKEN` for one. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Create a `note` content type with a `color` field:
+**1. Create a `note` content type with a `color` field.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "note", "display_name": "Note", "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "color", "field_type": "text"}]}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `200` with the stored definition, which now starts with the `id` field
-   every content type gets.
+1. Open **Schema builder** and choose **New schema**.
+2. Enter `Note` in **Display name** and `note` in **Machine name**.
+3. Choose **Add field**, name it `title`, keep the type `text` and tick **Req**.
+4. Choose **Add field** and name it `color`.
+5. Choose **Save**.
 
-2. Preview a change that adds `pinned` and drops `color`. Nothing is changed yet:
+[Your first content type](../getting-started/first-content-type.md) goes through the editor
+in more detail.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas/note/preview-ddl \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"display_name": "Note", "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "pinned", "field_type": "boolean"}]}'
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   {
-     "statements": [
-       {
-         "description": "add column _note.pinned",
-         "sql": "ALTER TABLE \"_note\" ADD COLUMN IF NOT EXISTS \"pinned\" BOOLEAN",
-         "down_sql": "ALTER TABLE \"_note\" DROP COLUMN IF EXISTS \"pinned\""
-       },
-       {
-         "description": "drop column _note.color",
-         "sql": "ALTER TABLE \"_note\" DROP COLUMN IF EXISTS \"color\"",
-         "down_sql": "-- no safe undo for drop of _note.color",
-         "destructive": true
-       }
-     ]
-   }
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "note", "display_name": "Note", "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "color", "field_type": "text"}]}'
+```
 
-   `"destructive": true` marks a statement the save queues instead of running. The SQL is
-   written for your database, PostgreSQL here.
+The answer is `200` with the stored definition, which now starts with the `id` field every
+content type gets.
 
-3. Save the change by sending the same definition with its name:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "note", "display_name": "Note", "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "pinned", "field_type": "boolean"}]}'
-   ```
+**2. Preview a change that adds `pinned` and drops `color`.** Nothing is changed yet.
 
-   `pinned` exists now. `color` and its values are still stored.
+<div class="paths">
+<div data-path="console">
 
-4. See what is queued:
+1. With **Note** open in the editor, choose **Add field**, name it `pinned` and pick
+   `boolean` as its type.
+2. Choose the remove button at the end of the `color` row.
+3. Choose **Preview DDL**.
 
-   ```bash
-   curl http://localhost:3001/api/admin/schemas/note/history \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Each statement shows the SQL a save would run, with its **Down SQL** below it. The drop of
+`color` carries **Queued**: the save queues it, and it runs only when a super admin applies
+it. Choose **Close** when you have read them.
 
-   The answer lists each statement with its `state` (`applied`, `pending` or `failed`), and
-   `"pending": 1`.
+![The Preview DDL dialog for the Note content type, after an unsaved edit that adds a subtitle field and removes pinned. It lists two statements, add column _note.subtitle and drop column _note.pinned, each with its SQL and a Down SQL toggle.](images/schema-changes.png)
 
-5. Apply the removal:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas/note/apply-pending \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas/note/preview-ddl \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"display_name": "Note", "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "pinned", "field_type": "boolean"}]}'
+```
 
-   ```json
-   { "applied": 1, "canceled": 0 }
-   ```
+```json
+{
+  "statements": [
+    {
+      "description": "add column _note.pinned",
+      "sql": "ALTER TABLE \"_note\" ADD COLUMN IF NOT EXISTS \"pinned\" BOOLEAN",
+      "down_sql": "ALTER TABLE \"_note\" DROP COLUMN IF EXISTS \"pinned\""
+    },
+    {
+      "description": "drop column _note.color",
+      "sql": "ALTER TABLE \"_note\" DROP COLUMN IF EXISTS \"color\"",
+      "down_sql": "-- no safe undo for drop of _note.color",
+      "destructive": true
+    }
+  ]
+}
+```
+
+`"destructive": true` marks a statement the save queues instead of running.
+
+</div>
+</div>
+
+The SQL is written for your database, PostgreSQL here.
+
+**3. Save the change.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Save**. A save that removes a field asks first: the dialog says the column and its
+data stay in the table until the queued change is applied. Choose **Save** in it.
+
+</div>
+<div data-path="api">
+
+Send the same definition with its name:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "note", "display_name": "Note", "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "pinned", "field_type": "boolean"}]}'
+```
+
+</div>
+</div>
+
+`pinned` exists now. `color` and its values are still stored.
+
+**4. See what is queued.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **History** at the foot of the editor. It lists the statements recorded for the content
+type, newest first, and **1 queued change** above them with an **Apply** button. After a page
+load, the top of every console page shows the count, such as **1 pending migration**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/schemas/note/history \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer lists each statement with its `state` (`applied`, `pending` or `failed`), and
+`"pending": 1`.
+
+</div>
+</div>
+
+**5. Apply the removal.**
+
+<div class="paths">
+<div data-path="console">
+
+In **History**, choose **Apply**. The dialog says how many rows the table holds and that the
+dropped column's data is gone for every tenant that defines the content type. Choose **Apply**
+in it. The statement then reads **Applied**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas/note/apply-pending \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "applied": 1, "canceled": 0 }
+```
+
+</div>
+</div>
 
 ## Preview a change
 
@@ -165,6 +231,19 @@ Both answer `200` with the stored definition, and every save is recorded in the
 
 ## Rename a content type or a field
 
+<div class="paths">
+<div data-path="console">
+
+To rename a field, open the content type in **Schema builder**, change the field's name in
+its row and choose **Save**. The dialog that follows names the rename, such as
+**Renames pinned to starred. The data moves with it.** Choose **Save** in it.
+
+To rename the content type, choose **Rename** beside **Machine name**, enter the
+**New machine name** and choose **Rename**.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X PUT http://localhost:3001/api/admin/schemas/note/fields/pinned/rename \
   -H "Authorization: Bearer $TOKEN" \
@@ -177,8 +256,13 @@ curl -X PUT http://localhost:3001/api/admin/schemas/note/fields/pinned/rename \
 ```
 
 `PUT /api/admin/schemas/{name}/rename` with `{"new_name": "memo"}` renames the content type
-and answers its stored definition. Its Content API path moves to the new name, and the
-entries stored there move with it. A name another content type already uses answers `409`.
+and answers its stored definition.
+
+</div>
+</div>
+
+A renamed content type's Content API path moves to the new name, and the entries stored there
+move with it. A name another content type already uses answers `409`.
 
 ## Apply removals
 
@@ -193,13 +277,37 @@ definition uses again is canceled instead of run.
 | See every queued statement, by content type | `GET /api/admin/migrate` |
 | Apply every queue | `POST /api/admin/migrate/apply`, or `POST /api/admin/schemas/migrate`, which also answers a `message` |
 
+In the console, **History** applies one content type's queue after a confirmation, as in step
+5 above. The count at the top of every console page, such as **1 pending migration**, is a
+button too.
+
+:::caution
+Choosing the **pending migration** button at the top of a console page applies every queued
+change at once, in console v0.21.0, without asking first. Read the queue in **History** before
+you choose it.
+:::
+
 ## Delete a content type
 
+<div class="paths">
+<div data-path="console">
+
+Open the content type in **Schema builder** and choose the delete button beside **Save**. The
+dialog says how many rows go with it. Choose **Delete**.
+
+</div>
+<div data-path="api">
+
 `DELETE /api/admin/schemas/{name}` removes the definition and your tenant's entries, and
-answers `204`. Add `?content=soft` to keep the entries the admin console wrote (their title,
-slug and body) marked deleted instead, so a content type you create again under the same name
-can take them back. The rows the Content API serves go either way. Deleting a content type
-that does not exist also answers `204`.
+answers `204`. Deleting a content type that does not exist also answers `204`.
+
+</div>
+</div>
+
+Keeping the entries is API only. Add `?content=soft` to the delete to keep the entries the
+admin console wrote (their title, slug and body) marked deleted instead, so a content type you
+create again under the same name can take them back. The rows the Content API serves go either
+way.
 
 ## Work on the schema canvas
 

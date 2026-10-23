@@ -27,9 +27,18 @@ To bring definitions from another instance or another CMS, see
 
 ## Apply a preset
 
-In the admin console, open **Schema builder**, choose **Presets**, and press **Create** on the
-preset you want. Over the Admin API, with a token in `TOKEN` for an `admin` or `super_admin`
-(the [quickstart](../getting-started/quickstart.md) shows how to get one):
+<div class="paths">
+<div data-path="console">
+
+Open **Schema builder** and choose **Presets**. **Use a preset** lists each preset with what
+it is for and the content types it creates. Choose **Create** on the one you want. The page
+confirms **Preset created**, and its content types are in the list.
+
+</div>
+<div data-path="api">
+
+With a token in `TOKEN` for an `admin` or `super_admin` (the
+[quickstart](../getting-started/quickstart.md) shows how to get one):
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/schemas/presets/forms \
@@ -40,11 +49,17 @@ curl -X POST http://localhost:3001/api/admin/schemas/presets/forms \
 { "created": ["forms", "form_submissions"] }
 ```
 
-The answer is `201`. The content types are created in the order the preset lists them,
-exactly as if you had posted each one to `POST /api/admin/schemas`.
+The answer is `201`.
+
+</div>
+</div>
+
+The content types are created in the order the preset lists them, exactly as if you had
+posted each one to `POST /api/admin/schemas`.
 
 - **A name you already use.** If any content type the preset creates already exists, the
-  answer is `409` `a schema the preset creates already exists` and nothing is created. A
+  console says `a schema the preset creates already exists`, the API answers `409` with the
+  same message, and nothing is created. A
   preset never merges into an existing content type, because nothing can know whether the
   fields it would add are wanted. Rename or delete yours first, or copy the fields you want
   from the definitions below.
@@ -66,9 +81,16 @@ new tenant or project starts from the same definitions. Saving one needs a licen
 applying and deleting a preset you already saved stay free, so a lapsed license keeps every
 preset you saved and only stops you saving more.
 
-In the console, open **Presets** and use **Save a preset from a URL or a file**. You can give
-it a URL, upload a file or paste the document. Without Schema Pro the console says that saving
-presets is part of it, and the built-in presets stay. Over the API,
+<div class="paths">
+<div data-path="console">
+
+Saving your own preset in the console needs Schema Pro. Without it, **Use a preset** says
+that saving your own presets from a URL or a file is not included in the license, and lists
+only the built-in presets.
+
+</div>
+<div data-path="api">
+
 `POST /api/admin/schemas/presets` takes either a `document` or a `url` to read one from, never
 both:
 
@@ -81,6 +103,9 @@ curl -X POST http://localhost:3001/api/admin/schemas/presets \
 
 The answer is `201` with the saved preset. Apply it with
 `POST /api/admin/schemas/presets/events`, like a built-in one.
+
+</div>
+</div>
 
 - The document has the shape of the built-in presets below, as JSON or YAML. A YAML document
   goes in `document` as a JSON string.
