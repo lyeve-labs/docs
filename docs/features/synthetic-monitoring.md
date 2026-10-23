@@ -47,98 +47,154 @@ region is a label on the result, also sent to the target as the
 `X-Synthetic-Region` header. A due probe runs once even when several replicas
 are running.
 
-## In the admin console
+In the admin console, synthetic monitoring is under **Insight > Observability > Synthetic
+monitoring**. The top row counts the **Probes**, how many are **Failing** and how many are
+**Paused**. Each row under **Probes** gives the probe's type and target, its state, how often
+it runs and its last run, and **All**, **Failing** and **Paused** narrow the list. The row
+buttons run the probe now, open its **Notice channels**, edit it and delete it. While a probe
+has an open alert, an **Unacknowledged alerts** card lists it with an **Acknowledge** button.
 
-Open **Insight > Observability > Synthetic monitoring**. The top row counts the
-**Probes**, how many are **Failing** and how many are **Paused**. Each row
-under **Probes** gives the probe's type and target, its state, how often it
-runs and its last run. The row buttons are **Run now**, **Notice channels**,
-edit and delete.
-
-**New probe** asks for a **Name**, **What it checks**, the target, an
-**Interval, in seconds**, a **Timeout, in seconds**, the
-**Failures before an alert** and whether to **Run on the schedule**.
+**New probe** asks for a **Name**, **What it checks**, the target, an **Interval, in seconds**,
+a **Timeout, in seconds**, the **Failures before an alert** and whether to **Run on the
+schedule**. The form has no region field, so a probe created there runs under all four region
+labels, and its timeout starts at `10` where the API's default is `30`. Response time trends
+are read with the API on v0.21.0.
 
 ![The Synthetic monitoring page with two probes: Checkout API, a health check that is failing, and Partner feed webhook, a webhook delivery that is paused.](images/synthetic-monitoring.png)
 
-Results, trends and alerts are read through the API below.
-
 ## Try it
 
-This works on a free install. You need an admin token in `TOKEN`. The
+This works on a free install. For the console steps, you are signed in to the admin console as
+an admin. For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Create a probe. On a free install it runs every 300 seconds:
+**1. Create a probe.** On a free install it runs every 300 seconds.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/synthetic-monitoring/probes \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Public site", "type": "health_check", "config": {"url": "https://example.com/", "expected_status": 200}, "regions": ["eu-west"], "alert_threshold": 3}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "id": "e6e4c9fc-5cfe-4db5-be63-219072e3d7ac",
-     "tenant_id": "default",
-     "name": "Public site",
-     "type": "health_check",
-     "enabled": true,
-     "config": { "url": "https://example.com/", "expected_status": 200 },
-     "interval_seconds": 300,
-     "timeout_seconds": 30,
-     "regions": ["eu-west"],
-     "alert_threshold": 3,
-     "created_at": "2026-10-01T10:00:00Z",
-     "updated_at": "2026-10-01T10:00:00Z"
-   }
-   ```
+Press **New probe**. Set **Name** to `Public site`, **What it checks** to **Health check**,
+**URL** to `https://example.com/` and **Expected status** to `200`. Keep the interval at `300`
+and **Failures before an alert** at `3`, leave **Run on the schedule** on, and press **Create**.
+The page confirms `Created Public site`, and the probe is listed under **Probes**.
 
-   Copy the `id` into `PROBE_ID`.
+</div>
+<div data-path="api">
 
-2. Run it now instead of waiting:
+```bash
+curl -X POST http://localhost:3001/api/admin/synthetic-monitoring/probes \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Public site", "type": "health_check", "config": {"url": "https://example.com/", "expected_status": 200}, "regions": ["eu-west"], "alert_threshold": 3}'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/run \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```json
+{
+  "id": "e6e4c9fc-5cfe-4db5-be63-219072e3d7ac",
+  "tenant_id": "default",
+  "name": "Public site",
+  "type": "health_check",
+  "enabled": true,
+  "config": { "url": "https://example.com/", "expected_status": 200 },
+  "interval_seconds": 300,
+  "timeout_seconds": 30,
+  "regions": ["eu-west"],
+  "alert_threshold": 3,
+  "created_at": "2026-10-01T10:00:00Z",
+  "updated_at": "2026-10-01T10:00:00Z"
+}
+```
 
-   ```json
-   [
-     { "id": "be3c2f7f-cb26-4064-8348-a108e6966626", "tenant_id": "default", "probe_id": "e6e4c9fc-5cfe-4db5-be63-219072e3d7ac", "status": "pass", "status_code": 200, "response_time_ms": 89, "region": "eu-west", "detail": "GET https://example.com/ => 200", "created_at": "2026-10-01T10:05:00Z" }
-   ]
-   ```
+Copy the `id` into `PROBE_ID`.
 
-   The answer holds one result per region. `status` is `pass` or `fail`, and a
-   failure carries an `error_message`. The run counts toward the alert
-   threshold the same as a scheduled one.
+</div>
+</div>
 
-3. Read the response time trend for the last hour:
+**2. Run it now instead of waiting.**
 
-   ```bash
-   curl "http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/trends?bucket=15m" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   [
-     { "time": "2026-10-01T10:00:00Z", "avg_ms": 89, "p50_ms": 89, "p95_ms": 89, "p99_ms": 89, "count": 1, "fail_count": 0 }
-   ]
-   ```
+Choose the run button on its row, labeled **Run Public site now**. The page reports
+`Public site passed in` with the response time, and **Last run** updates.
 
-4. List open alerts. A healthy probe has none, so the answer is `[]`:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/synthetic-monitoring/alerts?acknowledged=false" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/run \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-5. Delete the probe with its results and alerts. The answer is `204`:
+```json
+[
+  { "id": "be3c2f7f-cb26-4064-8348-a108e6966626", "tenant_id": "default", "probe_id": "e6e4c9fc-5cfe-4db5-be63-219072e3d7ac", "status": "pass", "status_code": 200, "response_time_ms": 89, "region": "eu-west", "detail": "GET https://example.com/ => 200", "created_at": "2026-10-01T10:05:00Z" }
+]
+```
 
-   ```bash
-   curl -X DELETE http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer holds one result per region. `status` is `pass` or `fail`, and a failure carries
+an `error_message`.
+
+</div>
+</div>
+
+The run counts toward the alert threshold the same as a scheduled one.
+
+**3. Read the response time trend for the last hour.** This is API only on v0.21.0:
+
+```bash
+curl "http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/trends?bucket=15m" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+[
+  { "time": "2026-10-01T10:00:00Z", "avg_ms": 89, "p50_ms": 89, "p95_ms": 89, "p99_ms": 89, "count": 1, "fail_count": 0 }
+]
+```
+
+**4. List open alerts.** A healthy probe has none.
+
+<div class="paths">
+<div data-path="console">
+
+The page shows no **Unacknowledged alerts** card. When a probe fails often enough to raise an
+alert, the card lists it with an **Acknowledge** button.
+
+</div>
+<div data-path="api">
+
+The answer is `[]`:
+
+```bash
+curl "http://localhost:3001/api/admin/synthetic-monitoring/alerts?acknowledged=false" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+</div>
+</div>
+
+**5. Delete the probe with its results and alerts.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the delete button on its row, labeled **Delete Public site**. The dialog asks
+"Delete Public site? Its results and its alert history go with it." Press **Delete**, and the
+page reports `Deleted Public site`.
+
+</div>
+<div data-path="api">
+
+The answer is `204`:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+</div>
+</div>
 
 ## Set up a probe
 
@@ -158,6 +214,8 @@ body.
 | `alert_threshold` | Failed runs in a row before an alert. A run fails when any of its regions fails. | `3` |
 
 Set one region unless you want the same check repeated under several labels.
+A probe created in the admin console has no regions set, so it runs under all
+four.
 
 | Type | `config` fields |
 |---|---|
@@ -246,6 +304,8 @@ Email works on every install. Slack, Discord, PagerDuty and a signed webhook
 need `alerts-pro`, and a PagerDuty incident opened by the outage is resolved
 by the recovery. Send `null` to clear the channels. `GET` on the same path
 answers the channels and `licensed`, whether this install may add a paid one.
+In the admin console, the **Notice channels** button on a probe's row opens the
+same channels, where **Email** takes the addresses and **Save** stores them.
 [Alerts](alerts.md#alert-when-a-probe-goes-down) covers every channel.
 
 ## Settings

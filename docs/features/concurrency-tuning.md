@@ -48,64 +48,103 @@ without a restart.
 Each replica has its own set, and a change made over the API applies to the
 replica that received it until it restarts. There are no per-tenant limits.
 
-## In the admin console
-
-Open **Insight > Observability** and find **Goroutine engine**. **Tracker**,
-**Worker pool**, **Parallel engine** and **Async hooks** give the same numbers
-as the reads below, and **Goroutines by owner** lists the live tasks of each
-feature with the age of the oldest. Below them, **Resize the pool**,
-**Parallel engine** and **Async hooks** change the settings with **Apply**.
-The section notes that a change holds until the instance restarts.
-
-![The Goroutine engine section with the tracker, a worker pool of 100 with nothing waiting, the parallel engine at 4 at once, and async hooks off.](images/concurrency-tuning.png)
+In the admin console, these live under **Insight > Observability**, in the **Goroutine engine**
+section. **Tracker**, **Worker pool**, **Parallel engine** and **Async hooks** give the same
+numbers as the reads below, and **Goroutines by owner** lists the live tasks of each feature
+with the age of the oldest. Below them, **Resize the pool**, **Parallel engine** and **Async
+hooks** change the settings with **Apply**. The section notes that a change holds until the
+engine restarts.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+For the console steps, you are signed in to the admin console. For the API steps, you need
+an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get
+one.
 
-1. Read the worker pool:
+**1. Read the worker pool.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/debug/goroutines/pool \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "size": 100, "active": 0, "waiting": 0, "completed": 3, "failed": 0, "dropped": 0, "avg_latency": "127.377427ms", "task_timeout": "30s" }
-   ```
+Open **Insight > Observability** and find **Goroutine engine**. **Worker pool** shows
+**Size** `100`, **Active**, **Waiting**, **Completed**, **Failed**, **Dropped**, **Avg
+latency** and **Task timeout** `30 s`.
 
-2. Read the parallel engine:
+![The Goroutine engine section with the tracker, a worker pool of 100 with nothing waiting, the parallel engine at 4 at once, async hooks off, and the live tasks of the review feature.](images/concurrency-tuning.png)
 
-   ```bash
-   curl http://localhost:3001/api/admin/debug/goroutines/parallel \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   { "max_concurrent": 4, "timeout": "30s" }
-   ```
+```bash
+curl http://localhost:3001/api/admin/debug/goroutines/pool \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-3. Read the async hook queue:
+```json
+{ "size": 100, "active": 0, "waiting": 0, "completed": 3, "failed": 0, "dropped": 0, "avg_latency": "127.377427ms", "task_timeout": "30s" }
+```
 
-   ```bash
-   curl http://localhost:3001/api/admin/debug/goroutines/async-hooks \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   ```json
-   { "enabled": false, "workers": 8, "queue_size": 1024, "timeout": "5s", "queued": 0, "running": 0, "overflow": 0, "dropped": 0 }
-   ```
+**2. Read the parallel engine.**
 
-4. As a super admin on a license with `goroutine-engine-pro`, grow the pool.
-   The answer is the new state. Without the license it is `402`:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/debug/goroutines/pool \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"size": 200}'
-   ```
+**Parallel engine** shows **Max concurrent** `4` and **Timeout** `30 s`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/debug/goroutines/parallel \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "max_concurrent": 4, "timeout": "30s" }
+```
+
+</div>
+</div>
+
+**3. Read the async hook queue.**
+
+<div class="paths">
+<div data-path="console">
+
+**Async hooks** shows **Enabled** **Off**, **Workers** `8`, **Queue size** `1024`,
+**Timeout** `5 s`, and **Queued**, **Running**, **Overflow** and **Dropped**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/debug/goroutines/async-hooks \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "enabled": false, "workers": 8, "queue_size": 1024, "timeout": "5s", "queued": 0, "running": 0, "overflow": 0, "dropped": 0 }
+```
+
+</div>
+</div>
+
+**4. Grow the pool.** This needs a super admin and a license with `goroutine-engine-pro`. On
+the API, the answer is the new state, and without the license it is `402`:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/debug/goroutines/pool \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"size": 200}'
+```
+
+In the console, **Resize the pool** takes the **Pool size** and **Apply** sends it. Without the
+license, the section says that changing these settings needs a license, and the three forms
+are turned off.
 
 ## Read the numbers
 
