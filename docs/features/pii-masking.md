@@ -106,81 +106,135 @@ personal data out of fields that do not need it.
 ## In the admin console
 
 Open **Settings > PII masking**. **Your own rules** lists the tenant's
-patterns with their order, replacement and state.
-**Presets, in the order they run** lists the built-in rules, which cannot be
-edited. **New rule** opens a form with **Name**, **Pattern**,
-**Replaced with** and **Priority**. Its **Try it** box runs the pattern on a
-**Sample** with **Run it**, and stores nothing. A new rule starts off until you turn on **Masking**.
-**Unmasked reads**, lower on the page, is the access log.
+patterns with their order, replacement and state, and each row has buttons to
+edit, duplicate and delete it. **Presets, in the order they run** lists the
+built-in rules, which cannot be edited. **New rule** opens a form with
+**Name**, **Description**, **Pattern**, **Replaced with**, **Priority** and a
+**Masking** switch. Its **Try it** box runs the pattern on a **Sample** with
+**Run it**, and stores nothing. **Unmasked reads**, lower on the page, is the
+access log.
+
+On console v0.21.0 the rule form has no button that saves it, so a new rule,
+or a change to one, is saved over the API. To change a rule there, find its id
+in `custom[].id` of `GET /api/admin/pii/rules`. Testing a pattern, reading the
+access log and deleting a rule work in the console.
 
 ![The PII masking page with one rule of the tenant's own, EMPLOYEE_ID, replacing EMP- and six digits with a redacted-employee placeholder, above the built-in presets in the order they run.](images/pii-masking.png)
 
 ## Try it
 
-This adds a rule for staff numbers and watches it mask a response. You need an
-admin token in `TOKEN`, and a content type to write to, such as the `post` type
-from the [quickstart](../getting-started/quickstart.md), which also shows how
-to get a token.
+This adds a rule for staff numbers and watches it mask a response. You need a
+content type to write to, such as the `post` type from the
+[quickstart](../getting-started/quickstart.md). Sign in as an `admin` or
+`super_admin`.
 
-1. Test the pattern on a sample. Nothing is saved:
+Test the pattern on a sample. Nothing is saved:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/pii/rules/test \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"pattern": "EMP-[0-9]{6}", "replacement": "[redacted-employee]", "sample": "Owner EMP-004211 approved"}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {"valid": true, "matches": ["EMP-004211"], "count": 1, "masked": "Owner [redacted-employee] approved"}
-   ```
+1. Open **Settings > PII masking** and choose **New rule**.
+2. Enter `EMPLOYEE_ID` in **Name**, `EMP-[0-9]{6}` in **Pattern** and
+   `[redacted-employee]` in **Replaced with**.
+3. Under **Try it**, enter `Owner EMP-004211 approved` in **Sample** and
+   choose **Run it**. The form says **1 match.** and shows **Owner
+   [redacted-employee] approved** under **What a reader would get**.
 
-   A pattern that is not valid answers `200` with `"valid": false` and an
-   `error`.
+</div>
+<div data-path="api">
 
-2. Save it as a rule. A rule is off until you send `"enabled": true`:
+You need a token in `TOKEN`. The quickstart shows how to get one.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/pii/rules \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "EMPLOYEE_ID", "description": "Staff numbers", "pattern": "EMP-[0-9]{6}", "replacement": "[redacted-employee]", "enabled": true}'
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/pii/rules/test \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"pattern": "EMP-[0-9]{6}", "replacement": "[redacted-employee]", "sample": "Owner EMP-004211 approved"}'
+```
 
-   The answer is `201` with the rule, its `id` and `"priority": 100`. Copy the
-   `id` into `RULE_ID`.
+```json
+{"valid": true, "matches": ["EMP-004211"], "count": 1, "masked": "Owner [redacted-employee] approved"}
+```
 
-3. Write an entry that carries a staff number:
+A pattern that is not valid answers `200` with `"valid": false` and an
+`error`.
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/content/post \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"data": {"title": "Approved by EMP-004211"}}'
-   ```
+</div>
+</div>
 
-   The entry is stored as written, but the answer already reads
-   `"title": "Approved by [redacted-employee]"`. Every later read is masked the
-   same way.
+Save it as a rule. Only the API saves a rule on this release. If you work in
+the console, sign in over the API to get a token, as
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows, and keep it in `TOKEN`. A rule is off until you send
+`"enabled": true`:
 
-4. See the access log:
+```bash
+curl -X POST http://localhost:3001/api/admin/pii/rules \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "EMPLOYEE_ID", "description": "Staff numbers", "pattern": "EMP-[0-9]{6}", "replacement": "[redacted-employee]", "enabled": true}'
+```
 
-   ```bash
-   curl "http://localhost:3001/api/admin/pii/access-log?limit=5" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer is `201` with the rule, its `id` and `"priority": 100`. Copy the
+`id` into `RULE_ID`. The rule shows under **Your own rules** in the console.
 
-   The newest entry names you as `viewer_user_id`, your role, and
-   `"pii_type": "EMPLOYEE_ID"`.
+Write an entry that carries a staff number. This is the same on both paths:
 
-5. Remove the rule:
+```bash
+curl -X POST http://localhost:3002/api/v1/content/post \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"title": "Approved by EMP-004211"}}'
+```
 
-   ```bash
-   curl -X DELETE http://localhost:3001/api/admin/pii/rules/$RULE_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The entry is stored as written, but the answer already reads
+`"title": "Approved by [redacted-employee]"`. Every later read is masked the
+same way.
 
-   The answer is `204`.
+See the access log:
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > PII masking**, **Unmasked reads** lists the newest reads first,
+with when, the **Kind**, such as **EMPLOYEE_ID**, and the reader's **Role**.
+**Most read on this page** counts each kind.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3001/api/admin/pii/access-log?limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The newest entry names you as `viewer_user_id`, your role, and
+`"pii_type": "EMPLOYEE_ID"`. `total_count` holds the number of entries.
+
+</div>
+</div>
+
+Remove the rule:
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > PII masking**, choose the delete button on the
+**EMPLOYEE_ID** row. The dialog asks **Delete rule EMPLOYEE_ID**. Choose
+**Delete**, and the page says **Deleted.**
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/pii/rules/$RULE_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Add your own rules
 

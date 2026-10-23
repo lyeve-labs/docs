@@ -10,7 +10,7 @@ capability_of: audit
 
 A stream sends every new [audit log](audit-log.md) entry to a destination you
 choose, so your security team reads it in the tools they already use. Entries
-arrive in order, 10 to 20 seconds after they are written, and a stream only
+arrive in order, usually 10 to 30 seconds after they are written, and a stream only
 moves on once your receiver has accepted a batch. Each tenant can have up to
 ten streams.
 
@@ -64,7 +64,8 @@ still change before it is marked stable.
 ## In the admin console
 
 Open **Insight > Audit log** and choose the **Streaming** tab. Each stream
-shows its name, its kind, its URL and when it last delivered. A stream that is
+shows its name, its kind, its URL, how far behind it is, such as **Up to
+date** or **1 entry waiting**, and when it last delivered. A stream that is
 turned off is marked **Paused**. **Send a test** sends one test event, and the
 edit and delete buttons on the row change or remove the stream.
 **New destination** opens a form with **Name**, **Destination**, **URL**,
@@ -75,55 +76,131 @@ edit and delete buttons on the row change or remove the stream.
 ## Try it
 
 Run this on an install whose license carries `audit` and `audit-pro`, signed in
-to a session as an admin. You need the token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. Point the
-stream at a request inspector of yours. The URL has to resolve to a public
-address.
+as an `admin` or `super_admin`. Point the stream at a request inspector of
+yours. The URL has to be `https://` and resolve to a public address.
 
-1. Create an `https` stream:
+Create an `https` stream:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/audit-log/sinks \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "try-it", "kind": "https", "url": "https://bin.example.com/audit"}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the stream and a generated `secret`, shown this
-   once. Copy its `id` into `SINK_ID`.
+1. Open **Insight > Audit log**, choose the **Streaming** tab, then
+   **New destination**.
+2. Enter `try-it` in **Name**. Leave **Destination** on **HTTPS endpoint**,
+   and enter your inspector's address in **URL**, such as
+   `https://bin.example.com/audit`.
+3. Leave **Signing secret** blank, so one is generated, and leave **Enabled**
+   on. Choose **Create**.
+4. The page says **try-it is streaming the audit log.** and shows the
+   **Signing secret** once. Copy it to your receiver, then choose **Close**.
 
-2. Send one test event:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/audit-log/sinks/$SINK_ID/test \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+You need a token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-   ```json
-   { "delivered": true }
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/audit-log/sinks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "try-it", "kind": "https", "url": "https://bin.example.com/audit"}'
+```
 
-   A receiver that refuses answers, for example,
-   `{"delivered": false, "error": "receiver answered HTTP 405"}`. The test
-   does not move the stream.
+The answer is `201` with the stream and a generated `secret`, shown this
+once. Copy its `id` into `SINK_ID`.
 
-3. Sign in to the admin console in another tab. Within 20 seconds the sign-in
-   entry reaches your receiver.
+</div>
+</div>
 
-4. Watch the stream's progress:
+Send one test event:
 
-   ```bash
-   curl http://localhost:3001/api/admin/audit-log/sinks \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `{"data": [...]}`, and each stream reports
-   `cursor_sequence`, `pending_entries` and `lag_seconds`.
+On the **try-it** row, choose **Send a test**. The page says **The test entry
+was delivered.**
 
-5. Delete the test stream with `DELETE /api/admin/audit-log/sinks/$SINK_ID`
-   when you are done.
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/audit-log/sinks/$SINK_ID/test \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "delivered": true }
+```
+
+A receiver that refuses answers, for example,
+`{"delivered": false, "error": "receiver answered HTTP 405"}`.
+
+</div>
+</div>
+
+Your receiver gets one line with `"action": "audit.sink.test"`. The test does
+not move the stream.
+
+Within about 30 seconds the entry that records the new stream,
+`audit.sink.create`, reaches your receiver too, and every entry written after
+it follows. Watch the stream's progress:
+
+<div class="paths">
+<div data-path="console">
+
+On the **Streaming** tab, the row reads **1 entry waiting** while an entry is
+on its way, then **Up to date**, with the time under **Last delivered**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/audit-log/sinks \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `{"data": [...]}`, and each stream reports
+`cursor_sequence`, `pending_entries`, `lag_seconds` and `last_shipped_at`.
+
+</div>
+</div>
+
+Delete the test stream when you are done:
+
+<div class="paths">
+<div data-path="console">
+
+Choose the delete button on the **try-it** row. The dialog asks **Delete
+destination try-it**. Choose **Delete**. Entries already sent stay in your
+receiver.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/audit-log/sinks/$SINK_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Create a stream
+
+<div class="paths">
+<div data-path="console">
+
+On the **Streaming** tab, choose **New destination**. Pick **Splunk HEC** or
+**Datadog logs** under **Destination** for those services. The form asks for
+the same fields as the API below, and **Send the existing log too** is
+`backfill`. The console's **URL** field is required for every kind, so for
+Datadog enter the intake URL of your site, which the API lets you leave out.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/audit-log/sinks \
@@ -137,6 +214,9 @@ curl -X POST http://localhost:3001/api/admin/audit-log/sinks \
     "splunk_index": "audit"
   }'
 ```
+
+</div>
+</div>
 
 | Field | Meaning | Default |
 |---|---|---|
@@ -227,6 +307,7 @@ data-subject erasure here does not reach what a stream already delivered.
 | `409` | `another audit sink already has this name` | Pick another `name`. |
 | `422` | `kind must be https, splunk or datadog` | An unknown `kind`. |
 | `422` | `name and url are required` | A field is missing. |
+| `422` | `url must be an https URL with a host and no credentials` | The URL is not `https://`, or carries a user name or password. |
 | `422` | `url resolves to an address that is not allowed, or does not resolve` | The host does not resolve, or resolves to a private address. |
 | `422` | `secret is required: the Splunk HEC token or the Datadog API key` | A Splunk or Datadog stream without a token. |
 | `422` | `kind cannot change: create a new sink instead` | A `PUT` that changes `kind`. |
