@@ -51,7 +51,43 @@ expected output, then **Next**.
 
 The site renders the Starlight callouts `:::tip`, `:::note`, `:::caution` and `:::danger`, with
 an optional title in brackets. Use them for guidance and real limits, not decoration. No other
-HTML, and no MDX.
+HTML than the path blocks below, and no MDX.
+
+## Console and API paths
+
+A task a reader can do both in the admin console and with the API shows both, in one block:
+
+```md
+<div class="paths">
+<div data-path="console">
+
+Steps in the admin console.
+
+</div>
+<div data-path="api">
+
+Steps with the API.
+
+</div>
+</div>
+```
+
+A block holds exactly these two parts, console first, and neither is empty. Keep the blank lines,
+or the Markdown inside does not render. The site shows each block as two tabs, and choosing one
+switches every block on the page. A step only one of the two can do has no block: say which one
+does it.
+
+The tab labels name the releases the pages describe, which `versions.json` holds:
+
+```json
+{
+  "engine": "v0.55.0",
+  "console": "v0.21.0"
+}
+```
+
+After each engine or console release, the docs release that follows checks every path against
+it and moves the version there.
 
 ## Structure
 
