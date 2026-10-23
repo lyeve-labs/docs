@@ -344,6 +344,15 @@ answer a `207`. Every run logs its outcome as `subject_erasure_outcome`, with
 the status, whether it completed, the rows and the parts that failed, even when
 nobody reads the answer.
 
+A log line about a person names them by `subject_ref`, a 12-character
+reference keyed from `ENCRYPTION_KEY`, or from `JWT_SECRET` when
+`ENCRYPTION_KEY` is unset. Every line about one identifier carries the same
+reference, so the lines of a run correlate, and without the key a list of
+addresses cannot be matched against them. Changing that key changes every
+reference, so a line written before the change no longer matches one written
+after it for the same person. A stateless engine with neither key
+picks a new one each time it starts.
+
 In the audit log, erasure redacts the subject's entries in place rather than
 deleting them: the user id is cleared, the address and user agent become
 `[redacted]`, and the before and after state is emptied. It finds entries by
