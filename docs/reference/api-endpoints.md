@@ -322,6 +322,7 @@ A build without license support answers `404` on both license routes and reports
 |---|---|---|---|
 | `POST` | `/api/admin/gdpr/export` | `super_admin`, rate limited | Export everything the instance holds about one person. `503` with `the subject's addresses could not be read; export was not attempted` when nothing was read |
 | `POST` | `/api/admin/gdpr/erase` | `super_admin`, rate limited | Erase it. `200` when every part erased, `207` when part of it did not finish and a repeat finishes it, `503` when nothing was erased |
+| `GET`, `PUT` | `/api/admin/schemas/form-erasure` | `admin` | What an erasure does with the tenant's form submissions: `auto`, `soft` or `hard` |
 | `GET` | `/api/v1/gdpr/export/sections` | Signed-in session | The sections of their own data a person may export |
 | `POST` | `/api/v1/gdpr/export` | Signed-in session, once an hour | A person's own data as NDJSON |
 | `POST` | `/api/v1/gdpr/export/step-up/email` | Signed-in session | Mail the person a code their export asks for |

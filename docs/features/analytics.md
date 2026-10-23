@@ -525,6 +525,10 @@ signed-in session.
 A person whose role is not listed gets `403` on the sections, the export and
 the emailed code.
 
+The same page holds what an erasure does with the tenant's form submissions,
+which [data protection](../trust/data-protection.md#right-to-erasure)
+describes.
+
 ### Ask the person to prove it is them
 
 An export hands one caller a person's whole history, so a super admin can

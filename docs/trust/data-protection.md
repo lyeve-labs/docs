@@ -99,11 +99,15 @@ each feature's own section, `plugins.schema_presets` lists:
 
 - `comments`: each comment whose author an erasure anonymizes, with its id,
   `author_email`, `author_name` and body.
-- `form_submissions`: each submission an erasure deletes, with its id, its
-  `form_id`, its `created_at` and, under `fields`, each field whose value is
-  one of the person's addresses, as its `field` name and its `value`. A field
-  inside a nested value is named by its path, such as `contact.email`. The rest of what it posted stays out, because
-  someone else may have filled in the form and named the person in one field.
+- `form_submissions`: each submission an erasure reaches, with its id, its
+  `form_id` and its `created_at`. A submission whose only email addresses are
+  the person's is listed whole, under `data`. One that also holds someone
+  else's address lists, under `fields`, only each field whose value is one of
+  the person's addresses, as its `field` name and its `value`, because someone
+  else may have filled in the form and named the person in one field. A field
+  inside a nested value is named by its path, such as `contact.email`, and an
+  item of a list by its position, such as `guests.0.email`. The export splits
+  submissions this way whatever the tenant chose for its erasures.
 
 When the person's addresses cannot be read, the server answers `503` with
 `the subject's addresses could not be read; export was not attempted`, and
@@ -254,9 +258,10 @@ When the addresses cannot be read, nothing is erased. The erasure reaches:
   `erased-<id>@erased.invalid`, where `<id>` is the comment's id, the
   `author_name` is left empty, and the comment stays.
 - Rows of a `form_submissions` content type, such as the one the `forms`
-  preset creates, whose `data` holds the address as a whole value. They are
-  deleted. A submission that names the address inside a longer value, such as
-  a message asking for a reply to it, stays.
+  preset creates, whose `data` holds the address as a whole value. What
+  happens to each is the tenant's choice, below. A submission that names the
+  address inside a longer value, such as a message asking for a reply to it,
+  stays.
 
 Comments and form submissions are erased only in the person's own tenant,
 because the same address may belong to someone else in another. An address
@@ -268,6 +273,48 @@ request is made in: your own, or the tenant you name with `X-Tenant-ID` (see
 lists the comments and form submissions an erasure of the same request would
 reach. That holds for an export with `all_tenants` too: an address no account
 holds is read only in the tenant the request is made in.
+
+A form has no field that says whose submission it is, so a submission
+someone else made may name the person in one field, such as an invitation.
+Each tenant chooses what an erasure does with a matching submission:
+
+| Mode | What an erasure does |
+|---|---|
+| `auto` | The default. A submission whose only email addresses are the person's is deleted. One that also holds another address keeps its row, and each value that is one of the person's addresses becomes `null`. |
+| `soft` | Every matching submission keeps its row, and only the person's values become `null`. |
+| `hard` | Every matching submission is deleted, with whatever anyone else entered in it. |
+
+Another address is a value that is a whole email address and none of the
+person's. Every other value stays as it was.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Privacy**. Under **Form submissions on erasure**, choose
+**Decide for each submission** (`auto`), **Always clear the person's values**
+(`soft`) or **Always delete the submission** (`hard`), then choose **Save**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT https://cms.example.com/api/admin/schemas/form-erasure \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"mode": "soft"}'
+```
+
+It answers the mode it stored, and `GET` on the same path reads the tenant's
+mode, `auto` when it never chose. Any other mode is a `400`, and so is a
+request that names no tenant, such as a super admin's with no tenant chosen.
+With the `audit` feature licensed, a change writes the audit entry
+`schema.form_erasure.update` with the mode before and after.
+
+</div>
+</div>
+
+An admin of the tenant sets it, and it applies to every erasure that runs
+after it is saved.
 
 An address the person used in the past and no longer holds is out of reach.
 No record keeps an account's earlier addresses, so data kept under one is
