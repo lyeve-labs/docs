@@ -41,99 +41,147 @@ Assignment is keyed on the user id in the caller's token, never on anything in t
 body. Shares of traffic are each above 0 and at most 100, and the total cannot exceed 100. A
 total below 100 does not hold anyone out: the remainder goes to the variant created last.
 
-## In the admin console
-
-Open **Delivery > Experiments**. Each experiment shows the question it tests, its status, the
-exposures it needs and when it was created. A draft has **Start**, a running one has **Pause**
-and **Stop**, and the row buttons edit, duplicate or delete it. **New experiment** asks for a
-**Name**, **What it is testing**, a **Confidence level**, the **Minimum exposures**
-and whether to **Stop automatically once significant**.
-
-![The Experiments page with signup-button running and pricing-headline still a draft, each with the question it tests and the exposures it needs.](images/ab-testing.png)
-
-**Confidence level** is the `significance_threshold` below, so `0.95` means a p-value below
-0.05. **Minimum exposures** and the **Exposures needed** column count exposures across all
-variants together, the same as `min_sample_size`.
-
 ## Try it
 
-You need a token in `TOKEN` for an `admin` or `super_admin`. The
+For the console steps, you are signed in to the admin console as an `admin` or `super_admin`.
+For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one. The same token stands in
 for the end user in steps 4 and 5.
 
-1. Create the experiment:
+**1. Create the experiment.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ab/experiments \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "signup-button", "min_sample_size": 500, "auto_stop_enabled": true}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the experiment and `"status": "draft"`. Save its `id` as `EXP`.
+Open **Delivery > Experiments** and choose **New experiment**. Enter `signup-button` in
+**Name** and `500` in **Minimum exposures**, turn on **Stop automatically once significant**,
+and choose **Create**. The list shows it as a draft. Open it from there.
 
-2. Add a control and a challenger:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/variants \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "control", "traffic_percentage": 50, "is_control": true, "config": "{\"color\":\"blue\"}"}'
+```bash
+curl -X POST http://localhost:3001/api/admin/ab/experiments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "signup-button", "min_sample_size": 500, "auto_stop_enabled": true}'
+```
 
-   curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/variants \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "green", "traffic_percentage": 50, "config": "{\"color\":\"green\"}"}'
-   ```
+The answer is `201` with the experiment and `"status": "draft"`. Save its `id` as `EXP`.
 
-   Each answers `201` with the variant.
+</div>
+</div>
 
-3. Add the metric and start the experiment:
+**Confidence level** in the console is the `significance_threshold` below, so `0.95` means a
+p-value below 0.05. **Minimum exposures** counts exposures across all variants together, the
+same as `min_sample_size`.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/metrics \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Signed up", "event_name": "signup", "metric_type": "conversion"}'
+**2. Add a control and a challenger.**
 
-   curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/start \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The start answers `200` with `"status": "running"`.
+On the experiment's page, choose **New variant**. Enter `control` in **Name**, `50` in **Share
+of traffic, as a percentage** and `{"color":"blue"}` in **Config the application reads**, tick
+**This is the control**, and choose **Create**. Add `green` the same way, with
+`{"color":"green"}` and without the tick.
 
-4. From your app, ask which variant the user sees:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/ab/expose \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"experiment_id\": \"$EXP\"}"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/variants \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "control", "traffic_percentage": 50, "is_control": true, "config": "{\"color\":\"blue\"}"}'
 
-   ```json
-   { "exposure_id": "4f0c2a8e-2b7e-4a51-9a1e-0c7d6b1f3a92", "variant": "green", "variant_id": "b3d1e6f0-8c2a-4e57-9f14-2a6c0d9e7b11", "is_control": false }
-   ```
+curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/variants \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "green", "traffic_percentage": 50, "config": "{\"color\":\"green\"}"}'
+```
 
-5. When the user signs up, report it. `value` is optional:
+Each answers `201` with the variant.
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/ab/convert \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"experiment_id\": \"$EXP\", \"event_name\": \"signup\"}"
-   ```
+</div>
+</div>
 
-   The answer is `201` with the conversion. Reporting it again records it once.
+**3. Add the metric and start the experiment.**
 
-6. Read the results:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl http://localhost:3001/api/admin/ab/experiments/$EXP/results \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Choose **New metric**. Enter `Signed up` in **Name** and `signup` in **Event name**, keep
+**conversion** as the **Type**, and choose **Create**. Then go back to **Experiments** and
+choose **Start** on the experiment's row.
 
-   The answer lists each variant with its exposures and conversions, as below.
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/metrics \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Signed up", "event_name": "signup", "metric_type": "conversion"}'
+
+curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/start \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The start answers `200` with `"status": "running"`.
+
+</div>
+</div>
+
+**4. From your app, ask which variant the user sees.** Exposures and conversions are API
+only, because your app sends them with the user's own token:
+
+```bash
+curl -X POST http://localhost:3002/api/v1/ab/expose \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"experiment_id\": \"$EXP\"}"
+```
+
+```json
+{ "exposure_id": "4f0c2a8e-2b7e-4a51-9a1e-0c7d6b1f3a92", "variant": "green", "variant_id": "b3d1e6f0-8c2a-4e57-9f14-2a6c0d9e7b11", "is_control": false }
+```
+
+In the console, the experiment's id is in the address of its page.
+
+**5. When the user signs up, report it.** `value` is optional:
+
+```bash
+curl -X POST http://localhost:3002/api/v1/ab/convert \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"experiment_id\": \"$EXP\", \"event_name\": \"signup\"}"
+```
+
+The answer is `201` with the conversion. Reporting it again records it once.
+
+**6. Read the results.**
+
+<div class="paths">
+<div data-path="console">
+
+Open the experiment. **What the results support** lists each variant with how many users were
+**Exposed** and **Converted**, its **Rate** and its **Confidence**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/ab/experiments/$EXP/results \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer lists each variant with its exposures and conversions, as below.
+
+</div>
+</div>
+
+![The Experiments page with signup-button running and pricing-headline still a draft, each with the question it tests and the exposures it needs.](images/ab-testing.png)
 
 ## Read the results
 
@@ -163,7 +211,9 @@ for the end user in steps 4 and 5.
 
 ## Run an experiment
 
-A new experiment starts as `draft`. Move it with the routes below:
+A new experiment starts as `draft`. In the console, a draft has **Start** on its row on
+**Delivery > Experiments**, and a running one has **Pause** and **Stop**. Over the API, move it
+with the routes below:
 
 | Route | Moves it to | From |
 |---|---|---|

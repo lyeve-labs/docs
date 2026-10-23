@@ -29,26 +29,6 @@ site may search, and you can see what readers look for.
   [the data model](../concepts/data-model.md#entries).
 :::
 
-## In the admin console
-
-Open **Search**. Type in **Search content** and choose **Search** to search every entry,
-drafts included. Each result shows its content type, status, slug and rank. The cards beside
-the results hold the settings the sections below describe:
-
-- **Public search** lists the content types under **Anyone may search**. Tick the ones your
-  site may search and choose **Save**.
-- **Ranking weights** sets **Title**, **Body** and **Tags** for every content type with no
-  weights of its own, the row saved under `*`.
-- **Synonyms** lists the synonym groups, and **New synonym** adds one.
-- **Last 30 days** counts **Searches** and the share with **No results**, and lists the top
-  queries.
-- **Rebuild index**, under **Index**, rebuilds the index from every entry.
-
-![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card has landing_page ticked under Anyone may search, and the Ranking weights card starts below it.](images/search.png)
-
-[Search and organization](../guides/user/search-and-organization.md) walks through searching
-from the console step by step.
-
 ## How it works
 
 | Part | What it does |
@@ -64,54 +44,100 @@ from the console step by step.
 
 This needs at least one published entry, such as the one the
 [content lifecycle](content-lifecycle.md#try-it) steps create, published again after its
-rollback. You need a token in `TOKEN` for
-an `admin` or `super_admin`. The [quickstart](../getting-started/quickstart.md) shows how to
-get one.
+rollback. For the console steps, you are signed in to the admin console as an `admin` or
+`super_admin`. For the API steps, you need a token in `TOKEN` for one. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Search for a word in the entry:
+**1. Search for a word in the entry.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/search \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"q": "hello", "highlight": true, "facets": ["tags"], "limit": 10}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer lists `results` with each entry's `rank` and `snippets`, the `total`, and the
-   `facets` you asked for.
+Open **Search**, type `hello` in **Search content** and choose **Search**. Each result shows
+its title, rank, content type, status and slug. The console searches every entry, drafts
+included.
 
-2. Try autocomplete with the first letters:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/search/instant?q=hel&limit=5" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/search \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "hello", "highlight": true, "facets": ["tags"], "limit": 10}'
+```
 
-   ```json
-   { "results": [{ "entry_id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd", "title": "Hello", "slug": "hello", "schema": "story" }], "query": "hel", "took_ms": 0 }
-   ```
+The answer lists `results` with each entry's `rank` and `snippets`, the `total`, and the
+`facets` you asked for.
 
-3. Add a synonym group:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/search/synonyms \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Greetings", "base_term": "hi", "synonyms": ["hello"]}'
-   ```
+**2. Try autocomplete with the first letters.** Autocomplete is API only. The console's
+**Search** page runs a full search:
 
-   The answer is `201` with the group. A search for `hi` now finds the entry too.
+```bash
+curl "http://localhost:3001/api/admin/search/instant?q=hel&limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-4. Read the analytics:
+```json
+{ "results": [{ "entry_id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd", "title": "Hello", "slug": "hello", "schema": "story" }], "query": "hel", "took_ms": 0 }
+```
 
-   ```bash
-   curl http://localhost:3001/api/admin/search/analytics \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**3. Add a synonym group, then search for it.**
 
-   ```json
-   { "total_searches": 2, "unique_queries": 2, "avg_result_count": 1, "avg_duration_ms": 3, "top_queries": [{ "query_text": "hello", "count": 1 }], "zero_result_pct": 50 }
-   ```
+<div class="paths">
+<div data-path="console">
+
+Under **Synonyms**, choose **New synonym**. Enter `hi` in **Term** and `hello` in **Also
+matches**, then choose **Create**. Search for `hi` as in step 1. The entry is found.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/search/synonyms \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Greetings", "base_term": "hi", "synonyms": ["hello"]}'
+```
+
+The answer is `201` with the group. Search for `hi` as in step 1, with `"q": "hi"`. The entry
+is found.
+
+</div>
+</div>
+
+**4. Read the analytics.**
+
+<div class="paths">
+<div data-path="console">
+
+The **Last 30 days** card on **Search** counts the **Searches** and the share with **No
+results**, and lists the top queries: `hello` and `hi`, once each.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/search/analytics \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "total_searches": 2, "unique_queries": 2, "avg_result_count": 1, "avg_duration_ms": 10.5, "top_queries": [{ "query_text": "hello", "count": 1 }, { "query_text": "hi", "count": 1 }], "zero_result_pct": 0 }
+```
+
+</div>
+</div>
+
+The autocomplete in step 2 is not counted. Each search you run in the console is.
+
+![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card lists landing_page under Anyone may search, and the Ranking weights card starts below it.](images/search.png)
+
+[Search and organization](../guides/user/search-and-organization.md) walks through searching
+from the console step by step.
 
 ## Search as an admin
 
@@ -173,7 +199,17 @@ default and at most 50.
 
 ## Let anyone search your site
 
-List the content types anyone may search:
+List the content types anyone may search.
+
+<div class="paths">
+<div data-path="console">
+
+On **Search**, pick the content types under **Anyone may search** in the **Public search**
+card and choose **Save**. Each one shows as a chip, and the card shows an **Example GET
+request** to copy.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/search/public-schemas \
@@ -182,8 +218,12 @@ curl -X PUT http://localhost:3001/api/admin/search/public-schemas \
   -d '{"schemas": ["article", "product"]}'
 ```
 
-The answer repeats the list. Send an empty list to make search admin only again. Your site then
-calls the public route with no credential, on the tenant's own host:
+The answer repeats the list. Send an empty list to make search admin only again.
+
+</div>
+</div>
+
+Your site then calls the public route with no credential, on the tenant's own host:
 
 ```bash
 curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
@@ -225,12 +265,28 @@ curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
 
 ## Match other words with synonyms
 
+<div class="paths">
+<div data-path="console">
+
+On **Search**, choose **New synonym** under **Synonyms**. Enter `laptop` in **Term** and
+`notebook, ultrabook` in **Also matches**, then choose **Create**. The console names the group
+after its term. The delete button on a group's row asks **Delete the synonyms of laptop?**,
+and **Delete** removes the group.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/search/synonyms \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "Computers", "base_term": "laptop", "synonyms": ["notebook", "ultrabook"]}'
 ```
+
+`PUT` and `DELETE` on `/api/admin/search/synonyms/{id}` change or remove a group.
+
+</div>
+</div>
 
 A search whose whole text is the base term also matches its synonyms. It works one way: a
 search for `notebook` does not match `laptop`. A search uses the text and the first 7 synonyms
@@ -243,12 +299,29 @@ the index settings.
 
 ## Weigh title, body and tags
 
+<div class="paths">
+<div data-path="console">
+
+On **Search**, set **Title**, **Body** and **Tags** in the **Ranking weights** card and choose
+**Save**. The card saves the weights under `*`, for every content type with no weights of its
+own.
+
+</div>
+<div data-path="api">
+
+Name a content type, or `*` for every content type with no weights of its own:
+
 ```bash
 curl -X PUT http://localhost:3001/api/admin/search/ranking \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"schema_name": "article", "title_weight": 1.0, "body_weight": 0.3, "tag_weight": 0.5}'
 ```
+
+</div>
+</div>
+
+Weights for one content type are API only. The console in v0.21.0 sets the `*` row.
 
 A search uses the weights saved for its content type, then the ones saved under `schema_name`
 `*`, then the defaults: title 1.0, body 0.4, tags 0.2. A negative weight counts as 0, and all
@@ -266,11 +339,12 @@ weights saved under that exact name, or the defaults when none are, even if a `*
 
 ## See what readers search for
 
-`GET /api/admin/search/analytics` answers the total searches, unique queries, average result
+The **Last 30 days** card on **Search** shows the searches, the share that found nothing and
+the top ten queries. `GET /api/admin/search/analytics` answers the total searches, unique queries, average result
 count and time, the top 20 queries and the share that found nothing. By default it covers the
 last month, and `?since=` sets the start.
 
-Your front end can report a search it ran with `POST /api/admin/search/analytics/log` and a
+Reporting searches and clicks is API only. Your front end can report a search it ran with `POST /api/admin/search/analytics/log` and a
 result the reader clicked with `POST /api/admin/search/analytics/click`. Both answer `202`. A
 click is kept only when it matches a logged search with the same `query_text` and
 `session_id`, and the summary does not count clicks.
@@ -283,15 +357,27 @@ every public search is narrowed that way. The analytics count searches that use 
 ## Use Elasticsearch or Meilisearch
 
 Set `SEARCH_PROVIDER` and the settings for that backend below, restart, then rebuild the index
-once with `POST /api/admin/search/reindex`, which needs `super_admin`. The instance refuses to
+once. A rebuild needs `super_admin`. The instance refuses to
 call a private, loopback or link-local address unless you list it, so a search engine on your
 own network or on the same machine needs its network in `SEARCH_ALLOWED_PRIVATE_NETWORKS`, such
 as `10.0.0.0/8` or `127.0.0.1`. The list opens that network to search and to nothing else.
+
+<div class="paths">
+<div data-path="console">
+
+On **Search**, choose **Rebuild index** in the **Index** card. It runs at once, with no
+confirmation, and the card shows what was indexed.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/search/reindex \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+</div>
+</div>
 
 The answer reports what was indexed, such as
 `"message": "elasticsearch: 1840 indexed, 0 skipped, 0 errors"`. After that, creates, updates

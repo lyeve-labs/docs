@@ -37,28 +37,6 @@ still change before it is marked stable.
   [Editorial review](editorial-review.md) adds stages and approvals.
 :::
 
-## In the admin console
-
-Open **Delivery > Releases**. The list shows each release with its status, its number of
-entries and when it **Goes out**, and the tabs above it filter by status. **New release** asks
-for a **Name** and a **Description**.
-
-Open a release to work on it:
-
-1. **Include entry** offers the most recently changed entries, by collection, and finds one by
-   title, slug or ID. Pick the **Entry**, choose **Publish it** or **Unpublish it** under
-   **When the release goes out**, and choose **Include**. An older entry is added from its own
-   page. The **Does** column shows the choice for each entry.
-2. Under **Schedule**, pick when it **Goes out at** and choose **Schedule**, or choose
-   **Publish now**.
-3. A scheduled release shows when it goes out, with **Unschedule** beside it. **Cancel release**
-   and **Delete** sit beside **Publish now**.
-
-On an entry's page, the **Release** card adds that entry to a release. Pick the **Release** and
-**When it goes out**, then choose **Add to release**.
-
-![The Spring launch release, scheduled to go out on March 1, 2027 at 09:00 UTC. It unpublishes Winter catalog and publishes Spring catalog and Spring pricing, with Publish now, Cancel release and Unschedule.](images/content-releases.png)
-
 ## How it works
 
 A release changes its entries in two stages:
@@ -92,75 +70,152 @@ A release moves through these states:
 
 ## Try it
 
-Run this on an install whose license carries `content-pro`. You need an admin
-token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how
-to get one. Create two entries first, as in
-[Content lifecycle](content-lifecycle.md#try-it), and copy their ids into
-`PAGE_A` and `PAGE_B`.
+Run this on an install whose license carries `content-pro`. For the console steps, you are
+signed in to the admin console as an `admin` or `super_admin`. For the API steps, you need a
+token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get one.
+Create two draft entries first, as in [Content lifecycle](content-lifecycle.md#try-it). For
+the API steps, copy their ids into `PAGE_A` and `PAGE_B`.
 
-1. Build a release that publishes both:
+**1. Build a release that publishes both.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content/releases \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Spring launch", "items": [{"entry_id": "'"$PAGE_A"'", "action": "publish"}, {"entry_id": "'"$PAGE_B"'", "action": "publish"}]}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with `"status": "draft"` and `"item_count": 2`. Copy its
-   `id` into `RELEASE_ID`.
+1. Open **Delivery > Releases** and choose **New release**.
+2. Enter `Spring launch` in **Name** and choose **Create**. The release's page opens.
+3. Choose **Include entry**. Pick the first entry under **Entry**, keep **Publish it** under
+   **When the release goes out**, and choose **Include**. The page confirms **Entry added to
+   the release.**
+4. Include the second entry the same way.
 
-2. Publish it now:
+**Entries (2)** lists both, and the **Does** column reads **Publishes**.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/publish \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   The answer is the release with `"status": "published"`, and each item
-   reports `"previous_status": "draft"` and `"outcome": "applied"`. Both
-   entries now read `"status": "published"` on `GET /api/admin/content/{id}`.
+```bash
+curl -X POST http://localhost:3001/api/admin/content/releases \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Spring launch", "items": [{"entry_id": "'"$PAGE_A"'", "action": "publish"}, {"entry_id": "'"$PAGE_B"'", "action": "publish"}]}'
+```
 
-3. Build and publish a second release that takes `PAGE_A` down:
+The answer is `201` with `"status": "draft"` and `"item_count": 2`. Copy its `id` into
+`RELEASE_ID`.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content/releases \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Retire page A", "items": [{"entry_id": "'"$PAGE_A"'", "action": "unpublish"}]}'
-   ```
+</div>
+</div>
 
-   Publish it with `.../publish` as in step 2. `PAGE_A` is a draft again and
-   leaves the Content API list.
+**2. Publish it now.**
 
-4. See a conflict. Schedule a release that holds `PAGE_B`:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content/releases/$OTHER_RELEASE_ID/schedule \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"publish_at": "2027-11-01T09:00:00Z"}'
-   ```
+Choose **Publish now** and confirm. The page reads **Release published.**
 
-   Then build a third release that also holds `PAGE_B` and read its conflicts:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/content/releases/$THIRD_RELEASE_ID/conflicts \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/publish \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```json
-   {"data": [{"entry_id": "059b65ff-...", "kind": "other_release", "at": "2027-11-01T09:00:00Z", "release_id": "68dee079-...", "detail": "another scheduled release moves the entry"}]}
-   ```
+The answer is the release with `"status": "published"`, and each item reports
+`"previous_status": "draft"` and `"outcome": "applied"`. Both entries now read
+`"status": "published"` on `GET /api/admin/content/{id}`.
 
-   Scheduling or publishing the third release answers `409` until you take the
-   entry out of one of them.
+</div>
+</div>
+
+**3. Build and publish a second release that takes the first entry down.**
+
+<div class="paths">
+<div data-path="console">
+
+Create a release named `Retire page A`. Choose **Include entry**, pick the first entry, choose
+**Unpublish it** and choose **Include**. Then choose **Publish now** and confirm.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content/releases \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Retire page A", "items": [{"entry_id": "'"$PAGE_A"'", "action": "unpublish"}]}'
+```
+
+Publish it with `.../publish` as in step 2.
+
+</div>
+</div>
+
+The first entry is a draft again and leaves the Content API list.
+
+**4. See a conflict.** Build two more releases that each hold the second entry. Schedule one
+of them, then look at the other.
+
+<div class="paths">
+<div data-path="console">
+
+1. On one of the two releases, pick a date and a time under **Goes out at** and choose
+   **Schedule**. The card shows when it goes out, in UTC, with **Unschedule** beside it.
+2. Open the other release. Its **Conflicts** card says that a conflict stops the release,
+   with **Open the other release**. **Publish now** and **Schedule** stay off until you take
+   the entry out of one of them.
+
+</div>
+<div data-path="api">
+
+Schedule one of them:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content/releases/$OTHER_RELEASE_ID/schedule \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"publish_at": "2027-11-01T09:00:00Z"}'
+```
+
+Then read the other one's conflicts:
+
+```bash
+curl http://localhost:3001/api/admin/content/releases/$THIRD_RELEASE_ID/conflicts \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"data": [{"entry_id": "059b65ff-...", "kind": "other_release", "at": "2027-11-01T09:00:00Z", "release_id": "68dee079-...", "detail": "another scheduled release moves the entry"}]}
+```
+
+Scheduling or publishing that release answers `409` until you take the entry out of one of
+them.
+
+</div>
+</div>
+
+![The Spring launch release, scheduled to go out on March 1, 2027 at 09:00 UTC. It unpublishes Winter catalog and publishes Spring catalog and Spring pricing, with Publish now, Cancel release and Unschedule.](images/content-releases.png)
 
 ## Build a release
 
-`name` is required, at most 255 characters, and `description` is optional.
-`items` is optional too, and a release holds up to 500 entries. Add an entry
-later, or change the action of one already in the release:
+`name` is required, at most 255 characters, and `description` is optional. A release holds up
+to 500 entries.
+
+<div class="paths">
+<div data-path="console">
+
+**Include entry** offers the most recently changed entries, by collection, and finds one by
+title, slug or ID. An older entry is added from its own page: the entry's **Release** card
+takes a **Release** and **When it goes out**, then **Add to release**. The remove button on an
+entry's row takes it out, and the page confirms **Entry removed from the release.** To change
+what an entry does, remove it and include it again. **Edit** changes the **Name** and the
+**Description**.
+
+</div>
+<div data-path="api">
+
+`items` is optional on the create. Add an entry later, or change the action of one already in
+the release:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/items \
@@ -169,10 +224,25 @@ curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/items 
   -d '{"entry_id": "'"$ANOTHER"'", "action": "publish"}'
 ```
 
-`DELETE .../items/{entryID}` takes an entry out. Entries can change only while
-the release is a `draft` or `scheduled`.
+`DELETE .../items/{entryID}` takes an entry out, and `PUT .../{id}` changes `name` or
+`description`.
+
+</div>
+</div>
+
+Entries can change only while the release is a `draft` or `scheduled`.
 
 ## Schedule it
+
+<div class="paths">
+<div data-path="console">
+
+Under **Schedule**, pick a date and a time in **Goes out at** and choose **Schedule**.
+**Unschedule** returns the release to draft, and **Cancel release** cancels it before it goes
+out.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/schedule \
@@ -181,9 +251,13 @@ curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/schedu
   -d '{"publish_at": "2027-11-01T09:00:00Z"}'
 ```
 
-`publish_at` must be in the future, and the release reports it as
-`scheduled_at`. `DELETE .../schedule` returns a scheduled release to draft, and
-`.../cancel` cancels it before it goes out.
+The release reports the time as `scheduled_at`. `DELETE .../schedule` returns a scheduled
+release to draft, and `.../cancel` cancels it before it goes out.
+
+</div>
+</div>
+
+The time must be in the future.
 
 ## Conflicts
 

@@ -27,21 +27,6 @@ find it in your S3 bucket, and a schedule runs the same export on a timetable.
 - You want a full copy of a tenant to restore later. See [tenants](tenants.md).
 :::
 
-## In the admin console
-
-Open **Insight > Data export**. **Exports** lists each export with its format, what it holds,
-its status, the entries written and its size, and a button that downloads the file.
-**Schedules** lists each export that runs on a timetable, with its next run and buttons that
-pause or delete the schedule.
-
-![The Data export page. Exports lists two finished exports, published-pages-json in JSON and landing-pages-csv in CSV, each with its entry count, size and a download button. Schedules lists Nightly backup, every day at 02:00 UTC, enabled and next running on October 12.](images/data-export.png)
-
-**New export** asks for a **Name**, the **Schemas**, the **Format** and the **Statuses**, with
-**Include the schema definitions** and **Bundle referenced media**. **Start** runs it in the
-background. **New schedule** asks for the same, plus **When**: **Every hour**,
-**Every day at 02:00 UTC**, **Every Monday at 02:00 UTC**,
-**On the first of each month at 02:00 UTC** or **A cron expression of my own**.
-
 ## How it works
 
 | Step | What happens |
@@ -53,64 +38,141 @@ background. **New schedule** asks for the same, plus **When**: **Every hour**,
 
 ## Try it
 
-You need a content type `post` with a few entries, and a token in `TOKEN` for an `admin` or
-`super_admin`. The [quickstart](../getting-started/quickstart.md) shows how to get one.
+You need a content type `post` with a few entries. For the console steps, you are signed in to
+the admin console as an `admin` or `super_admin`. For the API steps, you need a token in
+`TOKEN` for one. The [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Start a CSV export of `post`:
+**1. Start a CSV export of `post`.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/data-export/start \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "posts-csv", "format": "csv", "filter": {"schemas": ["post"]}}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `202` with the job, `"status": "pending"` and `"stage": "queued"`. Copy its
-   `id` into `JOB`.
+1. Open **Insight > Data export** and choose **New export**.
+2. Enter `posts-csv` in **Name**, pick `post` under **Schemas** and pick **CSV** in
+   **Format**.
+3. Choose **Start**.
 
-2. Check it:
+The page confirms that the export started and runs in the background.
 
-   ```bash
-   curl http://localhost:3001/api/admin/data-export/jobs/$JOB \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   Within a moment it shows `"status": "completed"`, `"stage": "done"` and `rows_written`.
+```bash
+curl -X POST http://localhost:3001/api/admin/data-export/start \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "posts-csv", "format": "csv", "filter": {"schemas": ["post"]}}'
+```
 
-3. Download it:
+The answer is `202` with the job, `"status": "pending"` and `"stage": "queued"`. Copy its `id`
+into `JOB`.
 
-   ```bash
-   curl http://localhost:3001/api/admin/data-export/jobs/$JOB/download \
-     -H "Authorization: Bearer $TOKEN" -OJ
-   ```
+</div>
+</div>
 
-   You get `posts-csv.csv`.
+**2. Check it.**
 
-4. Schedule a nightly JSON export:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/data-export/schedules \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Nightly", "cron_expression": "0 2 * * *", "enabled": true, "export_config": {"format": "json", "include_schemas": true}}'
-   ```
+**Exports** lists the job with its format, what it holds, its status, the entries written and
+its size. The list follows the job until it finishes, and **Refresh** reads it again.
 
-   The answer is `201` with the schedule and its `next_run_at`, 02:00 UTC tonight. Copy its
-   `id` into `SCHEDULE`.
+</div>
+<div data-path="api">
 
-5. Pause it, and delete it when you are done:
+```bash
+curl http://localhost:3001/api/admin/data-export/jobs/$JOB \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/data-export/schedules/$SCHEDULE \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"enabled": false}'
+Within a moment it shows `"status": "completed"`, `"stage": "done"` and `rows_written`.
 
-   curl -X DELETE http://localhost:3001/api/admin/data-export/schedules/$SCHEDULE \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   The pause answers `200` without a `next_run_at`, and the delete answers `204`.
+**3. Download it.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the download button on the job's row.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/data-export/jobs/$JOB/download \
+  -H "Authorization: Bearer $TOKEN" -OJ
+```
+
+</div>
+</div>
+
+You get `posts-csv.csv`.
+
+**4. Schedule a nightly JSON export.**
+
+<div class="paths">
+<div data-path="console">
+
+1. Choose **New schedule**.
+2. Enter `Nightly` in **Name**, pick **JSON** in **Format** and turn on **Include the schema
+   definitions**.
+3. Pick **Every day at 02:00 UTC** in **When**, keep **Run on the timetable** on, and choose
+   **Create**.
+
+**Schedules** lists it with its next run, 02:00 UTC tonight.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/data-export/schedules \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Nightly", "cron_expression": "0 2 * * *", "enabled": true, "export_config": {"format": "json", "include_schemas": true}}'
+```
+
+The answer is `201` with the schedule and its `next_run_at`, 02:00 UTC tonight. Copy its `id`
+into `SCHEDULE`.
+
+</div>
+</div>
+
+**5. Pause it, and delete it when you are done.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the pause button on the schedule's row, and it becomes a resume button. Then choose the
+delete button on the row and confirm **Delete schedule Nightly**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/data-export/schedules/$SCHEDULE \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}'
+
+curl -X DELETE http://localhost:3001/api/admin/data-export/schedules/$SCHEDULE \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The pause answers `200` without a `next_run_at`, and the delete answers `204`.
+
+</div>
+</div>
+
+![The Data export page. Exports lists two finished exports, published-pages-json in JSON and landing-pages-csv in CSV, each with its entry count, size and a download button. Schedules lists Nightly backup, every day at 02:00 UTC, enabled and next running on October 24.](images/data-export.png)
+
+The console's **New export** and **New schedule** also take the **Statuses**, **Include the
+schema definitions** and **Bundle referenced media**. **When** offers **Every hour**, **Every
+day at 02:00 UTC**, **Every Monday at 02:00 UTC**, **On the first of each month at 02:00 UTC**
+and **A cron expression of my own**. Sending an export to S3, and the options below that the
+console does not list, are API only.
 
 ## Formats
 
@@ -166,8 +228,9 @@ instead.
 it stopped at, and `error` says why it failed.
 
 Once `status` is `completed`, `GET .../jobs/{id}/download` answers the file as an attachment
-named after the job. An export sent to S3 answers `307` to a signed address in the bucket
-instead, so pass `-L` to `curl`. `POST .../jobs/{id}/cancel` stops a job that is still running.
+named after the job. An export sent to S3 answers `307` with the object's `s3://` address in
+`Location`, such as `s3://lyeve-exports/data-exports/default/nightly/content.json`. A browser
+or `curl` cannot follow it, so fetch the object from the bucket with your own S3 tools. `POST .../jobs/{id}/cancel` stops a job that is still running.
 
 ## Schedules
 

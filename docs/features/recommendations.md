@@ -28,16 +28,6 @@ you ask, from the console or from your own scheduler.
 - You want counts of views and visitors. [Analytics](analytics.md) reports them.
 :::
 
-## In the admin console
-
-Open **Settings > Recommendations**. **Trending now** lists the entries with the most activity
-this week, by title and slug, with each one's **Score** and **Views**. An entry that is not
-published shows its id. New activity counts once a
-super admin chooses **Recompute**. **The split** reports how readers divide between the
-recommended feed and a random baseline, once readers have asked for a feed.
-
-![The Recommendations settings page. Trending now lists five entries with their score and views. The first, with a score of 12.0 and 6 views, shows only its id, and the other four show a title and slug. Recompute sits at the top right.](images/recommendations.png)
-
 ## How it works
 
 | Step | What happens |
@@ -58,57 +48,85 @@ Each action counts toward a reader's feed with its own weight:
 ## Try it
 
 You need a token in `TOKEN` for a `super_admin`, which also counts as a reader here. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. Put the ids of two
+[quickstart](../getting-started/quickstart.md) shows how to get one. For the console steps,
+you are also signed in to the admin console as a `super_admin`. Put the ids of two published
 entries in `A` and `B`.
 
-1. Record that you liked both entries:
+**1. Record that you liked both entries.** Recording is API only, because your front end sends
+it with the reader's own token:
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/recommendations/behavior \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"content_id\": \"$A\", \"action\": \"like\"}"
+```bash
+curl -X POST http://localhost:3002/api/v1/recommendations/behavior \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"content_id\": \"$A\", \"action\": \"like\"}"
 
-   curl -X POST http://localhost:3002/api/v1/recommendations/behavior \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"content_id\": \"$B\", \"action\": \"like\"}"
-   ```
+curl -X POST http://localhost:3002/api/v1/recommendations/behavior \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"content_id\": \"$B\", \"action\": \"like\"}"
+```
 
-   Each answers `201` with the recorded `id`, `user_id`, `content_id`, `action` and
-   `created_at`.
+Each answers `201` with the recorded `id`, `user_id`, `content_id`, `action` and `created_at`.
 
-2. Recompute the scores:
+**2. Recompute the scores.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/recommendations/refresh \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "similarity_pairs_computed": 1, "trending_items_computed": 2, "feeds_generated": 0, "duration_ms": 9 }
-   ```
+Open **Settings > Recommendations** and choose **Recompute**. It runs at once, with no
+confirmation, and the page reports how long it took and what it computed.
 
-3. Ask what is similar to the first entry:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3002/api/v1/recommendations/similar?content_id=$A&limit=5" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/recommendations/refresh \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```json
-   { "similar": ["<B>"] }
-   ```
+```json
+{ "similarity_pairs_computed": 1, "trending_items_computed": 2, "feeds_generated": 0, "duration_ms": 19 }
+```
 
-4. Read the trending list:
+</div>
+</div>
 
-   ```bash
-   curl "http://localhost:3002/api/v1/recommendations/trending?limit=10" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**3. Ask what is similar to the first entry.** Similar entries are API only, since your front
+end asks for them:
 
-   The answer is `{"items": [...]}`, each with `content_id`, `title`, `slug`, `score` and
-   `view_count`.
+```bash
+curl "http://localhost:3002/api/v1/recommendations/similar?content_id=$A&limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "similar": ["<B>"] }
+```
+
+**4. Read the trending list.**
+
+<div class="paths">
+<div data-path="console">
+
+**Trending now** on **Settings > Recommendations** lists both entries by title and slug, with
+each one's **Score** and **Views**. An entry that is not published shows its id.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3002/api/v1/recommendations/trending?limit=10" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `{"items": [...]}`, each with `content_id`, `title`, `slug`, `score` and
+`view_count`.
+
+</div>
+</div>
+
+![The Recommendations settings page. Trending now lists five entries with their score and views. The first, with a score of 12.0 and 6 views, shows only its id, and the other four show a title and slug. Recompute sits at the top right.](images/recommendations.png)
 
 ## Record what readers do
 
@@ -132,10 +150,31 @@ is `similar`, for an entry close to one the reader acted on, or `collaborative`,
 readers with the same taste liked. The feed is built when it is requested, from the scores of
 the last recompute. A `limit` or `offset` above its maximum is lowered, not refused.
 
+A super admin can see the feed one reader would get:
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > Recommendations**, under **What one reader would see**, find the reader with
+**Find a reader** or enter their **User id**, then choose **Generate**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/recommendations/generate-feed/$USER_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer has the same shape as the feed: `{"entries": [...], "total": n}`.
+
+</div>
+</div>
+
 ## Recompute scores
 
-Recompute after a batch of activity, or call the refresh route on a timetable from your own
-tooling, signed in as a super admin. Only one recompute runs at a time, and a second answers
+Recompute after a batch of activity with **Recompute** on **Settings > Recommendations**, or
+call the refresh route on a timetable from your own tooling, signed in as a super admin. Only one recompute runs at a time, and a second answers
 `409`.
 
 :::caution
@@ -155,9 +194,22 @@ time they call `GET /api/v1/recommendations/ab-test`, and stays there:
 
 The group is a label your front end reads. LyEve serves the same answers to both groups, so
 show recommendation blocks only to readers in `recommendation`, and compare how the two groups
-engage. A reader who never calls `ab-test` is in neither group. `GET
-/api/admin/recommendations/ab-stats` returns `recommendation_count`, `random_count`,
+engage. A reader who never calls `ab-test` is in neither group. To see how readers divide:
+
+<div class="paths">
+<div data-path="console">
+
+**The split** on **Settings > Recommendations** reports how readers divide between the two
+groups, once a reader is in one.
+
+</div>
+<div data-path="api">
+
+`GET /api/admin/recommendations/ab-stats` returns `recommendation_count`, `random_count`,
 `total_users`, `recommendation_pct` and `random_pct`.
+
+</div>
+</div>
 
 ## Settings
 
