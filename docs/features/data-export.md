@@ -230,7 +230,14 @@ it stopped at, and `error` says why it failed.
 Once `status` is `completed`, `GET .../jobs/{id}/download` answers the file as an attachment
 named after the job. An export sent to S3 answers `307` with the object's `s3://` address in
 `Location`, such as `s3://lyeve-exports/data-exports/default/nightly/content.json`. A browser
-or `curl` cannot follow it, so fetch the object from the bucket with your own S3 tools. `POST .../jobs/{id}/cancel` stops a job that is still running.
+or `curl` cannot follow it, so fetch the object from the bucket with your own S3 tools, such
+as the AWS CLI with the credentials of an account that may read the bucket:
+
+```bash
+aws s3 cp s3://lyeve-exports/data-exports/default/nightly/content.json content.json
+```
+
+`POST .../jobs/{id}/cancel` stops a job that is still running.
 
 ## Schedules
 

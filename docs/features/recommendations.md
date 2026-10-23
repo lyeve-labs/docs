@@ -150,7 +150,8 @@ is `similar`, for an entry close to one the reader acted on, or `collaborative`,
 readers with the same taste liked. The feed is built when it is requested, from the scores of
 the last recompute. A `limit` or `offset` above its maximum is lowered, not refused.
 
-A super admin can see the feed one reader would get:
+A super admin can see the feed one reader would get. A reader's id is the `user_id` each
+behavior call answers, as in step 1 of [Try it](#try-it):
 
 <div class="paths">
 <div data-path="console">

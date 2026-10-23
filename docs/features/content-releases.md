@@ -159,16 +159,27 @@ of them, then look at the other.
 <div class="paths">
 <div data-path="console">
 
-1. On one of the two releases, pick a date and a time under **Goes out at** and choose
+1. Create two releases as in step 1, and include the second entry in each.
+2. On one of the two releases, pick a date and a time under **Goes out at** and choose
    **Schedule**. The card shows when it goes out, in UTC, with **Unschedule** beside it.
-2. Open the other release. Its **Conflicts** card says that a conflict stops the release,
+3. Open the other release. Its **Conflicts** card says that a conflict stops the release,
    with **Open the other release**. **Publish now** and **Schedule** stay off until you take
    the entry out of one of them.
 
 </div>
 <div data-path="api">
 
-Schedule one of them:
+Create the two releases. Run this twice, and copy each answer's `id` into `OTHER_RELEASE_ID`
+and `THIRD_RELEASE_ID`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content/releases \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Page B release", "items": [{"entry_id": "'"$PAGE_B"'", "action": "publish"}]}'
+```
+
+Schedule the first:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/content/releases/$OTHER_RELEASE_ID/schedule \
@@ -177,7 +188,7 @@ curl -X POST http://localhost:3001/api/admin/content/releases/$OTHER_RELEASE_ID/
   -d '{"publish_at": "2027-11-01T09:00:00Z"}'
 ```
 
-Then read the other one's conflicts:
+Then read the second one's conflicts:
 
 ```bash
 curl http://localhost:3001/api/admin/content/releases/$THIRD_RELEASE_ID/conflicts \

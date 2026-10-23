@@ -254,7 +254,9 @@ curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
   and no author. Snippets are always on.
 - A snippet, here and in the admin search, is HTML in which the text is escaped and each match
   is wrapped in `<mark>` tags, so it is safe to render as HTML, while every other field in a
-  hit is plain text.
+  hit is plain text. On v0.55.0 a `body` snippet is the entry's stored body as JSON text, with
+  its field names and quotes escaped, such as
+  `{&#34;body&#34;: &#34;Spring <mark>pricing</mark> notes&#34;}`.
 - `q` is required and at most 256 characters. `tags` filters by up to 10 comma-separated tags,
   and any beyond 10 are dropped.
 - `limit` is 10 by default and at most 50, and `offset` is at most 1000.
@@ -304,7 +306,8 @@ the index settings.
 
 On **Search**, set **Title**, **Body** and **Tags** in the **Ranking weights** card and choose
 **Save**. The card saves the weights under `*`, for every content type with no weights of its
-own.
+own. The card reads saved weights back at full float precision, so `0.3` shows as
+`0.30000001192092896`.
 
 </div>
 <div data-path="api">

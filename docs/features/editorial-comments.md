@@ -173,7 +173,8 @@ Write the comment in **New thread**, pick the person under **Mention**, and choo
 </div>
 <div data-path="api">
 
-Put the person's user id in `mentions`:
+`GET /api/admin/users` lists the accounts. Copy the person's `id` into `USER_ID`, then put it
+in `mentions`:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/content/entries/$ENTRY_ID/comments \

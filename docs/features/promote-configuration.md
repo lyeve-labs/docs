@@ -52,8 +52,9 @@ still change before it is marked stable.
 
 ## Try it
 
-This exports an instance, compares the file with the same instance, and dry runs it, so
-nothing is written. Run it on an install whose license carries `config-sync`. For the console
+This exports an instance, compares the file with the same instance, and dry runs it, so no
+bundle is applied. Step 3 creates a webhook and step 5 deletes it, so the instance ends as it
+started. Run it on an install whose license carries `config-sync`. For the console
 steps, you are signed in to the admin console as a super admin. For the API steps, you need
 the super admin's token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows
 how to get one. The API steps use `jq` to build the request bodies.
@@ -155,8 +156,9 @@ Without prune the plan lists nothing, because an apply only creates and updates 
 <div class="paths">
 <div data-path="console">
 
-Choose **Dry run**. The page shows **Dry run: what applying would do** and
-**Nothing was written.**, with the same plan.
+Untick **Delete what the bundle does not name**, which is still ticked from step 3, and choose
+**Dry run**. The page shows **Dry run: what applying would do** and **Nothing was written.**,
+with the plan from step 2.
 
 </div>
 <div data-path="api">
@@ -171,6 +173,30 @@ curl -X POST http://localhost:3001/api/admin/config-sync/apply \
 
 The answer carries the plan with `"applied": false` and `"dry_run": true`. Nothing was
 written.
+
+</div>
+</div>
+
+**5. Delete the webhook `extra`.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Delivery > Webhooks**, choose the delete button on the `extra` row, and confirm
+**Delete** in **Delete webhook extra**.
+
+</div>
+<div data-path="api">
+
+`GET /api/admin/webhooks` lists the webhooks. Copy the `id` of `extra` into `WEBHOOK_ID`,
+then:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
 
 </div>
 </div>

@@ -86,6 +86,8 @@ curl -X POST http://localhost:3001/api/admin/tenants \
   -d '{"slug": "quotatest", "name": "Quota test"}'
 ```
 
+The answer is `201` with the tenant. Copy its `id` into `TENANT_ID`.
+
 </div>
 </div>
 
@@ -209,9 +211,12 @@ the edit button on a row opens the same form:
   limit unchecked.
 - **Hard limit** and **Block the tenant past a limit**. A quota blocks only with both on.
   Otherwise the page says the quota is reported and never enforced.
-- **Grace period (hours)**, **Warn at 80%** and **Warn at 90%**.
+- **Grace period (hours)**, **Warn at 80%** and **Warn at 90%**. A blank **Grace period**
+  saves `0`, and the engine blocks at once whatever the field's hint says.
 
-The edit form's **Delete** removes the quota. The list's **API calls** and **Bandwidth**
+The edit button and the edit form's **Delete** work only on the quota of the tenant you are
+signed in to, because the list shows only that one. The edit form's **Delete** removes the
+quota. The list's **API calls** and **Bandwidth**
 columns count requests made with an API key only, as the page says, while a hard limit counts
 every request the tenant makes.
 
@@ -235,7 +240,7 @@ timestamps. `DELETE /api/admin/quotas/{tenantID}` removes it.
 | `is_hard_limit` | Whether the quota can block. | `false` |
 | `block_on_exceeded` | Block the tenant once a limit is passed. Takes effect only with `is_hard_limit`. | `false` |
 | `warn_at_pct_80`, `warn_at_pct_90` | Send the warning headers at 80% and 90%. | `true` |
-| `grace_period_hours` | Reported with the status. It does not delay a block. | `24` |
+| `grace_period_hours` | Reported with the status. It does not delay a block. | `24` over the API |
 | `unblock` | Send `true` to clear a block. | |
 
 | Write | Needs `usage-pro` |

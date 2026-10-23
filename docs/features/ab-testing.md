@@ -212,8 +212,9 @@ The answer lists each variant with its exposures and conversions, as below.
 ## Run an experiment
 
 A new experiment starts as `draft`. In the console, a draft has **Start** on its row on
-**Delivery > Experiments**, and a running one has **Pause** and **Stop**. Over the API, move it
-with the routes below:
+**Delivery > Experiments**, a running one has **Pause** and **Stop**, and a paused one has
+**Resume** and **Stop**. **Stop** asks to confirm, because a stopped experiment cannot start
+again. Over the API, move it with the routes below:
 
 | Route | Moves it to | From |
 |---|---|---|

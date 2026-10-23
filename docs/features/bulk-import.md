@@ -312,7 +312,7 @@ field and the mode. This saves the mapping of the `posts.csv` file above.
 2. Enter `weekly-posts` in **Name** and pick `post` in **Content type**.
 3. Under **When an entry already exists**, pick **Create and update**, then **Entry slug** in
    **Key field**.
-4. Enter `title` in **Column in the file** and pick **Entry title** in **Field**. Choose
+4. Enter `title` in **Column in the file** and pick `title` in **Field**. Choose
    **Add column**, enter `body` and pick `body`.
 5. Choose **Create**.
 
