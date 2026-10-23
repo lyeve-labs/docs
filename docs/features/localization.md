@@ -124,7 +124,7 @@ open it.
 curl -X POST http://localhost:3001/api/admin/content \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"schema": "article", "slug": "hello", "title": "Hello", "body": {"text": "First article."}, "status": "published"}'
+  -d '{"schema": "article", "slug": "hello-article", "title": "Hello", "body": {"text": "First article."}, "status": "published"}'
 ```
 
 </div>

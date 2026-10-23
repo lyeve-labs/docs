@@ -63,7 +63,8 @@ from the console step by step.
 ## Try it
 
 This needs at least one published entry, such as the one the
-[content lifecycle](content-lifecycle.md#try-it) steps create. You need a token in `TOKEN` for
+[content lifecycle](content-lifecycle.md#try-it) steps create, published again after its
+rollback. You need a token in `TOKEN` for
 an `admin` or `super_admin`. The [quickstart](../getting-started/quickstart.md) shows how to
 get one.
 
@@ -87,7 +88,7 @@ get one.
    ```
 
    ```json
-   { "results": [{ "entry_id": "ad39fb3d-eb5a-47ce-9cd5-e7d421acaa98", "title": "Hello", "slug": "hello", "schema": "post" }], "query": "hel", "took_ms": 0 }
+   { "results": [{ "entry_id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd", "title": "Hello", "slug": "hello", "schema": "story" }], "query": "hel", "took_ms": 0 }
    ```
 
 3. Add a synonym group:
