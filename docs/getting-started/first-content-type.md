@@ -65,11 +65,10 @@ with no name.
 
 ## 2. Describe the new Post
 
-The new Post keeps the Quickstart's two fields and adds three things:
+The new Post keeps the Quickstart's two fields and adds two:
 
 | What is new | What it does |
 |---|---|
-| Drafts and publishing | Each post carries a status: `draft`, `published` or `archived` |
 | `slug`, indexed | Finding a post by its slug stays fast as the blog grows |
 | `author` | A `belongs_to` relation: each post points at one entry of `author` |
 
@@ -102,14 +101,10 @@ Save this as `post-schema.json`:
 }
 ```
 
-`with_draft_publish` turns on drafts and publishing.
+`with_draft_publish` also turns on drafts and publishing, which step 5 explains.
 
 </div>
 </div>
-
-Only the API turns on drafts and publishing. The schema builder in console v0.21.0 has no
-switch for them, so a reader who works in the console applies `post-schema.json` once with
-the API steps 3 and 4 of this page. Steps 5 and 6 then work in the console.
 
 [The data model](../concepts/data-model.md) lists every field type, every flag such as
 `unique` and `default`, the validation rules and the other kinds of relation.
@@ -135,13 +130,13 @@ curl -X POST http://localhost:3001/api/admin/schemas/post/preview-ddl \
 ```
 
 The answer is `{"statements": [...]}`, each with a `description`, the `sql` an apply would
-run and the `down_sql` that undoes it.
+run and the `down_sql` that undoes it. The file also turns on drafts, so the API's preview adds
+a status column.
 
 </div>
 </div>
 
-For this change you see a column for `slug` and its index, a status column when drafts are on,
-and for the author a column, a step that clears links to authors that do not exist, a foreign
+For this change you see a column for `slug` and its index, and for the author a column, a step that clears links to authors that do not exist, a foreign
 key and an index. Nothing changes until you apply.
 
 ## 4. Apply it
@@ -149,7 +144,8 @@ key and an index. Nothing changes until you apply.
 <div class="paths">
 <div data-path="console">
 
-Choose **Save**. The badge beside the name reads **Saved**.
+Choose **Save**. The badge beside the name reads **Saved**. The Post has no drafts yet, and
+step 5 turns them on.
 
 </div>
 <div data-path="api">
@@ -174,7 +170,54 @@ Removing a field later does not delete its data right away. The removal waits un
 admin applies it, so a mistaken edit loses nothing. [The data model](../concepts/data-model.md)
 covers renames and removals.
 
-## 5. Write an author and a post
+## 5. Turn on drafts and publishing
+
+With drafts on, each post carries a status: `draft`, `published` or `archived`. Only the API
+turns drafts on: the schema builder in console v0.21.0 has no switch for them. If you followed
+the API steps, `post-schema.json` turned them on in step 4, so go on to step 6.
+
+From the console path, run two commands. They use the address of
+[Run the engine and the console together](engine-and-console.md). An engine on its own takes
+the same calls on port 3001. Sign in with your console account and keep the token:
+
+```bash
+curl -X POST http://localhost:8080/api/admin/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "password": "<your password>"}'
+
+export TOKEN="<the token from the answer>"
+```
+
+Then save Post again with drafts turned on:
+
+```bash
+curl -X POST http://localhost:8080/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "post",
+        "display_name": "Post",
+        "with_draft_publish": true,
+        "fields": [
+          { "name": "title", "field_type": "text", "required": true },
+          { "name": "body", "field_type": "rich_text" },
+          { "name": "slug", "field_type": "text", "indexed": true },
+          { "name": "author", "field_type": "relation", "relation_type": "belongs_to", "relation_to": "author" }
+        ]
+      }'
+```
+
+The answer is `200` with `"with_draft_publish": true`. The Quickstart's first post is now
+`published`.
+
+:::caution
+Reload the schema builder before you save Post in it again. A schema builder that had Post open
+before this call still holds the definition without drafts, and saving from it turns drafts
+off and drops every post's status. Its **Preview DDL** shows that as a step that drops the
+status column. After a reload, a save keeps drafts on.
+:::
+
+## 6. Write an author and a post
 
 <div class="paths">
 <div data-path="console">
@@ -234,7 +277,7 @@ and is published when it names none.
 </div>
 </div>
 
-## 6. Take it back to draft, then publish it
+## 7. Take it back to draft, then publish it
 
 <div class="paths">
 <div data-path="console">
@@ -273,7 +316,7 @@ The answer is `204`, and the post is back in the list.
 </div>
 </div>
 
-## 7. Read a post with its author
+## 8. Read a post with its author
 
 Reading a post together with its author is a Content API call, the one a site or an app
 makes. The console shows the author's name in the **Author** column of the Post list instead.

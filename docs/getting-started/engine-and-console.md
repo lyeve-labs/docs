@@ -281,7 +281,7 @@ feature that is not running says so and how to turn it on.
 4. Choose **Preview DDL** to see what the change will do to the database, then **Close** and
    **Save**.
 
-![The schema builder with the Post content type open: its display name, machine name and fields with their types.](images/schema-builder.png)
+![The schema builder with a Post content type open: its display name, machine name and fields with their types. This Post also has the slug and author fields that Your first content type adds.](images/schema-builder.png)
 
 5. Open **Content**, pick **Post** and choose **New entry**. Fill in the fields and choose
    **Create**.

@@ -18,7 +18,8 @@ file, and its address, `http://localhost:8080`, is where you open the console.
 ## 0. Start a database and the engine
 
 If you already started an engine by following [Installation](installation.md), skip to
-step 1.
+step 1. For the console steps, start both with
+[Run the engine and the console together](engine-and-console.md) instead, then skip to step 1.
 
 ```bash
 docker network create lyeve
