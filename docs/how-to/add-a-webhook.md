@@ -15,8 +15,10 @@ history and recover what failed. Every field, header and route is described on
 
 ## Before you start
 
-- An admin token in `TOKEN` for a user with the `super_admin` role. The
-  [quickstart](../getting-started/quickstart.md) shows how to get one.
+- An account with the `super_admin` role, such as the first administrator.
+  For the console steps, sign in to the admin console with it. For the API
+  steps, keep its token in `TOKEN`.
+  [Sign in](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 - A content type to watch. The steps use `post` from
   [Create your first content type](../getting-started/first-content-type.md).
 - Node.js 18 or later, or Python 3.8 or later. Neither receiver needs a
@@ -172,8 +174,20 @@ list in a shared store such as Redis when you run more than one receiver.
 
 ## 2. Register the receiver
 
-Replace the URL with the address the instance reaches your receiver at, and
-send the same secret:
+Use the address the instance reaches your receiver at, and the same secret.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Delivery > Webhooks** and choose **New webhook**.
+2. Enter `My receiver` in **Name** and the receiver's address in **URL**.
+   Enter the value of `WEBHOOK_SECRET` in **Signing secret**.
+3. Under **Events**, tick `after_create`, `after_update` and `after_delete`.
+4. In **Schemas**, which reads **Every schema**, pick `post`.
+5. Choose **Create**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks \
@@ -192,15 +206,31 @@ The answer is `201` with the webhook. Copy its `id` into `WEBHOOK_ID`. A URL
 whose host does not resolve, or resolves to a private address, answers
 `400 invalid input`.
 
+</div>
+</div>
+
 ## 3. Send a test
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Test**, the flask icon, on the webhook's row. The outcome shows under
+the row: `HTTP 204: No Content`.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/test \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-The API answers `{"success": true, "status_code": 204, "message": "No Content"}`,
-and the receiver prints:
+The API answers `{"success": true, "status_code": 204, "message": "No Content"}`.
+
+</div>
+</div>
+
+The receiver prints:
 
 ```text
 accepted: test * {"message":"webhook test from LyEve"}
@@ -209,6 +239,20 @@ accepted: test * {"message":"webhook test from LyEve"}
 If the receiver prints `refused: bad signature`, the two secrets differ.
 
 ## 4. Fire a real event
+
+<div class="paths">
+<div data-path="console">
+
+Open **Content**, pick **Post** and choose **New entry**. Enter
+`Webhook check` in **Title** and `Hello` in **Body**, then choose **Create**.
+
+Within a moment the receiver prints an `after_create` line. An entry saved in
+console v0.21.0 arrives as the console stores it: the fields you typed sit
+under `body`, beside the entry's `id`, `slug`, `status`, `title` and its
+timestamps.
+
+</div>
+<div data-path="api">
 
 Create a `post` on the Content API:
 
@@ -226,7 +270,20 @@ fields in alphabetical order, its `id` and status among them:
 accepted: after_create post {"_status":"published","body":"Hello","id":"4af50561-8093-4925-983f-ed8813ab615b","slug":"webhook-check","title":"Webhook check"}
 ```
 
+</div>
+</div>
+
 ## 5. Read the history
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Delivery history**, the clock icon, on the webhook's row. The dialog
+lists the test and the `after_create` delivery, newest first, each with its
+time, event, content type, status, duration and result.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl "http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries?limit=5" \
@@ -255,8 +312,10 @@ The answer lists the latest deliveries, newest first:
 ```
 
 A failed delivery carries `success: false`, the `status_code` or an `error`,
-and `next_retry_at`. In the admin console the same list is under
-**Delivery > Webhooks**, **Delivery history**.
+and `next_retry_at`.
+
+</div>
+</div>
 
 ## 6. Recover a failed delivery
 

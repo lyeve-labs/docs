@@ -43,7 +43,7 @@ new version. Below the canvas, the **Test** tab runs the draft on a trigger
 payload you edit, and **Runs** lists every run with its status, kind and
 duration.
 
-![The editor for the Hello flow, published as version 1, with an API request trigger joined to a response node named greet, the Inspector showing the trigger, and one succeeded test run under Runs.](images/flows.png)
+![The editor for the Hello flow, published as version 1, with an API request trigger joined to a response node named greet, the Inspector showing the trigger, and two succeeded runs under Runs, one live and one test.](images/flows.png)
 
 [Build a custom API with flows](../how-to/build-a-custom-api-with-flows.md) builds
 one on the canvas step by step.
@@ -67,65 +67,116 @@ returned.
 ## Try it
 
 This builds a small endpoint that greets whoever calls it. It uses only free
-nodes, so it runs on any install. You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+nodes, so it runs on any install. For the console steps, you are signed in to
+the admin console. For the API steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 
-1. Create the flow as a draft. The definition has an HTTP trigger and one
-   `response` node:
+**1. Create the flow as a draft.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/flows \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "Hello",
-           "slug": "hello",
-           "definition": {
-             "version": 1,
-             "name": "Hello",
-             "slug": "hello",
-             "trigger": { "type": "trigger.http", "config": { "method": "GET", "auth": "auth" } },
-             "nodes": [
-               { "id": "greet", "type": "response",
-                 "config": { "status": 200, "body": { "message": "Hello {{ trigger.query.name ?? '\''world'\'' }}" } } }
-             ],
-             "edges": []
-           }
-         }'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the new flow. Copy its `id` into `FLOW_ID`.
+1. Open **Flows** and choose **New flow**.
+2. Enter `Hello` in **Name**. **Slug** fills in as `hello`.
+3. Choose **Create**.
 
-2. Test the draft with a payload of your own. Nothing is published yet:
+The editor opens on the new draft, which already holds an **API request**
+trigger that answers `GET` calls from a signed-in user or an API key.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/test \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"trigger": {"query": {"name": "Ada"}}}'
-   ```
+</div>
+<div data-path="api">
 
-   The answer's `output` is `{"message": "Hello Ada"}`, and `steps` lists
-   every node with its input, output and timing.
+The definition has an HTTP trigger and one `response` node:
 
-3. Publish it:
+```bash
+curl -X POST http://localhost:3001/api/admin/flows \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Hello",
+        "slug": "hello",
+        "definition": {
+          "version": 1,
+          "name": "Hello",
+          "slug": "hello",
+          "trigger": { "type": "trigger.http", "config": { "method": "GET", "auth": "auth" } },
+          "nodes": [
+            { "id": "greet", "type": "response",
+              "config": { "status": 200, "body": { "message": "Hello {{ trigger.query.name ?? '\''world'\'' }}" } } }
+          ],
+          "edges": []
+        }
+      }'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/publish \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer is `201` with the new flow. Copy its `id` into `FLOW_ID`.
 
-4. Call your new endpoint on the Content API:
+</div>
+</div>
 
-   ```bash
-   curl "http://localhost:3002/api/v1/flows/hello?name=Ada" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**2. Test the draft with a payload of your own.** Nothing is published yet.
 
-   ```json
-   { "message": "Hello Ada" }
-   ```
+<div class="paths">
+<div data-path="console">
 
+1. In the **Palette**, under **Output**, choose **Response**. The node joins
+   the trigger on the canvas.
+2. In the **Inspector**, set **body** to
+   `{"message": "Hello {{ trigger.query.name ?? 'world' }}"}`, then choose
+   **Save**.
+3. On the **Test** tab below the canvas, add `"query": {"name": "Ada"}` to the
+   JSON in **Trigger** and choose **Run test**.
+
+The run reads `succeeded`. Choose the response step to see its output, the
+message `Hello Ada`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/test \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"trigger": {"query": {"name": "Ada"}}}'
+```
+
+The answer's `output` is `{"message": "Hello Ada"}`, and `steps` lists
+every node with its input, output and timing.
+
+</div>
+</div>
+
+**3. Publish it.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Publish**. The badge beside the slug reads **Published v1**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/publish \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+</div>
+</div>
+
+**4. Call your new endpoint on the Content API.** This step is an HTTP call on
+both paths. From the console path, get a token for your console account as
+[Sign in](../getting-started/quickstart.md#3-sign-in) shows, and keep it in
+`TOKEN`:
+
+```bash
+curl "http://localhost:3002/api/v1/flows/hello?name=Ada" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "message": "Hello Ada" }
+```
 
 ## Four ways to build one
 
@@ -157,6 +208,9 @@ step with its input, output, timing and error.
   Add `"live": true` to the test to run them for real.
 - Add `"until_node": "<id>"` to stop after one node while you work on the
   steps before it.
+
+On the editor's **Test** tab, **Live side effects** and **Until node** do the
+same.
 
 A flow's status tells you whether it runs:
 
@@ -322,6 +376,15 @@ page. A rule names either `flows`, which covers every flow in the tenant, or
 - The wildcard `*` covers content types, not flows.
 - A refusal answers `403` and names the action and the resource.
 
+Content nodes read and write as the account that published the flow, and a test
+run as the account that runs it, so that account's access rules apply to every
+content type the flow touches. The first administrator, the one setup creates,
+belongs to no tenant. A flow it publishes or tests stops at its first content
+node with `the flow's publisher is not an active account in this tenant`.
+Publish and test those flows as an admin of the tenant who may read the content
+types involved. [Build a custom API with flows](../how-to/build-a-custom-api-with-flows.md#3-create-the-account-that-publishes-the-flow)
+sets one up.
+
 Datasources and variables can hold credentials, so only the `admin` and
 `super_admin` roles can manage them. See
 [access rules](access-rules.md) for how rules combine.
@@ -354,12 +417,55 @@ A **variable** is a key and value for the tenant, read in a node as
 stored, any text equal to a secret, and a secret of eight characters or more
 inside longer text, is replaced by `***`.
 
+Variables are free. To set one:
+
+<div class="paths">
+<div data-path="console">
+
+Open **Flows**, choose **Variables**, then **New variable**. Enter the **Key**
+and the **Value**, tick **Secret** to make it write-only, and choose
+**Create**. The list shows it as `vars.<key>`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/flows/variables \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "site_url", "value": "https://example.com", "is_secret": false}'
+```
+
+`GET /api/admin/flows/variables` lists them, and a secret shows no value.
+
+</div>
+</div>
+
 ## Move flows between tenants and instances
 
 Every flow exports as JSON or YAML and imports into any tenant. An export keeps
 the canvas layout and notes, and never carries a secret. Datasources travel by
 name, and the import lists the names the target tenant does not have in
 `unresolved_datasources`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open the flow, choose **More actions** (the `...` button beside **Flows**)
+   and then **Export**.
+2. Pick **JSON** or **YAML** and choose **Download JSON** or **Download YAML**.
+   The file holds the saved draft, secrets stripped.
+3. To bring a file in, open **Flows** and choose **Import**. Upload it under
+   **Definition file**, or paste it under **Or paste the definition**.
+4. Under **Mode**, pick **Create a new flow** or **Replace the draft of an
+   existing flow**, and choose **Import**.
+
+The dialog has no slug field. A new flow takes the slug in the file, so edit
+the `slug` line before you import a copy into a tenant that already has the
+flow. A slug that is taken shows `failed to import flow`.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl "http://localhost:3001/api/admin/flows/$FLOW_ID/export?format=yaml" \
@@ -370,10 +476,15 @@ curl -X POST "http://localhost:3001/api/admin/flows/import?mode=replace&slug=hel
   -F "file=@hello.yaml"
 ```
 
-`?mode=create`, the default, makes a new draft flow and answers `201`.
-`?mode=replace` replaces the draft of the flow with that slug and answers
-`200`, or `404` when there is none. `&slug=` picks the slug. An imported flow
-runs only after you publish it. To keep flows in your repository and promote them from
+`?mode=create`, the default, makes a new draft flow and answers `201`, or
+`409` when the slug is taken. `?mode=replace` replaces the draft of the flow
+with that slug and answers `200`, or `404` when there is none. `&slug=` picks
+the slug.
+
+</div>
+</div>
+
+An imported flow runs only after you publish it. To keep flows in your repository and promote them from
 staging to production, see [schema and flows as code](../how-to/schema-and-flows-as-code.md).
 To move every flow together with the content types, access rules and webhooks in one bundle,
 a license with `config-sync` adds [Promote configuration](promote-configuration.md).

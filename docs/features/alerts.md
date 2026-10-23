@@ -74,7 +74,7 @@ five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 | What is watched | Where to open it |
 |---|---|
 | A scheduled job | **Operations > Scheduled jobs**, under **Failure alerts** in the job's form, with **Alert after this many failures in a row**. |
-| Error spikes | **Insight > Observability > Errors**, then **Spike alerts**. **What counts as a spike** sets a **Default** or **Custom** threshold. |
+| Error spikes | **Insight > Observability > Errors**, then **Spike alerts**. With `alerts-pro`, **What counts as a spike** sets a **Default** or **Custom** threshold. |
 | Log volume | **Insight > Logs**, then **Volume alerts**. Each rule from **New rule** has its own **Channels**. |
 | An uptime probe | **Insight > Observability > Synthetic monitoring**, then **Notice channels** on the probe's row. |
 
@@ -82,55 +82,125 @@ five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. Email
-needs a working [email](email.md) transport. Without one, the email channel
-is skipped and everything else still works.
+For the console steps, you are signed in to the admin console as a super admin.
+For the API steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
+Email needs a working [email](email.md) transport. Without one, the email
+channel is skipped and everything else still works.
 
-1. Create a job that fails on every run and emails you after the second
-   failure:
+**1. Create a job that fails on every run and emails you after the second
+failure.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cron/jobs \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "always-fails",
-           "schedule": "0 3 * * *",
-           "endpoint": "https://httpbin.org/status/500",
-           "alerts": {"email": ["you@example.com"], "failure_threshold": 2}
-         }'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201`. Copy its `id` into `JOB_ID`.
+Console v0.21.0 cannot run a job on demand, so this job runs every minute.
 
-2. Run the job now, twice, a few seconds apart:
+1. Open **Operations > Scheduled jobs** and choose **New job**.
+2. Enter `always-fails` in **Name**, `* * * * *` in **Cron schedule** and
+   `https://httpbin.org/status/500` in **Endpoint URL**.
+3. Under **Failure alerts**, enter `you@example.com` in **Email** and `2` in
+   **Alert after this many failures in a row**.
+4. Choose **Create**.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/trigger \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   Each answer is `202`. After the second run, `consecutive_failures` on
-   `GET /api/admin/cron/jobs/$JOB_ID` is `2`, and the email arrives with the
-   subject `Cron job "always-fails" failed 2 runs in a row. The endpoint answered 500.`
+```bash
+curl -X POST http://localhost:3001/api/admin/cron/jobs \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "always-fails",
+        "schedule": "0 3 * * *",
+        "endpoint": "https://httpbin.org/status/500",
+        "alerts": {"email": ["you@example.com"], "failure_threshold": 2}
+      }'
+```
 
-3. Ask whether this install may add a paid channel:
+The answer is `201`. Copy its `id` into `JOB_ID`.
 
-   ```bash
-   curl http://localhost:3001/api/admin/error-tracking/alert-settings \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   ```json
-   {"channels": {}, "spike_min_count": null, "spike_z_score": null, "defaults": {"spike_min_count": 10, "spike_z_score": 2.5}, "licensed": false, "free_event_window_days": 30}
-   ```
+**2. Let it fail twice.**
 
-   `licensed` is `false` on an install without `alerts-pro`. Adding a Slack
-   URL to the job now answers `402` naming `feature:alerts-pro`, and the job
-   keeps its email alert.
+<div class="paths">
+<div data-path="console">
 
-4. Delete the job when you are done. The answer is `204`.
+Wait two minutes. The job runs at the start of each minute, and **Last run**
+shows a cross after each failed run.
+
+</div>
+<div data-path="api">
+
+Run the job now, twice, a few seconds apart:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/trigger \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Each answer is `202`. After the second run, `consecutive_failures` on
+`GET /api/admin/cron/jobs/$JOB_ID` is `2`.
+
+</div>
+</div>
+
+After the second failure the email arrives with the subject
+`Cron job "always-fails" failed 2 runs in a row. The endpoint answered 500.`
+
+**3. Ask whether this install may add a paid channel.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Insight > Observability > Errors** and choose **Spike alerts**. On an
+install without `alerts-pro`, the page says **Not enabled on this instance**
+above the Slack, Discord, HTTPS webhook and PagerDuty fields, and those fields
+take no input. On the job, choose **Edit** and enter a Slack URL in
+**Slack webhook URL**. Saving says **This needs alerts-pro**, and nothing is
+changed.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/error-tracking/alert-settings \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"channels": {}, "spike_min_count": null, "spike_z_score": null, "defaults": {"spike_min_count": 10, "spike_z_score": 2.5}, "licensed": false, "free_event_window_days": 30}
+```
+
+`licensed` is `false` on an install without `alerts-pro`. Adding a Slack
+URL to the job now answers `402` naming `feature:alerts-pro`, and the job
+keeps its email alert.
+
+</div>
+</div>
+
+**4. Delete the job when you are done.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Delete** on the job's row and confirm. Its schedule stops and its
+run history goes with it.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/cron/jobs/$JOB_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Alert on a failing job
 
@@ -165,7 +235,17 @@ or `Cron job "nightly-export" recovered after 3 failed runs in a row.`
 
 ## Alert on an error spike
 
-Each tenant sets where its spike alerts go:
+Each tenant sets where its spike alerts go.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Insight > Observability > Errors** and choose **Spike alerts**. Enter
+`ops@example.com` in **Email**, one address per line or comma, and choose
+**Save**. The page says **Spike alerts saved.**
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/error-tracking/alert-settings \
@@ -177,6 +257,9 @@ curl -X PUT http://localhost:3001/api/admin/error-tracking/alert-settings \
 The answer is the setting, as `GET` on the same path returns it:
 `channels`, the tenant's own thresholds (`null` for the default), the
 `defaults`, `licensed` and `free_event_window_days`.
+
+</div>
+</div>
 
 | Field | Meaning | Free or `alerts-pro` |
 |---|---|---|
@@ -198,7 +281,23 @@ configuration and send on every install.
 ## Alert on log volume
 
 A super admin writes the volume rules, and each rule carries its own
-channels:
+channels.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Logs** and choose **Volume alerts**, then **New rule**.
+2. Keep `ERROR` in **Level**, enter `100` in **Ceiling** and `5m` in
+   **Window**. Leave **Tenant** empty to count every tenant's entries.
+3. Under **Channels**, enter `ops@example.com` in **Email** and choose
+   **Create**.
+
+The rule joins the list as `ERROR entries 100 in 5m`. **Cooldown**, below the
+list, sets the quiet time after a rule fires, such as `10m`, with its own
+**Save**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/logging/alerts \
@@ -217,6 +316,9 @@ curl -X PUT http://localhost:3001/api/admin/logging/alerts \
       }'
 ```
 
+</div>
+</div>
+
 - The rules are checked every minute in the background, whether or not
   anyone reads the volume.
 - A rule keeps its `id` across writes, and a rule sent without one gets one.
@@ -233,7 +335,17 @@ covers the rule fields.
 
 ## Alert when a probe goes down
 
-Each probe has its own channels:
+Each probe has its own channels.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Insight > Observability > Synthetic monitoring** and choose
+**Notice channels** on the probe's row. Enter `ops@example.com` in **Email**
+and choose **Save**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/alert-channels \
@@ -243,8 +355,12 @@ curl -X PUT http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_I
 ```
 
 The body is the channels object itself, or `null` to clear it. The answer,
-like `GET` on the same path, carries `channels` and `licensed`. When the
-probe raises an alert, the channels receive
+like `GET` on the same path, carries `channels` and `licensed`.
+
+</div>
+</div>
+
+When the probe raises an alert, the channels receive
 `Probe "Public site" is down: 3 failed checks in a row.`, and the first
 passing run after that resolves the alert and sends
 `Probe "Public site" recovered.`

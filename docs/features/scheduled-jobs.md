@@ -63,85 +63,135 @@ row**.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. Replace
-the endpoint with a URL of yours that accepts a `POST`, such as a request
-inspector, so you can watch the calls arrive.
+For the console steps, you are signed in to the admin console as a super admin.
+For the API steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
+Replace the endpoint with a URL of yours that accepts a `POST`, such as a
+request inspector, so you can watch the calls arrive.
 
-1. Create a job that runs every day at 02:00:
+**1. Create a job that runs every day at 02:00.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cron/jobs \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "nightly-export",
-           "schedule": "0 2 * * *",
-           "endpoint": "https://hooks.example.com/export",
-           "payload": {"format": "csv"}
-         }'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the job. Copy its `id` into `JOB_ID`:
+1. Open **Operations > Scheduled jobs** and choose **New job**.
+2. Enter `nightly-export` in **Name**, `0 2 * * *` in **Cron schedule** and
+   your URL in **Endpoint URL**.
+3. Enter `{"format": "csv"}` in **JSON payload (optional)**, keep **Enabled**
+   on and choose **Create**.
 
-   ```json
-   {
-     "id": "3c0a5f9e-8d21-4b7e-9f13-6a2d4c8e1b07",
-     "tenant_id": "default",
-     "name": "nightly-export",
-     "schedule": "0 2 * * *",
-     "endpoint": "https://hooks.example.com/export",
-     "payload": {"format": "csv"},
-     "enabled": true,
-     "created_at": "2026-10-01T10:00:00Z",
-     "updated_at": "2026-10-01T10:00:00Z",
-     "consecutive_failures": 0
-   }
-   ```
+The job joins the list as **Enabled**.
 
-2. Run it now instead of waiting for 02:00:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/trigger \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/cron/jobs \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "nightly-export",
+        "schedule": "0 2 * * *",
+        "endpoint": "https://hooks.example.com/export",
+        "payload": {"format": "csv"}
+      }'
+```
 
-   The answer is `202` with `{"message": "job triggered"}`. The call runs in
-   the background, and your endpoint receives `{"format": "csv"}`.
+The answer is `201` with the job:
 
-3. Read the run:
+```json
+{
+  "id": "3c0a5f9e-8d21-4b7e-9f13-6a2d4c8e1b07",
+  "tenant_id": "default",
+  "name": "nightly-export",
+  "schedule": "0 2 * * *",
+  "endpoint": "https://hooks.example.com/export",
+  "payload": {"format": "csv"},
+  "enabled": true,
+  "created_at": "2026-10-01T10:00:00Z",
+  "updated_at": "2026-10-01T10:00:00Z",
+  "consecutive_failures": 0
+}
+```
 
-   ```bash
-   curl http://localhost:3001/api/admin/cron/jobs/$JOB_ID/history \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   ```json
-   [
-     {
-       "id": "a41e7c2d-0b9f-4e35-8c6a-2f1d9e7b5c30",
-       "job_id": "3c0a5f9e-8d21-4b7e-9f13-6a2d4c8e1b07",
-       "tenant_id": "default",
-       "status": "ok",
-       "status_code": 200,
-       "duration_ms": 184,
-       "started_at": "2026-10-01T10:01:00Z",
-       "finished_at": "2026-10-01T10:01:00Z"
-     }
-   ]
-   ```
+**2. Run it now instead of waiting for 02:00.** Only the API runs a job on
+demand: console v0.21.0 has no button for it. From either path, find the
+job's id and trigger it. From the console path, get a token for your console
+account as [Sign in](../getting-started/quickstart.md#3-sign-in) shows:
 
-   A call that failed has `"status": "error"` and an `error_message` such as
-   `endpoint returned 405`.
+```bash
+JOB_ID=$(curl -s http://localhost:3001/api/admin/cron/jobs \
+  -H "Authorization: Bearer $TOKEN" \
+  | jq -r '.data[] | select(.name == "nightly-export") | .id')
 
-4. Pause the schedule:
+curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/trigger \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/disable \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer is `202` with `{"message": "job triggered"}`. The call runs in the
+background, and your endpoint receives `{"format": "csv"}`.
 
-   The answer is the job with `"enabled": false`. `/enable` turns it back on.
+**3. Read the run.**
+
+<div class="paths">
+<div data-path="console">
+
+Reload **Operations > Scheduled jobs**. **Last run** shows when the job ran,
+with a check for a run that worked and a cross for one that failed. Console
+v0.21.0 shows no status code or error.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/cron/jobs/$JOB_ID/history \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+[
+  {
+    "id": "a41e7c2d-0b9f-4e35-8c6a-2f1d9e7b5c30",
+    "job_id": "3c0a5f9e-8d21-4b7e-9f13-6a2d4c8e1b07",
+    "tenant_id": "default",
+    "status": "ok",
+    "status_code": 200,
+    "duration_ms": 184,
+    "started_at": "2026-10-01T10:01:00Z",
+    "finished_at": "2026-10-01T10:01:00Z"
+  }
+]
+```
+
+A call that failed has `"status": "error"` and an `error_message` such as
+`endpoint returned 405`.
+
+</div>
+</div>
+
+**4. Pause the schedule.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Edit** on the job's row, turn **Enabled** off and choose **Save**.
+The row reads **Disabled**. Turn **Enabled** on again to resume it.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/disable \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is the job with `"enabled": false`. `/enable` turns it back on.
+
+</div>
+</div>
 
 ## Write a schedule
 
@@ -200,6 +250,9 @@ license covered them keep firing after it lapses. See [Alerts](alerts.md).
 the job on, and one that leaves out `alerts` keeps the stored channels.
 `DELETE` removes the job and its history and answers `204`. The schedule
 changes as soon as the call returns, on every replica.
+
+In the console, **Edit** on a job's row opens its form,
+and **Delete** asks to confirm, because the job's run history goes with it.
 
 ## Errors
 

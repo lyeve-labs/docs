@@ -44,7 +44,8 @@ answers `402` naming each node that needs the license. See
 
 ## Before you start
 
-- An admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+- For the console steps, the admin console, signed in. For the API steps, an
+  admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md#3-sign-in)
   shows how to get one.
 - What the template needs, from the last column above. Variables, datasources
   and content types are covered under [Set up what a template needs](#set-up-what-a-template-needs).
@@ -52,86 +53,133 @@ answers `402` naming each node that needs the license. See
 ## Create, test and publish a template
 
 These steps use `edge-geo-redirect`, which needs nothing, so it runs on any
-install. Swap in the id of the template you chose.
+install. Swap in the template you chose.
 
-1. List the templates with their tier, and whether this instance can save each:
+**1. Create a draft from the template.**
 
-   ```bash
-   curl -s http://localhost:3001/api/admin/flows/templates \
-     -H "Authorization: Bearer $TOKEN" \
-     | jq -r '.data[] | "\(.id)\t\(.tier)\t\(.enabled)"'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```text
-   join-three-tables-api	free	true
-   nightly-sheet-export	pro	false
-   ...
-   edge-geo-redirect	free	true
-   ```
+1. Open **Flows** and choose **New flow**. Enter `Geo redirect` in **Name**,
+   keep the slug it fills in, and choose **Create**.
+2. In the editor, choose **More actions** (the `...` button beside **Flows**)
+   and then **Use a template**. Each card shows a template's title, and a pro
+   template on an instance without `flow-pro` reads
+   **Not enabled on this instance**.
+3. Choose **Use** on **Send visitors to their region**, then **Save**.
 
-2. Create a draft from the template. The create body takes only `name`, `slug`,
-   `description` and `definition`, so pick those out of the list:
+The flow keeps the name and slug you gave it. Nothing is saved until you
+choose **Save**.
 
-   ```bash
-   curl -s http://localhost:3001/api/admin/flows/templates \
-     -H "Authorization: Bearer $TOKEN" \
-     | jq '.data[] | select(.id == "edge-geo-redirect")
-           | {name: .name, slug: .definition.slug, description: .description, definition: .definition}' \
-     | curl -X POST http://localhost:3001/api/admin/flows \
-         -H "Authorization: Bearer $TOKEN" \
-         -H "Content-Type: application/json" \
-         -d @-
-   ```
+</div>
+<div data-path="api">
 
-   The answer is `201` with the new flow as a `draft`. Copy its `id` into
-   `FLOW_ID`. A slug the tenant already uses answers `409`, so change `slug` to
-   take a second copy.
+List the templates with their tier, and whether this instance can save each:
 
-3. Test it with a sample request:
+```bash
+curl -s http://localhost:3001/api/admin/flows/templates \
+  -H "Authorization: Bearer $TOKEN" \
+  | jq -r '.data[] | "\(.id)\t\(.tier)\t\(.enabled)"'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/test \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"trigger": {"headers": {"cf-ipcountry": "DE"}}}'
-   ```
+```text
+join-three-tables-api	free	true
+nightly-sheet-export	pro	false
+...
+edge-geo-redirect	free	true
+```
 
-   The run succeeds, and the step `pick` has the output
-   `{"to": "https://example.com/de"}`. A step that sends mail, writes or posts
-   reports what it would do instead of doing it. A `GET` request runs for real.
+The create body takes only `name`, `slug`, `description` and `definition`, so
+pick those out of the list:
 
-4. Publish it:
+```bash
+curl -s http://localhost:3001/api/admin/flows/templates \
+  -H "Authorization: Bearer $TOKEN" \
+  | jq '.data[] | select(.id == "edge-geo-redirect")
+        | {name: .name, slug: .definition.slug, description: .description, definition: .definition}' \
+  | curl -X POST http://localhost:3001/api/admin/flows \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "Content-Type: application/json" \
+      -d @-
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/publish \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer is `201` with the new flow as a `draft`. Copy its `id` into
+`FLOW_ID`. A slug the tenant already uses answers `409`, so change `slug` to
+take a second copy.
 
-   The answer is `200` with `"status": "active"`.
+</div>
+</div>
 
-5. Call it. This template is public, so it answers on the public URL:
+**2. Test it with a sample request.**
 
-   ```bash
-   curl -i "http://localhost:3002/api/v1/flows/p/$FLOW_ID" -H "CF-IPCountry: DE"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```http
-   HTTP/1.1 302 Found
-   Cache-Control: private, max-age=300
-   Location: https://example.com/de
-   ```
+On the **Test** tab below the canvas, add `"headers": {"cf-ipcountry": "DE"}`
+to the JSON in **Trigger** and choose **Run test**. The run reads
+`succeeded`. Choose the `pick` step to see its output,
+`{"to": "https://example.com/de"}`.
 
-In the admin console, open **Flows**, choose **New flow**, give it a name and a
-slug, and press **Create**. The editor opens empty. Choose **Use a template**
-and press **Use** on a card. The flow keeps the name and slug you gave it, and
-nothing is saved until you save.
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/test \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"trigger": {"headers": {"cf-ipcountry": "DE"}}}'
+```
+
+The run succeeds, and the step `pick` has the output
+`{"to": "https://example.com/de"}`.
+
+</div>
+</div>
+
+A step that sends mail, writes or posts reports what it would do instead of
+doing it. A `GET` request runs for real.
+
+**3. Publish it.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Publish**. The badge beside the slug reads **Published v1**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/flows/$FLOW_ID/publish \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `200` with `"status": "active"`.
+
+</div>
+</div>
+
+**4. Call it.** This template is public, so it answers on the public URL with
+no credentials. The call is the same on both paths. From the console, the
+flow's id is the last part of the editor's address, after `/admin/flows/`:
+
+```bash
+curl -i "http://localhost:3002/api/v1/flows/p/$FLOW_ID" -H "CF-IPCountry: DE"
+```
+
+```http
+HTTP/1.1 302 Found
+Cache-Control: private, max-age=300
+Location: https://example.com/de
+```
 
 ## Set up what a template needs
 
 Each template opens with a note on the canvas that lists its variables and
 datasources. Create them before you test:
 
-- **Variables:** `PUT /api/admin/flows/variables` with `key`, `value` and
+- **Variables:** in the console, **Flows > Variables > New variable**. Over
+  the API, `PUT /api/admin/flows/variables` with `key`, `value` and
   `is_secret`. Mark keys and tokens secret, so they are never shown again.
 - **Datasources** (pro templates): `POST /api/admin/flows/datasources`, then
   `POST /api/admin/flows/datasources/{id}/test` to check the connection.
@@ -145,13 +193,13 @@ a signed-in session. See [connect outside systems](../features/flows.md#connect-
 
 ### `join-three-tables-api`
 
-Loads orders filtered by `?status=` (default `open`), then their customers and
-shipments side by side, and joins them. Its slug is `orders-with-customers`.
-The cache key is `?customer_id=`, which picks a cache entry but filters
-nothing, and `?status=` is not part of it. Within 30 seconds a caller who
-changes only `status` gets the earlier answer, so drop the `key` to cache per
-URL. [Build a custom API with flows](build-a-custom-api-with-flows.md) builds
-a smaller version step by step.
+Loads orders filtered by `?status=` (default `open`) and, when you pass one, by
+`?customer_id=`, then their customers and shipments side by side, and joins
+them. Its slug is `orders-with-customers`. An answer is cached for 30 seconds
+per customer and status, and each signed-in user, or each client address, may
+call it 120 times a minute.
+[Build a custom API with flows](build-a-custom-api-with-flows.md) builds a
+smaller version step by step.
 
 ### `bulk-import`
 
@@ -344,19 +392,42 @@ adds a new month-to-date API line, so sum only the latest one.
 
 ## Save your own template
 
-A flow you want to reuse becomes a template of the tenant. In the editor,
-open **Use a template** and expand **Save a template**, or post it:
+A flow you want to reuse becomes a template of the tenant.
+
+<div class="paths">
+<div data-path="console">
+
+Open the flow, choose **More actions** and then **Use a template**. Expand
+**Save a template** and choose **Save this flow as a template**. The console
+says **Template saved**. **Save a template**
+can also fetch a definition from a URL, and it refuses private and loopback
+addresses.
+
+</div>
+<div data-path="api">
+
+Post the definition as `document`, here taken from the flow's own export:
 
 ```bash
-curl -X POST http://localhost:3001/api/admin/flows/templates \
+curl -s "http://localhost:3001/api/admin/flows/$FLOW_ID/export?format=json" \
   -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com/flows/orders.yaml"}'
+  | jq '{document: .}' \
+  | curl -X POST http://localhost:3001/api/admin/flows/templates \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "Content-Type: application/json" \
+      -d @-
 ```
 
-Send either `url` or `document`, the definition as an object or as YAML or JSON
-text, up to 1 MiB. The definition's slug names the template, and saving the
-same slug again replaces it. Saved templates appear in the list with
+The answer is `201` with the template. Send `url` in place of `document` to
+fetch the definition from an address. An address that does not answer with a
+flow definition answers `502`.
+
+</div>
+</div>
+
+`document` is the definition as an object or as YAML or JSON text, up to
+1 MiB. The definition's slug names the template, and saving the same slug
+again replaces it. Saved templates appear in the list with
 `"source": "saved"`, and `DELETE /api/admin/flows/templates/{id}` removes one.
 
 ## Next

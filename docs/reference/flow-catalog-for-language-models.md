@@ -16,39 +16,63 @@ any other flow.
 
 ## Use it with your own model
 
-1. Copy everything from the heading "LyEve flow definitions" to the end of this
-   page into the model's context. Or download your instance's own copy, which
-   also lists the nodes your other features add:
+**1. Give the model the catalog.** Copy everything from the heading
+"LyEve flow definitions" to the end of this page into the model's context. Or
+download your instance's own copy, which also lists the nodes your other
+features add. Only the API serves that copy: console v0.21.0 has no download
+for it.
 
-   ```bash
-   curl "http://localhost:3001/api/admin/flows/catalog/llm" \
-     -H "Authorization: Bearer $TOKEN" -o flow-catalog.md
-   ```
+```bash
+curl "http://localhost:3001/api/admin/flows/catalog/llm" \
+  -H "Authorization: Bearer $TOKEN" -o flow-catalog.md
+```
 
-   The answer is `text/markdown`. Anyone who may read at least one flow can
-   fetch it. The [quickstart](../getting-started/quickstart.md) shows how to get
-   a token.
+The answer is `text/markdown`. Anyone who may read at least one flow can
+fetch it. [Sign in](../getting-started/quickstart.md#3-sign-in) shows how to
+get a token.
 
-2. Ask for the flow you want. Name your content types, fields and addresses,
-   because the model knows the catalog but not your content model.
+**2. Ask for the flow you want.** Name your content types, fields and
+addresses, because the model knows the catalog but not your content model.
 
-3. Save the YAML it answers as `flow.yaml` and import it as a draft:
+**3. Import what it answers as a draft.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/flows/import \
-     -H "Authorization: Bearer $TOKEN" \
-     -F "file=@flow.yaml"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the new flow. A definition with a problem answers
-   `422`, naming the node, the key and what is wrong. Paste that back to the
-   model and ask it to fix the named key. A type or option marked
-   `Tier: pro` answers `402` with the same list when your license lacks
-   `flow-pro`.
+Open **Flows** and choose **Import**. Paste the YAML under
+**Or paste the definition**, or save it as `flow.yaml` and upload it under
+**Definition file**. Keep **Create a new flow** and choose **Import**.
 
-4. Open the flow in the editor, run a test and publish it. A `nodes.<id>`
-   reference to a node that is not upstream, or a `control.delay` under
-   `trigger.http`, is reported at this step rather than on import.
+The editor opens on the new draft. A definition with a problem keeps the
+dialog open under **The definition did not validate.**, with one line per
+problem naming the node, the key and what is wrong. A type marked `Tier: pro`
+on an instance without `flow-pro` reads
+**One element uses what this instance does not enable**, followed by the node
+and the reason. Paste those lines back to the model and ask it to fix the
+named key.
+
+</div>
+<div data-path="api">
+
+Save the YAML as `flow.yaml`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/flows/import \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "file=@flow.yaml"
+```
+
+The answer is `201` with the new flow. A definition with a problem answers
+`422`, naming the node, the key and what is wrong. Paste that back to the
+model and ask it to fix the named key. A type or option marked `Tier: pro`
+answers `402` with the same list when your license lacks `flow-pro`.
+
+</div>
+</div>
+
+**4. Open the flow in the editor, run a test and publish it.** A
+`nodes.<id>` reference to a node that is not upstream, or a `control.delay`
+under `trigger.http`, is reported at this step rather than on import.
 
 With the [AI](../features/ai.md) feature, the flow editor's assistant does
 these steps for you, with your tenant's own provider. See
