@@ -9,7 +9,7 @@ sidebar:
 
 Caching keeps the answers to frequent reads, such as content items, content
 lists and the schema list, so repeated requests skip the database. A response
-cache rule adds the answers of a public route such as search. A content change
+cache rule adds the answers of a public route, such as media files. A content change
 clears the affected entries, so readers do not see stale content after a write.
 
 :::tip[Best for]
@@ -19,7 +19,7 @@ clears the affected entries, so readers do not see stale content after a write.
 - **Sharing one cache across replicas.** Point every replica at the same
   Redis, Valkey or KeyDB.
 - **Serving public pages faster.** A response cache rule keeps the answers of
-  a public route such as search, and a content change clears them.
+  a public route, such as media files, and a content change clears them.
 - **Surviving a cache server outage.** With `cache-pro`, list several servers,
   and requests move to the next one while the first is down.
 - **Moving to a new cache server.** With `cache-pro`, copy the entries across
@@ -45,81 +45,146 @@ clears the affected entries, so readers do not see stale content after a write.
 A content write clears the cached reads it changes, in its own tenant. Flushing the
 cache never signs anyone out, because sessions are kept apart from it.
 
-## In the admin console
-
-Open **Insight > Observability > Cache**. The top row gives the **Hit rate**,
-**Entries**, **Evicted** and **Misses**. **Entries** counts what the provider
-serving reads holds. **Providers** lists each cache provider with the state of
-its circuit and its **Priority**. **Response cache rules** lists each rule's
-**Route**, **Time to live**, **Tags** and state, with **Purge all** and
-**Purge by tag** above them. **New rule** asks for the **Route**, the
-**Time to live, in seconds**, the **Tags** and **Serve from the cache**.
-**Stored**, at the bottom for a super admin, has **Flush everything** and lists
-the stored entries a page at a time, with their **Key**, **Size**, **Tags** and
-**Expires**.
-
-![The Cache page with the memory-primary provider healthy and one response cache rule serving /api/v1/search/{schema} for 5 minutes, tagged post.](images/caching.png)
+In the admin console, caching is under **Insight > Observability > Cache**. The top row gives
+the **Hit rate**, **Entries**, **Evicted** and **Misses**. **Entries** counts what the provider
+serving reads holds. **Providers** lists each cache provider with the state of its circuit and
+its **Priority**. **Response cache rules** lists each rule's **Route**, **Time to live**,
+**Tags** and state, with **Purge all**, and **Purge by tag** with its **Purge tag** button, above
+them. **Stored**, at the bottom, has **Flush the cache** for a super admin and lists the stored
+entries a page at a time, with their **Key**, **Size**, **Tags** and **Expires**. A tenant
+admin sees **Flush this tenant's responses** there instead, which flushes only that tenant's
+cached responses after a confirmation, and no entry list, because the store holds every
+tenant's keys.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
+For the console steps, you are signed in to the admin console as a super admin. For the API
+steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. List the cache providers and their state:
+**1. List the cache providers and their state.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/cache/providers \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "data": [
-       { "name": "memory-primary", "kind": "inmemory", "priority": 0, "hits": 0, "misses": 0, "entries": 0, "max_size": 10000, "circuit_state": "closed", "connected": true, "active": true }
-     ],
-     "limit": 50,
-     "offset": 0,
-     "total_count": 1
-   }
-   ```
+Open **Insight > Observability > Cache**. **Providers** lists `memory-primary`, of kind
+`inmemory`, as **Healthy** with **Priority** `0`.
 
-   `priority` is the provider's place in the failover order, `0` first.
+</div>
+<div data-path="api">
 
-2. As a super admin, read the cache counters:
+```bash
+curl http://localhost:3001/api/admin/cache/providers \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl http://localhost:3001/api/admin/cache/stats \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```json
+{
+  "data": [
+    { "name": "memory-primary", "kind": "inmemory", "priority": 0, "hits": 0, "misses": 0, "entries": 0, "max_size": 10000, "circuit_state": "closed", "connected": true, "active": true }
+  ],
+  "inactive": [],
+  "licensed": false,
+  "limit": 50,
+  "offset": 0,
+  "total_count": 1
+}
+```
 
-   The answer carries `hits`, `misses`, `sets`, `deletes`, `flushes` and
-   `evictions`, summed over the providers, and the `entries` and `max_size` of
-   the provider serving reads.
+</div>
+</div>
 
-3. Cache the answers of a public route for five minutes:
+`priority` is the provider's place in the failover order, `0` first.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cache/rules \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"pattern": "/api/v1/search/{schema}", "ttl_seconds": 300, "tags": ["posts"]}'
-   ```
+**2. Read the cache counters.**
 
-   The answer is `201` with the rule. An anonymous search that reaches your
-   tenant, such as one on a domain mapped to it, now answers `X-Cache: MISS`
-   the first time and `X-Cache: HIT` after that, until a `posts` entry
-   changes.
+<div class="paths">
+<div data-path="console">
 
-4. Flush your tenant's cache:
+The top row of the same page gives the **Hit rate**, **Entries**, **Evicted** and **Misses**.
+A fresh install reads **Nothing asked yet** under **Hit rate**.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/cache/flush \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   { "message": "cache flushed" }
-   ```
+```bash
+curl http://localhost:3001/api/admin/cache/stats \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer carries `hits`, `misses`, `sets`, `deletes`, `flushes` and `evictions`, summed over
+the providers, and the `entries` and `max_size` of the provider serving reads.
+
+</div>
+</div>
+
+**3. Cache the answers of a public route for five minutes.** A published file in the
+[media library](media.md) is a public route that answers without a token on every install.
+Step 3 there publishes one, and its public path has the form `/api/v1/media/<id>/<name>`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Choose **New rule**.
+2. Enter `/api/v1/media/**` in **Route** and `300` in **Time to live, in seconds**. Leave
+   **Tags** empty, and keep **Serve from the cache** on.
+3. Choose **Create**.
+
+**Response cache rules** lists the route with **5 min**, **Every content change** under
+**Tags**, and **Serving**.
+
+![The Cache page with the memory-primary provider healthy and one response cache rule serving /api/v1/media/** for 5 minutes, purged by every content change.](images/caching.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cache/rules \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"pattern": "/api/v1/media/**", "ttl_seconds": 300}'
+```
+
+The answer is `201` with the rule, and `"tags": []`.
+
+</div>
+</div>
+
+Load the file twice with no token, at its public path. **Media library** shows the path
+under **Public path**, and the API answer gives it as `public_url`. Put your file's id and name
+in place of `<id>` and `hero.png`:
+
+```bash
+curl -s -o /dev/null -D - http://localhost:3002/api/v1/media/<id>/hero.png
+```
+
+The first answer carries `X-Cache: MISS` and the second `X-Cache: HIT`, until the rule's five
+minutes pass or a content change clears it. A `HEAD` request carries no `X-Cache` header.
+
+**4. Flush the cache.**
+
+<div class="paths">
+<div data-path="console">
+
+Under **Stored**, choose **Flush the cache**, then **Flush** in the dialog that asks. The page
+confirms **Flushed the cache**, and **Stored** reads **Nothing is cached**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cache/flush \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "message": "cache flushed" }
+```
+
+</div>
+</div>
+
+The next anonymous load of the file answers `X-Cache: MISS` again.
 
 ## One provider, or several with cache-pro
 

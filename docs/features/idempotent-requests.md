@@ -49,63 +49,80 @@ with no signed-in caller, pass through unchanged.
 Credential headers such as `Authorization`, `Cookie` and `Set-Cookie` are never
 stored or replayed.
 
-## In the admin console
-
-Open **Insight > Observability > Idempotency**. The page counts the keys held,
-the keys with a stored response and the requests in flight. **Keys** lists
-each key with the request it was sent on, its state, how many times it was
-replayed and its age. The page only reads. Clear a key, or see which store
-holds the keys, with the routes in [Try it](#try-it).
-
-![The Idempotency page with three keys held, each stored with the POST request it was sent on, its replay count and its age.](images/idempotent-requests.png)
+In the admin console, the keys are under **Insight > Observability > Idempotency**. The page
+counts the **Keys held**, the keys **With a stored response** and the requests **In flight**.
+**Keys** lists each key with the request it was sent on, its state, how many times it was
+replayed and its age, and narrows to **All**, **Not finished** or **Stored**. A key whose
+request has not finished has a release button on its row, which lets the next request with the
+key run again. Clearing a key that holds a stored answer, and seeing which store holds the
+keys, are done with the API.
 
 ## Try it
 
-You need an admin token in `TOKEN` and the `post` content type from the
-[quickstart](../getting-started/quickstart.md).
+You need the `post` content type from the [quickstart](../getting-started/quickstart.md) and a
+token in `TOKEN`, because a key is honored only for a signed-in caller. Steps 1 to 3 are
+requests your client sends. For the console step, you are signed in to the admin console.
 
-1. Create an entry with a key of your choice. Pick a new unique value, such as
-   a UUID, for each operation:
+**1. Create an entry with a key of your choice.** Pick a new unique value, such as a UUID,
+for each operation:
 
-   ```bash
-   curl -i -X POST http://localhost:3002/api/v1/content/post \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -H "Idempotency-Key: checkout-7f3c9a2e-001" \
-     -d '{"data": {"title": "Launch post"}}'
-   ```
+```bash
+curl -i -X POST http://localhost:3002/api/v1/content/post \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: checkout-7f3c9a2e-001" \
+  -d '{"data": {"title": "Launch post"}}'
+```
 
-   The answer is `201` with `Idempotency-Replayed: false` and the new entry.
+The answer is `201` with `Idempotency-Replayed: false` and the new entry.
 
-2. Send exactly the same request again. The answer is the same `201` and the
-   same entry `id`, with `Idempotency-Replayed: true`. No second entry exists.
+**2. Send exactly the same request again.** The answer is the same `201` and the same entry
+`id`, with `Idempotency-Replayed: true`. No second entry exists.
 
-3. Send the same key with a different body, such as
-   `{"data": {"title": "Other post"}}`:
+**3. Send the same key with a different body,** such as `{"data": {"title": "Other post"}}`:
 
-   ```json
-   { "error": "idempotency key reused with different request parameters" }
-   ```
+```json
+{ "error": "idempotency key reused with different request parameters" }
+```
 
-   The status is `422`.
+The status is `422`.
 
-4. See which store holds the keys:
+**4. See the key the instance holds.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/idempotency/stats \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "total": 1, "completed": 1, "in_flight": 0, "backend": { "backend": "memory", "shared": false, "reason": "no Redis answered on the default local address", "degraded": false } }
-   ```
+Open **Insight > Observability > Idempotency**. **Keys** lists `checkout-7f3c9a2e-001` with
+`POST /api/v1/content/post`, **Stored**, and **Replays** `1`.
 
-5. Clear the key, so the next request with it runs again. The answer is `204`:
+![The Idempotency page with two keys held, each stored with the POST request to /api/v1/content/post it was sent on, its replay count and its age.](images/idempotent-requests.png)
 
-   ```bash
-   curl -X DELETE http://localhost:3001/api/admin/idempotency/checkout-7f3c9a2e-001 \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/idempotency/stats \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "total": 1, "completed": 1, "in_flight": 0, "backend": { "backend": "memory", "shared": false, "reason": "no Redis answered on the default local address", "degraded": false } }
+```
+
+`backend` says which store holds the keys. `GET /api/admin/idempotency` lists the keys
+themselves.
+
+</div>
+</div>
+
+**5. Clear the key.** The console on v0.21.0 releases only a key whose request has not
+finished, so clear a stored key with the API. The answer is `204`, and the next request with
+the key runs again:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/idempotency/checkout-7f3c9a2e-001 \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## Share keys across instances
 

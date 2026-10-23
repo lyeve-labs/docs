@@ -54,88 +54,138 @@ server, and you need no Go knowledge to read the result:
 `go tool pprof -http=:8080 cpu.pb.gz` opens it in a browser, flame graph
 included.
 
-## In the admin console
+In the admin console, profiling is under **Insight > Observability > Profiler**, and only a
+super admin can open it.
 
-Open **Insight > Observability > Profiler**. Only a super admin can open it.
+- **Memory** gives the heap in use, heap objects, the total allocated, garbage collection
+  cycles, goroutines and the heap slope, with a label such as **Steady** for the trend.
+- **Slowest endpoints** ranks the twenty slowest endpoints by p95, with their count, average,
+  p50, p99 and maximum. **By plugin** groups the same timings by feature.
+- **Flamegraph** records a CPU profile over a **Window** of seconds and draws it.
+- **pprof export** lists a **CPU**, **Goroutines**, **Heap** and **Allocations** profile. On
+  v0.21.0 these buttons answer with an error instead of a file, so download a profile with
+  the API, as the Engine API tab of step 3 shows.
 
-- **Memory** gives the heap in use, heap objects, the total allocated, garbage
-  collection cycles, goroutines and the heap slope, with a label such as
-  **Steady** for the trend.
-- **Slowest endpoints** ranks the twenty slowest endpoints by p95, with their
-  count, average, p50, p99 and maximum. **By plugin** groups the same timings
-  by feature.
-- **pprof export** downloads a **CPU**, **Goroutines**, **Heap** or
-  **Allocations** profile, and **Flamegraph** records a CPU profile over a
-  **Window** of seconds and draws it.
-
-![The Profiler page with a steady memory trend and the slowest endpoints ranked by p95, each with its count, average and percentiles.](images/request-profiling.png)
-
-**Insight > Observability** also ranks endpoints by latency, under
-**Latency rankings**.
+**Insight > Observability** also ranks endpoints by latency, under **Latency rankings**.
 
 ## Try it
 
-You need a super admin token in `TOKEN`. The
+For the console steps, you are signed in to the admin console as a super admin. For the API
+steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Rank the slowest endpoints:
+**1. Rank the slowest endpoints.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/debug/profiler/slowest \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "slowest": [
-       {
-         "endpoint": "/api/v1/content/post",
-         "method": "GET",
-         "count": 1520,
-         "avg_duration_ns": 8100000,
-         "p50_duration_ns": 6200000,
-         "p95_duration_ns": 21400000,
-         "p99_duration_ns": 48000000,
-         "max_duration_ns": 93000000,
-         "avg_alloc_bytes": 0,
-         "total_alloc_bytes": 0,
-         "last_seen": "2026-10-01T09:30:12Z"
-       }
-     ]
-   }
-   ```
+Open **Insight > Observability > Profiler**. **Slowest endpoints** lists each endpoint's
+method and path with its count, average, p50, p95, p99 and maximum, slowest p95 first.
 
-   Durations are in nanoseconds, so `21400000` is 21.4 ms.
+![The Profiler page with a steady memory trend and the slowest endpoints ranked by p95, each with its count, average and percentiles.](images/request-profiling.png)
 
-2. Look at one endpoint's recent requests. The path follows `endpoint`:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/debug/profiler/endpoint/api/v1/content/post?limit=5" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl http://localhost:3001/api/admin/debug/profiler/slowest \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   The answer has `methods`, each with its `stats` and `recent_entries`.
+```json
+{
+  "slowest": [
+    {
+      "endpoint": "/api/v1/content/post",
+      "method": "GET",
+      "count": 1520,
+      "avg_duration_ns": 8100000,
+      "p50_duration_ns": 6200000,
+      "p95_duration_ns": 21400000,
+      "p99_duration_ns": 48000000,
+      "max_duration_ns": 93000000,
+      "avg_alloc_bytes": 0,
+      "total_alloc_bytes": 0,
+      "last_seen": "2026-10-01T09:30:12Z"
+    }
+  ]
+}
+```
 
-3. Record a CPU profile for five seconds while the slow traffic runs, then open
-   it:
+Durations are in nanoseconds, so `21400000` is 21.4 ms.
 
-   ```bash
-   curl -X POST "http://localhost:3001/api/admin/debug/profiler/profile/cpu?duration_sec=5" \
-     -H "Authorization: Bearer $TOKEN" -o cpu.pb.gz
-   go tool pprof -top cpu.pb.gz
-   ```
+</div>
+</div>
 
-   `-top` lists the functions that used the most CPU. Use `-http=:8080` in its
-   place for the browser view.
+**2. Look at one endpoint's recent requests.**
 
-4. Check the heap trend:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl http://localhost:3001/api/admin/debug/profiler/memory \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Choose the endpoint's path in **Slowest endpoints**. **Recent GET requests** lists each
+request's time, status, duration, allocations, goroutines and plugin.
 
-   The answer has `snapshots`, `slope_bytes_per_sec` and `leak_likely`.
+</div>
+<div data-path="api">
+
+The path follows `endpoint`:
+
+```bash
+curl "http://localhost:3001/api/admin/debug/profiler/endpoint/api/v1/content/post?limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer has `methods`, each with its `stats` and `recent_entries`.
+
+</div>
+</div>
+
+**3. See where the CPU time goes** while the slow traffic runs.
+
+<div class="paths">
+<div data-path="console">
+
+Under **Flamegraph**, type `/api/v1/content/post` in **Endpoint**, set **Window** to `5` and
+press **Capture**. The graph is drawn on the page after the window ends. The endpoint is a
+label on the result, and the profile covers the whole process.
+
+</div>
+<div data-path="api">
+
+Record a CPU profile for five seconds, then open it:
+
+```bash
+curl -X POST "http://localhost:3001/api/admin/debug/profiler/profile/cpu?duration_sec=5" \
+  -H "Authorization: Bearer $TOKEN" -o cpu.pb.gz
+go tool pprof -top cpu.pb.gz
+```
+
+`-top` lists the functions that used the most CPU. Use `-http=:8080` in its place for the
+browser view.
+
+</div>
+</div>
+
+**4. Check the heap trend.**
+
+<div class="paths">
+<div data-path="console">
+
+**Memory** on the same page shows the trend label, the number of snapshots, the heap in use and
+the heap slope.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/debug/profiler/memory \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer has `snapshots`, `slope_bytes_per_sec` and `leak_likely`.
+
+</div>
+</div>
 
 ## Rank the slowest endpoints
 
