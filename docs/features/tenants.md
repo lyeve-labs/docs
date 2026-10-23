@@ -60,9 +60,11 @@ reads **Tenant provisioning** and **Not enabled on this instance**, and has no
 
 The console has no tenant switcher. A super admin creates an account in any
 tenant from **Access > Users** with **New user**, choosing the tenant under
-**Tenant**. An account with a membership in another tenant works in it by
-entering its slug in **Organization (optional)** on the sign-in page. A super
-admin's own session stays in its home tenant, so steps 3 to 5 below, which act
+**Tenant**. Under **Roles**, untick **editor** and tick the account's role,
+because the form keeps **editor** ticked beside any role you tick. An account
+with a membership in another tenant works in it by entering its slug in
+**Organization (optional)** on the sign-in page. A super admin's own session
+stays in its home tenant, so steps 3 to 5 below, which act
 inside `acme` from that session, are API only on v0.21.0.
 
 **Operations > Tenant costs**, which admins open too, shows what the tenant's

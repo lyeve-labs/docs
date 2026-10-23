@@ -266,8 +266,16 @@ curl -X POST http://localhost:3001/api/admin/cron/jobs \
 ```
 
 The answer is `201` and carries `alert_signing_secret` once. Its `alerts`
-shows the URL masked and `"webhook_signed": true`. After two failed runs the
-endpoint gets:
+shows the URL masked and `"webhook_signed": true`. Copy its `id` into
+`JOB_ID`. The schedule runs once a day, so trigger the job twice instead of
+waiting two days. Each call answers `202`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cron/jobs/$JOB_ID/trigger \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+After the second failed run the endpoint gets:
 
 ```json
 {"event": "cron.job.failed", "job_id": "5a6a7018-e851-4d76-97a5-c6f14e4ad526", "job_name": "always-fails", "tenant_id": "default", "status_code": 500, "error": "endpoint returned 500", "consecutive_failures": 2, "time": "2026-10-23T17:31:12.354501984Z"}

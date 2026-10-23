@@ -363,24 +363,54 @@ For example, a webhook that posts a chat message for one title only:
 A post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post
 with any other title sends nothing.
 
-![The New webhook form on an install licensed for webhook-pro, with Delivery options open, showing a payload template and the field filter title=Launch.](images/webhooks-delivery-options.png)
+![The New webhook form on an install licensed for webhook-pro, with post picked under Schemas and Delivery options open, showing a payload template and the field filter title=Launch.](images/webhooks-delivery-options.png)
 
 </div>
 <div data-path="api">
 
-An update replaces the whole record, so send every field the webhook should
-keep:
+Put the chat service's address in place of the example URL, which does not
+resolve:
 
 ```bash
-curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID \
+curl -X POST http://localhost:3001/api/admin/webhooks \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Chat notice", "url": "https://chat.example.com/hooks/lyeve", "events": ["after_create"], "schemas": ["post"], "enabled": true, "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}", "jsonpath_filter": "$.data.title == \"Release\""}'
+  -d '{"name": "Chat notice", "url": "https://chat.example.com/hooks/lyeve", "events": ["after_create"], "schemas": ["post"], "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}", "field_filters": {"title": "Launch"}}'
 ```
 
-A post titled `Release` now sends `{"text":"New post: Release"}`, and a post
-with any other title sends nothing. A field you leave out of the update, such
-as `field_filters`, is cleared.
+The answer is `201` with the new webhook. Copy its `id` into `CHAT_ID`. A
+post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post with
+any other title sends nothing.
+
+An update replaces the whole record, so send every writable field. A field
+you leave out is cleared, and only `secret` keeps its stored value when left
+out. This update swaps the field filter for a JSONPath condition, and its
+retry and size values are the defaults:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/webhooks/$CHAT_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Chat notice",
+        "url": "https://chat.example.com/hooks/lyeve",
+        "events": ["after_create"],
+        "schemas": ["post"],
+        "enabled": true,
+        "headers": {},
+        "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}",
+        "field_filters": {},
+        "jsonpath_filter": "$.data.title == \"Release\"",
+        "include_fields": [],
+        "exclude_fields": [],
+        "max_retries": 4,
+        "retry_delay_seconds": 30,
+        "max_response_size": 1048576
+      }'
+```
+
+The answer is `200`. A post titled `Release` now sends
+`{"text":"New post: Release"}`, and a post titled `Launch` sends nothing.
 
 </div>
 </div>
@@ -392,7 +422,7 @@ headers against the `event`, `schema`, `data` and `old_data` you send. Send
 preview applies the field lists but not the filters:
 
 ```bash
-curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/preview \
+curl -X POST http://localhost:3001/api/admin/webhooks/$CHAT_ID/preview \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"event": "after_create", "schema": "post", "data": {"title": "Release"}}'

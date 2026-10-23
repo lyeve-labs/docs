@@ -367,10 +367,16 @@ Stop the receiver and create another `post`. The delivery fails, and with this
 policy four retries follow. Each one goes at the first 30-second check after
 its wait ends, and every wait here is shorter than that, so the first retry
 goes about a minute after the failure and the rest about half a minute apart.
-`GET /api/admin/webhooks/$WEBHOOK_ID/attempts` lists them. Start the receiver
-again and either wait for the next retry, which carries
-`X-Webhook-Retry: true`, or send the delivery yourself with its `id` from the
-history:
+`GET /api/admin/webhooks/$WEBHOOK_ID/attempts` lists them.
+
+Keep the receiver stopped until the delivery runs out of attempts, about three
+minutes after the failure. It then waits in the dead-letter queue.
+`GET /api/admin/webhook-dead-letters?status=pending` lists it with
+`total_attempts` 5. Copy its `id` into `DEAD_LETTER_ID`. Then copy the failed
+delivery's `id` from `GET /api/admin/webhooks/$WEBHOOK_ID/deliveries?limit=5`,
+the one with `success: false`, into `DELIVERY_ID`.
+
+Start the receiver again and send the delivery yourself:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries/$DELIVERY_ID/retry \
@@ -381,9 +387,7 @@ curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries/$DE
 {"success": true, "status_code": 200, "message": "OK", "delivery_id": "..."}
 ```
 
-A delivery that ran out of attempts waits in the dead-letter queue, with
-`total_attempts` 5 here. List it with
-`GET /api/admin/webhook-dead-letters?status=pending` and send it again:
+Send the dead letter again too:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhook-dead-letters/$DEAD_LETTER_ID/replay \

@@ -294,6 +294,23 @@ passkey, and clearing its backup mark, are free too. Without `mfa-pro` the
 register routes answer
 `402` with `{"error": "payment_required", "plugin": "mfa", "feature": "feature:mfa-pro", "upgrade_url": ""}`.
 
+:::caution[Turn on an authenticator app before the first passkey]
+A password sign-in challenges an account that holds a passkey, and the
+challenge takes only a code from an authenticator app or a backup code. An
+account whose only factor is a passkey has neither, so it signs in only
+through passwordless sign-in, which the admin console does not offer. Turn on
+the authenticator app first, which also gives the account its backup codes,
+and register the passkey after it.
+
+An account that is already passkey-only adds the app over the API. Sign in
+with the passkey through passwordless sign-in, send a passkey proof to
+`POST /api/admin/mfa/totp/setup` as
+[Add or remove a factor](#add-or-remove-a-factor) shows, and verify a code
+from the new key with `POST /api/admin/mfa/totp/verify`. The answer carries
+eight backup codes, and a password sign-in then finishes with a code from the
+app.
+:::
+
 Every WebAuthn route comes in a begin and complete pair:
 
 1. Call the `begin` route. It returns a `session_id` and the `options` to pass
@@ -321,14 +338,6 @@ The token lives for `JWT_EXPIRY_SECS`.
 `{"data": [...], "limit", "offset", "total_count"}`, each with its `id`,
 `name`, `is_backup`, `created_at` and `last_used_at`, and
 `GET /api/admin/mfa/status` then reads `"has_passkeys": true`.
-
-:::caution[Keep an authenticator app beside a passkey]
-An account whose only factor is a passkey is still challenged at a password
-sign-in, and that challenge offers only a code, which the account does not
-have. It signs in through passwordless sign-in alone. The admin console has
-no passwordless sign-in, so that person cannot sign in to the console. Turn on
-an authenticator app as well, which also gives the account its backup codes.
-:::
 
 Mark a passkey as the backup key with
 `PUT /api/admin/mfa/webauthn/credentials/{id}/backup` and the body

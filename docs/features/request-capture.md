@@ -261,7 +261,8 @@ in order with each replay compared against its original.
 
 1. Open **Insight > Observability > Request capture**. Under **Captures from every tenant**,
    tick the box on each capture the set should hold, such as a `GET` of
-   `/api/admin/logging/levels`.
+   `/api/admin/logging/levels`. Tick only captures from your own tenant,
+   because a set takes only captures the current tenant holds.
 2. Choose **New replay set from 1**, the count of captures you ticked, enter
    `settings smoke` in **Name**, and choose **Create**. **Replay sets** lists it.
 3. Choose **Replay** on the set's row, then **Replay** in the dialog that asks
@@ -279,7 +280,11 @@ curl -X POST http://localhost:3001/api/admin/request-captures/sets \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "checkout smoke", "capture_ids": ["'"$CAPTURE_ID"'"]}'
+```
 
+The answer is `201` with the set. Copy its `id` into `SET_ID`, and replay it:
+
+```bash
 curl -X POST http://localhost:3001/api/admin/request-captures/sets/$SET_ID/replay \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
