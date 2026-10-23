@@ -115,6 +115,25 @@ subject's data as a subject access request requires.
 **Check it:** export an address you know, then read `scope.tenants_covered` and
 `incomplete` before you trust the bundle.
 
+### A person's own export
+
+A signed-in person can export their own data without an admin, as
+[Analytics](../features/analytics.md#let-users-export-or-erase-their-data)
+describes. It runs the same features, in the tenant the request is made in,
+and answers one NDJSON file. The tenant chooses which features' sections it
+offers and which roles may export. Two things in it differ from the export
+above, so that it shows nothing about someone else who held or used the
+person's address:
+
+- Rows found through an email address (mail, sign-in links and attempts,
+  comments, form submissions and flow runs) appear only when they were created
+  in or after the second the account was created.
+- The IP address of whoever asked for a sign-in link to the person's address
+  reads `[withheld]`.
+
+A flow run the person may not read on the flow routes keeps only its shape.
+The export above keeps every row, IP and run.
+
 ## Right to erasure
 
 `POST /api/admin/gdpr/erase`, `super_admin`, rate limited, same body as export.

@@ -362,15 +362,169 @@ per tenant.
 
 ## Let users export or erase their data
 
-A signed-in user calls these on the Content API for their own account:
+A signed-in user calls these on the Content API for their own account.
+
+### Export your own data
+
+An export is made of sections. A section is the data one feature keeps about
+the person, named after that feature, and `engine` is the account itself. A
+section appears only while its feature runs on the install, so a paid feature
+adds its section only while the license includes it. The tenant chooses which
+sections it offers, as
+[shown below](#choose-what-the-tenant-offers-and-who-may-export).
+
+List the sections the tenant offers:
+
+```bash
+curl http://localhost:3002/api/v1/gdpr/export/sections \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"sections": ["analytics", "email", "engine", "magic-link", "schema"]}
+```
+
+Then export. With no body the file holds every offered section, and
+`sections` picks some of them:
 
 ```bash
 curl -X POST http://localhost:3002/api/v1/gdpr/export \
-  -H "Authorization: Bearer $TOKEN" -o my-data.ndjson
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"sections": ["engine", "email"]}' \
+  -o my-data.ndjson
 ```
 
-The download is one JSON object per line, each tagged with `data_type`:
-`content`, `audit_log`, `media_metadata` or `user`.
+A section the tenant does not offer is a `400`, and so is an empty list. When
+the tenant offers no section at all, an export that names none answers `409`.
+
+The download is NDJSON, one JSON object per line:
+
+| Field | Meaning |
+|---|---|
+| `data_type` | What the line holds: `user` for the account, `content`, `media_metadata` and `audit_log` for the content entries the person created, the files they uploaded and their audit entries, or the name a feature gives its own records, such as `outbox` or `flow_runs`. |
+| `section` | The section the line belongs to. |
+| `user_id` | The account that exported. |
+| `data` | The record. |
+
+The account line is in the `engine` section:
+
+```json
+{"data_type": "user", "section": "engine", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "data": {"id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "email": "ada@example.com", "roles": ["editor"], "tenant_id": "acme", "disabled": false, "created_at": "2026-03-02T09:14:07Z", "updated_at": "2026-10-20T16:40:31Z"}}
+```
+
+`roles` is a list. The account also carries `expires_at` when it has an
+expiry, and `provider_email` and `provider_seen_at` when an identity provider
+asserted its address. The password hash is never exported.
+
+The status goes out before the first line, so a failure after that cannot
+change it. When part of the export failed, the file ends with a line that
+names the sections missing rows:
+
+```json
+{"data_type": "incomplete", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "data": {"sections": ["email"]}}
+```
+
+Treat a file that ends this way as partial, and export again once the hour
+below has passed.
+
+Some features keep data under an email address rather than an account: mail,
+sign-in links, comments and form submissions, and flow runs. A person's own
+export keeps out two things that may belong to whoever held the address
+before them, or to someone else:
+
+- A row found through an address appears only when it was created in or after
+  the second the account was created. A comment or form submission in a
+  content type with no `created_at` field is left out, because its age cannot
+  be read.
+- The IP address of whoever asked for a sign-in link to the person's address
+  reads `[withheld]`. The IP of a sign-in that used a link stays.
+
+A flow run the person may not read on the flow routes keeps only its shape:
+which flow ran, when and how it ended, and which node each step ran, marked
+`"withheld": true`, with no input or output. The export a super admin runs from
+[data protection](../trust/data-protection.md#subject-access-export) keeps all
+of this.
+
+### Limits on an export
+
+- Only a signed-in session exports. An API key or an admin token gets `403`.
+- One export of an account runs at a time, and one is delivered an hour. A
+  request while one runs, or within an hour of the start of the last one
+  delivered, answers `429` with `Retry-After` in seconds. An export that
+  failed before its first line does not start the hour.
+- A refusal of the role or the sections comes before the export starts, so
+  it never spends the hour.
+
+### Choose what the tenant offers and who may export
+
+An admin of the tenant chooses which sections the tenant offers. Every section
+is offered until one is left out, including a section that appears later when
+a feature starts running.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Privacy**. Under **Exporting their own data**, **What a
+person may include** lists the sections the install can export now, ticked
+while the tenant offers them. Untick a section and choose **Save**. A section
+the tenant left out whose feature is not running now is listed under **Also
+left out**, and stays left out.
+
+</div>
+<div data-path="api">
+
+Read the sections, each with whether the tenant offers it, and the sections
+the tenant left out:
+
+```bash
+curl http://localhost:3002/api/admin/analytics/gdpr/export-sections \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"sections": [{"section": "email", "offered": false}, {"section": "engine", "offered": true}], "excluded": ["email"]}
+```
+
+Replace the sections the tenant leaves out with `PUT` on the same path and
+`{"excluded": ["email"]}`. The answer is the new state. A name that is neither
+a section the install can export now nor one the tenant already left out is a
+`400`.
+
+</div>
+</div>
+
+Every role may export its own data until the tenant lists the roles that may.
+Admins and super admins always may.
+
+<div class="paths">
+<div data-path="console">
+
+On the same page, under **Who may export**, choose **Every role**, or choose
+**Chosen roles** and tick them under **Roles that may export**. Then choose
+**Save**. With no role ticked, only admins and super admins can export.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3002/api/admin/analytics/gdpr/export-roles \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"roles": ["editor"]}'
+```
+
+The answer is the stored list, sorted, as `{"roles": [...]}`, and `GET` on the
+same path reads it. An empty list lets every role export. A role is 1 to 64
+characters, at most 64 are listed, and duplicates collapse. Both routes need a
+signed-in session.
+
+</div>
+</div>
+
+A person whose role is not listed gets `403` on the sections and the export.
+
+### Erase your own data
 
 `POST /api/v1/gdpr/erase` answers `202`:
 
@@ -483,10 +637,13 @@ features start, include `analytics` in it. See
 | `POST` | `/api/admin/analytics/deliveries/{id}/replay` | Admin | Send one delivery again now. Needs `analytics-pro`. |
 | `GET` | `/api/admin/analytics/dashboard` | Admin | Your tenant's own `total_content`, `total_media` and `total_users`. `total_content` or `total_media` is `null` when the content or media feature is not installed. `api_calls_24h` is always `null`. |
 | `GET` | `/api/v1/analytics` | Signed in | Your tenant's usage and activity. |
-| `POST` | `/api/v1/gdpr/export` | Signed in | Your data as NDJSON. |
+| `GET` | `/api/v1/gdpr/export/sections` | Signed-in session | The sections your tenant offers, as `{"sections": [...]}`. |
+| `POST` | `/api/v1/gdpr/export` | Signed-in session | Your data as NDJSON. Body: `sections`. |
 | `POST` | `/api/v1/gdpr/erase` | Signed in | Erases your data. `202`. |
 | `GET` | `/api/admin/analytics/gdpr/erasures` | Super admin | Erasures that have not finished, as `{"erasures": [...]}`. |
 | `POST` | `/api/admin/analytics/gdpr/erasures/{user_id}/rerun` | Super admin | Runs one again. `202`. |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-sections` | Admin | The sections the tenant offers, and the ones it leaves out. |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-roles` | Admin, signed-in session | The roles that may export. Empty means every role. |
 
 </details>
 
@@ -507,6 +664,13 @@ features start, include `analytics` in it. See
 | `404` | `no incomplete erasure for this account` on a rerun |
 | `409` | `erasure is deferred by a legal hold on this account` on `POST /api/v1/gdpr/erase` |
 | `409` | `this erasure is running` on a rerun |
+| `400` | `a requested section is not offered`, `choose at least one section` on an export |
+| `400` | `an excluded section is not known`, `a role must be 1 to 64 characters`, `at most 64 roles may be listed` |
+| `403` | `this route needs a signed-in session` on an export route, for an API key or an admin token |
+| `403` | `your role may not export its data` |
+| `409` | `this tenant offers no data for export` on an export with no sections |
+| `429` | `an export of this account ran recently, try again later`, with `Retry-After` |
+| `503` | `export is temporarily unavailable` on an export route |
 | `422` | `retry_policy.max_attempts must be between 1 and 10`, `retry_policy.backoff_seconds must be between 1 and 3600 when max_attempts is above 1` |
 | `422` | `config.url must be an absolute https:// URL of at most 2048 characters`, `the destination address is not allowed` |
 | `429` | `rate limit exceeded (<n> req/min per tenant)` on `GET /api/v1/analytics` |
