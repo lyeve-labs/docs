@@ -133,7 +133,21 @@ curl http://localhost:3001/api/admin/debug/goroutines/async-hooks \
 </div>
 
 **4. Grow the pool.** This needs a super admin and a license with `goroutine-engine-pro`.
-Without the license the answer is `402`:
+
+<div class="paths">
+<div data-path="console">
+
+Under **Resize the pool**, enter `200` in **Pool size** and choose **Apply**. The form says
+**Applied.** and **The change holds until the engine restarts.**, and **Worker pool** shows
+**Size** `200`. The **Parallel engine** form beside it takes **Max concurrent** and
+**Timeout**, and the **Async hooks** form takes **Workers**, **Queue size**, **Timeout** and
+**Run hooks asynchronously**, each with its own **Apply**.
+
+Without the license, the section says that changing these settings needs a license, and the
+three forms are turned off.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/debug/goroutines/pool \
@@ -142,8 +156,12 @@ curl -X PUT http://localhost:3001/api/admin/debug/goroutines/pool \
   -d '{"size": 200}'
 ```
 
-In the console, without the license, the section says that changing these settings needs a
-license, and the three forms are turned off.
+The answer is `200` with the pool's new state, `"size": 200` among it. A size above 4096
+answers `422` with `worker pool size must be between 1 and 4096`. Without the license the
+answer is `402`.
+
+</div>
+</div>
 
 ## Read the numbers
 

@@ -348,6 +348,59 @@ more settings. The console's **New definition** form shows them on each stage as
   skips every stage left approves the entry, and a start that skips every stage answers
   `409`. `review.transitioned` lists the skipped stages in `skipped_stage_ids`.
 
+For example, a legal stage that two people approve. Both reviewers here are admins, who may
+act on any review until a rule says otherwise.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Reviews** and choose **New definition**. Enter `Legal sign-off` in **Name** and
+   pick `blog_post` in **Content schema**.
+2. On the stage, enter `Legal` in **Stage name**, `editor` in **Required role** and `2` in
+   **Approvals needed**, then choose **Create**. The page says **Definition created.**, and
+   the definition's row shows **2 approvals**.
+3. Open a draft `blog_post` entry. In its **Review** card, pick **Legal sign-off** in
+   **Definition**, keep yourself in **Assignee**, pick the second admin in
+   **More assignees**, and choose **Start review**. The card says
+   **0 of 2 approvals on this stage.**
+4. Choose **Approve**. The card says **1 of 2 approvals on this stage, from You.**, and the
+   entry stays in review.
+5. The second admin opens the entry and chooses **Approve**. The quorum is reached, the
+   status turns **Published**, and **Unpublish** appears.
+
+![The Review card of an entry on an install licensed for review-pro, in the Legal stage with two assignees and 1 of 2 approvals recorded, from you.](images/editorial-review-quorum.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/definitions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Legal sign-off", "content_schema": "blog_post", "stages": [{"name": "Legal", "required_role": "editor", "quorum": 2}]}'
+```
+
+The answer is `201`. Start the assignment with both reviewers, your own id in `assignee_id`
+and the second admin's in `assignee_ids`. `GET /api/admin/users` lists the accounts with
+their `id`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/assignments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"entry_id\": \"$ENTRY\", \"definition_id\": \"$DEF\", \"assignee_id\": \"$ME\", \"assignee_ids\": [\"$SECOND\"]}"
+```
+
+The answer is `201` with both ids in `assignee_ids` and `"required_approvals": 2`. With only
+one assignee it answers `422`
+`a quorum stage needs more approvals than the assignment names assignees`. Your
+`approve` transition answers `200` with the status still `pending_review` and your id in
+`approvals`. The same call with the second admin's token reaches the quorum, and the status
+turns `published`.
+
+</div>
+</div>
+
 Without `review-pro`, a definition create or update that sets any of these answers `402`
 naming `feature:review-pro`. If the license lapses, every definition keeps running as it is:
 stored escalations still escalate, quorums still count and conditions still route. An update

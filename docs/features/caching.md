@@ -257,7 +257,8 @@ providers, use the same names with the `CACHE_PROVIDER_N_` prefix, such as
 ## Move to a new cache server
 
 Copy entries from one provider to another before you switch. This needs a
-super admin and `cache-pro`:
+super admin and `cache-pro`. Console v0.21.0 has no screen to move entries or
+to time the providers, so both run over the API:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/cache/migrate \
@@ -266,10 +267,19 @@ curl -X POST http://localhost:3001/api/admin/cache/migrate \
   -d '{"source": "primary", "destination": "replacement", "pattern": "*", "dry_run": true}'
 ```
 
-`pattern` is a key glob and defaults to `*`. `overwrite` replaces keys the
-destination already has. `dry_run` reports what would be copied.
+```json
+{"source": "primary", "destination": "replacement", "total_keys": 1, "migrated_keys": 0, "failed_keys": 0, "skipped_keys": 0, "duration": 275379}
+```
+
+`pattern` is a key glob and defaults to `*`. `dry_run` counts the keys and
+copies none. Without `overwrite`, a key the destination already holds is
+counted in `skipped_keys` and left as it is, and with `"overwrite": true` it is
+replaced and counted in `migrated_keys`. `duration` is in nanoseconds.
+
 `GET /api/admin/cache/benchmark?n=5` times each provider, also with
-`cache-pro`. Both answer `400` for a malformed request and `404` for an
+`cache-pro`. Its answer carries `providers_benchmarked` and, per provider in
+`results`, the read and write rates and latencies. `n` above 100 answers
+`400`. Both answer `400` for a malformed request and `404` for an
 unknown provider before the license is read, so a `402` means only that the
 request needs `cache-pro`.
 

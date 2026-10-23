@@ -212,12 +212,28 @@ Capture rules need `request-capture-pro`. Without rules, every request is captur
 at least one enabled rule, it captures only the requests a rule matches, and
 the first matching rule, oldest first, decides how long each is kept.
 
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Request capture** and choose **New rule**.
+2. Enter `/api/v1/content/orders/**` in **Route** and pick `POST` in **Method**.
+3. Enter `50` in **Sample, as a percentage**, pick `7 days` in **Kept for**, and keep
+   **Apply this rule** on.
+4. Choose **Create**. **Capture rules** lists the rule with its route, `POST`, `50%`,
+   `7 days` and **Capturing**.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/request-captures/rules \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"route_pattern": "/api/v1/content/orders/**", "method": "POST", "sample_rate": 0.5, "retention_seconds": 604800}'
 ```
+
+</div>
+</div>
 
 | Field | Meaning | Default |
 |---|---|---|
@@ -238,7 +254,25 @@ Creating a rule, turning one on and changing one that is on answer `402`.
 ## Replay a set of captures
 
 Creating a set needs `request-capture-pro`. A replay set is a named list of up to 50 of your captures, replayed together
-in order with each replay compared against its original:
+in order with each replay compared against its original.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Request capture**. Under **Captures from every tenant**,
+   tick the box on each capture the set should hold, such as a `GET` of
+   `/api/admin/logging/levels`.
+2. Choose **New replay set from 1**, the count of captures you ticked, enter
+   `settings smoke` in **Name**, and choose **Create**. **Replay sets** lists it.
+3. Choose **Replay** on the set's row, then **Replay** in the dialog that asks
+   **Replay settings smoke?**.
+
+The page says **Replayed settings smoke** and
+**1 of 1 answered as they did when captured.**, and lists each call with **Same** or what
+changed, its status and its time then and now.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/request-captures/sets \
@@ -251,6 +285,9 @@ curl -X POST http://localhost:3001/api/admin/request-captures/sets/$SET_ID/repla
   -H "Content-Type: application/json" \
   -d '{"confirm_replay": true}'
 ```
+
+</div>
+</div>
 
 The replay answers `set_id` and `results`, one per capture with its
 `capture_id`, the captured `method` and `path`, and either the `replay_id` and `diff`, or an `error` such as

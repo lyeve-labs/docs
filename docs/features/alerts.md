@@ -233,6 +233,54 @@ The line a chat channel receives reads
 `Cron job "nightly-export" failed 3 runs in a row. The endpoint answered 500.`,
 or `Cron job "nightly-export" recovered after 3 failed runs in a row.`
 
+With `alerts-pro`, the same alert can go to a signed webhook of yours:
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Operations > Scheduled jobs** and choose **New job**, or **Edit** on
+   a job's row.
+2. Under **Failure alerts**, enter your endpoint's `https://` address in
+   **HTTPS webhook URL**, and the count in
+   **Alert after this many failures in a row**.
+3. Choose **Create**, or **Save** on an existing job.
+
+A dialog, **Alert signing secret**, shows the secret the job signs its alerts
+with. Copy it to your endpoint then, because it is not shown again. The next
+failure that reaches the count posts a signed `cron.job.failed` call to the
+address.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cron/jobs \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "always-fails",
+        "schedule": "0 3 * * *",
+        "endpoint": "https://httpbin.org/status/500",
+        "alerts": {"webhook_url": "https://hooks.example.com/lyeve-alerts", "failure_threshold": 2}
+      }'
+```
+
+The answer is `201` and carries `alert_signing_secret` once. Its `alerts`
+shows the URL masked and `"webhook_signed": true`. After two failed runs the
+endpoint gets:
+
+```json
+{"event": "cron.job.failed", "job_id": "5a6a7018-e851-4d76-97a5-c6f14e4ad526", "job_name": "always-fails", "tenant_id": "default", "status_code": 500, "error": "endpoint returned 500", "consecutive_failures": 2, "time": "2026-10-23T17:31:12.354501984Z"}
+```
+
+The first run that works sends `cron.job.recovered` to the same address.
+
+</div>
+</div>
+
+[Verify a webhook alert](#verify-a-webhook-alert) shows how to check the
+signature.
+
 ## Alert on an error spike
 
 Each tenant sets where its spike alerts go.
@@ -272,6 +320,41 @@ The answer is the setting, as `GET` on the same path returns it:
 - The check runs every minute and compares each tenant's errors on their own.
 - The alert names the tenant, the count, the window and how far above the
   baseline it stands.
+
+With `alerts-pro`, set a threshold of the tenant's own:
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Errors** and choose **Spike alerts**.
+2. Under **What counts as a spike**, pick **Custom** in **Threshold**.
+3. Enter `5` in **Minimum errors in a window** and `3` in **Z-score**, then
+   choose **Save**. The page says **Spike alerts saved.**
+
+A new **HTTPS webhook URL** saved on the same form opens a
+**Webhook signing secret** dialog first, with the secret shown once, and the
+field then reads **Signed**.
+
+![The What counts as a spike part of the Spike alerts page on an install licensed for alerts-pro, with the Custom threshold picked, 5 minimum errors in a window and a z-score of 3.](images/alerts-threshold.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/error-tracking/alert-settings \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"spike_min_count": 20, "spike_z_score": 3.5}'
+```
+
+The answer is `200` with `"spike_min_count": 20` and `"spike_z_score": 3.5`
+beside the `defaults`. A z-score of `30` answers `422` with
+`spike_z_score must be null or a number from 0.5 to 20`. A new `webhook_url` in
+`channels` answers `webhook_signing_secret` once, and sending the masked URL
+back answers none.
+
+</div>
+</div>
 
 An operator can also send every tenant's spikes to one place with
 `SLACK_WEBHOOK_URL` and `DISCORD_WEBHOOK_URL`, described on

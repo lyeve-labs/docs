@@ -182,7 +182,25 @@ manual export answers `422` and names the setting.
 
 With `multitenant-customization`, a tenant admin saves one destination for
 the tenant, and every export also pushes it the series labeled with that
-tenant and nothing else, the same samples the tenant's scrape shows:
+tenant and nothing else, the same samples the tenant's scrape shows.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Telemetry** and find **Tenant destination**.
+2. Pick **OTLP** in **Protocol** and enter `https://otlp.example.com/v1/metrics` in **URL**.
+3. Choose **Add header**, then enter `Authorization` in **Header** and
+   `Bearer <collector key>` in **Value**.
+4. Choose **Save**. The page says **Saved the destination**.
+
+The headers then read **Stored: Authorization. Their values are never shown.**, with a choice
+to **Keep the stored headers** or **Replace them**. After the next export the section shows
+whether the destination is healthy, the time of the last push and how many pushes worked and
+failed. **Delete destination** asks **Delete the destination** with its URL, and **Delete**
+removes it.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/telemetry/destination \
@@ -190,6 +208,13 @@ curl -X PUT http://localhost:3001/api/admin/telemetry/destination \
   -H "Content-Type: application/json" \
   -d '{"kind": "otlp", "url": "https://otlp.example.com/v1/metrics", "headers": {"Authorization": "Bearer <collector key>"}}'
 ```
+
+The answer is `200` with the destination and `"licensed": true`. After the next export,
+`GET` on the same path shows its `health`, with `healthy`, the time of the last export and the
+counts of exports and failures. `DELETE` answers `204`.
+
+</div>
+</div>
 
 | Field | Meaning |
 |---|---|

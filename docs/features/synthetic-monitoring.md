@@ -269,6 +269,30 @@ probe may be given. On a free install it answers:
 With `synthetic-monitoring-pro`, `limit` is `0`, which means no ceiling, and
 `min_interval_seconds` is `15`.
 
+To check a site every minute:
+
+<div class="paths">
+<div data-path="console">
+
+In **New probe**, enter `60` in **Interval, in seconds**. With the license its hint starts
+**At least 15.** The probe's row then reads **Every 1 minute**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/synthetic-monitoring/probes \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Public site", "type": "health_check", "config": {"url": "https://example.com/", "expected_status": 200}, "interval_seconds": 60, "regions": ["eu-west"]}'
+```
+
+The answer is `201`. An interval of `10` answers `400` with
+`interval_seconds must be at least 15`.
+
+</div>
+</div>
+
 ## Probe a private network
 
 A probe cannot reach private or internal addresses. To probe a service on your
