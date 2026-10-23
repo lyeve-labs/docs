@@ -207,8 +207,7 @@ curl -X POST http://localhost:8080/api/admin/schemas \
       }'
 ```
 
-The answer is `200` with `"with_draft_publish": true`. The Quickstart's first post is now
-`published`.
+The answer is `200` with `"with_draft_publish": true`.
 
 :::caution
 Reload the schema builder before you save Post in it again. A schema builder that had Post open
