@@ -45,11 +45,16 @@ Open **Insight > Events**. **Recorded**, **Carrying an error** and
    The run counts the events in the window and posts nothing.
 3. Untick it to send the events for real. The button then reads **Replay**.
 
+   :::caution
+   **Replay** starts the run at once, with no question first, and every
+   listener gets the events.
+   :::
+
 Each run is listed with its run name, status, progress and result, and a
 rehearsal is marked **rehearsal**. **Published** lists the log, with a search and
 **Only those carrying an error**.
 
-![The Events page with its three counters, the Replay form with Rehearse first ticked, and six completed runs, among them a rehearsal and two real runs named search-rebuild, the second of which skipped all eight events.](images/event-replay.png)
+![The Events page with its three counters, the Replay form with Rehearse first ticked, and three completed runs named search-rebuild: a rehearsal, a real run that replayed three events, and a second real run that skipped all three.](images/event-replay.png)
 
 ## How it works
 
@@ -82,7 +87,7 @@ each event's topic, type, source and content type.
 <div data-path="api">
 
 ```bash
-curl "http://localhost:3001/api/admin/events?limit=5" \
+curl "http://localhost:3001/api/admin/events?limit=1" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -90,21 +95,29 @@ curl "http://localhost:3001/api/admin/events?limit=5" \
 {
   "data": [
     {
-      "id": "3a9c73a4-d95b-4a44-917b-30b90aa7d6df",
+      "id": "0aeee191-ca98-4750-bdac-006c2cb843c0",
       "source": "hookbus",
-      "topic": "cms.tenant.default.post.after_create",
+      "topic": "cms.tenant.default.post.after_update",
       "schema_name": "post",
-      "event_type": "after_create",
-      "payload": { "id": "4c6cf7e0-7e24-4d42-83eb-0bb7cac3a5cb", "title": "Hello" },
-      "published_at": "2026-10-01T08:15:02Z",
+      "event_type": "after_update",
+      "payload": {
+        "_status": "published",
+        "body": null,
+        "id": "8ca037f9-41ce-4b19-9e69-2e1eeab8e2e0",
+        "slug": "from-graphql",
+        "title": "From GraphQL"
+      },
+      "published_at": "2026-10-23T17:31:49.650288Z",
       "tenant_id": "default"
     }
   ],
-  "total_count": 1,
-  "limit": 5,
-  "offset": 0
+  "limit": 1,
+  "offset": 0,
+  "total_count": 3
 }
 ```
+
+`total_count` is the number of events in the log, three here.
 
 </div>
 </div>
@@ -127,7 +140,7 @@ minute beside it. Type `search-rebuild` in **Run name**. Leave
 curl -i -X POST http://localhost:3001/api/admin/events/replay \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"since": "2026-10-01T08:00:00Z", "handler": "search-rebuild", "dry_run": true}'
+  -d '{"since": "2026-10-23T17:02:00Z", "handler": "search-rebuild", "dry_run": true}'
 ```
 
 The answer is `202` with a `Location` header,
@@ -156,18 +169,18 @@ curl http://localhost:3001/api/admin/events/replay/$RUN_ID \
 
 ```json
 {
-  "run_id": "22764095-c193-4eba-b213-c214a98d401b",
+  "run_id": "fa452e96-b601-4f41-aade-ff26bca25585",
   "status": "completed",
   "handler": "search-rebuild",
-  "since": "2026-10-01T08:00:00Z",
+  "since": "2026-10-23T17:02:00Z",
   "dry_run": true,
   "tenant_id": "default",
-  "total_events": 1,
-  "replayed": 1,
+  "total_events": 3,
+  "replayed": 3,
   "skipped": 0,
   "failed": 0,
-  "started_at": "2026-10-01T09:40:00Z",
-  "completed_at": "2026-10-01T09:40:00Z"
+  "started_at": "2026-10-23T17:32:17.02261Z",
+  "completed_at": "2026-10-23T17:32:17.034785Z"
 }
 ```
 
@@ -181,12 +194,17 @@ sends the whole window.
 listeners react. A webhook watching the content type gets a delivery for each
 one.
 
+:::caution
+A real replay starts at once, with no question first, from the console and
+from the API alike.
+:::
+
 <div class="paths">
 <div data-path="console">
 
 The form empties **Run name** after each run, so type `search-rebuild` again.
 Untick **Rehearse first, posting nothing**. The button now reads **Replay**.
-Choose it. The run starts at once, with no question first.
+Choose it. The result reads **3 replayed, 0 skipped, 0 failed**.
 
 </div>
 <div data-path="api">
@@ -203,12 +221,13 @@ Send the request of step 2 without `"dry_run": true`.
 <div data-path="console">
 
 Type `search-rebuild` in **Run name** and choose **Replay** again. The result
-reads **0 replayed, 8 skipped, 0 failed** for a window of eight events.
+reads **0 replayed, 3 skipped, 0 failed**.
 
 </div>
 <div data-path="api">
 
-Send the request of step 4 again. The run reports the events as `skipped`.
+Send the request of step 4 again. The run reports `"replayed": 0` and
+`"skipped": 3`.
 
 </div>
 </div>
@@ -253,20 +272,26 @@ and a super admin sees every tenant.
 Events older than 90 days are deleted every hour. To delete sooner, call the
 API. The console has no prune control.
 
+:::caution
+A super admin who leaves `tenant_id` out prunes every tenant's events, and the
+answer reads `"tenant_id": ""`. The quickstart's token is a super admin's, so
+name the tenant in the body.
+:::
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/events/prune \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"days": 30}'
+  -d '{"days": 30, "tenant_id": "default"}'
 ```
 
 ```json
-{ "deleted": 1820, "days": 30, "tenant_id": "default" }
+{ "days": 30, "deleted": 0, "tenant_id": "default" }
 ```
 
-`days` defaults to 90. A tenant admin prunes only their own tenant. A super
-admin can pass `tenant_id`, and a super admin who leaves it out prunes every
-tenant.
+`deleted` counts the events removed, none here because every event was newer
+than 30 days. `days` defaults to 90. A tenant admin prunes only their own
+tenant, and `tenant_id` names another tenant only for a super admin.
 
 ## Use it in flows
 

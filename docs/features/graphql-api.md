@@ -45,7 +45,7 @@ what it does. **Persisted queries** lists the queries clients may send by hash,
 each with its **Operation**, **Hash** and **Query**, and buttons to copy the
 hash, disable the query or delete it. **New persisted query** registers one.
 
-![The GraphQL page with the generated Queries, Mutations and Subscriptions, and two persisted queries, LatestPosts and PostBySlug, each with its hash and query text.](images/graphql-api.png)
+![The GraphQL page with the Queries, Mutations and Subscriptions generated for the post content type, and two persisted queries, LatestPosts and PostBySlug, each with its hash and query text.](images/graphql-api.png)
 
 **Try it in API labs** opens **Delivery > API labs**, where you choose
 **GraphQL** and run a query or a mutation as you. Subscriptions and requests by hash
@@ -219,6 +219,7 @@ curl -X POST http://localhost:3001/api/admin/graphql/persisted-queries \
   -d '{"query": "{ post(limit: 10) { id title } }", "operation_name": "LatestPosts"}'
 ```
 
+The persisted-query routes are admin routes, so `TOKEN` has to be an admin's.
 The answer is `201` with `query_hash`, the SHA-256 of the query text.
 
 </div>
@@ -269,11 +270,11 @@ a variable:
 curl -X POST http://localhost:3002/api/v1/graphql \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"query": "mutation($id: ID!, $input: PostUpdateInput!) { updatePost(id: $id, input: $input) { id body author_id } }", "variables": {"id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "input": {"body": null, "author_id": null}}}'
+  -d '{"query": "mutation($id: ID!, $input: PostUpdateInput!) { updatePost(id: $id, input: $input) { id body } }", "variables": {"id": "8ca037f9-41ce-4b19-9e69-2e1eeab8e2e0", "input": {"body": null}}}'
 ```
 
 ```json
-{ "data": { "updatePost": { "id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "body": null, "author_id": null } } }
+{ "data": { "updatePost": { "body": null, "id": "8ca037f9-41ce-4b19-9e69-2e1eeab8e2e0" } } }
 ```
 
 ## Who may call it
@@ -357,6 +358,8 @@ has its own list.
 
 <details>
 <summary>Persisted query routes</summary>
+
+Every persisted-query route needs an admin token.
 
 | Method | Path | Purpose |
 |--------|------|---------|

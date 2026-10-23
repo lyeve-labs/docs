@@ -100,8 +100,8 @@ With no broker configured, `backend` is empty and `connected` still reads
 </div>
 </div>
 
-**2. Point the instance at NATS and restart it.** This is set in the
-environment of the instance, not in the console or the API:
+**2. Point the instance at NATS.** Set these in the environment of the
+instance and restart it:
 
 ```bash
 EVENT_BUS=nats
@@ -110,6 +110,24 @@ NATS_URL=nats://nats.internal:4222
 
 TLS is on by default. For a NATS server without TLS, also set
 `NATS_TLS=false`, or the feature does not start.
+
+When neither the environment nor the configuration file sets these keys, a
+super admin can save them instead, and the instance connects without a
+restart:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/config \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"values": {"EVENT_BUS": "nats", "NATS_URL": "nats://nats.internal:4222", "NATS_TLS": "false"}}'
+```
+
+The answer lists the keys it took under `saved`. Once saved, each key shows in
+**Settings > Configuration** with **Save** beside it. On console v0.21.0 that
+page lists only settings that already have a value, so it changes a saved
+broker setting but cannot add the first one. The web application firewall
+refuses a URL that names a private IP address, so name the broker by its host
+name.
 
 **3. Subscribe to everything in your tenant** (here `default`) with the
 `nats` tool:
@@ -175,12 +193,11 @@ Each message is the content event as JSON:
 | `old_data` | The previous values, when the event carries them |
 | `record_id` | The entry's id |
 | `tenant_id` | The owning tenant |
-| `instance_id` | The instance that raised the event |
-| `timestamp` | RFC 3339 time of the event |
+| `instance_id` | The instance that raised the event. Absent on engine v0.55.0. |
+| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.55.0. |
 | `source` | Where the event came from, when set |
 
-On engine v0.55.0, `timestamp` reads `0001-01-01T00:00:00Z` instead of the
-time of the event, and `instance_id` is left out. Use the time your consumer
+Until `timestamp` carries the time of the event, use the time your consumer
 received the message.
 
 The `event_id` also travels as a transport header, so a consumer can
@@ -298,10 +315,14 @@ See [Flows](flows.md).
 
 ## Settings
 
-Each setting is read from the environment, the configuration file or the
-configuration page of the admin console. A broker change saved in the console
-reconnects without a restart, and a failed reconnect keeps the old connection.
-Only the settings for the selected backend apply.
+Each setting is read from the environment first, then the configuration file,
+then a value a super admin saved with `PUT /api/admin/config` or in
+**Settings > Configuration**. A save is accepted only for a key that neither
+the environment nor the file sets, unless `LYEVE_OVERRIDABLE` lists it. A
+save in which every key is set that way answers `409`. After a save every feature reloads its
+settings. The broker reconnects only when its own settings changed, and a
+failed reconnect keeps the old connection. Only the settings for the selected
+backend apply.
 
 <details>
 <summary>Every setting</summary>
@@ -331,9 +352,10 @@ credentials in the URL.
 </details>
 
 Certificate verification is never skipped. A CA file that cannot be read is
-logged and ignored, and the system roots verify the broker instead, so a
-broker on a private certificate then fails to connect. If you set `LYEVE_PLUGINS` to choose which features start, include
-`messagebroker`. See [Licensing and tiers](../concepts/licensing-and-tiers.md).
+logged and ignored, and the system roots verify the broker instead, so a broker
+on a private certificate then fails to connect. If you set `LYEVE_PLUGINS` to
+choose which features start, include `messagebroker`. See [Licensing and
+tiers](../concepts/licensing-and-tiers.md).
 
 The broker is for your systems. LyEve replicas stay in step with each other
 whether or not one is configured. See [Scaling](../scaling/index.md).

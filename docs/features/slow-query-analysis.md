@@ -8,15 +8,15 @@ sidebar:
 > **Requires** a license with the `query-monitor` feature. See [pricing](https://lyeve.com/pricing/).
 
 Slow query analysis watches how long each request takes. When one passes the
-threshold, it records the request, reads the database's most expensive recent
-statements, and stores each one the database can plan beside it, with its plan
-and the indexes that would help. Use it to find out why a content type or an
+threshold, it records the request, reads the statements that cost the
+database the most on average, and stores each one the database can plan beside
+it, with its plan and the indexes that would help. Use it to find out why a content type or an
 endpoint got slow, and what to index.
 
 :::tip[Best for]
 - **Finding out why a listing got slow.** A slow request is stored with its
-  method, path and time, and the statements the database spent the most time
-  on are stored beside it with their plans.
+  method, path and time, and the database's most expensive statements on
+  average are stored beside it with their plans.
 - **Deciding what to index.** On PostgreSQL and MySQL, a plan that scans a
   whole table comes with a ready `CREATE INDEX` statement.
 - **Finding the heaviest statements on SQL Server.** The SQL Server view ranks
@@ -37,9 +37,12 @@ endpoint got slow, and what to index.
 - Timing a request adds no database work. The analysis runs after the answer
   is sent, so it never slows the request it records.
 - Requests are timed and analyzed after the fact. Individual queries are not
-  intercepted. The request is stored as its method and path, and the
-  statements stored beside it are the database's most expensive recent ones,
-  which are usually, but not always, the ones that request ran.
+  intercepted. The request is stored as its method and path. Beside it go the
+  three statements with the highest average time since the database's
+  statistics were last reset: `mean_exec_time` in `pg_stat_statements` on
+  PostgreSQL, `AVG_TIMER_WAIT` in `performance_schema` on MySQL. They are the
+  most expensive statements on average, not the ones that request ran. Only
+  SQL Server takes the statement it ran most recently.
 - A plan is read with `EXPLAIN`, without the statement's values. On
   PostgreSQL, `pg_stat_statements` replaces every value with a placeholder
   such as `$1`, and PostgreSQL refuses to plan a statement that still holds
@@ -102,8 +105,8 @@ admin. For the API steps, you need a super admin token in `TOKEN`. The
 <div data-path="console">
 
 Open **Insight > Observability > Slow queries**. **Captured statements** lists
-the newest entries first. Type part of a path or a statement in
-**Narrow this page** to find one.
+the newest entries first. Type part of a path or a statement in the box that
+reads **Statement, caller or tenant on this page** to find one.
 
 </div>
 <div data-path="api">
@@ -181,29 +184,37 @@ empty.
 
 ## Read a plan and its suggestions
 
-This entry from `analyze-pg` is a slow request whose statement scanned the
-whole `_post` table. The plan is PostgreSQL's JSON plan, shortened here:
+This entry from `analyze-pg` is a statement stored beside a slow request. It
+is the most expensive statement on average at that moment, not the request's
+own: the request was a content list, and this statement was run separately.
+The plan is PostgreSQL's JSON plan, shortened here:
 
 ```json
 {
-  "id": "ab390d7b-8ea6-4335-b783-438825fac3a9",
+  "id": "aa2cf2f8-5185-4b61-8a0d-aacee020a44c",
   "tenant_id": "default",
-  "query_hash": "933ef7a38a9cb5e6",
-  "query_text": "GET /api/admin/plugins/status",
-  "plan_text": "[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Aggregate\", ...",
-  "duration_ms": 57.521,
-  "caller_file": "http",
+  "query_hash": "3d6957c1be2d2e8f",
+  "query_text": "SELECT id, title FROM _post WHERE updated_at >= current_date ORDER BY updated_at DESC",
+  "plan_text": "[\n  {\n    \"Plan\": {\n      \"Node Type\": \"Gather Merge\", ...",
+  "duration_ms": 1367.786,
+  "rows_returned": 3159,
   "engine": "postgres",
-  "captured_at": "2026-10-23T16:57:56.567836Z",
+  "captured_at": "2026-10-23T17:34:23.982351Z",
   "analysis": {
     "has_seq_scan": true,
-    "rows_estimated": 1,
+    "rows_estimated": 836,
     "index_suggestions": [
       {
         "table": "_post",
-        "columns": ["slug", "body", "title"],
-        "reason": "Seq scan on _post with filter \"((slug IS NULL) AND (body <> title))\" (est. rows: 248743)",
-        "ddl": "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx__post_slug_body_title ON _post (slug, body, title)"
+        "columns": ["updated_at"],
+        "reason": "Seq scan on _post with filter \"(updated_at >= CURRENT_DATE)\" (est. rows: 418)",
+        "ddl": "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx__post_updated_at ON _post (updated_at)"
+      },
+      {
+        "table": "",
+        "columns": ["updated_at DESC"],
+        "reason": "Sort on  ([updated_at DESC]): index would eliminate sort step",
+        "ddl": "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx__updated_at DESC ON  (updated_at DESC)"
       }
     ]
   }
@@ -212,9 +223,15 @@ whole `_post` table. The plan is PostgreSQL's JSON plan, shortened here:
 
 `has_seq_scan` means the database read the whole table. A suggestion names the
 table, the columns and why, and `ddl` is the statement that would create the
-index. A request carries the plan of the first statement beside it that
-earned a suggestion. The statement itself is stored as its own entry, with
-the request's time in `duration_ms`.
+index. Here the first suggestion is the one to act on: the statement filters
+`_post` on `updated_at`, and an index on that column lets the database read
+only the recent rows. On engine v0.55.0 a suggestion for a sort names no
+table, and its `ddl` does not run, so skip a suggestion whose `table` is
+empty.
+
+`duration_ms` is the time of the request the statement was stored beside, not
+the statement's own time. The request entry carries the plan of the first
+statement beside it that earned a suggestion.
 
 :::caution
 Review a suggested index before you create it. A suggestion reads one plan and
@@ -265,7 +282,8 @@ All routes are read-only and need a super admin.
 |---|---|---|
 | `400` | `reqparse: invalid pagination parameter "limit": -1` | `limit`, `offset` or `top_n` is negative or not a number. |
 | `402` | `payment_required` | The license no longer carries `query-monitor`. |
-| `503` | `failed to load query log` or `failed to analyze queries` | The database could not be read. |
+| `503` | `failed to load query log`, `failed to analyze queries`, `failed to analyze MySQL slow queries` or `failed to analyze MSSQL query store` | The database could not be read. |
+| `503` | `no database connection available` | The instance has no database connection to read from. |
 
 ## Related
 

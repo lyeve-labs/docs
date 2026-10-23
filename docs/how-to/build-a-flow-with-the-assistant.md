@@ -66,9 +66,12 @@ With the tenant's AI switch off, the assistant answers `404` with
 </div>
 </div>
 
-If the [web application firewall](../features/web-application-firewall.md)
-refuses the request with `403` and `request blocked by WAF`, read the rule
-ids on `/api/admin/ai/assist/flow` in the violation log, and
+The [web application firewall](../features/web-application-firewall.md)
+skips the `catalog` field on both assistant routes, so only your prompt or the
+flow definition can trip a rule. A URL that names a private IP address, for
+example, trips `SSRF-004`. If the firewall refuses the request with `403` and
+`request blocked by WAF`, read the rule ids on `/api/admin/ai/assist/flow` in
+the violation log, and
 [add an exception](../features/web-application-firewall.md#add-an-exception)
 for each one on the path `/api/admin/ai/assist/flow*`.
 
