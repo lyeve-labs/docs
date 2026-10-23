@@ -70,6 +70,29 @@ The response carries `X-Request-ID: debug-run-42`, and every log line the reques
 `"request_id": "debug-run-42"`. The [quickstart](../../getting-started/quickstart.md) shows how
 to get `TOKEN`.
 
+To find those lines on a running instance, an admin searches the log by the request id. A
+line reaches the search a second or two after the request.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Insight > Logs**, enter `debug-run-42` in the search box under **Entries** and choose
+**Search**. The list keeps the lines that request wrote, with their time, level and message.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3001/api/admin/logs/search?request_id=debug-run-42" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer lists the lines under `results`, each with its `timestamp`, `level`, `message`,
+`request_id` and the request's `fields`, and `total` counts them.
+
+</div>
+</div>
+
 ## Read the engine's log
 
 The engine writes JSON lines to standard output. A line from a request carries `level`
