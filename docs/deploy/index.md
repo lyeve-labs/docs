@@ -26,7 +26,7 @@ request, such as Vercel Functions, Cloudflare Workers or Netlify Functions, cann
 | Docker Compose | The whole stack on one server: engine, admin console, Postgres and TLS | One machine, so no failover | [Docker Compose](docker-compose.md) |
 | Kubernetes | Several replicas, rolling deploys and a cluster you already run | More than one replica needs Redis, an S3 bucket and a shared signing key | [Kubernetes](kubernetes.md) |
 | Google Cloud Run | An engine that scales to zero and bills per request | One API per service, cold starts, and a new signing key per instance | [Cloud Run](engine-cloud-run.md) |
-| Fly.io | Both APIs public from one small Machine | Usage is billed, the Admin API answers on port 8443, and each Machine start signs everyone out unless a volume keeps the signing key | [Fly.io](engine-fly.md) |
+| Fly.io | Both APIs public from one small Machine | Usage is billed, the Admin API answers on port 8443, and each Machine start signs everyone out unless a volume keeps the signing key and `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis | [Fly.io](engine-fly.md) |
 | Railway | Both APIs from one service, with a volume for the signing key | No lasting free plan, usage is billed | [Railway](engine-railway.md) |
 | Render | A free engine for a demo or staging | One API per service, and a free service spins down and signs everyone out | [Render](engine-render.md) |
 | Free-tier stack | An engine and a database at $0 a month | Cold starts, tight connection limits, and no free host for the admin console | [Free-tier stack](free-tier-overview.md) |

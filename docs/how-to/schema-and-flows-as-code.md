@@ -45,7 +45,8 @@ export TOKEN=$(curl -s "$ADMIN_URL/api/admin/auth/login" \
   -d '{"email": "you@example.com", "password": "<password>"}' | jq -r .token)
 ```
 
-`TOKEN` now holds a session token. If it says `null`, the account signs in
+`TOKEN` now holds a session token for 15 minutes. Sign in again when a call
+answers `401`. If it says `null`, the account signs in
 with a second factor, and the answer carried a challenge instead. Finish it as
 [multi-factor authentication](../features/multi-factor-auth.md) shows. On an instance with
 several tenants, add `-H "X-Tenant-ID: acme"` to each call to act in that
@@ -130,8 +131,8 @@ ask the instance what importing the file would do. Nothing is written yet.
 In **Schema builder**, choose **Import and export** and then **Import**. Leave
 **LyEve export (YAML or JSON)** selected, choose `schemas.yaml` under
 **Definition file** or paste it, and choose **Check**. **What importing does**
-lists each content type as **Unchanged** or **Changes**, and a change opens to
-the statements it would run, such as
+lists each content type as **Creates**, **Changes** or **Unchanged**, and a new
+or changed one opens to the statements it would run, such as
 `ALTER TABLE "_article" ADD COLUMN IF NOT EXISTS "summary" TEXT`.
 
 </div>
@@ -177,8 +178,12 @@ job calls the engine API, so this step has no console path:
 - name: Plan the content model
   env:
     ADMIN_URL: ${{ vars.STAGING_ADMIN_URL }}
-    TOKEN: ${{ secrets.STAGING_SESSION_TOKEN }}
+    CI_EMAIL: ${{ secrets.STAGING_ADMIN_EMAIL }}
+    CI_PASSWORD: ${{ secrets.STAGING_ADMIN_PASSWORD }}
   run: |
+    TOKEN=$(jq -n --arg e "$CI_EMAIL" --arg p "$CI_PASSWORD" '{email: $e, password: $p}' |
+      curl -sf "$ADMIN_URL/api/admin/auth/login" -H "Content-Type: application/json" -d @- |
+      jq -r .token)
     curl -sf -X POST "$ADMIN_URL/api/admin/schemas/import" \
       -H "Authorization: Bearer $TOKEN" \
       -H "Content-Type: application/yaml" \
@@ -191,8 +196,10 @@ job calls the engine API, so this step has no console path:
     fi
 ```
 
-The token has to be a super admin's session token, signed in from the job with
-credentials kept in your secret store. Keep `plan.json` as a build artifact so
+The plan answers only a super admin's session, so the job signs in first with
+credentials kept in your secret store. An API key or an admin token is refused.
+Use an account without a second factor, because one with it gets a challenge
+instead of a token. Keep `plan.json` as a build artifact so
 the reviewer reads the plan the gate read. A field whose type changes shows up
 as `ALTER COLUMN ... TYPE`. Read those in review, because a narrower type can
 change or lose existing values.
@@ -221,9 +228,8 @@ The answer is the same plan with `"applied": true`.
 </div>
 </div>
 
-Every statement runs
-except column removals, which wait as pending so their data stays until a super
-admin applies them. See [Apply removals](../features/schema-changes.md#apply-removals).
+Every statement runs except column removals, which wait as pending so their
+data stays until a super admin applies them. See [Apply removals](../features/schema-changes.md#apply-removals).
 
 Two content types that point at each other import in one apply. The plan
 lists them under `second_pass`: the engine creates both tables first, then
@@ -318,9 +324,8 @@ curl -s -X POST "$ADMIN_URL/api/admin/flows/$FLOW_ID/publish" \
 </div>
 </div>
 
-Publishing stores the draft as
-the next version and makes it the one that runs. The previous version stays
-listed. **Roll back** beside it under **Versions** on the flow's page, or
+Publishing stores the draft as the next version and makes it the one that runs.
+The previous version stays listed. **Roll back** beside it under **Versions** on the flow's page, or
 `POST /api/admin/flows/{id}/rollback` with `{"version": n}`, brings it back.
 
 ## Promote on release day

@@ -18,7 +18,8 @@ monthly allotment of requests, CPU and memory covers a low-traffic engine.
   both. For both, use [Railway](engine-railway.md) or [Fly.io](engine-fly.md).
 - An instance has no persistent disk, so every new instance creates its own signing key. After
   a scale to zero, users sign in again. Refresh tokens also live in the engine's memory unless
-  `CACHE_DRIVER=redis` is set, so a new instance cannot renew a session either way.
+  `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis. Without Redis, a new instance cannot
+  renew a session, so users sign in again.
 :::
 
 ## Before you start

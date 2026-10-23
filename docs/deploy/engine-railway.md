@@ -36,7 +36,7 @@ Railway's current pricing before you leave it unattended.
 
 Without the volume, every redeploy creates a new key and every token issued before it stops
 working. The volume keeps the key, not the sessions: refresh tokens live in the engine's memory
-unless `CACHE_DRIVER=redis` is set, so a redeploy still signs everyone out once their access
+unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, so a redeploy still signs everyone out once their access
 token expires, 15 minutes by default.
 
 ## Secrets

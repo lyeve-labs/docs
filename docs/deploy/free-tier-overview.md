@@ -76,7 +76,7 @@ ways to run LyEve, see [Choose where to run LyEve](index.md).
   no persistent disk, every cold start or redeploy makes a new key, and every token issued
   before it stops working. Where the host offers a volume, mount it at `/var/lib/lyeve`, writable
   by uid `65532`. The volume keeps the key, not the sessions: refresh tokens live in the engine's
-  memory unless `CACHE_DRIVER=redis` is set, so a restart still signs everyone out once their
+  memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, so a restart still signs everyone out once their
   access token expires, 15 minutes by default.
 - **One engine service.** Two services started from the image each create their own key, so a
   token from one is refused by the other. Do not run a second service to publish the other port.

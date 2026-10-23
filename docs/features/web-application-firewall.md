@@ -229,8 +229,11 @@ Settings apply to the whole instance, so only a super admin changes them:
 curl -X PUT http://localhost:3001/api/admin/waf/config \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"anomaly_threshold": 8, "max_inspect_body_bytes": 131072}'
+  -d '{"anomaly_threshold": 8, "max_inspect_body_bytes": 131072, "max_violation_body_length": 500}'
 ```
+
+A `PUT` replaces all three settings, so send each one. A setting left out is
+saved as `0`, which leaves `max_violation_body_length` at `0`.
 
 | Setting | What it does | Default |
 |---|---|---|

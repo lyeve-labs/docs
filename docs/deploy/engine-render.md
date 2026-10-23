@@ -18,8 +18,9 @@ staging engine.
 - A free web service spins down after a period with no traffic. The next request waits for
   Render to start the container, then for the engine to start and connect to the database.
 - A free web service has no persistent disk, so every start creates a new signing key and users
-  sign in again. Refresh tokens also live in the engine's memory unless `CACHE_DRIVER=redis` is
-  set, so a start cannot renew a session either way.
+  sign in again. Refresh tokens also live in the engine's memory unless `CACHE_DRIVER=redis` and
+  `REDIS_URL` point at a Redis. Without Redis, a new instance cannot renew a session, so users
+  sign in again.
 :::
 
 ## Before you start

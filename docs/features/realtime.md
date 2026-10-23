@@ -135,7 +135,7 @@ shows how to get one.
 
    The stream opens with a `:ok` comment line and stays open.
 
-2. In a second terminal, create an entry:
+2. In a second terminal, sign in again and set `TOKEN`, then create an entry:
 
    ```bash
    curl -X POST http://localhost:3002/api/v1/content/post \
@@ -173,19 +173,10 @@ sends back as `Last-Event-ID`. A comment line keeps the stream open every 10
 seconds, which is inside the usual idle timeout of a proxy in front of the
 instance.
 
-In a browser signed in to the instance, the session cookie authenticates the
-stream, and the browser sends `Last-Event-ID` itself when it reconnects:
-
-```javascript
-const es = new EventSource(
-  "https://lyeve.example.com/api/v1/realtime/events?topic=content:article",
-  { withCredentials: true },
-);
-es.addEventListener("content:article", (e) => {
-  const change = JSON.parse(e.data);
-  console.log(change.action, change.record_id);
-});
-```
+A browser page cannot hold such a stream with its session on engine v0.55.0.
+From the instance's own origin it sends no `Origin`, and from another origin the
+Content API does not allow credentials. Use a WebSocket in the browser, and SSE
+from a server or a client that sets its own headers.
 
 ## WebSocket
 

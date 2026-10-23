@@ -56,7 +56,7 @@ The engine's `/readyz` answers `503` while the database cannot be reached, and `
 too. A host that restarts the container on a failed liveness check may restart it while Neon
 resumes. Give the check a grace period of at least the time Neon takes to resume. A restart
 also signs everyone out once their access token expires, 15 minutes by default, because refresh
-tokens live in the engine's memory unless `CACHE_DRIVER=redis` is set.
+tokens live in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis.
 
 ## Verify
 

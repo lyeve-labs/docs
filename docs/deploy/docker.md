@@ -75,7 +75,7 @@ Mount a volume at `/var/lib/lyeve`. The engine creates its Ed25519 signing key t
 boot. Without the volume, a replaced container creates a new key and every token issued before
 it stops working. A named Docker volume is writable by uid `65532`, because the image prepares
 the directory with that owner. The volume keeps the key, not the sessions: refresh tokens live
-in the engine's memory unless `CACHE_DRIVER=redis` is set, so a new container still signs
+in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, so a new container still signs
 everyone out once their access token expires, 15 minutes by default.
 
 Mount a second volume at `/app/uploads` if media stays on local disk, or send media to an
