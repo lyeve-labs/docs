@@ -101,7 +101,8 @@ each feature's own section, `plugins.schema_presets` lists:
   `author_email`, `author_name` and body.
 - `form_submissions`: each submission an erasure deletes, with its id, its
   `form_id`, its `created_at` and, under `fields`, each field whose value is
-  one of the person's addresses. The rest of what it posted stays out, because
+  one of the person's addresses, as its `field` name and its `value`. A field
+  inside a nested value is named by its path, such as `contact.email`. The rest of what it posted stays out, because
   someone else may have filled in the form and named the person in one field.
 
 When the person's addresses cannot be read, the server answers `503` with
@@ -243,7 +244,10 @@ read from an account uses that account's tenant. The address you name uses the
 tenant of each account whose address, or address from its identity provider,
 is that address. When no account holds the address, it uses the tenant the
 request is made in: your own, or the tenant you name with `X-Tenant-ID` (see
-[Tenants](../features/tenants.md)).
+[Tenants](../features/tenants.md)). An export follows the same rule, so it
+lists the comments and form submissions an erasure of the same request would
+reach. That holds for an export with `all_tenants` too: an address no account
+holds is read only in the tenant the request is made in.
 
 An address the person used in the past and no longer holds is out of reach.
 No record keeps an account's earlier addresses, so data kept under one is
