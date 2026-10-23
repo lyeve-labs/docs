@@ -32,21 +32,6 @@ Localization is in beta. Plan around these limits:
   translation there.
 :::
 
-## In the admin console
-
-Open **Settings > Locales**. Set the **Default locale**, add each language under
-**Enabled locales** with **Add locale**, build the **Fallback chain** in order with
-**Append**, then choose **Save**.
-
-![The Locales settings page. English is the default locale, German, French and Italian are enabled, and the fallback chain holds German.](images/localization.png)
-
-Each enabled locale is a tab in the **Translations** card on every entry's page. A tab shows
-the translation's status, its progress as **N of M fields written**, and the localized fields
-to fill in. An empty field names the locale a reader gets instead. A draft translation shows
-**Mark translated**, and **Save** keeps the fields.
-
-![The Translations card of an entry, on the fr tab. The French translation is a draft with 2 of 3 fields written. The title and summary are in French, and the empty body notes that a French reader gets it in German.](images/localization-entry.png)
-
 ## How it works
 
 | Part | What it is |
@@ -69,86 +54,168 @@ source body. The id, content type, slug, status, timestamps and authors are neve
 
 ## Try it
 
-You need a token in `TOKEN` for an `admin` or `super_admin`. The
+For the console steps, you are signed in to the admin console as an `admin` or
+`super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Turn on French beside English:
+**1. Turn on French beside English.**
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/localization/locales \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"default_locale": "en", "enabled_locales": ["en", "fr"], "fallback_chain": []}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `200` with the same settings.
+1. Open **Settings > Locales**. **Default locale** is `en` until you change it.
+2. Under **Enabled locales**, enter `fr` in **Add locale** and choose **Add locale**.
+3. Choose **Save**. The page confirms **Locales saved.**
 
-2. Create a content type with two translated fields:
+![The Locales settings page. English is the default locale, German, French and Italian are enabled, and the fallback chain holds German.](images/localization.png)
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "article", "fields": [{"name": "title", "field_type": "text", "localized": true}, {"name": "text", "field_type": "text", "localized": true}]}'
-   ```
+</div>
+<div data-path="api">
 
-3. Write an entry in English:
+```bash
+curl -X PUT http://localhost:3001/api/admin/localization/locales \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"default_locale": "en", "enabled_locales": ["en", "fr"], "fallback_chain": []}'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"schema": "article", "slug": "hello", "title": "Hello", "body": {"text": "First article."}, "status": "published"}'
-   ```
+The answer is `200` with the same settings.
 
-   Copy its `id` into `ENTRY`.
+</div>
+</div>
 
-4. Add the French translation:
+**2. Create a content type with two translated fields.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content/$ENTRY/translations \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"locale": "fr", "title": "Bonjour", "body": {"text": "Premier article."}, "translation_status": "translated"}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the translation's `locale`, `title`, `body` and
-   `translation_status`.
+1. Open **Schema builder** and choose **New schema**.
+2. Enter `Article` in **Display name** and `article` in **Machine name**.
+3. Choose **Add field**, name it `title` and tick its **i18n** box, **Translated per locale**.
+4. Choose **Add field**, name it `text` and tick its **i18n** box.
+5. Choose **Save**.
 
-5. Read the entry as a Canadian French reader would:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3002/api/v1/content/article/$ENTRY?locale=fr-CA" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "article", "fields": [{"name": "title", "field_type": "text", "localized": true}, {"name": "text", "field_type": "text", "localized": true}]}'
+```
 
-   ```json
-   {
-     "id": "8c2b6f10-3d4e-4a57-9b81-0c2d3e4f5a67",
-     "schema_name": "article",
-     "data": { "title": "Bonjour", "text": "Premier article." },
-     "created_at": "2026-10-02T09:30:00Z",
-     "updated_at": "2026-10-02T09:30:00Z",
-     "resolved_locale": "fr"
-   }
-   ```
+</div>
+</div>
 
-   There is no `fr-CA` translation, so the French one is served.
+**3. Write an entry in English.**
 
-6. See how far each locale has got:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/content/$ENTRY/translations?schema=article" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Open **Content**, pick **article** and choose **New entry**. Enter `Hello` in **Title** and
+`First article.` in **Text**, then choose **Create**. Choose the entry's title in the list to
+open it.
 
-   The answer lists the translations, the `localized_fields`, and a `completeness` entry per
-   locale with `done`, `total` and `missing`.
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"schema": "article", "slug": "hello", "title": "Hello", "body": {"text": "First article."}, "status": "published"}'
+```
+
+</div>
+</div>
+
+Copy the entry's `id` into `ENTRY`. The console shows it under the title.
+
+**4. Add the French translation.**
+
+<div class="paths">
+<div data-path="console">
+
+On the entry's page, the **Translations** card has a tab for each enabled locale other than
+the default.
+
+1. Open the **fr** tab. It reads **Not started** and **0 of 2 fields written**.
+2. Enter `Bonjour` in **TITLE** and `Premier article.` in **TEXT**, then choose **Save**. The
+   translation is now a **Draft**.
+3. Choose **Mark translated**.
+
+An empty field names the locale a reader gets instead.
+
+![The Translations card of an entry, on the fr tab. The French translation is a draft with 2 of 3 fields written. The title and summary are in French, and the empty body notes that a French reader gets it in German.](images/localization-entry.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content/$ENTRY/translations \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"locale": "fr", "title": "Bonjour", "body": {"text": "Premier article."}, "translation_status": "translated"}'
+```
+
+The answer is `201` with the translation's `locale`, `title`, `body` and
+`translation_status`.
+
+</div>
+</div>
+
+**5. Read the entry as a Canadian French reader would.** This is a Content API read, the
+call your site makes, whichever way you wrote the entry:
+
+```bash
+curl "http://localhost:3002/api/v1/content/article/$ENTRY?locale=fr-CA" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "id": "8c2b6f10-3d4e-4a57-9b81-0c2d3e4f5a67",
+  "schema_name": "article",
+  "data": { "title": "Bonjour", "text": "Premier article." },
+  "created_at": "2026-10-02T09:30:00Z",
+  "updated_at": "2026-10-02T09:30:00Z",
+  "resolved_locale": "fr"
+}
+```
+
+There is no `fr-CA` translation, so the French one is served.
+
+**6. See how far each locale has got.**
+
+<div class="paths">
+<div data-path="console">
+
+The **fr** tab shows the translation's status, **Translated**, and its progress, **2 of 2
+fields written**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3001/api/admin/content/$ENTRY/translations?schema=article" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer lists the translations, the `localized_fields`, and a `completeness` entry per
+locale with `done`, `total` and `missing`. Here `done` is `1` and `missing` names `title`,
+because this translation holds its title beside `body` rather than in it. Send the title in
+`body` too, as the console does, and it counts.
+
+</div>
+</div>
 
 ## Mark which fields are translated
 
-Add `"localized": true` to a field in the content type. Only `text`, `rich_text` and `url`
-fields can be localized, and never a `unique` one: a content type that tries answers `422`,
+In the Schema builder, tick the field's **i18n** box, **Translated per locale**. Over the API,
+add `"localized": true` to a field in the content type. Only `text`, `rich_text` and `url`
+fields can be localized, and never a `unique` one. The console turns the box off for every
+other field, and a content type that tries over the API answers `422`,
 such as `field_type "number" cannot be localized (allowed: rich_text, text, url)`. Marking a
 field changes no stored data. It decides which fields the console's **Translations** card
 offers and what completeness counts.
@@ -190,7 +257,24 @@ delete, export and resolve them.
 
 Every other part of localization is free.
 
-Read and change the locale settings with `GET` and `PUT` `/api/admin/localization/locales`:
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Locales**. Set the **Default locale**, add each language under
+**Enabled locales** with **Add locale**, build the **Fallback chain** in order with
+**Append**, then choose **Save**. A locale past the ceiling shows
+**No more locales on this instance** with the count, and nothing is saved.
+
+</div>
+<div data-path="api">
+
+Read and change the locale settings with `GET` and `PUT` `/api/admin/localization/locales`.
+A write past the ceiling answers the `402` above.
+
+</div>
+</div>
+
+The settings:
 
 | Setting | Meaning | Default |
 |---------|---------|---------|
@@ -199,6 +283,10 @@ Read and change the locale settings with `GET` and `PUT` `/api/admin/localizatio
 | `fallback_chain` | Locales tried after the requested locale and its language, before the default. Each must be enabled. | empty |
 
 ## Manage translations
+
+In the console, each tab of an entry's **Translations** card writes the translation for its
+locale, as in step 4. Deleting a translation, the field-by-field view below and the bulk
+export and import are API only.
 
 `POST /api/admin/content/{id}/translations` creates one. `locale` and `title` are required, and
 `translation_status` is `draft` (the default), `translated` or `outdated`. A second translation

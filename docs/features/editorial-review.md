@@ -38,27 +38,8 @@ Editorial review is in beta. Three limits apply:
   minutes after its due time.
 :::
 
-## In the admin console
-
-Open **Reviews**. **Definitions** lists each review with its content type, its stages in order
-and what happens **On approval**. **New definition** creates one: give it a **Name**, pick the
-**Content schema**, and fill in **Stages, in order**, each with a **Stage name**, a
-**Required role** and **SLA, hours**. With `review-pro`, a stage with an SLA can name who takes
-over when it passes: under **On an SLA breach, hand it to**, choose **A user** and pick the
-account by email, or **A role** and type the role. **Assignments** lists every entry under review with its
-stage, status, assignee and due time, and the tabs above it filter by status.
-
-![The Reviews page. The Launch page review definition has two stages, Copy edit for the editor role within 24 hours and Legal for the legal role within 48 hours, and publishes on approval. Below it, two entries are under review, one in the Legal stage and one waiting for Copy edit.](images/editorial-review.png)
-
-On an entry's page, the **Review** card shows **Not under review.** until someone picks a
-**Definition**, picks the **Assignee** from the accounts, adds any **More assignees** in the
-picker below it and chooses **Start review**. The **Assignee** starts as you. A stage that needs
-several approvals takes them from the assignees. Someone who may not list the accounts types
-user ids instead. Under review, it shows the stage, status, assignee and due time, a
-**Comment** box, and the actions you may take, such as **Approve**, **Request changes** and
-**Reject**.
-
-![The Review card of an entry in stage 2 of 2, Legal, with the status In review, assigned to you and due on October 13. Below a Comment box are Approve, Request changes and Reject.](images/editorial-review-entry.png)
+In the admin console, **Reviews** holds the definitions and every entry under review, and
+the **Review** card on each entry's page moves that entry through its stages.
 
 ## How it works
 
@@ -91,93 +72,190 @@ approval answers `400` `failed to transition assignment` and the assignment stay
 
 ## Try it
 
-You need a token in `TOKEN` for an `admin` or `super_admin`. The
+For the console steps, you are signed in to the admin console as an `admin` or
+`super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Create a `post` content type with draft and publish, and a draft entry in it:
+**1. Create a `post` content type with draft and publish.** Only the API turns on drafts and
+publishing. The Schema builder in console v0.21.0 has no switch for them, so run this call
+even when you follow the console steps after it.
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows how to get a token with your console account:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "post", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text"}, {"name": "text", "field_type": "text"}]}'
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "post", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text"}, {"name": "text", "field_type": "text"}]}'
+```
 
-   curl -X POST http://localhost:3001/api/admin/content \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"schema": "post", "slug": "first", "title": "Draft post", "body": {"text": "Body."}}'
-   ```
+**2. Create a draft entry in it.**
 
-   Copy the entry's `id` into `ENTRY`.
+<div class="paths">
+<div data-path="console">
 
-2. Define a review with two stages:
+Open **Content**, pick **post** and choose **New entry**. Enter `Draft post` in **Title** and
+`Body.` in **Text**, then choose **Create**. The list shows the entry as `draft`. Open it
+from there.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/review/definitions \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "Blog review",
-           "slug": "blog",
-           "content_schema": "post",
-           "stages": [
-             {"name": "Copy edit", "required_role": "editor", "sla_duration_seconds": 86400},
-             {"name": "Legal", "required_role": "legal"}
-           ]
-         }'
-   ```
+</div>
+<div data-path="api">
 
-   The answer is `201` with the definition and `"publish_on_approve": true`. Copy its `id`
-   into `DEF`.
+```bash
+curl -X POST http://localhost:3001/api/admin/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"schema": "post", "slug": "first", "title": "Draft post", "body": {"text": "Body."}}'
+```
 
-3. Put the entry into review, assigned to yourself:
+Copy the entry's `id` into `ENTRY`.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/review/assignments \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"entry_id\": \"$ENTRY\", \"definition_id\": \"$DEF\", \"assignee_id\": \"<your user id>\"}"
-   ```
+</div>
+</div>
 
-   The answer is `201` with `"status": "pending_review"` and a `due_at` one day out. Copy its
-   `id` into `ASSIGNMENT`.
+**3. Define a review with two stages.**
 
-4. Approve the first stage:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/review/assignments/$ASSIGNMENT/transition \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"action": "approve", "comment": "Copy is clean."}'
-   ```
+1. Open **Reviews** and choose **New definition**.
+2. Enter `Blog review` in **Name** and `blog` in **Slug**, and pick **post** in
+   **Content schema**. **Publish on approval** is on.
+3. Under **Stages, in order**, enter `Copy edit` in **Stage name**, `editor` in
+   **Required role** and `24` in **SLA, hours**.
+4. Choose **New stage**, and enter `Legal` in **Stage name** and `legal` in
+   **Required role**.
+5. Choose **Create**.
 
-   ```json
-   {
-     "id": "5e2c9b7a-1f3d-4a6e-8b0c-7d9e2f4a1c63",
-     "entry_id": "0f8d3a1c-6b2e-4c7f-9a5d-3e1b8c4f2a90",
-     "definition_id": "8a4e1d2c-3b5f-4e6a-9c7d-1f2e3a4b5c6d",
-     "current_stage_id": "2b7c9e1a-4d3f-4a8b-b6c5-9e8d7f6a5b4c",
-     "assignee_id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
-     "assigned_by": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
-     "assigned_at": "2026-10-01T12:00:00Z",
-     "status": "in_review",
-     "overdue": false,
-     "created_at": "2026-10-01T12:00:00Z",
-     "updated_at": "2026-10-01T12:05:00Z"
-   }
-   ```
+**Definitions** lists the review with its content type, its stages in order and
+**Publishes** under **On approval**.
 
-5. Send the same request again. The second stage is the last, so the answer has
-   `"status": "published"` and the entry is published.
+![The Reviews page. The Launch page review definition has two stages, Copy edit for the editor role within 24 hours and Legal for the legal role within 48 hours, and publishes on approval. Below it, two entries are under review, one in the Legal stage and one waiting for Copy edit.](images/editorial-review.png)
 
-6. Read the log:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/review/assignments/$ASSIGNMENT/logs \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/review/definitions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Blog review",
+        "slug": "blog",
+        "content_schema": "post",
+        "stages": [
+          {"name": "Copy edit", "required_role": "editor", "sla_duration_seconds": 86400},
+          {"name": "Legal", "required_role": "legal"}
+        ]
+      }'
+```
 
-   Each transition is listed with its `action`, `actor_id` and `comment`.
+The answer is `201` with the definition and `"publish_on_approve": true`. Copy its `id` into
+`DEF`.
+
+</div>
+</div>
+
+**4. Put the entry into review, assigned to yourself.**
+
+<div class="paths">
+<div data-path="console">
+
+Open the entry. Its **Review** card shows **Not under review.**
+
+1. Pick **Blog review** in **Definition**.
+2. Keep **Assignee**, which starts as you. **More assignees** adds others, for a stage that
+   needs several approvals. Someone who may not list the accounts types user ids instead.
+3. Choose **Start review**.
+
+The card shows **Stage 1 of 2: Copy edit**, the status **Pending review**, the assignee and
+the time it is due, one day out. **Reviews** lists the entry under **Assignments**, and the
+tabs above it filter by status.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/assignments \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"entry_id\": \"$ENTRY\", \"definition_id\": \"$DEF\", \"assignee_id\": \"<your user id>\"}"
+```
+
+The answer is `201` with `"status": "pending_review"` and a `due_at` one day out. Copy its
+`id` into `ASSIGNMENT`.
+
+</div>
+</div>
+
+**5. Approve the first stage.**
+
+<div class="paths">
+<div data-path="console">
+
+In the **Review** card, enter `Copy is clean.` in **Comment** and choose **Approve**. The card
+moves to **Stage 2 of 2: Legal** with the status **In review**, and still offers **Approve**,
+**Request changes** and **Reject**.
+
+![The Review card of an entry in stage 2 of 2, Legal, with the status In review, assigned to you and due on October 13. Below a Comment box are Approve, Request changes and Reject.](images/editorial-review-entry.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/review/assignments/$ASSIGNMENT/transition \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "approve", "comment": "Copy is clean."}'
+```
+
+```json
+{
+  "id": "5e2c9b7a-1f3d-4a6e-8b0c-7d9e2f4a1c63",
+  "entry_id": "0f8d3a1c-6b2e-4c7f-9a5d-3e1b8c4f2a90",
+  "definition_id": "8a4e1d2c-3b5f-4e6a-9c7d-1f2e3a4b5c6d",
+  "current_stage_id": "2b7c9e1a-4d3f-4a8b-b6c5-9e8d7f6a5b4c",
+  "assignee_id": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
+  "assigned_by": "c3d4e5f6-a7b8-4c9d-8e0f-1a2b3c4d5e6f",
+  "assigned_at": "2026-10-01T12:00:00Z",
+  "status": "in_review",
+  "overdue": false,
+  "created_at": "2026-10-01T12:00:00Z",
+  "updated_at": "2026-10-01T12:05:00Z"
+}
+```
+
+</div>
+</div>
+
+**6. Approve the last stage.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Approve** again. The card's **Status** reads **Published** and the card offers
+**Unpublish**. The status at the top of the entry reads `published`.
+
+</div>
+<div data-path="api">
+
+Send the same request again. The second stage is the last, so the answer has
+`"status": "published"`.
+
+</div>
+</div>
+
+The entry is published.
+
+**7. Read the log.** The log is API only. The console in v0.21.0 shows the current stage and
+status, not the transitions before them:
+
+```bash
+curl http://localhost:3001/api/admin/review/assignments/$ASSIGNMENT/logs \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Each transition is listed with its `action`, `actor_id` and `comment`.
 
 ## Who may act
 
@@ -217,8 +295,9 @@ underscores, made from the name when you leave it out. A slug already taken answ
 `content_schema` is `default` when you leave it out. `PUT` changes `name` or
 `publish_on_approve`, or replaces the stages. The slug never changes.
 
-Every install holds one definition per tenant, with as many stages as it needs. A second one
-answers `402`:
+Every install holds one definition per tenant, with as many stages as it needs. At the
+ceiling the console turns **New definition** off and shows
+**No more workflows on this instance**. Over the API, a second one answers `402`:
 
 ```json
 {"error": "cap_exceeded", "cap": "review.workflows", "limit": 1, "current": 1, "upgrade_url": ""}
@@ -231,7 +310,10 @@ there is no ceiling.
 ## Escalate, ask for several approvals, and skip stages
 
 With `review-pro`, a tenant holds any number of definitions, and each stage can take three
-more settings:
+more settings. In the console's **New definition** form, a stage with an SLA names who takes
+over when it passes: under **On an SLA breach, hand it to**, choose **A user** and pick the
+account by email, or **A role** and type the role. **Approvals needed** sets the quorum, and
+**Only when the field** sets the condition.
 
 | Stage setting | What it does |
 |---|---|

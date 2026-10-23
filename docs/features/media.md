@@ -24,17 +24,7 @@ load.
   and location data, and scan for viruses.
 :::
 
-## In the admin console
-
-Open **Media library**. It shows every file in **Grid** or **List** view, with
-**Upload files**, **Import from URL** and a **File name** search. Choose a file to open its
-**Preview**, with its name, type, size and dimensions, **Download** and **Delete**.
-**Publish** gives the file its public address: the preview then shows the **Published**
-badge and the **Public path**, also as **Markdown** and **HTML** to copy. **Alt text**,
-**Tags** and **Folder** are under **Details**, kept with **Save**.
-
-![The preview of a published image, harbor.png, showing its name, type, size, dimensions and upload time, the Published badge beside Unpublish, and its public path, also written as Markdown and as HTML.](images/media.png)
-
+In the admin console, **Media library** shows every file in **Grid** or **List** view.
 [Media library](../guides/user/media-library.md) walks through each task there. Where files
 are kept, local disk or S3 and other providers, is set on [object storage](object-storage.md).
 
@@ -51,91 +41,149 @@ are kept, local disk or S3 and other providers, is set on [object storage](objec
 
 ## Try it
 
-You need a token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to
-get one. Any PNG or JPEG works as `hero.png`.
+For the console steps, you are signed in to the admin console. For the API steps, you need a
+token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get one. Any
+PNG or JPEG works as `hero.png`.
 
-1. Upload an image into a folder, with alt text:
+**1. Upload an image.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/media \
-     -H "Authorization: Bearer $TOKEN" \
-     -F "file=@hero.png" \
-     -F "folder=/blog" \
-     -F "alt_text=Mountain at sunrise"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with a list of the stored items:
+Open **Media library**, choose **Upload files** and pick `hero.png`. The page confirms
+**Uploaded 1 file**, and the file appears in the grid. The console sets no folder or alt text
+on upload. Step 3 sets them.
 
-   ```json
-   [
-     {
-       "id": "ad2c0afd-9c21-412a-b47a-d6b9cea033d0",
-       "key": "blog/7ab76082-70d4-463a-b349-03a99324dddd_hero.png",
-       "filename": "hero.png",
-       "content_type": "image/png",
-       "size": 2787,
-       "alt_text": "Mountain at sunrise",
-       "folder": "/blog",
-       "tenant_id": "default",
-       "width": 400,
-       "height": 300,
-       "uploaded_by": "12dd433d-c110-4809-b476-12ef360afe7f",
-       "scan_status": "pending",
-       "scan_result": "virus scanning disabled",
-       "metadata": { "width": 400, "height": 300, "color_depth": 8, "has_alpha": true },
-       "tags": ["image"],
-       "created_at": "2026-10-02T09:20:09.512818Z",
-       "updated_at": "2026-10-02T09:20:09.512818Z",
-       "url": "/api/v1/storage/local/20d35ec0-bd5c-53a3-8111-b122a0d7ba4e?expires=1791019209&key=...&sig=...",
-       "public": false
-     }
-   ]
-   ```
+</div>
+<div data-path="api">
 
-   Copy the `id` into `MEDIA_ID`. `updated_at` is when the item last changed. An item
-   stored before the server recorded it starts at its `created_at`.
+Upload it into a folder, with alt text:
 
-2. Read it back with its thumbnails:
+```bash
+curl -X POST http://localhost:3001/api/admin/media \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "file=@hero.png" \
+  -F "folder=/blog" \
+  -F "alt_text=Mountain at sunrise"
+```
 
-   ```bash
-   curl http://localhost:3001/api/admin/media/$MEDIA_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer is `201` with a list of the stored items:
 
-   The item now lists `thumbnails`, each with its `size` (`small`), `width`, `height` and
-   `format` (`webp`). A 400 px image gets `small` only.
+```json
+[
+  {
+    "id": "ad2c0afd-9c21-412a-b47a-d6b9cea033d0",
+    "key": "blog/7ab76082-70d4-463a-b349-03a99324dddd_hero.png",
+    "filename": "hero.png",
+    "content_type": "image/png",
+    "size": 2787,
+    "alt_text": "Mountain at sunrise",
+    "folder": "/blog",
+    "tenant_id": "default",
+    "width": 400,
+    "height": 300,
+    "uploaded_by": "12dd433d-c110-4809-b476-12ef360afe7f",
+    "scan_status": "pending",
+    "scan_result": "virus scanning disabled",
+    "metadata": { "width": 400, "height": 300, "color_depth": 8, "has_alpha": true },
+    "tags": ["image"],
+    "created_at": "2026-10-02T09:20:09.512818Z",
+    "updated_at": "2026-10-02T09:20:09.512818Z",
+    "url": "/api/v1/storage/local/20d35ec0-bd5c-53a3-8111-b122a0d7ba4e?expires=1791019209&key=...&sig=...",
+    "public": false
+  }
+]
+```
 
-3. Change its details and publish it:
+Copy the `id` into `MEDIA_ID`. `updated_at` is when the item last changed. An item stored
+before the server recorded it starts at its `created_at`.
 
-   ```bash
-   curl -X PATCH http://localhost:3001/api/admin/media/$MEDIA_ID \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"alt_text": "Mountain at dawn", "tags": ["landscape"], "public": true}'
-   ```
+</div>
+</div>
 
-   The answer is the item with `"public": true` and
-   `"public_url": "/api/v1/media/<id>/hero.png"`.
+**2. Read it back.**
 
-4. Load it with no token, as a site would:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl -I http://localhost:3002/api/v1/media/$MEDIA_ID/hero.png
-   ```
+Choose the file to open its **Preview**. It shows the image with zoom controls, then its
+**Name**, **Type**, **Size**, **Dimensions** and **Uploaded** time, with **Download** and
+**Delete**. A new file is **Private**: only signed-in operators can open it.
 
-   The answer is `200` with `Content-Type: image/png`, `Content-Disposition: inline` and
-   `Cache-Control: public, max-age=300`.
+</div>
+<div data-path="api">
 
-5. Search the library:
+```bash
+curl http://localhost:3001/api/admin/media/$MEDIA_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/media/search \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "mountain", "kind": "image"}'
-   ```
+The item now lists `thumbnails`, each with its `size` (`small`), `width`, `height` and
+`format` (`webp`). A 400 px image gets `small` only.
 
-   The answer is `{"items": [...], "total": 1}`.
+</div>
+</div>
+
+**3. Change its details and publish it.**
+
+<div class="paths">
+<div data-path="console">
+
+1. In the **Preview**, under **Details**, enter `Mountain at dawn` in **Alt text**,
+   `landscape` in **Tags** and `/blog` in **Folder**, then choose **Save**.
+2. Choose **Publish**. The preview shows the **Published** badge beside **Unpublish**, and the
+   **Public path**, also written as **Markdown** and **HTML** to copy.
+
+![The preview of a published image, harbor.png, showing its name, type, size, dimensions and upload time, the Published badge beside Unpublish, and its public path, also written as Markdown and as HTML.](images/media.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PATCH http://localhost:3001/api/admin/media/$MEDIA_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"alt_text": "Mountain at dawn", "tags": ["landscape"], "public": true}'
+```
+
+The answer is the item with `"public": true` and
+`"public_url": "/api/v1/media/<id>/hero.png"`.
+
+</div>
+</div>
+
+**4. Load it with no token, as a site would.** This is the Content API, whichever way you
+published the file:
+
+```bash
+curl -I http://localhost:3002/api/v1/media/$MEDIA_ID/hero.png
+```
+
+The answer is `200` with `Content-Type: image/png`, `Content-Disposition: inline` and
+`Cache-Control: public, max-age=300`.
+
+**5. Search the library.**
+
+<div class="paths">
+<div data-path="console">
+
+Enter `mountain` in the **File name** box and choose **Search**. The box matches file names,
+alt text and tags, so the image you just changed is found.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/media/search \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mountain", "kind": "image"}'
+```
+
+The answer is `{"items": [...], "total": 1}`.
+
+</div>
+</div>
 
 ## Upload files
 
@@ -177,6 +225,16 @@ and `tags` replaces the tags the file had.
 
 ## Import from a URL
 
+<div class="paths">
+<div data-path="console">
+
+In **Media library**, choose **Import from URL**. Enter the **Address** and the **Alt text**,
+tick the box to publish the file in the same step if you want, and choose **Import**. The file
+lands in the `/` folder. Change it under **Details** afterward.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/media/import \
   -H "Authorization: Bearer $TOKEN" \
@@ -184,16 +242,24 @@ curl -X POST http://localhost:3001/api/admin/media/import \
   -d '{"url": "https://example.com/logo.png", "folder": "/brand", "alt_text": "Logo", "public": true}'
 ```
 
-The file goes through the same checks as an upload, and the answer is `201` with the item.
+The answer is `201` with the item.
+
+</div>
+</div>
+
+The file goes through the same checks as an upload.
 
 - Private, loopback, link-local and cloud metadata addresses are refused, after a redirect
   too. At most three redirects are followed.
-- The fetch gives up after 20 seconds. `max_bytes` sets a lower size limit for this one file.
+- The fetch gives up after 20 seconds. `max_bytes`, API only, sets a lower size limit for this
+  one file.
 - With `"public": true`, the file is published in the same call. If publishing fails, nothing
   is kept.
 - The address is kept in the item's `metadata` as `source_url`, without its query string.
 
 ## Search the library
+
+The console's **File name** box sends `query`. Every other field below is API only.
 
 `POST /api/admin/media/search` takes any of these fields and answers `{"items": [...],
 "total": n}`, oldest first unless `sort_desc` is `true`.
