@@ -99,8 +99,10 @@ each feature's own section, `plugins.schema_presets` lists:
 
 - `comments`: each comment whose author an erasure anonymizes, with its id,
   `author_email`, `author_name` and body.
-- `form_submissions`: each submission an erasure deletes, with its id and the
-  `data` it posted.
+- `form_submissions`: each submission an erasure deletes, with its id, its
+  `form_id`, its `created_at` and, under `fields`, each field whose value is
+  one of the person's addresses. The rest of what it posted stays out, because
+  someone else may have filled in the form and named the person in one field.
 
 When the person's addresses cannot be read, the server answers `503` with
 `the subject's addresses could not be read; export was not attempted`, and
