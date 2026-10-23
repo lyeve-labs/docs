@@ -57,85 +57,155 @@ Open **Settings > Email**. **Provider pool** lists the tenant's providers.
 **Transport**, fill in the **From address** and the server or API details,
 then set the **Priority**, **Max per hour** and **Status**. A provider saved
 here joins the pool at once. **Fallback transport**, below the pool, holds the
-`SMTP_*` settings used when the pool is empty or every provider fails.
+`SMTP_*` settings used when the pool is empty or every provider fails. The
+engine reads those at boot, so a change saved there takes effect at the next
+restart.
 
-![The New provider form with the SMTP transport, the from address noreply@example.com, the host smtp.example.com on port 587, a username, a hidden password and TLS turned on.](images/email.png)
+The **TLS** switch on an SMTP provider is on by default and turns on implicit
+TLS, usually on port 465, although its hint reads "STARTTLS on the
+connection". Turn it off for a relay that starts in plain text, such as one on
+port 587 or a local mail catcher. With it on, sending to such a relay fails
+with `TLS handshake: first record does not look like a TLS handshake`.
 
-**Templates**, at the top of the page, lists every template with its subject
-and status. **New template** adds one, and each row can be previewed and
-edited. The two templates marked **Required** cannot be deleted. **Triggers**,
-beside it, holds the [content triggers](#mail-when-content-changes).
+![The New provider form with the SMTP transport, the from address noreply@example.com, the host smtp.example.com on port 587, a username, a hidden password and TLS turned off.](images/email.png)
 
-![The Email templates page listing the required magic-link and password-reset templates and a welcome template, all three active.](images/email-templates.png)
+**Templates**, at the top of the page, opens **Email templates**: every
+template with its subject and status, and how many of the tenant's templates
+are in use, such as `3 of 5 templates`. **New template** adds one, and each row
+can be previewed and edited. The two templates marked **Required** cannot be
+deleted. **Triggers**, beside it, holds the
+[content triggers](#mail-when-content-changes).
+
+![The Email templates page, 3 of 5 templates in use, listing the required magic-link and password-reset templates and a welcome template, all three active.](images/email-templates.png)
 
 ## Try it
 
-You need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
-shows how to get one. These steps create a template, translate it and preview
-it, which works on a free install.
+These steps create a template, translate it and preview it, which works on a
+free install. For the console steps, you are signed in to the admin console.
+For the API steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 
-1. List the built-in bodies you can start from:
+**1. See the built-in bodies you can start from.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/email-templates/starters \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   Each one carries its `key`, `subject` and `mjml_source`, the two
-   [required templates](#required-templates) first. Copy a body you like into
-   the next step, or write your own.
+Open **Settings > Email**, choose **Templates** and then **New template**.
+**Start from** lists **A blank template** and the five
+[starters](#starters). Picking one fills in its name, subject and body.
 
-2. Create a `welcome` template:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/email-templates \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"key": "welcome", "subject": "Welcome to {{.Branding.CompanyName}}, {{.Vars.name}}!", "status": "active", "mjml_source": "<mjml><mj-body><mj-section><mj-column><mj-text>Hi {{.Vars.name}}, thanks for signing up.</mj-text></mj-column></mj-section></mj-body></mjml>"}'
-   ```
+```bash
+curl http://localhost:3001/api/admin/email-templates/starters \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   The answer is `201` with the template. Copy its `id` into `TEMPLATE_ID`. If
-   the tenant already holds a `welcome` template, the answer is `409`. Read
-   that one with `GET /api/admin/email-templates/key/welcome` and use its `id`.
+Each one carries its `key`, `subject` and `mjml_source`, the two
+[required templates](#required-templates) first. Copy a body you like into
+the next step, or write your own.
 
-3. Add a French translation:
+</div>
+</div>
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/email-templates/$TEMPLATE_ID/translations \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"locale": "fr", "subject": "Bienvenue chez {{.Branding.CompanyName}}, {{.Vars.name}} !", "mjml_source": "<mjml><mj-body><mj-section><mj-column><mj-text>Bonjour {{.Vars.name}}, merci pour votre inscription.</mj-text></mj-column></mj-section></mj-body></mjml>"}'
-   ```
+**2. Create a `welcome` template.**
 
-4. Preview it for a Canadian French reader, without sending:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/email-templates/key/welcome/preview \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"locale": "fr-CA", "vars": {"name": "Ana"}}'
-   ```
+In the **New template** form, keep **A blank template** and fill in:
 
-   ```json
-   { "subject": "Bienvenue chez LyEve CMS, Ana !", "html": "<!doctype html>...", "template_id": "...", "locale": "fr-CA" }
-   ```
+- **Name**: `welcome`
+- **Status**: **Active**
+- **Subject**: `Welcome to {{.Branding.CompanyName}}, {{.Vars.name}}!`
+- **Body**: `<mjml><mj-body><mj-section><mj-column><mj-text>Hi {{.Vars.name}}, thanks for signing up.</mj-text></mj-column></mj-section></mj-body></mjml>`
 
-   `fr-CA` has no translation, so the French one is used. The company name
-   comes from the tenant's branding.
+Choose **Create**. The template joins the list. Its **Preview** renders it with
+sample values, such as the subject `Welcome to LyEve CMS, Ada!`.
 
-5. See how much room the tenant has left:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/email-templates/limits \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/email-templates \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "welcome", "subject": "Welcome to {{.Branding.CompanyName}}, {{.Vars.name}}!", "status": "active", "mjml_source": "<mjml><mj-body><mj-section><mj-column><mj-text>Hi {{.Vars.name}}, thanks for signing up.</mj-text></mj-column></mj-section></mj-body></mjml>"}'
+```
 
-   ```json
-   { "templates": { "limit": 5, "current": 3 } }
-   ```
+The answer is `201` with the template. Copy its `id` into `TEMPLATE_ID`. If
+the tenant already holds a `welcome` template, the answer is `409`. Read
+that one with `GET /api/admin/email-templates/key/welcome` and use its `id`.
 
-   On a new tenant `current` is `3`: the two required templates and `welcome`.
-   With `email-pro` the `limit` is `0`, which means no ceiling.
+</div>
+</div>
+
+**3. Add a French translation.** Only the API holds translations: the
+template form in console v0.21.0 has no locale. From the console path, get a
+token for your console account as
+[Sign in](../getting-started/quickstart.md#3-sign-in) shows, and read the
+template's id first:
+
+```bash
+TEMPLATE_ID=$(curl -s http://localhost:3001/api/admin/email-templates/key/welcome \
+  -H "Authorization: Bearer $TOKEN" | jq -r .id)
+```
+
+Then add the translation:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/email-templates/$TEMPLATE_ID/translations \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"locale": "fr", "subject": "Bienvenue chez {{.Branding.CompanyName}}, {{.Vars.name}} !", "mjml_source": "<mjml><mj-body><mj-section><mj-column><mj-text>Bonjour {{.Vars.name}}, merci pour votre inscription.</mj-text></mj-column></mj-section></mj-body></mjml>"}'
+```
+
+**4. Preview it for a Canadian French reader, without sending.** The console's
+**Preview** uses sample values and no locale, so a preview in a language is an
+API call on both paths:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/email-templates/key/welcome/preview \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"locale": "fr-CA", "vars": {"name": "Ana"}}'
+```
+
+```json
+{ "subject": "Bienvenue chez LyEve CMS, Ana !", "html": "<!doctype html>...", "template_id": "...", "locale": "fr-CA" }
+```
+
+`fr-CA` has no translation, so the French one is used. The company name
+comes from the tenant's branding.
+
+**5. See how much room the tenant has left.**
+
+<div class="paths">
+<div data-path="console">
+
+**Email templates** shows the count above the list: `3 of 5 templates`. Once
+all five are in use, **New template** is turned off and the page says
+**Every template slot is in use**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/email-templates/limits \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "templates": { "limit": 5, "current": 3 } }
+```
+
+With `email-pro` the `limit` is `0`, which means no ceiling.
+
+</div>
+</div>
+
+On a new tenant the count is `3`: the two required templates and `welcome`.
 
 ## Free and email-pro
 
@@ -153,13 +223,13 @@ every send still checks the suppression list. The relay from the `SMTP_*`
 settings needs no license. A second provider on a free install is refused:
 
 ```json
-{"error": "cap_exceeded", "cap": "email.providers", "limit": 1, "current": 1, "upgrade_url": ""}
+{"error": "cap_exceeded", "cap": "email.providers", "limit": 1, "current": 1, "upgrade_url": "https://app.lyeve.com/pricing?skus=plugin-email-pro&utm_campaign=email.providers&utm_medium=product&utm_source=admin"}
 ```
 
 A sixth template is refused the same way:
 
 ```json
-{"error": "cap_exceeded", "cap": "email.templates", "limit": 5, "current": 5, "upgrade_url": ""}
+{"error": "cap_exceeded", "cap": "email.templates", "limit": 5, "current": 5, "upgrade_url": "https://app.lyeve.com/pricing?skus=plugin-email-pro&utm_campaign=email.templates&utm_medium=product&utm_source=admin"}
 ```
 
 A tenant that holds more than five templates when its license lapses keeps
@@ -216,6 +286,26 @@ that fails is skipped for the next one, and `max_per_hour` caps each (`0` means
 no cap). A new provider takes a growing share of the mail over its first 48
 hours, starting at 5%, and the rest goes to the next provider.
 
+The first SMTP provider is free. To add one:
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Settings > Email** and choose **New provider**.
+2. Enter `primary` in **Name**, keep **SMTP** as the **Transport** and enter
+   `no-reply@example.com` in **From address**.
+3. Enter your relay's **Host**, `587` in **Port**, and its **Username** and
+   **Password**. Turn **TLS** off, because port 587 starts in plain text.
+4. Keep **Priority** at `0`, enter `1000` in **Max per hour**, and choose
+   **Create**.
+
+The SMTP form in console v0.21.0 has no field for `webhook_secret`, which the
+[delivery webhook](#record-bounces-opens-and-clicks) checks, so set that one
+over the API.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/email/providers \
   -H "Authorization: Bearer $TOKEN" \
@@ -233,6 +323,9 @@ curl -X POST http://localhost:3001/api/admin/email/providers \
         "webhook_secret": "replace-with-a-long-random-secret"
       }'
 ```
+
+</div>
+</div>
 
 | `transport` | Sends through | Fields that matter |
 |-------------|---------------|--------------------|
@@ -406,7 +499,8 @@ answered, and a failed send is logged without failing the write.
 ## Bounces and suppressions
 
 Bounce classification, the bounce list and its stats need `email-pro`. The
-suppression list is free. A bounce is classified as `hard` or `soft`, with a category such as invalid
+suppression list is free. Only the API manages it: console v0.21.0 has no page
+for the suppression list or for bounces. A bounce is classified as `hard` or `soft`, with a category such as invalid
 mailbox, mailbox full, spam blocked, rate limited, DNS failure or TLS failure,
 from an enhanced status code such as `5.1.1`, a plain SMTP code or the
 diagnostic text. A hard bounce for a recipient problem adds the address to the
