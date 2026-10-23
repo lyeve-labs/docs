@@ -326,8 +326,8 @@ A build without license support answers `404` on both license routes and reports
 | `GET` | `/api/v1/gdpr/export/sections` | Signed-in session | The sections of their own data a person may export |
 | `POST` | `/api/v1/gdpr/export` | Signed-in session, once an hour | A person's own data as NDJSON |
 | `POST` | `/api/v1/gdpr/export/step-up/email` | Signed-in session | Mail the person a code their export asks for |
-| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-sections`, `/api/admin/analytics/gdpr/export-roles` | `admin` | The sections the tenant offers, and the roles that may export |
-| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-step-up` | `super_admin` | What every person proves before exporting their own data |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-sections`, `/api/admin/analytics/gdpr/export-roles` | `admin`, signed-in session | The sections the tenant offers, and the roles that may export |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-step-up` | `super_admin`, signed-in session | What every person proves before exporting their own data |
 
 [Data protection](../trust/data-protection.md) has the bodies and what each one covers, and [Analytics](../features/analytics.md#let-users-export-or-erase-their-data) has a person's own export.
 

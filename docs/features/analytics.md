@@ -489,7 +489,7 @@ curl http://localhost:3002/api/admin/analytics/gdpr/export-sections \
 Replace the sections the tenant leaves out with `PUT` on the same path and
 `{"excluded": ["email"]}`. The answer is the new state. A name that is neither
 a section the install can export now nor one the tenant already left out is a
-`400`.
+`400`. Both routes need a signed-in session.
 
 </div>
 </div>
@@ -556,7 +556,8 @@ curl -X PUT http://localhost:3002/api/admin/analytics/gdpr/export-step-up \
 `factors` takes `password`, `code` and `email`, and an empty list requires
 nothing. The answer is the stored list, and `GET` on the same path reads it.
 Any other name is a `400`. `email` on an install that cannot send mail is a
-`422` with the code `step_up_mail_unavailable`.
+`422` with the code `step_up_mail_unavailable`. Both routes need a signed-in
+session.
 
 </div>
 </div>
@@ -723,9 +724,9 @@ features start, include `analytics` in it. See
 | `POST` | `/api/v1/gdpr/erase` | Signed in | Erases your data. `202`. |
 | `GET` | `/api/admin/analytics/gdpr/erasures` | Super admin | Erasures that have not finished, as `{"erasures": [...]}`. |
 | `POST` | `/api/admin/analytics/gdpr/erasures/{user_id}/rerun` | Super admin | Runs one again. `202`. |
-| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-sections` | Admin | The sections the tenant offers, and the ones it leaves out. |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-sections` | Admin, signed-in session | The sections the tenant offers, and the ones it leaves out. |
 | `GET`, `PUT` | `/api/admin/analytics/gdpr/export-roles` | Admin, signed-in session | The roles that may export. Empty means every role. |
-| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-step-up` | Super admin | What every person proves before exporting, out of `password`, `code` and `email`. |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-step-up` | Super admin, signed-in session | What every person proves before exporting, out of `password`, `code` and `email`. |
 
 </details>
 
@@ -748,7 +749,7 @@ features start, include `analytics` in it. See
 | `409` | `this erasure is running` on a rerun |
 | `400` | `a requested section is not offered`, `choose at least one section` on an export |
 | `400` | `an excluded section is not known`, `a factor is not one of password, code and email`, `a role must be 1 to 64 characters`, `at most 64 roles may be listed` |
-| `403` | `this route needs a signed-in session` on an export route, for an API key or an admin token |
+| `403` | `this route needs a signed-in session` on an export route or an export settings route, for an API key or an admin token |
 | `403` | `your role may not export its data` |
 | `403` | `step_up_required`, `step_up_password_unavailable`, `step_up_code_unavailable`, `step_up_email_unavailable`, `step_up_failed`, as [listed above](#ask-the-person-to-prove-it-is-them) |
 | `409` | `this tenant offers no data for export` on an export with no sections |
