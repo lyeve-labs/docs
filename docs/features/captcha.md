@@ -94,10 +94,23 @@ A change to these settings applies without a restart.
 
 ## Try it
 
-This needs a site key and a secret key from your provider.
+This needs a site key and a secret key from your provider. Set the three
+variables in [Turn it on](#turn-it-on) first.
 
-1. Set the three variables above and sign in with a wrong password three
-   times:
+<div class="paths">
+<div data-path="console">
+
+1. Open the console's sign-in page and sign in with a wrong password three
+   times. After the third, the page says **Complete the security check to try
+   again.** and shows the widget above **Sign in**, with your email still
+   filled in.
+2. Complete the widget, enter the right password and choose **Sign in**. You
+   are signed in, and the counts reset.
+
+</div>
+<div data-path="api">
+
+1. Sign in with a wrong password three times:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/auth/login \
@@ -132,8 +145,8 @@ This needs a site key and a secret key from your provider.
 
    A correct password now signs in and resets the counts.
 
-4. Open the admin console's sign-in page and fail three times. The widget
-   appears above **Sign in**.
+</div>
+</div>
 
 ## Check a token in a flow
 

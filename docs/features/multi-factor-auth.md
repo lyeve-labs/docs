@@ -58,7 +58,7 @@ with a code, before it sets up an app.
 
 | Method | Used for |
 |---|---|
-| **TOTP** | A six-digit code that changes every 30 seconds. Turning TOTP on or off and replacing backup codes accept each code once. At sign-in, a code still works again while it is current. |
+| **TOTP** | A six-digit code that changes every 30 seconds. Each code is accepted once, at sign-in as well as when TOTP is turned on or off or the backup codes are replaced. A code already used is refused, so wait for the app to show the next one. |
 | **Backup codes** | Eight single-use codes shown when TOTP is turned on. Each one works once in place of a code. |
 | **Passkeys and security keys** | A second step, a sign-in without a password, or, for a key marked as the backup, a recovery sign-in. Enrolling one needs `mfa-pro`. |
 
@@ -93,8 +93,23 @@ Each person then enrolls in the admin console. See
 
 ## Try it
 
-This enrolls an authenticator app and signs in with it. Use an account of your
-own, and keep its token in `TOKEN`. The
+This enrolls an authenticator app, signs in with it and turns it off. Use an
+account of your own.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open the account menu in the header and choose **Two-factor
+   authentication**, then **Turn on two-factor authentication**.
+2. Scan the QR code with an authenticator app, enter **The 6-digit code from
+   the app** and choose **Verify and turn on**.
+3. Save the eight backup codes, or choose **Copy all codes**, then choose
+   **Done**.
+
+</div>
+<div data-path="api">
+
+Keep the account's token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 1. Check the account's state:
@@ -141,10 +156,26 @@ own, and keep its token in `TOKEN`. The
    Save the eight backup codes now. A wrong code answers `422` with
    `invalid TOTP code`.
 
-4. Sign in again. The answer is now the challenge shown above. Copy
-   `challenge_token` into `CHALLENGE`.
+</div>
+</div>
 
-5. Finish the sign-in with a code from the app, or with a backup code:
+Then sign in again. Wait for the app to show a new code first, because the
+code that turned TOTP on is spent.
+
+<div class="paths">
+<div data-path="console">
+
+Sign out, then sign in with your email and password. The page asks for
+**Two-factor verification**. Enter a code from the app, or a backup code, in
+**Authenticator code** and choose **Verify**.
+
+</div>
+<div data-path="api">
+
+1. Sign in with `POST /api/admin/auth/login`. The answer is now the challenge
+   shown above. Copy `challenge_token` into `CHALLENGE`.
+
+2. Finish the sign-in with a code from the app, or with a backup code:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/auth/mfa-verify \
@@ -152,24 +183,40 @@ own, and keep its token in `TOKEN`. The
      -d '{"challenge_token": "'"$CHALLENGE"'", "code": "123456"}'
    ```
 
-   The answer is a normal sign-in, with `token` and `refresh_token`. Sending
-   the same challenge again answers `401` with
+   The answer is a normal sign-in, with `token` and `refresh_token`. Copy
+   `token` into `TOKEN`. Sending the same challenge again answers `401` with
    `The MFA challenge has expired. Please log in again.`
 
-6. Turn it off with a current code or a backup code:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/mfa/totp/disable \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"code": "7cfaca44e9aae775"}'
-   ```
+Turn it off with a current code or a backup code:
 
-   The answer is `204`.
+<div class="paths">
+<div data-path="console">
+
+On **Two-factor authentication**, enter the code in the **Code** field under
+**Turn off** and choose **Turn off**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/mfa/totp/disable \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "7cfaca44e9aae775"}'
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Replace the backup codes
 
-`POST /api/admin/mfa/backup-codes/regenerate` with a current code in
+The console has no screen for this on the current release, so it is an API
+call. `POST /api/admin/mfa/backup-codes/regenerate` with a current code in
 `{"code": "123456"}` replaces all eight with new ones and returns them as
 `backup_codes`. A code from the same 30-second window as the last code that
 turning TOTP on or off or replacing backup codes accepted is refused, so wait
@@ -190,8 +237,20 @@ need proof of a factor it already holds, in the request body:
   The challenge proves a factor once and signs nobody in. The route answers
   `404` when the account has no passkey.
 
-To replace an authenticator app, send the proof to
-`POST /api/admin/mfa/totp/setup`:
+To replace an authenticator app:
+
+<div class="paths">
+<div data-path="console">
+
+On **Two-factor authentication**, enter a current code or a backup code in the
+**Code** field under **Replace the authenticator app** and choose **Replace
+the authenticator app**. Scan the new QR code and verify a code from it. The
+page then shows eight new backup codes.
+
+</div>
+<div data-path="api">
+
+Send the proof to `POST /api/admin/mfa/totp/setup`:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/mfa/totp/setup \
@@ -201,8 +260,12 @@ curl -X POST http://localhost:3001/api/admin/mfa/totp/setup \
 ```
 
 The new key replaces the old one once `POST /api/admin/mfa/totp/verify`
-accepts a code from it. A wrong proof counts toward the same lockout as a wrong
-code.
+accepts a code from it.
+
+</div>
+</div>
+
+A wrong proof counts toward the same lockout as a wrong code.
 
 Removing a passkey with `DELETE /api/admin/mfa/webauthn/credentials/{id}` takes
 the same body. When that passkey is the last factor the account holds, with no
@@ -261,7 +324,8 @@ starts.
 
 ## Reset someone's MFA
 
-A super admin who acts across every tenant can turn off another person's MFA,
+The console has no screen for this on the current release, so it is an API
+call. A super admin who acts across every tenant can turn off another person's MFA,
 for example when they lost their phone and their backup codes:
 
 ```bash
