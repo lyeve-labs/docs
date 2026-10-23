@@ -19,7 +19,7 @@ kept.
   an encrypted S3 object.
 - **Keeping a copy in your SIEM.** With `audit-pro`, each new entry is
   [streamed](audit-log-streaming.md) to Splunk, Datadog or your own HTTPS
-  endpoint 10 to 20 seconds after it is written.
+  endpoint 10 to 30 seconds after it is written.
 - **Keeping records exactly as long as a policy says.** Retention policies
   delete or archive by action and resource type, and legal holds keep what a
   case needs.
@@ -56,19 +56,27 @@ chain stays verifiable through all four, and a super admin checks it with
 ## In the admin console
 
 Open **Insight > Audit log**. The **Entries** tab lists the log, newest first,
-with the time, action, resource, user and address of each entry. Search by
-action, resource type or user id, or narrow the list with an action and a
-**From** and **To** date. **Export JSON** downloads your tenant's entries. A
-super admin also sees **Export all**, for every tenant, and **Prune**.
+with the time, action, resource, user and address of each entry. Type an
+action, resource type or user id in the search box, or pick an action under
+**All actions** and a **From** and **To** date, then choose **Search**. A
+super admin also sees **Prune**.
+
+**Export JSON**, and **Export all** for a super admin, sit beside **Prune**. On
+console v0.21.0 these buttons answer with an error instead of a file, so export
+the log with the API, as [Export the log](#export-the-log) shows.
 
 ![The Entries tab of the audit log listing recent actions, newest first, each with its time, action, resource and the user who acted.](images/audit-log.png)
 
 The **Retention and holds** tab lists the retention **Policies** and the
-**Legal holds**. **New policy** and **New hold** add one, **Release** on a
-hold removes it, and **Enforce now** runs enforcement at once. The
+**Legal holds**. **New policy** and **New hold** add one, the release button
+on a hold removes it, and **Enforce now** runs enforcement at once. The
 **Streaming** tab holds [audit log streaming](audit-log-streaming.md).
 
-![The Retention and holds tab with a policy that keeps every event on user for one year and then deletes it, and a legal hold named Case 2026-114 that protects entries on user.](images/audit-log-retention.png)
+![The Retention and holds tab with a policy that keeps every event on user for six months and archives it to default, and a legal hold named Case 2026-114 that protects entries on user.](images/audit-log-retention.png)
+
+Checking the chain, rehashing it, sending an export to S3 and the compliance
+export of a hold are done with the API. The console has no control for them on
+this release.
 
 ## Turn it on
 
@@ -86,71 +94,119 @@ answer `404`.
 
 ## Try it
 
-This needs a license with `audit`. You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+This needs a license with `audit`. Sign in as an admin. The steps read the
+`schema.create` entry that creating the `post` type in the
+[quickstart](../getting-started/quickstart.md) wrote.
 
-1. Read the newest entry:
+Read the newest entries:
 
-   ```bash
-   curl "http://localhost:3001/api/admin/audit-log?limit=1" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "data": [
-       {
-         "id": "1170a17f-5e00-4193-87ab-49d20fdef6c6",
-         "sequence": 92,
-         "tenant_id": "default",
-         "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b",
-         "action": "ai.settings.update",
-         "resource_type": "ai_settings",
-         "resource_id": "default",
-         "ip": "[::1]:35606",
-         "user_agent": "curl/8.18.0",
-         "created_at": "2026-10-01T12:09:44.045612Z",
-         "chain_hash": "8fd607e5a35021e3667cea11fb867ed75eac7802270ea75a3444ffb3f9ec9e34"
-       }
-     ],
-     "total": 92,
-     "limit": 1,
-     "offset": 0
-   }
-   ```
+Open **Insight > Audit log**. The **Entries** tab shows the newest entry on
+top, with its time, action, resource, user and address. The count of entries
+is under the title.
 
-2. Narrow it to actions on users:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/audit-log?resource_type=user&limit=10" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+You need a token in `TOKEN`. The quickstart shows how to get one.
 
-3. Download two rows as CSV:
+```bash
+curl "http://localhost:3001/api/admin/audit-log?limit=1" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/audit-log/export \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"format": "csv", "limit": 2}'
-   ```
+```json
+{
+  "data": [
+    {
+      "id": "1170a17f-5e00-4193-87ab-49d20fdef6c6",
+      "sequence": 92,
+      "tenant_id": "default",
+      "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b",
+      "action": "ai.settings.update",
+      "resource_type": "ai_settings",
+      "resource_id": "default",
+      "ip": "[::1]:35606",
+      "user_agent": "curl/8.18.0",
+      "created_at": "2026-10-01T12:09:44.045612Z",
+      "chain_hash": "8fd607e5a35021e3667cea11fb867ed75eac7802270ea75a3444ffb3f9ec9e34"
+    }
+  ],
+  "total": 92,
+  "limit": 1,
+  "offset": 0
+}
+```
 
-   ```text
-   id,user_id,action,resource_type,resource_id,ip,user_agent,ts
-   1170a17f-5e00-4193-87ab-49d20fdef6c6,3e7cc859-1207-4c7c-9af2-363fa5079e0b,ai.settings.update,ai_settings,default,****:****:****:35606,curl/8.18.0,2026-10-01T12:09:44.045612Z
-   5ab83683-a564-4900-8115-a68dd5c27dc0,3e7cc859-1207-4c7c-9af2-363fa5079e0b,schema.delete,schema,post,****:****:****:35590,curl/8.18.0,2026-10-01T12:09:41.813285Z
-   ```
+`total` holds the number of entries.
 
-4. List the retention policies. A new install has none:
+</div>
+</div>
 
-   ```bash
-   curl http://localhost:3001/api/admin/retention-policies \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Narrow it to actions on content types:
 
-   ```json
-   { "data": [], "limit": 50, "offset": 0, "total_count": 0 }
-   ```
+<div class="paths">
+<div data-path="console">
+
+Type `schema` in the search box and choose **Search**. The list shows the
+**schema.create** entry with **schema/post** as its resource. To narrow by one
+action instead, pick it under **All actions** and choose **Search**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3001/api/admin/audit-log?resource_type=schema&limit=10" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer holds the `schema.create` entry with `"resource_id": "post"`.
+
+</div>
+</div>
+
+Download two rows as CSV. Only the API exports on console v0.21.0. If you
+work in the console, sign in over the API to get a token, as
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows, and keep it in `TOKEN`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/audit-log/export \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"format": "csv", "limit": 2}'
+```
+
+```text
+id,user_id,action,resource_type,resource_id,ip,user_agent,ts
+1170a17f-5e00-4193-87ab-49d20fdef6c6,3e7cc859-1207-4c7c-9af2-363fa5079e0b,ai.settings.update,ai_settings,default,****:****:****:35606,curl/8.18.0,2026-10-01T12:09:44.045612Z
+5ab83683-a564-4900-8115-a68dd5c27dc0,3e7cc859-1207-4c7c-9af2-363fa5079e0b,schema.delete,schema,post,****:****:****:35590,curl/8.18.0,2026-10-01T12:09:41.813285Z
+```
+
+List the retention policies. A new install has none:
+
+<div class="paths">
+<div data-path="console">
+
+Open the **Retention and holds** tab. **Policies** reads **No retention
+policy** and **Legal holds** reads **Nothing is held**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/retention-policies \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "data": [], "limit": 50, "offset": 0, "total_count": 0 }
+```
+
+</div>
+</div>
 
 ## Search the log
 
@@ -220,8 +276,18 @@ answer is:
 
 ## Prune old entries
 
-`POST /api/admin/audit-log/prune` deletes entries older than a cutoff in the
-caller's tenant. It needs a super admin.
+A prune deletes entries older than a cutoff in the caller's tenant. It needs a
+super admin.
+
+<div class="paths">
+<div data-path="console">
+
+On **Insight > Audit log**, choose **Prune**. Pick a date under **Delete
+entries older than** and choose **Delete**. Pruned entries cannot be recovered
+or exported afterwards.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/audit-log/prune \
@@ -234,9 +300,14 @@ curl -X POST http://localhost:3001/api/admin/audit-log/prune \
 { "deleted": 3812 }
 ```
 
-A prune skips every entry a legal hold covers. A cutoff later than now
-answers `400`. Each prune records itself as an `audit.prune` entry with the
-cutoff, the count and the first and last sequence it removed.
+A cutoff later than now answers `400`.
+
+</div>
+</div>
+
+A prune skips every entry a legal hold covers. Each prune records itself as an
+`audit.prune` entry with the cutoff, the count and the first and last sequence
+it removed.
 
 ## Verify the chain
 
@@ -292,7 +363,24 @@ hold instead, whatever the license says.
 Enforcement runs once at start and then every 24 hours. Set
 `RETENTION_ENFORCE_INTERVAL` to a duration such as `6h` to change that.
 
-Create a policy that keeps user entries for 180 days and archives them first:
+Create a policy that keeps user entries for 180 days and archives them first.
+A super admin creates policies and holds:
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Insight > Audit log**, open **Retention and holds** and choose
+   **New policy**.
+2. Leave **Event type** empty, enter `user` in **Resource type** and `180` in
+   **Keep for, in days**.
+3. Leave **Archive before deleting** on, which the form turns on for you.
+   Enter `default` in **Archive to** and `audit-archive/` in **Path prefix**.
+4. Choose **Create**. The page says **Policy created**, and the policy reads
+   **Every event on user**, kept for **6 months**, then **Archived to
+   default**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/retention-policies \
@@ -300,6 +388,11 @@ curl -X POST http://localhost:3001/api/admin/retention-policies \
   -H "Content-Type: application/json" \
   -d '{"event_type": "", "resource_type": "user", "retention_days": 180, "archival_enabled": true, "archival_path_prefix": "audit-archive/"}'
 ```
+
+The answer is `201` with the policy, and `archival_storage` is `default`.
+
+</div>
+</div>
 
 `event_type` is the action. An empty `event_type` or `resource_type` matches
 everything. `retention_days` defaults to `365` when you leave it out. An
@@ -312,6 +405,17 @@ same second from writing one object.
 
 Create a hold:
 
+<div class="paths">
+<div data-path="console">
+
+On **Retention and holds**, choose **New hold**. Enter `Case 2026-114` in
+**Name** and `user` in **Resource type**, then choose **Create**. The form
+also filters on **Action**, **Resource id** and **Tenant**. A date range or an
+actor is set with the API.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/legal-holds \
   -H "Authorization: Bearer $TOKEN" \
@@ -319,15 +423,39 @@ curl -X POST http://localhost:3001/api/admin/legal-holds \
   -d '{"name": "Case 2026-114", "filter_resource_type": "user", "filter_from": "2026-01-01T00:00:00Z"}'
 ```
 
+</div>
+</div>
+
 Holds filter on `filter_action`, `filter_resource_type`, `filter_resource_id`,
 `filter_actor`, `filter_from`, `filter_to` and `filter_tenant_id`. `name` is
 required. A removed hold keeps protecting its entries for 30 days.
 
-Run enforcement now with `POST /api/admin/retention/enforce`. Send
-`{"cleanup_only": true}` to delete without archiving. The answer lists each
-policy with `entries_archived`, `entries_deleted` and `elapsed`.
+Run enforcement now:
 
-Export what a hold preserves:
+<div class="paths">
+<div data-path="console">
+
+On **Retention and holds**, choose **Enforce now**. The dialog asks **Enforce
+retention now?** and warns that it is not a dry run. Choose **Delete them**.
+The page reports how many policies ran and how many entries were deleted.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/retention/enforce \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+Send `{"cleanup_only": true}` to delete without archiving. The answer lists
+each policy with `entries_archived`, `entries_deleted` and `elapsed`.
+
+</div>
+</div>
+
+Export what a hold preserves. Only the API does this on this release:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/retention/compliance-export \
@@ -357,7 +485,7 @@ curl -X POST http://localhost:3001/api/admin/retention/compliance-export \
 
 With `audit-pro` on the same license as `audit`, a tenant streams each new
 entry to Splunk, Datadog or an HTTPS endpoint of its own, in order and about 10
-to 20 seconds after it is written. Streams already set up keep shipping after
+to 30 seconds after it is written. Streams already set up keep shipping after
 `audit-pro` lapses. See [Audit log streaming](audit-log-streaming.md).
 
 ## Record and read from a flow

@@ -69,30 +69,56 @@ and **Default for new tenants**.
 
 ![The Data residency page with two regions. Northwind Traders is placed in eu-west-1, and the regions EU West (Ireland) and US East (Virginia) both accept tenants.](images/data-residency.png)
 
-The console does not assign a tenant to a region. Do that over the API, as
-[Try it](#try-it) shows.
+The console does not assign a tenant to a region on this release. Do that
+over the API, as [Try it](#try-it) shows.
 
 ## Try it
 
-This defines a region, assigns a tenant to it and reads the report. You need a
-super admin token in `TOKEN`. The
+This defines a region, assigns a tenant to it and reads the report. Sign in as
+a super admin. The tenant here is `northwind`, made on
+[Tenants](tenants.md). A new install lists no tenant until you make one.
+
+Create a region:
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Settings > Data residency** and choose **New region**.
+2. Enter `eu-west-1` in **Slug** and `EU West (Ireland)` in **Name**. Leave
+   **Runs on** as `aws`.
+3. Enter `53.35` in **Latitude** and `-6.26` in **Longitude**. Leave
+   **Accepting new tenants** on.
+4. Choose **Create**. The page says **Created EU West (Ireland)**, and the
+   region is listed under **Regions** as **Accepting tenants**.
+
+</div>
+<div data-path="api">
+
+You need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Create a region:
+```bash
+curl -X POST http://localhost:3001/api/admin/regions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"slug": "eu-west-1", "display_name": "EU West (Ireland)", "provider": "aws", "coordinates": {"lat": 53.35, "long": -6.26}}'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/regions \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"slug": "eu-west-1", "display_name": "EU West (Ireland)", "provider": "aws", "coordinates": {"lat": 53.35, "long": -6.26}}'
-   ```
+The answer is `201` with the region. Copy its `id` into `REGION`.
 
-   The answer is `201` with the region. Copy its `id` into `REGION`.
+</div>
+</div>
 
-2. Find the tenant's id with `GET /api/admin/tenants` and copy it into
+Assign the tenant. Only the API does this on this release. If you work in the
+console, sign in over the API to get a token, as
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows, and keep it in `TOKEN`. Then find the region's `id` in the list from
+`GET /api/admin/regions` and copy it into `REGION`.
+
+1. Find the tenant's id with `GET /api/admin/tenants` and copy it into
    `TENANT`. A tenant is assigned by its id, not its slug.
 
-3. Assign the tenant:
+2. Assign it:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/tenants/$TENANT/region \
@@ -111,36 +137,51 @@ super admin token in `TOKEN`. The
    }
    ```
 
-4. Read the report:
+Read the report:
 
-   ```bash
-   curl http://localhost:3001/api/admin/residency/report \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   It lists `regions`, every tenant's assignment under `tenant_regions`, and a
-   `summary`:
+Open **Settings > Data residency**. **Where tenants are** reads **1** under
+**Regions**, **Tenants** and the region's count, and **0** under
+**Replicated** and **Not placed**. The table below lists **Northwind
+Traders** in **eu-west-1** with no replica and when it was assigned.
 
-   ```json
-   {
-     "total_regions": 1,
-     "total_tenants": 1,
-     "tenants_per_region": {"eu-west-1": 1},
-     "replicating_count": 0,
-     "unassigned_count": 0
-   }
-   ```
+</div>
+<div data-path="api">
 
-5. Ask for the nearest region the way a sign-up page would, with no credentials:
+```bash
+curl http://localhost:3001/api/admin/residency/report \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/regions/nearest \
-     -H "Content-Type: application/json" \
-     -d '{"lat": 48.85, "long": 2.35}'
-   ```
+It lists `regions`, every tenant's assignment under `tenant_regions`, and a
+`summary`:
 
-   The answer is the region with `distance_km`, about `781` from Paris to
-   Dublin.
+```json
+{
+  "total_regions": 1,
+  "total_tenants": 1,
+  "tenants_per_region": {"eu-west-1": 1},
+  "replicating_count": 0,
+  "unassigned_count": 0
+}
+```
+
+</div>
+</div>
+
+Ask for the nearest region the way a sign-up page would, with no credentials.
+This is a public Content API route, the same on both paths:
+
+```bash
+curl -X POST http://localhost:3002/api/v1/regions/nearest \
+  -H "Content-Type: application/json" \
+  -d '{"lat": 48.85, "long": 2.35}'
+```
+
+The answer is the region with `distance_km`, about `781` from Paris to
+Dublin.
 
 ## Turn it on
 

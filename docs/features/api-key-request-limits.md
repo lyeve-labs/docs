@@ -43,14 +43,13 @@ still change before it is marked stable.
 ## In the admin console
 
 Open **Access > API keys**. The **Usage (this month)** column shows each key's
-requests, with a bar for a key that has a monthly limit. To change a key's
-limits, choose its **Request limits** button. The drawer has **Per hour**,
-**Per day** and **Per month**, where `0` sets no ceiling, and **Save** applies
-them. The **New key** form has the same three fields.
+requests, with a bar for a key that has a monthly limit and its other limits
+below it, such as **Also 3/h**. To change a key's limits, choose its
+**Request limits** button. The drawer has **Per hour**, **Per day** and
+**Per month**, where `0` sets no ceiling, and **Save** applies them. The
+**New key** form has the same three fields under **Request limits**.
 
-![The Request limits drawer for the partner-feed key, open over the API keys list, with a limit of 200 requests per month.](images/api-key-request-limits.png)
-
-The sections below cover the same three limits over the API.
+![The Request limits drawer for the partner-feed key, open over the API keys list, with 3 requests per hour, no daily limit and 1000 per month.](images/api-key-request-limits.png)
 
 ## How it works
 
@@ -66,66 +65,120 @@ The sections below cover the same three limits over the API.
 
 ## Try it
 
-Run this on an install whose license carries `apikey-pro`. You need an admin
-token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how
-to get one, and creates the `post` content type used here.
+Run this on an install whose license carries `apikey-pro`, signed in as an
+`admin` or `super_admin`. The [quickstart](../getting-started/quickstart.md)
+creates the `post` content type used here, and the key's `viewer` role needs
+an access rule that reads `post`, as step 1 of
+[API keys](api-keys.md#try-it) creates.
 
-1. Create a key that may make three requests an hour:
+Create a key that may make three requests an hour:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/api-keys \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "partner-feed", "roles": ["site-reader"], "scopes": ["content:read"], "hourly_limit": 3, "monthly_limit": 1000}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with `"hourly_limit": 3` and `"monthly_limit": 1000`.
-   Copy `raw_key` into `KEY` and `id` into `KEY_ID`. The `site-reader` role
-   needs an access rule that reads `post`, as step 1 of
-   [API keys](api-keys.md#try-it) creates.
+1. Open **Access > API keys** and choose **New key**. Enter `partner-feed` in
+   **Name**. Under **Roles**, untick **editor**, which the form ticks for you,
+   and tick **viewer**.
+2. Leave **Content** on **Every schema** with **Read** ticked.
+3. Under **Request limits**, enter `3` in **Per hour** and `1000` in
+   **Per month**, then choose **Create**.
+4. Copy the key from **API key created** into `KEY`. It is shown once.
 
-2. Call the Content API four times with it:
+</div>
+<div data-path="api">
 
-   ```bash
-   for i in 1 2 3 4; do
-     curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3002/api/v1/content/post \
-       -H "X-API-Key: $KEY"
-   done
-   ```
+You need a super admin token in `TOKEN`. The quickstart shows how to get one.
 
-   You see `200`, `200`, `200`, then `429`. The fourth answer carries
-   `Retry-After` with the seconds left in the hour.
+```bash
+curl -X POST http://localhost:3001/api/admin/api-keys \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "partner-feed", "roles": ["viewer"], "scopes": ["content:read"], "hourly_limit": 3, "monthly_limit": 1000}'
+```
 
-3. Read the key's use this month:
+The answer is `201` with `"hourly_limit": 3` and `"monthly_limit": 1000`.
+Copy `raw_key` into `KEY` and `id` into `KEY_ID`. `raw_key` is shown once.
 
-   ```bash
-   curl http://localhost:3001/api/admin/usage/api-key/$KEY_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   ```json
-   { "api_key_id": "bab86a15-...", "tenant_id": "default", "billing_period": "2026-10", "requests": 3, "bytes_in": 0, "bytes_out": 9 }
-   ```
+Call the Content API four times with the key. This is the same on both paths:
 
-   The refused fourth call is not counted.
+```bash
+for i in 1 2 3 4; do
+  curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3002/api/v1/content/post \
+    -H "X-API-Key: $KEY"
+done
+```
 
-4. Clear the hourly limit, and the key is served again:
+You see `200`, `200`, `200`, then `429`. The fourth answer carries
+`Retry-After` with the seconds left in the hour.
 
-   ```bash
-   curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/limits \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"hourly_limit": 0}'
-   ```
+Read the key's use this month:
 
-   The answer is the key with `"hourly_limit": 0` and its monthly limit
-   unchanged, because a field the body leaves out keeps its value.
+<div class="paths">
+<div data-path="console">
+
+On **Access > API keys**, the key's row shows **3 req** under **Usage (this
+month)**, with **Also 3/h** below the bar. The refused fourth call is not
+counted.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/usage/api-key/$KEY_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "api_key_id": "b0872381-...", "tenant_id": "default", "billing_period": "2026-10", "requests": 3, "bytes_in": 0, "bytes_out": 540 }
+```
+
+The refused fourth call is not counted.
+
+</div>
+</div>
+
+Clear the hourly limit, and the key is served again:
+
+<div class="paths">
+<div data-path="console">
+
+Choose the key's **Request limits** button. Set **Per hour** to `0` and choose
+**Save**. **Also 3/h** goes from the row, and **Per month** keeps `1000`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/limits \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"hourly_limit": 0}'
+```
+
+The answer is the key with `"hourly_limit": 0` and its monthly limit
+unchanged, because a field the body leaves out keeps its value.
+
+</div>
+</div>
 
 ## Set or change a limit
 
+<div class="paths">
+<div data-path="console">
+
+Give a new key limits under **Request limits** in the **New key** form, or
+choose an existing key's **Request limits** button on **Access > API keys**,
+change **Per hour**, **Per day** or **Per month** and choose **Save**.
+
+</div>
+<div data-path="api">
+
 Give a new key limits with `hourly_limit`, `daily_limit` and `monthly_limit` on
-`POST /api/admin/api-keys`, as in step 1, or change the limits of an existing
-key:
+`POST /api/admin/api-keys`, as in [Try it](#try-it), or change the limits of
+an existing key:
 
 ```bash
 curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/limits \
@@ -137,8 +190,12 @@ curl -X PATCH http://localhost:3001/api/admin/api-keys/$KEY_ID/limits \
 `PATCH /api/admin/api-keys/{id}/monthly-limit` still sets the monthly limit
 alone.
 
-Both routes take an `admin` or `super_admin` with a signed-in session. An admin
-token or another API key is refused.
+</div>
+</div>
+
+Both routes, and the console's forms, take an `admin` or `super_admin` with a
+signed-in session. An [admin token](../how-to/admin-tokens.md) or another API
+key is refused.
 
 Each limit is judged on its own:
 

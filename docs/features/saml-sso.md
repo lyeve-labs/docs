@@ -42,11 +42,14 @@ and a **Test sign-in**. **Certificates to renew** counts the certificates that
 are expired or close to expiry.
 
 - **New provider** asks for the **Entity ID**, **Sign-on URL**, **Their signing
-  certificate** and **Attribute mapping** from your identity provider. Turn on
-  **Show on the sign-in page** to put its button on the login page.
+  certificate** and **Attribute mapping** from your identity provider. Leave
+  **Show on the sign-in page** on to put its button on the login page.
 - To rotate our certificate, choose the refresh button on a provider. The new
   certificate waits under **Waiting to be promoted**. Once the provider has
   it, choose **Promote**.
+
+The templates for Okta, Azure AD and OneLogin are served by the API. The
+console has no template picker on this release.
 
 ![Access > SAML SSO with two providers and their certificate expiry dates, and a new certificate for azure-ad waiting to be promoted.](images/saml-sso.png)
 
@@ -97,18 +100,13 @@ On an instance with several tenants, the sign-in routes take the tenant from
 the domain the request arrives on. Map a domain to each tenant that uses SAML.
 See [tenants](tenants.md).
 
-:::caution
-The admin API accepts only `application/json` and `multipart/form-data`
-bodies, and refuses others with `415`. A provider that posts its answer as an
-ordinary HTML form (`application/x-www-form-urlencoded`, which the SAML POST
-binding uses) is refused before LyEve reads it. Test a full sign-in against
-your provider before you rely on it.
-:::
-
 ## Try it
 
-You need a super admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+Sign in as a super admin. Read the settings a template holds, which only the
+API serves on this release. If you work in the console, sign in over the API
+to get a token, as
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows, and keep it in `TOKEN`.
 
 1. List the templates:
 
@@ -138,35 +136,53 @@ You need a super admin token in `TOKEN`. The
    signature settings, the attribute mapping and an `idp_cert_hint` saying
    where Okta shows its certificate.
 
-3. Create the provider with the values from Okta:
+Create the provider with the values from Okta:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/saml-providers \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "name": "okta",
-       "entity_id": "http://www.okta.com/exk1a2b3c4d5e6f7g8h9",
-       "sso_url": "https://example.okta.com/app/example_lyeve/exk1a2b3c4d5e6f7g8h9/sso/saml",
-       "idp_cert": "-----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----",
-       "attributes_mapping": {"email": "email", "roles": "groups"},
-       "enabled": true
-     }'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the provider, its `sp_cert_active`, and
-   `sp_cert_expires_at` and `idp_cert_expires_at`. Copy `id` into
-   `PROVIDER_ID`.
+1. Open **Access > SAML SSO** and choose **New provider**.
+2. Enter `okta` in **Name**. It is the label on the sign-in button and the
+   name in the provider's URLs.
+3. Paste Okta's identifier into **Entity ID**, its single sign-on URL into
+   **Sign-on URL** and its certificate into **Their signing certificate**.
+   **Attribute mapping** starts as `email=email` and `roles=groups`.
+4. Leave **Show on the sign-in page** on and choose **Create**. The page says
+   **Created okta**, and the row links its **Metadata**.
 
-4. Fetch the metadata to give Okta:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/auth/saml/okta/metadata
-   ```
+You need a super admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-   The answer is the service provider's metadata XML.
+```bash
+curl -X POST http://localhost:3001/api/admin/saml-providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "okta",
+    "entity_id": "http://www.okta.com/exk1a2b3c4d5e6f7g8h9",
+    "sso_url": "https://example.okta.com/app/example_lyeve/exk1a2b3c4d5e6f7g8h9/sso/saml",
+    "idp_cert": "-----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----",
+    "attributes_mapping": {"email": "email", "roles": "groups"},
+    "enabled": true
+  }'
+```
 
-5. Open the admin console's login page. It offers the provider.
+The answer is `201` with the provider, its `sp_cert_active`, and
+`sp_cert_expires_at` and `idp_cert_expires_at`. Copy `id` into
+`PROVIDER_ID`.
+
+</div>
+</div>
+
+Give Okta the metadata at
+`http://localhost:3001/api/admin/auth/saml/okta/metadata`, which needs no
+sign-in, as [Register LyEve with the provider](#register-lyeve-with-the-provider)
+shows. Then open the admin console's login page. It offers **Sign in with
+okta**, which sends you to Okta and back into the console as the account with
+your email.
 
 ## Register LyEve with the provider
 
@@ -207,6 +223,20 @@ Only a path on the same site is accepted.
 
 Rotate in two steps so sign-in never breaks:
 
+<div class="paths">
+<div data-path="console">
+
+1. On **Access > SAML SSO**, choose the refresh button on the provider. The
+   new certificate is listed under **Waiting to be promoted**, and the
+   metadata then lists both certificates.
+2. Wait until the provider has read the new metadata, or hand it the new
+   certificate with **Copy certificate**. Then choose **Promote**. The dialog
+   asks **Promote the new certificate for okta?**. Choose **Promote**, and the
+   page says **okta is using the new certificate**.
+
+</div>
+<div data-path="api">
+
 1. Stage a new certificate. The answer shows it as `sp_cert_next`, and the
    metadata then lists both certificates:
 
@@ -224,8 +254,10 @@ Rotate in two steps so sign-in never breaks:
    ```
 
 Both calls return the provider. Promoting before staging answers
-`400 no next certificate configured`. The console has the same two steps. See
-[In the admin console](#in-the-admin-console).
+`400 no next certificate configured`.
+
+</div>
+</div>
 
 ## Settings
 
@@ -282,7 +314,7 @@ refused on them with `403`.
 | `400` | `no next certificate configured` | `rollover-cert` was called before `prepare-cert`. |
 | `400` | `key is required` | `apply` was called without a template key. |
 | `404` | `template not found` | No template has that key. |
-| `415` | `unsupported media type, expected application/json or multipart/form-data` | A body in any other format. |
+| `415` | `unsupported media type, expected application/json or multipart/form-data` | A body in any other format on a provider or template route. |
 | `404` | `The requested endpoint does not exist.` | The instance started without a license that carries `saml`. |
 | `402` | `payment_required` | The license stopped carrying `saml` while the instance was running. |
 
