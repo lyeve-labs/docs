@@ -86,8 +86,8 @@ The tab labels name the releases the pages describe, which `versions.json` holds
 }
 ```
 
-After each engine or console release, the docs release that follows checks every path against
-it and moves the version there.
+After each engine or console release, the docs release that follows checks every console and
+API block against them and moves the versions there.
 
 ## Structure
 
