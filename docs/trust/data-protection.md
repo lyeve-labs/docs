@@ -121,9 +121,10 @@ A signed-in person can export their own data without an admin, as
 [Analytics](../features/analytics.md#let-users-export-or-erase-their-data)
 describes. It runs the same features, in the tenant the request is made in,
 and answers one NDJSON file. The tenant chooses which features' sections it
-offers and which roles may export. Two things in it differ from the export
-above, so that it shows nothing about someone else who held or used the
-person's address:
+offers and which roles may export, and a super admin chooses what a person
+proves before exporting. Two things in it differ from the export above, so
+that it shows nothing about someone else who held or used the person's
+address:
 
 - Rows found through an email address (mail, sign-in links and attempts,
   comments, form submissions and flow runs) appear only when they were created
