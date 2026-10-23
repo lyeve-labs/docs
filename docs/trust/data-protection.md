@@ -72,7 +72,8 @@ characters, with no control characters. Anything else, such as a first name,
 answers `422` with
 `identifier must be an email address, an account id or an IP address`, because
 erasure would redact that word in the records of everyone whose text holds it.
-Every feature that stores personal data contributes its
+A user id names the same account in upper or lower case, in braces, with a
+`urn:uuid:` prefix or without hyphens. Every feature that stores personal data contributes its
 section, and the response merges them:
 
 | Field | Meaning |
@@ -90,6 +91,20 @@ every tenant. The result comes back keyed per tenant under `tenants` and lists
 different people in two tenants. On a single-tenant install the sweep reaches the
 `default` tenant alone, and `scope` says `tenants_covered: 1`. The sweep is API
 only on v0.22.0: the console asks of your own tenant.
+
+The export looks for the person under the addresses an erasure reaches (see
+[Right to erasure](#right-to-erasure)), with the same rule for tenants: an
+address read from an account is listed only in that account's tenant. Beside
+each feature's own section, `plugins.schema_presets` lists:
+
+- `comments`: each comment whose author an erasure anonymizes, with its id,
+  `author_email`, `author_name` and body.
+- `form_submissions`: each submission an erasure deletes, with its id and the
+  `data` it posted.
+
+When the person's addresses cannot be read, the server answers `503` with
+`the subject's addresses could not be read; export was not attempted`, and
+nothing is read. Repeat the request.
 
 The export is never masked (see [Masking](#masking)), so the bundle carries the
 subject's data as a subject access request requires.
@@ -140,7 +155,7 @@ The status says whether the erasure finished:
 |---|---|
 | `200` | Every part erased, and `complete` is `true`. When a legal hold stopped the erasure, `complete` is `false`, `holds` names the holds and nothing was erased. |
 | `207` | Part of the erasure did not finish, and `complete` is `false`. The account is not erased: it stays signed out and locked. Repeat the request to finish the erasure. |
-| `503` | Nothing was erased, because the legal hold check could not answer or the person could not be signed out. Repeat the request. |
+| `503` | Nothing was erased, because the legal hold check could not answer, the person could not be signed out, or the person's addresses could not be read. Repeat the request. |
 
 The answer carries:
 
@@ -183,20 +198,33 @@ tenant. That includes accounts a tenant's identity provider, SCIM directory or
 magic link sign-up created, and what sign-in keeps about them: the SCIM
 directory record, with its external id and stored attributes, and the OAuth
 provider links. The account row itself stays, with its address replaced by
-`erased-<user id>@localhost` and its roles cleared.
+`erased-<user id>@localhost` and its roles cleared. An OAuth provider link whose
+address you name is erased even when no account holds that address. The links
+are erased just before the account, and only when every other part has erased,
+so a repeated request still finds the addresses they hold.
 
-Some data is kept under an email address rather than an account. An erasure by
-user id looks for it under both addresses the account holds: its own and the
-one its identity provider asserted. An erasure by address looks under that
-address alone. It reaches:
+Some data is kept under an email address rather than an account. At the start
+of each run, the erasure works out every address of the person:
 
-- Mail sent to the address, in every tenant: the recipient of each sent
-  message, delivery events, opens and clicks with their IP address and user
-  agent, bounces and suppressions. A suppression is deleted. Everywhere else
-  the recipient is replaced with `[redacted]`, and the subject and body of a
-  sent message stay.
-- Magic link sign-in links and the record of each sign-in attempt, in every
-  tenant. Both are deleted.
+- The address you name, when you erase by address. It is reached in every
+  tenant.
+- For each account the identifier names, the account's own address, the
+  address its identity provider asserted and the address of each sign-in
+  identity linked to it. Each is reached only in that account's tenant,
+  because that tenant's identity provider or admins control it.
+
+When the addresses cannot be read, nothing is erased. The erasure reaches:
+
+- Mail sent to one of those addresses: the recipient of each sent message,
+  delivery events, opens and clicks with their IP address and user agent,
+  bounces and suppressions. A suppression is deleted. Everywhere else the
+  recipient is replaced with `[redacted]`, and the subject and body of a sent
+  message stay. Mail recorded with no tenant is reached only by the address
+  you name.
+- Magic link sign-in links and the record of each sign-in attempt under one of
+  those addresses. Both are deleted. A link or attempt recorded with no tenant
+  is reached by the address you name and by the addresses of accounts in the
+  `default` tenant.
 - Comments in a `comments` content type, such as the one the
   [`comments` preset](../reference/schema-presets.md) creates, whose
   `author_email` is the address. The `author_email` becomes
@@ -208,11 +236,11 @@ address alone. It reaches:
   a message asking for a reply to it, stays.
 
 Comments and form submissions are erased only in the person's own tenant,
-because the same address may belong to someone else in another. An erasure by
-user id uses the account's tenant. An erasure by address uses the tenant of
-each account whose address, or address from its identity provider, is the one
-named. When no account holds the address, it uses the tenant the request is
-made in: your own, or the tenant you name with `X-Tenant-ID` (see
+because the same address may belong to someone else in another. An address
+read from an account uses that account's tenant. The address you name uses the
+tenant of each account whose address, or address from its identity provider,
+is that address. When no account holds the address, it uses the tenant the
+request is made in: your own, or the tenant you name with `X-Tenant-ID` (see
 [Tenants](../features/tenants.md)).
 
 An address the person used in the past and no longer holds is out of reach.
@@ -225,7 +253,18 @@ checked is not treated as no hold: the server answers `503` with
 can be retried. `LYEVE_GDPR_HOLD_CHECK=proceed` changes that to erase anyway.
 When the person cannot be signed out, the server answers `503` with
 `the subject could not be signed out; erasure was not attempted`, and nothing
-is erased either. Repeat the request.
+is erased either. When the person's addresses cannot be read, the server
+answers `503` with
+`the subject's addresses could not be read; erasure was not attempted`. The
+person is already signed out and locked by then, and nothing is erased. Repeat
+the request.
+
+An erasure keeps running when the caller disconnects or a proxy gives up, and
+a long one still gets its answer, because the erase request has no write
+timeout. A run stops after 15 minutes, and the parts it did not reach make the
+answer a `207`. Every run logs its outcome as `subject_erasure_outcome`, with
+the status, whether it completed, the rows and the parts that failed, even when
+nobody reads the answer.
 
 In the audit log, erasure redacts the subject's entries in place rather than
 deleting them: the user id is cleared, the address and user agent become
