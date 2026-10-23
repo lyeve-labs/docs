@@ -62,7 +62,7 @@ This creates a draft, publishes it, rolls it back and schedules it. For the cons
 you are signed in to the admin console. For the API steps, you need a token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-**1. Create a `post` content type with draft and publish.** Only the API turns on drafts and
+**1. Create a `story` content type with draft and publish.** Only the API turns on drafts and
 publishing. The Schema builder in console v0.21.0 has no switch for them, so run this call
 even when you follow the console steps after it.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
@@ -72,7 +72,7 @@ shows how to get a token with your console account:
 curl -X POST http://localhost:3001/api/admin/schemas \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "post", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "body", "field_type": "rich_text"}]}'
+  -d '{"name": "story", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "body", "field_type": "rich_text"}]}'
 ```
 
 **2. Create an entry.**
@@ -80,9 +80,9 @@ curl -X POST http://localhost:3001/api/admin/schemas \
 <div class="paths">
 <div data-path="console">
 
-1. Open **Content** and pick **post**.
+1. Open **Content** and pick **story**.
 2. Choose **New entry**.
-3. Enter `Hello` in **Title** and `First post.` in **Body**, then choose **Create**.
+3. Enter `Hello` in **Title** and `First story.` in **Body**, then choose **Create**.
 
 The list shows the entry as a `draft`, with a slug made from its title. Choose its title to
 open it.
@@ -96,25 +96,25 @@ The content type requires `title`, so it goes in `body` as well as beside it:
 curl -X POST http://localhost:3001/api/admin/content \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"schema": "post", "slug": "hello", "title": "Hello", "body": {"title": "Hello", "body": "<p>First post.</p>"}}'
+  -d '{"schema": "story", "slug": "hello", "title": "Hello", "body": {"title": "Hello", "body": "<p>First story.</p>"}}'
 ```
 
 ```json
 {
-  "id": "ad39fb3d-eb5a-47ce-9cd5-e7d421acaa98",
-  "schema": "post",
+  "id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd",
+  "schema": "story",
   "tenant_id": "default",
   "slug": "hello",
   "title": "Hello",
-  "body": { "title": "Hello", "body": "<p>First post.</p>" },
+  "body": { "title": "Hello", "body": "<p>First story.</p>" },
   "meta": {},
   "status": "draft",
   "timezone": "UTC",
-  "created_by": "12dd433d-c110-4809-b476-12ef360afe7f",
-  "updated_by": "12dd433d-c110-4809-b476-12ef360afe7f",
+  "created_by": "f1b49902-1ab9-44d3-91f4-e3d9c98cffe7",
+  "updated_by": "f1b49902-1ab9-44d3-91f4-e3d9c98cffe7",
   "current_rev": 1,
-  "created_at": "2026-10-02T05:06:17.627726Z",
-  "updated_at": "2026-10-02T05:06:17.627726Z"
+  "created_at": "2026-10-23T11:24:59.017672858Z",
+  "updated_at": "2026-10-23T11:24:59.017672858Z"
 }
 ```
 
@@ -196,17 +196,17 @@ curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/rollback \
 {
   "message": "rolled back to revision 1",
   "new_revision": {
-    "id": "fc1659a6-afa4-48e5-9089-b786fbb45d94",
-    "entry_id": "ad39fb3d-eb5a-47ce-9cd5-e7d421acaa98",
+    "id": "b0465eb5-55ae-43cf-b8fe-80f5c58200cc",
+    "entry_id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd",
     "tenant_id": "default",
     "revision_num": 3,
     "title": "Hello",
-    "body": { "title": "Hello", "body": "<p>First post.</p>" },
+    "body": { "title": "Hello", "body": "<p>First story.</p>" },
     "meta": {},
     "status": "draft",
     "change_note": "rolled back to revision 1",
-    "created_by": "12dd433d-c110-4809-b476-12ef360afe7f",
-    "created_at": "2026-10-02T05:06:34.085365Z"
+    "created_by": "f1b49902-1ab9-44d3-91f4-e3d9c98cffe7",
+    "created_at": "2026-10-23T11:25:15.651009706Z"
   }
 }
 ```
@@ -243,23 +243,23 @@ status. Choose a title to open the entry.
 <div data-path="api">
 
 `GET /api/admin/content` lists entries, newest change first, 50 at a time by default and at
-most 500. Narrow it with `?schema=post` and `?status=published`, and page with `limit` and
+most 500. Narrow it with `?schema=story` and `?status=published`, and page with `limit` and
 `offset`:
 
 ```bash
-curl "http://localhost:3001/api/admin/content?schema=post&limit=2" \
+curl "http://localhost:3001/api/admin/content?schema=story&limit=2" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ```json
 {
   "data": [
-    { "id": "46abdfd4-5ad2-4687-a231-805a2abc52f7", "schema": "post", "slug": "first", "title": "Draft post, edited", "status": "published", "current_rev": 2 },
-    { "id": "297e7c4a-9fcb-4c6e-b0a4-123870aecdaa", "schema": "post", "slug": "console-post-ump346", "title": "Console post", "status": "draft", "current_rev": 3 }
+    { "id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd", "schema": "story", "slug": "hello", "title": "Hello", "status": "draft", "current_rev": 3 },
+    { "id": "200e7e4b-2037-46be-8516-bf3f1243a494", "schema": "story", "slug": "third", "title": "Third story", "status": "draft", "current_rev": 1 }
   ],
   "limit": 2,
   "offset": 0,
-  "total_count": 6
+  "total_count": 3
 }
 ```
 

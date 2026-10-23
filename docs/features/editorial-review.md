@@ -76,7 +76,7 @@ For the console steps, you are signed in to the admin console as an `admin` or
 `super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-**1. Create a `post` content type with draft and publish.** Only the API turns on drafts and
+**1. Create a `blog_post` content type with draft and publish.** Only the API turns on drafts and
 publishing. The Schema builder in console v0.21.0 has no switch for them, so run this call
 even when you follow the console steps after it.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
@@ -86,7 +86,7 @@ shows how to get a token with your console account:
 curl -X POST http://localhost:3001/api/admin/schemas \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "post", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text"}, {"name": "text", "field_type": "text"}]}'
+  -d '{"name": "blog_post", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text"}, {"name": "text", "field_type": "text"}]}'
 ```
 
 **2. Create a draft entry in it.**
@@ -94,7 +94,7 @@ curl -X POST http://localhost:3001/api/admin/schemas \
 <div class="paths">
 <div data-path="console">
 
-Open **Content**, pick **post** and choose **New entry**. Enter `Draft post` in **Title** and
+Open **Content**, pick **blog_post** and choose **New entry**. Enter `Draft post` in **Title** and
 `Body.` in **Text**, then choose **Create**. The list shows the entry as `draft`. Open it
 from there.
 
@@ -105,7 +105,7 @@ from there.
 curl -X POST http://localhost:3001/api/admin/content \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"schema": "post", "slug": "first", "title": "Draft post", "body": {"text": "Body."}}'
+  -d '{"schema": "blog_post", "slug": "first", "title": "Draft post", "body": {"text": "Body."}}'
 ```
 
 Copy the entry's `id` into `ENTRY`.
@@ -119,7 +119,7 @@ Copy the entry's `id` into `ENTRY`.
 <div data-path="console">
 
 1. Open **Reviews** and choose **New definition**.
-2. Enter `Blog review` in **Name** and `blog` in **Slug**, and pick **post** in
+2. Enter `Blog review` in **Name** and `blog` in **Slug**, and pick **blog_post** in
    **Content schema**. **Publish on approval** is on.
 3. Under **Stages, in order**, enter `Copy edit` in **Stage name**, `editor` in
    **Required role** and `24` in **SLA, hours**.
@@ -142,7 +142,7 @@ curl -X POST http://localhost:3001/api/admin/review/definitions \
   -d '{
         "name": "Blog review",
         "slug": "blog",
-        "content_schema": "post",
+        "content_schema": "blog_post",
         "stages": [
           {"name": "Copy edit", "required_role": "editor", "sla_duration_seconds": 86400},
           {"name": "Legal", "required_role": "legal"}
@@ -164,8 +164,9 @@ The answer is `201` with the definition and `"publish_on_approve": true`. Copy i
 Open the entry. Its **Review** card shows **Not under review.**
 
 1. Pick **Blog review** in **Definition**.
-2. Keep **Assignee**, which starts as you. **More assignees** adds others, for a stage that
-   needs several approvals. Someone who may not list the accounts types user ids instead.
+2. Keep **Assignee**, which starts as you. Someone who may not list the accounts types a
+   user id instead. **More assignees**, for a stage that needs several approvals, needs
+   `review-pro`.
 3. Choose **Start review**.
 
 The card shows **Stage 1 of 2: Copy edit**, the status **Pending review**, the assignee and
@@ -310,10 +311,8 @@ there is no ceiling.
 ## Escalate, ask for several approvals, and skip stages
 
 With `review-pro`, a tenant holds any number of definitions, and each stage can take three
-more settings. In the console's **New definition** form, a stage with an SLA names who takes
-over when it passes: under **On an SLA breach, hand it to**, choose **A user** and pick the
-account by email, or **A role** and type the role. **Approvals needed** sets the quorum, and
-**Only when the field** sets the condition.
+more settings. The console's **New definition** form shows them on each stage as
+**On an SLA breach, hand it to**, **Approvals needed** and **Only when the field**.
 
 | Stage setting | What it does |
 |---|---|

@@ -308,10 +308,9 @@ field and the mode.
 <div class="paths">
 <div data-path="console">
 
-On **Insight > Imports**, under **Mapping templates**, choose **New template**. Enter a
-**Name**, pick the **Content type** and what happens **When an entry already exists**, map
-each **Column in the file** to a **Field** with its **Transform**, and choose **Create**.
-Without the license, the section says that saving a template needs one.
+Saving a template in the console needs `content-pro`. Without it, **Mapping templates** on
+**Insight > Imports** says that saving a template needs a license, and that templates already
+saved keep applying.
 
 </div>
 <div data-path="api">

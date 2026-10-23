@@ -101,9 +101,9 @@ Copy the `id` from the answer into `MEDIA_ID`.
 4. Choose **Build URL**.
 
 The **Signed URL** appears below with the time it stops working, and its button
-copies it. Copy it into `URL`.
+copies it. It starts with the address you opened the console at. Copy it into `URL`.
 
-![The Transform URL section of an image's preview, set to 800 by 450 with the Cover fit and WebP, built to expire in an hour, and the signed URL it built with the time it stops working.](images/image-transforms.png)
+![The Transform URL section of the preview of hero.png, set to 400 by 400 with the engine's default fit and WebP, built to expire in an hour, and the signed URL it built on http://localhost:8080 with the time it stops working.](images/image-transforms.png)
 
 </div>
 <div data-path="api">

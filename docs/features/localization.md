@@ -156,7 +156,7 @@ An empty field names the locale a reader gets instead.
 curl -X POST http://localhost:3001/api/admin/content/$ENTRY/translations \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"locale": "fr", "title": "Bonjour", "body": {"text": "Premier article."}, "translation_status": "translated"}'
+  -d '{"locale": "fr", "title": "Bonjour", "body": {"title": "Bonjour", "text": "Premier article."}, "translation_status": "translated"}'
 ```
 
 The answer is `201` with the translation's `locale`, `title`, `body` and
@@ -166,7 +166,9 @@ The answer is `201` with the translation's `locale`, `title`, `body` and
 </div>
 
 **5. Read the entry as a Canadian French reader would.** This is a Content API read, the
-call your site makes, whichever way you wrote the entry:
+call your site makes, whichever way you wrote the entry. It needs a token in `TOKEN`.
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows how to get one with your console account:
 
 ```bash
 curl "http://localhost:3002/api/v1/content/article/$ENTRY?locale=fr-CA" \
@@ -203,9 +205,9 @@ curl "http://localhost:3001/api/admin/content/$ENTRY/translations?schema=article
 ```
 
 The answer lists the translations, the `localized_fields`, and a `completeness` entry per
-locale with `done`, `total` and `missing`. Here `done` is `1` and `missing` names `title`,
-because this translation holds its title beside `body` rather than in it. Send the title in
-`body` too, as the console does, and it counts.
+locale with `done`, `total` and `missing`. Here `done` is `2` of `2` and `missing` is empty.
+A translated field counts once it is in `body`, which is why step 4 sends the title there as
+well as beside it.
 
 </div>
 </div>

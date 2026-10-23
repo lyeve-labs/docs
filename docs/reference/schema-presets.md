@@ -84,10 +84,9 @@ preset you saved and only stops you saving more.
 <div class="paths">
 <div data-path="console">
 
-Open **Presets** and use **Save a preset from a URL or a file**. You can give it a URL,
-upload a file or paste the document. Without Schema Pro, **Use a preset** says that saving
-your own presets from a URL or a file is not included in the license, and the built-in
-presets stay.
+Saving your own preset in the console needs Schema Pro. Without it, **Use a preset** says
+that saving your own presets from a URL or a file is not included in the license, and lists
+only the built-in presets.
 
 </div>
 <div data-path="api">
