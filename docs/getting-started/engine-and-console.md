@@ -142,7 +142,7 @@ What the less obvious lines do:
 | `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL` | Where the console's server reaches the engine: through the proxy, by its name inside the network |
 | `ADMIN_CONSOLE_KEY` | The same value on both sides. The console signs each call with the browser's address, so sign-in limits count each person rather than the console |
 | `TRUSTED_PROXIES` | The network's address range, which the `networks` block fixes. The engine then believes the client address the proxy passes on |
-| `engine-state` volume | Keeps the engine's signing key. Without it, every restart signs everyone out |
+| `engine-state` volume | Keeps the engine's signing key, so tokens it issued stay valid. Sessions still end at a restart, once each access token expires, because refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, and this stack runs none |
 
 ## 2. Write the secrets
 
@@ -187,25 +187,63 @@ the engine a few more seconds, then read `docker compose logs engine`.
 
 ## 4. Create the first administrator
 
+The setup token is the `SETUP_TOKEN` line of your `.env`:
+
+```bash
+grep SETUP_TOKEN .env
+```
+
+The password has to meet the default policy: at least 12 characters, with an upper-case letter,
+a lower-case letter and a digit, and not a common password.
+
+<div class="paths">
+<div data-path="console">
+
 Open `http://localhost:8080`. A new install sends you to the setup page.
 
-![The setup page asks for the setup token, an email address and a password for the first super admin.](images/setup-first-admin.png)
+![The setup page asks for the setup token, an email address and a password, typed twice, for the first super admin.](images/setup-first-admin.png)
 
-1. Paste the setup token. It is the `SETUP_TOKEN` line of your `.env`:
-
-   ```bash
-   grep SETUP_TOKEN .env
-   ```
-
-2. Enter your email address and a password. The default policy asks for at least 12 characters,
-   with an upper-case letter, a lower-case letter and a digit, and refuses common passwords.
+1. Paste the setup token into **Setup token**.
+2. Enter your email address in **Email**, and the password in **Password** and again in
+   **Confirm password**.
 3. Choose **Create super admin account**.
 
-The console signs you in and opens the **Dashboard**. The account holds the `super_admin` role,
-which can do everything, including creating the other accounts. Next time, sign in at the same
-address:
+The console signs you in and opens the **Dashboard**. Next time, sign in at the same address:
 
-![The sign-in form, with email, password, a forgotten password link and a sign-in link by email.](images/sign-in.png)
+![The sign-in form, with email, password, an optional organization, a forgotten password link and a sign-in link by email.](images/sign-in.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:8080/api/admin/setup \
+  -H "Content-Type: application/json" \
+  -d '{
+        "email": "you@example.com",
+        "password": "<a password that meets the policy>",
+        "setup_token": "<the SETUP_TOKEN value>"
+      }'
+```
+
+A success answers `201` with the new `user` and a `token`. Sign in for a token whenever you
+need a new one, and keep it in a variable:
+
+```bash
+curl -X POST http://localhost:8080/api/admin/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@example.com", "password": "<your password>"}'
+
+export TOKEN="<the token from the answer>"
+```
+
+A token lasts 15 minutes by default. The [Quickstart](quickstart.md#2-create-the-first-administrator)
+lists the other answers setup can give.
+
+</div>
+</div>
+
+The account holds the `super_admin` role, which can do everything, including creating the other
+accounts.
 
 ## 5. Find your way around
 
@@ -232,19 +270,56 @@ feature that is not running says so and how to turn it on.
 
 ## 6. Create a content type and an entry
 
-1. Open **Schema builder** and choose **New schema**.
-2. Enter a display name, such as `Post`. The machine name, `post`, is filled in from it and is
-   the name the APIs use.
-3. Choose **Add field** for each field. Give `title` the type `text` and mark it required, and
-   give `body` the type `rich_text`.
-4. Choose **Preview DDL** to see what the change will do to the database, then **Save**.
+<div class="paths">
+<div data-path="console">
 
-![The schema builder with the Post content type open: its display name, machine name and fields with their types.](images/schema-builder.png)
+1. Open **Schema builder** and choose **New schema**.
+2. Enter a display name, such as `Post`, and a machine name, such as `post`. The machine name
+   is the name the APIs use.
+3. Choose **Add field** for each field. Give `title` the type `text` and tick **Req**, and
+   give `body` the type `rich_text`.
+4. Choose **Preview DDL** to see what the change will do to the database, then **Close** and
+   **Save**.
+
+![The schema builder with a Post content type open: its display name, machine name and fields with their types. This Post also has the slug and author fields that Your first content type adds.](images/schema-builder.png)
 
 5. Open **Content**, pick **Post** and choose **New entry**. Fill in the fields and choose
    **Create**.
 
 ![An entry open in the editor, with its status, history, the review panel and its fields.](../guides/user/images/entry-editor.png)
+
+</div>
+<div data-path="api">
+
+Define the content type on the Admin API:
+
+```bash
+curl -X POST http://localhost:8080/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "post",
+        "display_name": "Post",
+        "fields": [
+          { "name": "title", "field_type": "text", "required": true },
+          { "name": "body", "field_type": "rich_text" }
+        ]
+      }'
+```
+
+Then write an entry on the Content API, with the field values under `data`:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/content/post \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"title": "Hello, LyEve", "body": "<p>A first entry.</p>"}}'
+```
+
+The first answers `200` with the stored definition, and the second `201` with the entry.
+
+</div>
+</div>
 
 Your entry is now readable over the Content API at `http://localhost:8080/api/v1/content/post`
 with a token or an API key. [Your first content type](first-content-type.md) builds a blog with
@@ -272,12 +347,34 @@ make sign-in sessions last 30 minutes instead of 15.
    running. Use `up -d` after every change. `docker compose restart` restarts a container with the
    settings it already had, so it ignores the edit.
 
-3. Open **Settings > Configuration**. `JWT_EXPIRY_SECS` now reads `1800`, set by an environment
-   variable.
+3. Check the value the engine uses.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Configuration** and search for `JWT_EXPIRY_SECS`. It reads `1800`, set by an
+environment variable.
 
 ![The Configuration page: how many settings come from the environment, the files and the console, and each setting with its value and where it came from.](../how-to/images/configuration.png)
 
-That page lists every setting the engine uses and where its value came from. A value the
+</div>
+<div data-path="api">
+
+Ask for the configuration:
+
+```bash
+curl -s http://localhost:8080/api/admin/config \
+  -H "Authorization: Bearer $TOKEN" | grep -o '{"key":"JWT_EXPIRY_SECS"[^}]*}'
+```
+
+The setting reads `"source":"env","value":"1800"`, and a token you get from now on lasts
+30 minutes.
+
+</div>
+</div>
+
+The configuration lists every setting the environment, the file or the console sets, and where
+its value came from. A value the
 environment sets is read-only there. [Change a setting](../how-to/change-a-setting.md) covers
 the other places a setting can live, which changes take effect without a restart, and the
 settings to change with care.

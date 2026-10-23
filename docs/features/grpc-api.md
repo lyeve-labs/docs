@@ -35,7 +35,8 @@ carries the same calls over HTTP/2.
 
 As a super admin, open **Delivery > gRPC**. A badge says whether the gRPC API
 is **Serving**. **Listeners** gives the **gRPC** address, with a button to copy
-it, the **Health and REST** address and whether **Reflection** is on.
+it, the **Health and REST** address and whether **Reflection** is on. On the
+default addresses it notes that the listeners are on loopback only.
 **Services** lists each service with what its health check reports, and
 **REST, without a gRPC client** lists the JSON routes. **Refresh** reads the
 status again.
@@ -58,50 +59,109 @@ ports and Service entries.
 
 ## Try it
 
-You need a signed-in user's token in `TOKEN`. The
+For the console steps, you are signed in to the admin console as a super
+admin. For the API steps, you need a signed-in user's token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Open both listeners and publish the ports (the engine image exposes 3003 and
-   3004), then restart:
+**1. Open both listeners.** This is set in the environment of the instance,
+not in the console or the API. Publish the ports (the engine image exposes
+3003 and 3004), then restart:
 
-   ```bash
-   GRPC_ADDR=0.0.0.0:3003
-   GRPC_HEALTH_ADDR=0.0.0.0:3004
-   ```
+```bash
+GRPC_ADDR=0.0.0.0:3003
+GRPC_HEALTH_ADDR=0.0.0.0:3004
+```
 
-2. Check health, which needs no token:
+**2. Check health.**
 
-   ```bash
-   curl http://localhost:3004/healthz
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {"status": "SERVING", "services": {"": "SERVING", "lyeve.core.v1.ContentService": "SERVING", "lyeve.core.v1.SchemaService": "SERVING"}}
-   ```
+Open **Delivery > gRPC**. The badge reads **Serving**, **Listeners** gives
+the two addresses, and **Services** lists each service with what its health
+check says.
 
-3. List entries of a content type through the JSON route:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3004/api/content/post \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The health route needs no token:
 
-   ```json
-   {"items": [{"id": "c8a14e2b-7d3f-4b90-a1c6-5e8f0d2b9a74", "title": "Hello"}]}
-   ```
+```bash
+curl http://localhost:3004/healthz
+```
 
-4. Call the gRPC listener itself with `grpcurl`. Reflection lets `grpcurl`
-   discover the services, and it is served only when `APP_ENV` is not
-   `production`:
+```json
+{"status": "SERVING", "services": {"": "SERVING", "lyeve.core.v1.ContentService": "SERVING", "lyeve.core.v1.SchemaService": "SERVING"}}
+```
 
-   ```bash
-   grpcurl -plaintext \
-     -H "authorization: Bearer $TOKEN" \
-     localhost:3003 lyeve.core.v1.SchemaService/ListSchemas
-   ```
+</div>
+</div>
 
-   The answer lists your content types as `schemas`, each with `name` and
-   `definition`.
+**3. List entries of a content type through the JSON route.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Delivery > API labs** and choose **gRPC**. Under **Transcoded route**,
+pick `GET /api/content/{schema}`, type `post` in **schema** and choose
+**Run**. The console runs the route inside the engine with your own token.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3004/api/content/post \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"items": [{"id": "c8a14e2b-7d3f-4b90-a1c6-5e8f0d2b9a74", "title": "Hello"}]}
+```
+
+</div>
+</div>
+
+**4. Call the gRPC listener itself.** Only a gRPC client does this.
+`grpcurl` reads the services through reflection, which needs a token, so pass
+one even for the health service:
+
+```bash
+grpcurl -plaintext -H "authorization: Bearer $TOKEN" \
+  localhost:3003 grpc.health.v1.Health/Check
+```
+
+The answer is `{"status": "SERVING"}`. On engine v0.55.0, `grpcurl` cannot
+call the LyEve services. `grpcurl list` names them, but a call answers
+`target server does not expose service`. Call
+them from a client that sends JSON messages, as
+[Call the services](#call-the-services) describes. In Go:
+
+```go
+type jsonCodec struct{}
+
+func (jsonCodec) Marshal(v any) ([]byte, error)   { return json.Marshal(v) }
+func (jsonCodec) Unmarshal(b []byte, v any) error { return json.Unmarshal(b, v) }
+func (jsonCodec) Name() string                    { return "json" }
+
+func listSchemas(token string) (json.RawMessage, error) {
+	encoding.RegisterCodec(jsonCodec{})
+	conn, err := grpc.NewClient("localhost:3003",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	ctx := metadata.AppendToOutgoingContext(context.Background(),
+		"authorization", "Bearer "+token)
+	var out json.RawMessage
+	err = conn.Invoke(ctx, "/lyeve.core.v1.SchemaService/ListSchemas",
+		json.RawMessage(`{}`), &out, grpc.CallContentSubtype("json"))
+	return out, err
+}
+```
+
+The answer lists your content types as `schemas`, each with `name` and
+`definition`. Without a token, the call fails with `Unauthenticated`.
 
 ## Call the services
 
@@ -112,7 +172,7 @@ You need a signed-in user's token in `TOKEN`. The
 | `lyeve.core.v1.ContentService` | `Create`, `Update`, `Delete` | `editor` or `admin` |
 | `lyeve.core.v1.FlowService` | `Run`, `List` | any signed-in user, and the flow's own `auth` setting |
 | `grpc.health.v1.Health` | `Check`, `Watch` | none |
-| `grpc.reflection.v1.ServerReflection` | | a token, and only outside production |
+| `grpc.reflection.v1.ServerReflection` | | a token, and only outside production. On engine v0.55.0 it lists the service names but not their methods. |
 
 A super admin may call every method. The services are defined in
 `schema.proto`, `content.proto` and `flow.proto`, package `lyeve.core.v1`.
@@ -205,12 +265,17 @@ When [flows](flows.md) run beside gRPC, `FlowService.Run` starts a published
 flow of the caller's tenant whose HTTP trigger lists `grpc` in `protocols`,
 with `input` as the trigger body:
 
-```bash
-grpcurl -plaintext \
-  -H "authorization: Bearer $TOKEN" \
-  -d '{"slug": "order-totals", "input": {"order": 7}}' \
-  localhost:3003 lyeve.core.v1.FlowService/Run
+```json
+{"slug": "order-totals", "input": {"order": 7}}
 ```
+
+Send it from a JSON client as in [Try it](#try-it), to
+`/lyeve.core.v1.FlowService/Run`. The same run is
+`POST /api/flows/order-totals` on the JSON listener, with the input as the
+body. In the console, open **Delivery > API labs**, choose **gRPC**, pick
+`POST /api/flows/{slug}` under **Transcoded route**, fill in the slug and the
+body, and choose **Run**. The console asks first, and **Run it** starts the
+flow.
 
 The answer carries the run id (empty when the flow's cache answered), the
 status the flow set or `200`, its headers and the body. The flow's `auth`
@@ -229,7 +294,9 @@ from REST and GraphQL callers.
 
 ## Admin routes
 
-Both need a super admin and live on the Admin API.
+Both need a super admin and live on the Admin API. The console's
+**Delivery > gRPC** page reads the status route, and **API labs** runs
+routes through the invoke route.
 
 | Method | Path | Purpose |
 |--------|------|---------|

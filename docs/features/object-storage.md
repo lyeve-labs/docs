@@ -33,18 +33,10 @@ straight to the bucket.
 
 Open **Settings > Storage**. **How storage works** explains where uploads go,
 and with no provider the page reads **No provider configured**: uploads are
-then written to the engine's own directory. **New provider** opens a form.
-Pick the **Type** (**Amazon S3**, **Google Cloud Storage**,
-**Azure Blob Storage**, **MinIO** or **Local directory**), then fill in what it
-asks for, such as the **Bucket**, **Region**, **Access key ID** and
-**Secret access key** of an S3 bucket. Leave **Endpoint** empty for Amazon S3 and set it for an
-S3-compatible service. A lower **Priority** receives uploads first, and
-**Create** saves the provider.
-
-![The New provider form for Amazon S3, filled in with the name primary, the bucket acme-media, the region eu-west-1 and an access key, with the secret hidden.](images/object-storage.png)
-
-The sections below add the same over the Admin API, with the connection test
-and presigned uploads.
+then written to the engine's own directory. Each provider is a row with
+**Test**, **Edit**, **Duplicate** and **Delete** buttons, and a line under the
+list names the provider new uploads go to. Presigned and multipart uploads
+have no console screen, so they are API only on v0.21.0.
 
 ## How it works
 
@@ -58,68 +50,114 @@ and presigned uploads.
 
 ## Try it
 
-You need an admin token for a super admin in `TOKEN`. The
+For the console steps, you are signed in to the admin console as a super admin. For the API
+steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. See where files go now:
+**1. See where files go now.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/storage/health \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {"providers": [{"provider_id": "20d35ec0-bd5c-53a3-8111-b122a0d7ba4e", "provider_type": "local", "provider_name": "local-default", "status": "healthy", "latency_ms": 0.07, "last_check": "2026-10-01T09:17:20Z", "failures": 0}]}
-   ```
+Open **Settings > Storage**. With no provider configured, the page reads
+**No provider configured** and says uploads are written to the engine's own directory.
 
-   With no provider configured, files go to local disk.
+</div>
+<div data-path="api">
 
-2. Ask for a presigned upload. Local disk cannot presign, so this answers `501`
-   until a bucket is added:
+```bash
+curl http://localhost:3001/api/admin/storage/health \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/storage/presign-upload \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"key": "videos/intro.mp4", "content_type": "video/mp4", "content_length": 73400320}'
-   ```
+```json
+{"providers": [{"provider_id": "20d35ec0-bd5c-53a3-8111-b122a0d7ba4e", "provider_type": "local", "provider_name": "local-default", "status": "healthy", "latency_ms": 0.07, "last_check": "2026-10-01T09:17:20Z", "failures": 0}]}
+```
 
-3. Add your S3 bucket:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/storage/providers \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "primary",
-           "provider_type": "s3",
-           "bucket": "acme-media",
-           "region": "eu-west-1",
-           "access_key": "<access key id>",
-           "secret_key": "<secret access key>",
-           "use_ssl": true,
-           "enabled": true
-         }'
-   ```
+With no provider configured, files go to local disk.
 
-   The answer is `201` with the provider, without its credentials. Copy its
-   `id` into `PROVIDER_ID`.
+**2. Ask for a presigned upload.** This is API only on v0.21.0. Local disk cannot presign, so
+this answers `501` until a bucket is added:
 
-4. Check that the instance can reach it:
+```bash
+curl -X POST http://localhost:3001/api/admin/storage/presign-upload \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "videos/intro.mp4", "content_type": "video/mp4", "content_length": 73400320}'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/storage/providers/$PROVIDER_ID/test \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**3. Add your S3 bucket.**
 
-   ```json
-   {"healthy": true, "latency_ms": 41.2, "provider_id": "...", "provider_name": "primary", "provider_type": "s3"}
-   ```
+<div class="paths">
+<div data-path="console">
 
-   When the bucket refuses, `healthy` is `false` and `error` says why, such as
-   `s3: status 403 Forbidden`.
+1. Choose **New provider** and keep **Amazon S3** as the **Type**. The other types are
+   **Google Cloud Storage**, **Azure Blob Storage**, **MinIO** and **Local directory**.
+2. Enter `primary` in **Name**, your bucket in **Bucket** and its region in **Region**.
+   Leave **Endpoint** empty for Amazon S3, and set it for an S3-compatible service.
+3. Fill in **Access key ID** and **Secret access key**. The secret is stored encrypted and
+   never shown again.
+4. Keep **Use TLS** and **Enabled** on, and choose **Create**. A lower **Priority** receives
+   uploads first.
 
-5. Repeat step 2. The answer now carries an `upload_url` on your bucket.
+![The New provider form for Amazon S3, filled in with the name primary, the bucket acme-media, the region eu-west-1 and an access key, with the secret hidden.](images/object-storage.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/storage/providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "primary",
+        "provider_type": "s3",
+        "bucket": "acme-media",
+        "region": "eu-west-1",
+        "access_key": "<access key id>",
+        "secret_key": "<secret access key>",
+        "use_ssl": true,
+        "enabled": true
+      }'
+```
+
+The answer is `201` with the provider, without its credentials. A provider saved
+over the API is off unless you send `"enabled": true`. Copy its `id` into
+`PROVIDER_ID`.
+
+</div>
+</div>
+
+**4. Check that the instance can reach it.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Test** on the `primary` row. The page confirms **primary answered**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/storage/providers/$PROVIDER_ID/test \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"healthy": true, "latency_ms": 41.2, "provider_id": "...", "provider_name": "primary", "provider_type": "s3", "error": ""}
+```
+
+When the bucket refuses, `healthy` is `false` and `error` reads
+`The S3 provider failed its check. Check the region, bucket, endpoint and keys.`
+
+</div>
+</div>
+
+**5. Repeat step 2.** The answer now carries an `upload_url` on your bucket. Send the file
+from the client as [Upload from the client](#upload-from-the-client) shows.
 
 ## Providers
 
@@ -142,7 +180,10 @@ You need an admin token for a super admin in `TOKEN`. The
 Only a super admin can add, change or remove a provider. Set `ENCRYPTION_KEY`
 to encrypt stored credentials with a key per tenant. An endpoint that resolves
 to a private, loopback, link-local or cloud metadata address is refused, so a
-store on your private network cannot be used.
+store on your private network cannot be used. A store in the shared address
+space `100.64.0.0/10`, such as a Tailscale address, is allowed once the instance
+starts with `LYEVE_OUTBOUND_ALLOW_CGNAT=true`, which
+[opens that range](../reference/configuration.md) to every tenant.
 
 ### Keep a tenant's files in its region
 
@@ -226,7 +267,20 @@ a presigned URL, without sending the file through the instance:
 }
 ```
 
-`PUT` the file to `upload_url` before it expires.
+`PUT` the file to `upload_url` before it expires, with the same `Content-Type`
+you asked for and the header `x-amz-server-side-encryption: AES256`. Both are
+signed into the URL, so the store refuses a `PUT` that leaves either out:
+
+```bash
+curl -X PUT "$UPLOAD_URL" \
+  -H "Content-Type: video/mp4" \
+  -H "x-amz-server-side-encryption: AES256" \
+  --data-binary @intro.mp4
+```
+
+Every write the instance makes to an S3 or MinIO store asks for server-side
+encryption the same way, so the store has to support it. MinIO does once it has
+a key management key configured, and refuses those writes until then.
 
 - `content_length` locks the URL to that size. It is required unless the
   operator sets `MAX_PRESIGN_UPLOAD_BYTES`, which then also caps it.
@@ -260,7 +314,8 @@ curl -X POST "http://localhost:3001/api/admin/storage/multipart/part?key=tenant_
 
 A part is at most 5 GiB, or `MAX_PRESIGN_UPLOAD_BYTES` when the operator sets
 it. A larger part answers `413`, including a chunked request that runs past
-the cap, and an empty body answers `400`.
+the cap, an empty body answers `400`, and a part sent without a `Content-Type`
+header answers `415`.
 
 ## Settings
 

@@ -39,13 +39,15 @@ menu in the header and choose **Trusted devices**.
 
 - To trust the browser you are using, enter a name in **Name this device** and
   choose **Trust this browser**. Only the browser you are reading the page in
-  can be trusted from here.
+  can be trusted from here. Once it is trusted, the form gives way to **This
+  browser is already trusted**, with its name.
 - **Remembered devices** lists every trusted browser by its name and the
   browser it was trusted from, such as Chrome on macOS, with when it was last
-  seen and added. The trash button on a row forgets it.
+  seen and added. **Looks like this one** marks the browser you are using. The
+  trash button on a row forgets it.
 
-The console has no screen for login history or blocks. Use the API below for
-those.
+The console has no screen for login history or blocks on this release. The
+API serves them, as below.
 
 ![The Trusted devices page of an editor's account, with the Trust this browser form and two remembered devices: Phone, which is Safari on iOS, and Work laptop, which is Chrome on macOS.](images/trusted-devices.png)
 
@@ -98,68 +100,128 @@ history require a second factor whatever the score.
 
 ## Try it
 
+Sign in first. Trusting, listing and forgetting a device works for any
+signed-in account, on its own devices.
+
+Trust a device:
+
+<div class="paths">
+<div data-path="console">
+
+Open the account menu in the header and choose **Trusted devices**. Enter
+`Work laptop` in **Name this device** and choose **Trust this browser**. The
+page says **Trusted Work laptop**, and the form gives way to **This browser is
+already trusted, as Work laptop.**
+
+</div>
+<div data-path="api">
+
 You need a token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+[quickstart](../getting-started/quickstart.md) shows how to get one. This
+trusts the machine you call from, as the program making the request:
 
-1. Trust the browser or machine you are calling from:
+```bash
+curl -X POST http://localhost:3001/api/admin/devices/trust \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"label": "Work laptop"}'
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/devices/trust \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"label": "Work laptop"}'
-   ```
+```json
+{ "device_id": "4c80c9ea-ebbe-4074-9073-d7dae73f89e5", "label": "Work laptop" }
+```
 
-   ```json
-   { "device_id": "4c80c9ea-ebbe-4074-9073-d7dae73f89e5", "label": "Work laptop" }
-   ```
+</div>
+</div>
 
-2. List your trusted devices:
+List your trusted devices:
 
-   ```bash
-   curl http://localhost:3001/api/admin/devices \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "data": [
-       { "id": "4c80c9ea-ebbe-4074-9073-d7dae73f89e5", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "label": "Work laptop", "last_seen_at": "2026-10-01T09:30:00Z", "created_at": "2026-10-01T09:30:00Z", "user_agent": "curl/8.9.1" }
-     ],
-     "limit": 50,
-     "offset": 0,
-     "total_count": 1
-   }
-   ```
+**Remembered devices** shows **Work laptop** with the browser it was trusted
+from, such as **Chrome on Linux**, marked **Looks like this one**, and when it
+was last seen and added.
 
-3. Read your own login history. Put your user id in `USER_ID`:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/session-anomaly/history?user_id=$USER_ID&limit=20" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl http://localhost:3001/api/admin/devices \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```json
-   {
-     "entries": [
-       { "id": "e6d012b9-2064-4efc-a5c5-a852ba27bbe7", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b",
-         "ip": "203.0.113.7", "user_agent": "Mozilla/5.0", "success": true,
-         "timestamp": "2026-10-01T08:02:10Z", "risk_level": "low", "risk_score": 10,
-         "risk_reason": "10 signals: [no trusted devices configured]" }
-     ],
-     "limit": 20,
-     "offset": 0
-   }
-   ```
+```json
+{
+  "data": [
+    { "id": "4c80c9ea-ebbe-4074-9073-d7dae73f89e5", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b", "label": "Work laptop", "last_seen_at": "2026-10-01T09:30:00Z", "created_at": "2026-10-01T09:30:00Z", "user_agent": "curl/8.9.1" }
+  ],
+  "limit": 50,
+  "offset": 0,
+  "total_count": 1
+}
+```
 
-4. Forget the device again:
+</div>
+</div>
 
-   ```bash
-   curl -X DELETE http://localhost:3001/api/admin/devices/4c80c9ea-ebbe-4074-9073-d7dae73f89e5 \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Read your own login history. Only the API serves it on this release. If you
+work in the console, sign in over the API to get a token, as
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows, and keep it in `TOKEN`. Ask for your user id, then put it in `USER_ID`:
 
-   The answer is `204`.
+```bash
+curl http://localhost:3001/api/admin/auth/me \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer holds `id`, `email` and `roles`. Then read the history:
+
+```bash
+curl "http://localhost:3001/api/admin/session-anomaly/history?user_id=$USER_ID&limit=20" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "entries": [
+    { "id": "e6d012b9-2064-4efc-a5c5-a852ba27bbe7", "user_id": "3e7cc859-1207-4c7c-9af2-363fa5079e0b",
+      "ip": "203.0.113.7", "user_agent": "Mozilla/5.0", "success": true,
+      "timestamp": "2026-10-01T08:02:10Z", "risk_level": "medium", "risk_score": 35,
+      "risk_reason": "35 signals: [new device fingerprint no trusted devices configured]" }
+  ],
+  "limit": 20,
+  "offset": 0
+}
+```
+
+A first sign-in from a new browser, on an account with no trusted device,
+scores `35`, which is `medium`. On an install whose license carries
+`pii-mask`, [PII masking](pii-masking.md) answers `ip` as `[redacted-ip]`.
+
+Forget the device again:
+
+<div class="paths">
+<div data-path="console">
+
+On **Trusted devices**, choose the trash button on the **Work laptop** row.
+The dialog asks **Forget Work laptop?**. Choose **Forget**. The list reads
+**No device is remembered**.
+
+</div>
+<div data-path="api">
+
+Use the `id` from the list:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/devices/4c80c9ea-ebbe-4074-9073-d7dae73f89e5 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Block brute force
 

@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-> **Included free** on every install, up to 25 webhooks per tenant. Step 6 sets a retry policy and resends a delivery, which need a license with the `webhook-pro` feature, and step 7 needs `events`. See [pricing](https://lyeve.com/pricing/).
+> **Included free** on every install, up to 25 webhooks per tenant. Step 6 sets retry settings and resends a delivery, which need a license with the `webhook-pro` feature, and step 7 needs `events`. See [pricing](https://lyeve.com/pricing/).
 
 This walkthrough connects LyEve to an endpoint of your own. You run a small
 receiver that refuses any request LyEve did not sign, register it as a
@@ -15,8 +15,10 @@ history and recover what failed. Every field, header and route is described on
 
 ## Before you start
 
-- An admin token in `TOKEN` for a user with the `super_admin` role. The
-  [quickstart](../getting-started/quickstart.md) shows how to get one.
+- An account with the `super_admin` role, such as the first administrator.
+  For the console steps, sign in to the admin console with it. For the API
+  steps, keep its token in `TOKEN`.
+  [Sign in](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 - A content type to watch. The steps use `post` from
   [Create your first content type](../getting-started/first-content-type.md).
 - Node.js 18 or later, or Python 3.8 or later. Neither receiver needs a
@@ -163,6 +165,11 @@ node receiver.mjs        # or: python3 receiver.py
 listening on http://localhost:8787
 ```
 
+The receiver keeps this terminal. Run the API steps below in a second one, and
+export `WEBHOOK_SECRET` with the same value there, and `TOKEN` too. In a
+terminal where `WEBHOOK_SECRET` is unset, step 2 registers the webhook with no
+secret, and the receiver prints `refused: unsigned request` for every delivery.
+
 Both print the fields of the standard body. If you give the webhook a
 `payload_template`, the body is your own JSON, so change the line that prints
 it. Both check the raw bytes. If you move the check into a framework, read the body
@@ -172,8 +179,20 @@ list in a shared store such as Redis when you run more than one receiver.
 
 ## 2. Register the receiver
 
-Replace the URL with the address the instance reaches your receiver at, and
-send the same secret:
+Use the address the instance reaches your receiver at, and the same secret.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Delivery > Webhooks** and choose **New webhook**.
+2. Enter `My receiver` in **Name** and the receiver's address in **URL**.
+   Enter the value of `WEBHOOK_SECRET` in **Signing secret**.
+3. Under **Events**, tick `after_create`, `after_update` and `after_delete`.
+4. In **Schemas**, which reads **Every schema**, pick `post`.
+5. Choose **Create**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks \
@@ -192,15 +211,31 @@ The answer is `201` with the webhook. Copy its `id` into `WEBHOOK_ID`. A URL
 whose host does not resolve, or resolves to a private address, answers
 `400 invalid input`.
 
+</div>
+</div>
+
 ## 3. Send a test
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Test**, the flask icon, on the webhook's row. The outcome shows under
+the row: `HTTP 204: No Content`.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/test \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-The API answers `{"success": true, "status_code": 204, "message": "No Content"}`,
-and the receiver prints:
+The API answers `{"success": true, "status_code": 204, "message": "No Content"}`.
+
+</div>
+</div>
+
+The receiver prints:
 
 ```text
 accepted: test * {"message":"webhook test from LyEve"}
@@ -209,6 +244,25 @@ accepted: test * {"message":"webhook test from LyEve"}
 If the receiver prints `refused: bad signature`, the two secrets differ.
 
 ## 4. Fire a real event
+
+<div class="paths">
+<div data-path="console">
+
+Open **Content**, pick **Post** and choose **New entry**. Enter
+`Webhook check` in **Title** and `Hello` in **Body**, then choose **Create**.
+
+Within a moment the receiver prints an `after_create` line. An entry saved in
+console v0.21.0 arrives as the console stores it. The fields you typed sit in
+an object under `body`, which also holds the post's own `body` field, and
+beside that object are the entry's `id`, `slug`, `status`, `title`, its
+timestamps and the accounts that wrote it:
+
+```text
+accepted: after_create post {"_status":"draft","body":{"author_id":null,"body":"<p>Hello</p>","slug":null,"title":"Webhook check"},"created_at":"2026-10-23T16:31:35.423506701Z","created_by":"59ef432d-cfa3-4dc3-b90a-87f2eff13558","current_rev":1,"id":"8371ea04-24e5-49a8-93b0-0bb8b7d4baff","meta":{},"schema":"post","slug":"webhook-check-omh0mr","status":"draft","tenant_id":"default","timezone":"UTC","title":"Webhook check","updated_at":"2026-10-23T16:31:35.423506701Z","updated_by":"59ef432d-cfa3-4dc3-b90a-87f2eff13558"}
+```
+
+</div>
+<div data-path="api">
 
 Create a `post` on the Content API:
 
@@ -226,7 +280,20 @@ fields in alphabetical order, its `id` and status among them:
 accepted: after_create post {"_status":"published","body":"Hello","id":"4af50561-8093-4925-983f-ed8813ab615b","slug":"webhook-check","title":"Webhook check"}
 ```
 
+</div>
+</div>
+
 ## 5. Read the history
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Delivery history**, the clock icon, on the webhook's row. The dialog
+lists the test and the `after_create` delivery, newest first, each with its
+time, event, content type, status, duration and result.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl "http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries?limit=5" \
@@ -255,15 +322,39 @@ The answer lists the latest deliveries, newest first:
 ```
 
 A failed delivery carries `success: false`, the `status_code` or an `error`,
-and `next_retry_at`. In the admin console the same list is under
-**Delivery > Webhooks**, **Delivery history**.
+and `next_retry_at`.
+
+</div>
+</div>
 
 ## 6. Recover a failed delivery
 
-Without a retry policy, the default retries a failed delivery after 30, 60,
-120 and 240 seconds, as [Retry policy](../features/webhooks.md#retry-policy)
-explains. For shorter waits while you test, set a policy of your own. The
-policy, the manual retry and the replay below need `webhook-pro`:
+Without retry settings of its own, a webhook retries a failed delivery after
+30, 60, 120 and 240 seconds, as [Retry policy](../features/webhooks.md#retry-policy)
+explains. For shorter waits while you test, give the webhook its own. Those
+settings, the manual retry and the replay below need `webhook-pro`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Choose **Edit** on the webhook's row. Under **Delivery options**, enter `2`
+   in **Retries** and `5` in **Retry delay (seconds)**, then choose
+   **Save**. A failed delivery now gets two retries after the first attempt.
+2. Stop the receiver and create another `post`. The delivery fails, and its
+   two retries follow at the worker's 30-second checks. About a minute and a
+   half after the failure, the delivery moves to the dead-letter queue.
+3. Start the receiver again. Choose **Delivery history** on the webhook's row
+   and choose **Retry this delivery**, the arrow on the failed delivery. Its
+   result reads `OK`, and the receiver prints the delivery.
+4. Choose **Dead letters**. The **Dead letter queue** lists the delivery with
+   its attempts and the status `pending`. Choose **Replay** on it. The row
+   reads **Delivered (HTTP 200)**.
+
+</div>
+<div data-path="api">
+
+Set a retry policy. A policy wins over the console's **Retries** and
+**Retry delay** once a webhook has one:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
@@ -272,31 +363,71 @@ curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
   -d '{"max_attempts": 5, "base_delay_ms": 5000, "max_delay_ms": 20000, "strategy": "exponential"}'
 ```
 
-Stop the receiver and create another `post`. The delivery fails. With this
-policy its four retries wait 5, 10, 20 and 20 seconds, each counted from the
-attempt before it. A retry goes at the first 30-second check after its wait
-ends, and every wait here is shorter than that, so the retries arrive about
-half a minute apart. Start the receiver again and either wait for the next retry,
-which carries `X-Webhook-Retry: true`, or send the delivery yourself with its
-`id` from the history:
+Stop the receiver and create another `post`. The delivery fails, and with this
+policy four retries follow. Each one goes at the first 30-second check after
+its wait ends, and every wait here is shorter than that, so the first retry
+goes about a minute after the failure and the rest about half a minute apart.
+`GET /api/admin/webhooks/$WEBHOOK_ID/attempts` lists them.
+
+Keep the receiver stopped until the delivery runs out of attempts, about three
+minutes after the failure. It then waits in the dead-letter queue.
+`GET /api/admin/webhook-dead-letters?status=pending` lists it with
+`total_attempts` 5. Copy its `id` into `DEAD_LETTER_ID`. Then copy the failed
+delivery's `id` from `GET /api/admin/webhooks/$WEBHOOK_ID/deliveries?limit=5`,
+the one with `success: false`, into `DELIVERY_ID`.
+
+Start the receiver again and send the delivery yourself:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries/$DELIVERY_ID/retry \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-A delivery that ran out of attempts waits in the dead-letter queue. List it
-with `GET /api/admin/webhook-dead-letters?status=pending` and send it with
-`POST /api/admin/webhook-dead-letters/{id}/replay`, as
+```json
+{"success": true, "status_code": 200, "message": "OK", "delivery_id": "..."}
+```
+
+Send the dead letter again too:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/webhook-dead-letters/$DEAD_LETTER_ID/replay \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"id": "...", "status": "replayed", "http_status": 200}
+```
+
+</div>
+</div>
+
 [Replay or dismiss a dead letter](../features/webhooks.md#replay-or-dismiss-a-dead-letter)
-shows.
+covers the queue in full.
 
 ## 7. Recover a missed window
 
 When the receiver was down for longer than its retries lasted, send every
 content event of the window again with [event replay](../features/event-replay.md).
-This step needs a license with the `events` feature. Start with a dry run that
-counts what would be sent:
+This step needs a license with the `events` feature. Start with a dry run,
+which counts what would be sent and sends nothing.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Events**. Under **Replay**, pick the day and enter the
+   hour and minute the receiver went down in **Replay from**, and enter
+   `my-receiver-catchup` in **Run name**.
+2. Keep **Rehearse first, posting nothing** ticked and choose **Rehearse**.
+   The page says **Rehearsed. Nothing was published.**, and the run's row
+   shows how many events it counted, marked **rehearsal** and
+   **(nothing was posted)**.
+3. Clear **Rehearse first, posting nothing**. The button now reads
+   **Replay**. Choose it. The page says **Replay started.**, and the row
+   reads, for one event, **1 replayed, 0 skipped, 0 failed**. The receiver
+   prints the event again.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -i -X POST http://localhost:3001/api/admin/events/replay \
@@ -313,10 +444,16 @@ curl http://localhost:3001/api/admin/events/replay/$RUN_ID \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-Send the same request without `dry_run` to replay for real. Each event is
-published again, the webhook matches it as it matched the original, and the
-receiver gets it with a fresh timestamp and nonce. Running the same `handler`
-name again skips events it already replayed.
+Send the same request without `dry_run` to replay for real. The run then
+counts each event it sent in `replayed`.
+
+</div>
+</div>
+
+Each event is published again, the webhook matches it as it matched the
+original, and the receiver gets it with a fresh timestamp and nonce. A
+rehearsal marks nothing as replayed. Running the same name for real again
+skips the events it already replayed and counts them in `skipped`.
 
 :::caution
 A replay publishes the events to everything that listens, not only this

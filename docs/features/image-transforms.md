@@ -41,19 +41,9 @@ can still change before it is marked stable.
   original, and it does the work instead.
 :::
 
-## In the admin console
-
-Open **Media library** and choose an image. Its **Preview** holds two sections
-for transforms. Under **Focal point**, click the image where a crop should
-center and choose **Save focal point**. Under **Transform URL**, set **Width**,
-**Height**, **Fit**, **Format**, **Quality** and **Expires**, then choose
-**Build URL**. The **Signed URL** appears below with the time it stops working,
-and its button copies it.
-
-![The Transform URL section of an image's preview, set to 800 by 450 with the Cover fit and WebP, and the signed URL it built with the time it stops working.](images/image-transforms.png)
-
-The sections below sign the same URLs over the Admin API and list every
-parameter.
+In the admin console, an image's **Preview** in **Media library** holds a
+**Focal point** section and a **Transform URL** section. The sections below show
+each task there and over the Admin API, and list every parameter.
 
 ## How it works
 
@@ -74,48 +64,83 @@ URL always expires, after an hour by default and a week at most. Responses carry
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. This works
-on a free install.
+This works on a free install. For the console steps, you are signed in to the
+admin console. For the API steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Upload an image:
+**1. Upload an image.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/media \
-     -H "Authorization: Bearer $TOKEN" \
-     -F "file=@hero.png"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   Copy the `id` from the answer into `MEDIA_ID`.
+Open **Media library**, choose **Upload files** and pick `hero.png`. Then choose
+the file to open its **Preview**.
 
-2. Sign a 400 pixel square WebP:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/media/$MEDIA_ID/transform-url \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"w": 400, "h": 400, "fmt": "webp"}'
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/media \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "file=@hero.png"
+```
 
-   ```json
-   {
-     "url": "/api/v1/media/7332599e-.../transform?fmt=webp&h=400&w=400&exp=1791043674&sig=6693...",
-     "expires_at": "2026-10-03T16:07:54Z"
-   }
-   ```
+Copy the `id` from the answer into `MEDIA_ID`.
 
-   The file is private, so the URL expires in an hour. Copy `url` into `URL`.
+</div>
+</div>
 
-3. Load it on the Content API, with no credential:
+**2. Sign a 400 pixel square WebP.**
 
-   ```bash
-   curl -sI "http://localhost:3002$URL"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `200` with `Content-Type: image/webp`, an `ETag` and
-   `X-Transform-Cache: miss`.
+1. In the **Preview**, scroll to **Transform URL**.
+2. Enter `400` in **Width** and in **Height**, and pick **WebP** in **Format**.
+3. Under **Expires**, keep **In an hour**.
+4. Choose **Build URL**.
 
-4. Load it again. The same `ETag` comes back with `X-Transform-Cache: hit`.
+The **Signed URL** appears below with the time it stops working, and its button
+copies it. It starts with the address you opened the console at. Copy it into `URL`.
+
+![The Transform URL section of the preview of hero.png, set to 400 by 400 with the engine's default fit and WebP, built to expire in an hour, and the signed URL it built on http://localhost:8080 with the time it stops working.](images/image-transforms.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/media/$MEDIA_ID/transform-url \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"w": 400, "h": 400, "fmt": "webp"}'
+```
+
+```json
+{
+  "url": "/api/v1/media/7332599e-.../transform?fmt=webp&h=400&w=400&exp=1791043674&sig=6693...",
+  "expires_at": "2026-10-03T16:07:54Z"
+}
+```
+
+The answer is a path. Put your Content API address in front of it and copy the
+whole address into `URL`, here `http://localhost:3002` followed by `url`.
+
+</div>
+</div>
+
+The file is private, so the URL expires in an hour. A published file's URL can
+also never expire, and the console then offers **Never** under **Expires**.
+
+**3. Load it on the Content API, with no credential:**
+
+```bash
+curl -sI "$URL"
+```
+
+The answer is `200` with `Content-Type: image/webp`, an `ETag` and
+`X-Transform-Cache: miss`.
+
+**4. Load it again.** The same `ETag` comes back with `X-Transform-Cache: hit`.
 
 ## Parameters
 
@@ -153,6 +178,19 @@ the path.
 The focal point is where a `cover` crop centers. Set it on the file, free on
 every install:
 
+<div class="paths">
+<div data-path="console">
+
+In the image's **Preview**, under **Focal point**, click the image where a crop
+should center, or move the point with the arrow keys. Choose
+**Save focal point**. The page confirms
+**Focal point saved. Crops cut around the old one are made again.** Once a file
+has a focal point, **Transform URL** shows
+**Center a crop on the focal point**, which builds the URL around it.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X PATCH http://localhost:3001/api/admin/media/$MEDIA_ID \
   -H "Authorization: Bearer $TOKEN" \
@@ -160,9 +198,13 @@ curl -X PATCH http://localhost:3001/api/admin/media/$MEDIA_ID \
   -d '{"focal_point": {"x": 0.3, "y": 0.4}}'
 ```
 
-`{"focal_point": null}` clears it back to the center. A new focal point retires
-the crops cut around the old one, and a `focal` parameter in a URL overrides the
-stored point for that URL.
+`{"focal_point": null}` clears it back to the center.
+
+</div>
+</div>
+
+A new focal point retires the crops cut around the old one, and a `focal`
+parameter in a URL overrides the stored point for that URL.
 
 ## The free ceiling
 

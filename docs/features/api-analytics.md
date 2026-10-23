@@ -65,88 +65,133 @@ follow.
 
 ![The API analytics page for the last 24 hours, with the request total, the error rates and the latency percentiles at the top, the responses split by status class, three paths under Where the errors are, and the top endpoints ranked by request count.](images/api-analytics.png)
 
-The breakdown by tenant and the hourly trend are read through the API below.
+The console always shows the last 24 hours. The breakdown by tenant, the hourly trend, a chosen range or filter, and the settings are
+read and changed through the API.
 
 ## Try it
 
-This needs a license with `apianalytics`. You need an admin token in `TOKEN`.
-The [quickstart](../getting-started/quickstart.md) shows how to get one.
+This needs a license with `apianalytics`. For the console steps, you are
+signed in to the admin console as an admin. For the API steps, you need an
+admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+shows how to get one.
 
-1. Read the totals for the last 24 hours:
+**1. Read the totals for the last 24 hours.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/apianalytics/metrics/summary \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "from": "2026-09-30T09:05:43Z",
-     "to": "",
-     "total_requests": 1739,
-     "total_2xx": 673,
-     "total_4xx": 1063,
-     "total_5xx": 3,
-     "error_rate": 0.613,
-     "avg_latency_p50_ms": 21.8,
-     "avg_latency_p95_ms": 22.2,
-     "avg_latency_p99_ms": 22.3,
-     "max_latency_p99_ms": 10754.9,
-     "avg_request_size_bytes": 4.2,
-     "max_request_size_bytes": 222,
-     "unique_endpoints": 955,
-     "unique_tenants": 2,
-     "unique_methods": 4,
-     "unique_user_agents": 2
-   }
-   ```
+Open **Insight > API analytics**. The top row gives **Total requests**,
+**Server errors**, **Client errors** and the **P50**, **P95** and **P99
+latency**. **Responses** gives the count of 2xx, 4xx and 5xx answers, the
+number of endpoints served and the highest p99.
 
-   `from` echoes the start the query used. `to` stays empty when you did not
-   set one, which means now.
+</div>
+<div data-path="api">
 
-2. Rank the endpoints:
+```bash
+curl http://localhost:3001/api/admin/apianalytics/metrics/summary \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl "http://localhost:3001/api/admin/apianalytics/metrics/endpoints?limit=3" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```json
+{
+  "from": "2026-09-30T09:05:43Z",
+  "to": "",
+  "total_requests": 1739,
+  "total_2xx": 673,
+  "total_4xx": 1063,
+  "total_5xx": 3,
+  "error_rate": 0.613,
+  "avg_latency_p50_ms": 21.8,
+  "avg_latency_p95_ms": 22.2,
+  "avg_latency_p99_ms": 22.3,
+  "max_latency_p99_ms": 10754.9,
+  "avg_request_size_bytes": 4.2,
+  "max_request_size_bytes": 222,
+  "unique_endpoints": 955,
+  "unique_tenants": 2,
+  "unique_methods": 4,
+  "unique_user_agents": 2
+}
+```
 
-   ```json
-   {
-     "items": [
-       { "key": "/api/admin/search", "request_count": 15, "error_rate": 0.467, "avg_latency_p95_ms": 12.8, "max_latency_p99_ms": 42.1, "request_size_avg_bytes": 8.7 }
-     ],
-     "total": 1
-   }
-   ```
+`from` echoes the start the query used. `to` stays empty when you did not
+set one, which means now.
 
-   `total` is the number of rows in `items`.
+</div>
+</div>
 
-3. Chart the hours:
+**2. Rank the endpoints.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/apianalytics/metrics/trend \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "points": [ { "hour": "2026-10-01T05:00:00Z", "request_count": 1701, "error_rate": 0.62, "avg_latency_p95_ms": 22.5, "max_latency_p99_ms": 10754.9 } ] }
-   ```
+**Top endpoints** lists the twenty busiest paths with their **Requests**,
+**Error rate**, **P95**, **Max P99** and **Avg size**. **Where the errors
+are** names the paths with the highest error rate.
 
-4. List the hours that stand out. An even day answers an empty list:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/apianalytics/metrics/anomalies \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl "http://localhost:3001/api/admin/apianalytics/metrics/endpoints?limit=3" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```json
-   { "anomalies": [], "window_hours": 24, "z_threshold": 2.5 }
-   ```
+```json
+{
+  "items": [
+    { "key": "/api/admin/search", "request_count": 15, "error_rate": 0.467, "avg_latency_p95_ms": 12.8, "max_latency_p99_ms": 42.1, "request_size_avg_bytes": 8.7 }
+  ],
+  "total": 1
+}
+```
+
+`total` is the number of rows in `items`.
+
+</div>
+</div>
+
+**3. Chart the hours.** The hourly trend is read through the API only:
+
+```bash
+curl http://localhost:3001/api/admin/apianalytics/metrics/trend \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "points": [ { "hour": "2026-10-01T05:00:00Z", "request_count": 1701, "error_rate": 0.62, "avg_latency_p95_ms": 22.5, "max_latency_p99_ms": 10754.9 } ] }
+```
+
+**4. List the hours that stand out.**
+
+<div class="paths">
+<div data-path="console">
+
+**Anomalies** gives the window and the threshold, such as
+**window 24h, z threshold 2.5**. An even day reads **No anomalies detected**.
+
+</div>
+<div data-path="api">
+
+An even day answers an empty list:
+
+```bash
+curl http://localhost:3001/api/admin/apianalytics/metrics/anomalies \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "anomalies": [], "window_hours": 24, "z_threshold": 2.5 }
+```
+
+</div>
+</div>
 
 ## Filter what you read
 
-Every `metrics` route takes these:
+Every `metrics` route takes these. The console has no filters, so this is
+API only:
 
 | Parameter | Meaning | Default |
 |---|---|---|
@@ -177,8 +222,8 @@ it sits at least `anomaly_z_threshold` standard deviations away. Severity is
 
 ## Change how it records
 
-A super admin reads the settings with `GET /api/admin/apianalytics/config` and
-changes them with `PUT`, sending only the fields to change. Both answer
+The settings are changed through the API only. A super admin reads them with
+`GET /api/admin/apianalytics/config` and changes them with `PUT`, sending only the fields to change. Both answer
 `{"config": {...}}` with every setting.
 
 ```bash

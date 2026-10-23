@@ -56,46 +56,63 @@ through the API below. Setting a quota is on
 
 ## Try it
 
-You need a super admin token in `TOKEN`. The
+For the console step, you are signed in to the admin console as a super admin. For the API
+steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Read every tenant's usage this month:
+**1. Read every tenant's usage this month.**
 
-   ```bash
-   curl "http://localhost:3001/api/admin/usage/tenants?period=2026-10" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   [{ "tenant_id": "default", "billing_period": "2026-10", "api_calls": 0, "storage_bytes": 0, "bandwidth_bytes": 0, "content_count": 1, "media_count": 0 }]
-   ```
+Open **Operations > Quotas and usage**. Each row of the **Quotas** table gives a tenant's API
+calls, storage and bandwidth used this month, such as **3 used** and **291 B used**, beside its
+limit or **No limit set**. A tenant appears there once it has a quota.
 
-   `api_calls` and `bandwidth_bytes` count requests made with API keys.
+</div>
+<div data-path="api">
 
-2. Write this month's snapshot for every active tenant:
+```bash
+curl "http://localhost:3001/api/admin/usage/tenants?period=2026-10" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST "http://localhost:3001/api/admin/usage/snapshot?period=2026-10" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```json
+[{ "tenant_id": "default", "billing_period": "2026-10", "api_calls": 0, "storage_bytes": 0, "bandwidth_bytes": 0, "content_count": 1, "media_count": 0 }]
+```
 
-   ```json
-   { "snapshots_created": 1 }
-   ```
+A tenant is listed once it holds an API key, an entry or a media file, so a new install with
+none answers `[]`.
 
-   Running it again for the same month replaces that month's snapshot.
+</div>
+</div>
 
-3. Export every tenant's usage as CSV:
+`api_calls` and `bandwidth_bytes` count requests made with API keys.
 
-   ```bash
-   curl "http://localhost:3001/api/admin/usage/export?from=2026-10&to=2026-10&format=csv" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**2. Write this month's snapshot for every active tenant.** This is API only on v0.21.0.
 
-   ```text
-   tenant_id,billing_period,api_calls,storage_bytes,bandwidth_bytes,content_count,media_count
-   default,2026-10,0,0,0,1,0
-   ```
+```bash
+curl -X POST "http://localhost:3001/api/admin/usage/snapshot?period=2026-10" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "snapshots_created": 1 }
+```
+
+Running it again for the same month replaces that month's snapshot.
+
+**3. Export every tenant's usage as CSV.** This is API only on v0.21.0.
+
+```bash
+curl "http://localhost:3001/api/admin/usage/export?from=2026-10&to=2026-10&format=csv" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```text
+tenant_id,billing_period,api_calls,storage_bytes,bandwidth_bytes,content_count,media_count
+default,2026-10,0,0,0,1,0
+```
 
 ## Read one tenant or one key
 
@@ -103,11 +120,11 @@ You need a super admin token in `TOKEN`. The
 admin may read only their own tenant. `GET /api/admin/usage/api-key/{id}`
 reads one key's `requests`, `bytes_in` and `bytes_out` for a month.
 
-:::caution[A tenant without API keys reads as not found]
-`/api/admin/usage/tenant/{id}` and `/api/admin/usage/snapshots/{id}` answer
-`404` with `tenant not found` until the tenant holds at least one API key. The
-list of every tenant, the snapshot write and the export are not affected.
-:::
+The tenant route and `GET /api/admin/usage/snapshots/{id}` answer for a tenant
+that holds nothing yet, with zero counts and an empty list. An unknown tenant
+answers `404` with `tenant not found`. Both reads are API only for a super admin
+reading one tenant. An admin's **Quotas and usage** page shows their own tenant's usage once
+the tenant has a quota.
 
 ## Quotas and key limits
 
@@ -160,7 +177,7 @@ The quota and increase request routes are listed on
 | `400` | `period must be YYYY-MM` | Bad `period`. |
 | `400` | `from/to must be YYYY-MM` or `from must not be after to` | Bad export range. |
 | `403` | `cross-tenant access not allowed` | An admin named another tenant. |
-| `404` | `tenant not found` or `api key not found` | Unknown id, or a tenant that holds no API key yet. |
+| `404` | `tenant not found` or `api key not found` | Unknown id. |
 | `429` | `quota exceeded - tenant is blocked` | The tenant is past a hard quota. See [Tenant quotas](tenant-quotas.md). |
 | `429` | `monthly request limit (<n>) exceeded` | An API key passed its monthly limit. See [API key request limits](api-key-request-limits.md). |
 

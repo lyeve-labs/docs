@@ -58,7 +58,7 @@ with a code, before it sets up an app.
 
 | Method | Used for |
 |---|---|
-| **TOTP** | A six-digit code that changes every 30 seconds. Turning TOTP on or off and replacing backup codes accept each code once. At sign-in, a code still works again while it is current. |
+| **TOTP** | A six-digit code that changes every 30 seconds. Each code is accepted once, at sign-in as well as when TOTP is turned on or off or the backup codes are replaced. A code already used is refused, so wait for the app to show the next one. |
 | **Backup codes** | Eight single-use codes shown when TOTP is turned on. Each one works once in place of a code. |
 | **Passkeys and security keys** | A second step, a sign-in without a password, or, for a key marked as the backup, a recovery sign-in. Enrolling one needs `mfa-pro`. |
 
@@ -69,11 +69,12 @@ session. It returns a challenge:
 {
   "mfa_required": true,
   "challenge_token": "eyJhbGciOi...",
-  "mfa_methods": ["totp", "webauthn"]
+  "mfa_methods": ["totp"]
 }
 ```
 
-`mfa_methods` lists `webauthn` only when the person has a passkey. The
+`mfa_methods` is `["totp"]` for every account, with or without a passkey,
+because a passkey cannot finish a password sign-in's challenge. The
 challenge is exchanged for a session at `POST /api/admin/auth/mfa-verify`. Each
 challenge works once and expires five minutes after it is issued. TOTP secrets are encrypted at rest with the
 instance's `ENCRYPTION_KEY`.
@@ -88,13 +89,29 @@ instance's `ENCRYPTION_KEY`.
    registers a passkey.
 3. Restart the instance.
 
-Each person then enrolls in the admin console. See
-[In the admin console](#in-the-admin-console).
+Each person then turns on an authenticator app in the admin console, as
+[In the admin console](#in-the-admin-console) shows. Passkeys are registered
+over the API, as [Use passkeys](#use-passkeys) shows.
 
 ## Try it
 
-This enrolls an authenticator app and signs in with it. Use an account of your
-own, and keep its token in `TOKEN`. The
+This enrolls an authenticator app, signs in with it and turns it off. Use an
+account of your own.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open the account menu in the header and choose **Two-factor
+   authentication**, then **Turn on two-factor authentication**.
+2. Scan the QR code with an authenticator app, enter **The 6-digit code from
+   the app** and choose **Verify and turn on**.
+3. Save the eight backup codes, or choose **Copy all codes**, then choose
+   **Done**.
+
+</div>
+<div data-path="api">
+
+Keep the account's token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 1. Check the account's state:
@@ -141,10 +158,26 @@ own, and keep its token in `TOKEN`. The
    Save the eight backup codes now. A wrong code answers `422` with
    `invalid TOTP code`.
 
-4. Sign in again. The answer is now the challenge shown above. Copy
-   `challenge_token` into `CHALLENGE`.
+</div>
+</div>
 
-5. Finish the sign-in with a code from the app, or with a backup code:
+Then sign in again. Wait for the app to show a new code first, because the
+code that turned TOTP on is spent.
+
+<div class="paths">
+<div data-path="console">
+
+Sign out, then sign in with your email and password. The page asks for
+**Two-factor verification**. Enter a code from the app, or a backup code, in
+**Authenticator code** and choose **Verify**.
+
+</div>
+<div data-path="api">
+
+1. Sign in with `POST /api/admin/auth/login`. The answer is now the challenge
+   shown above. Copy `challenge_token` into `CHALLENGE`.
+
+2. Finish the sign-in with a code from the app, or with a backup code:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/auth/mfa-verify \
@@ -152,24 +185,40 @@ own, and keep its token in `TOKEN`. The
      -d '{"challenge_token": "'"$CHALLENGE"'", "code": "123456"}'
    ```
 
-   The answer is a normal sign-in, with `token` and `refresh_token`. Sending
-   the same challenge again answers `401` with
+   The answer is a normal sign-in, with `token` and `refresh_token`. Copy
+   `token` into `TOKEN`. Sending the same challenge again answers `401` with
    `The MFA challenge has expired. Please log in again.`
 
-6. Turn it off with a current code or a backup code:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/mfa/totp/disable \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"code": "7cfaca44e9aae775"}'
-   ```
+Turn it off with a current code or a backup code:
 
-   The answer is `204`.
+<div class="paths">
+<div data-path="console">
+
+On **Two-factor authentication**, enter the code in the **Code** field under
+**Turn off** and choose **Turn off**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/mfa/totp/disable \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "7cfaca44e9aae775"}'
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Replace the backup codes
 
-`POST /api/admin/mfa/backup-codes/regenerate` with a current code in
+The console has no screen for this on the current release, so it is an API
+call. `POST /api/admin/mfa/backup-codes/regenerate` with a current code in
 `{"code": "123456"}` replaces all eight with new ones and returns them as
 `backup_codes`. A code from the same 30-second window as the last code that
 turning TOTP on or off or replacing backup codes accepted is refused, so wait
@@ -190,8 +239,20 @@ need proof of a factor it already holds, in the request body:
   The challenge proves a factor once and signs nobody in. The route answers
   `404` when the account has no passkey.
 
-To replace an authenticator app, send the proof to
-`POST /api/admin/mfa/totp/setup`:
+To replace an authenticator app:
+
+<div class="paths">
+<div data-path="console">
+
+On **Two-factor authentication**, enter a current code or a backup code in the
+**Code** field under **Replace the authenticator app** and choose **Replace
+the authenticator app**. Scan the new QR code and verify a code from it. The
+page then shows eight new backup codes.
+
+</div>
+<div data-path="api">
+
+Send the proof to `POST /api/admin/mfa/totp/setup`:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/mfa/totp/setup \
@@ -201,8 +262,12 @@ curl -X POST http://localhost:3001/api/admin/mfa/totp/setup \
 ```
 
 The new key replaces the old one once `POST /api/admin/mfa/totp/verify`
-accepts a code from it. A wrong proof counts toward the same lockout as a wrong
-code.
+accepts a code from it.
+
+</div>
+</div>
+
+A wrong proof counts toward the same lockout as a wrong code.
 
 Removing a passkey with `DELETE /api/admin/mfa/webauthn/credentials/{id}` takes
 the same body. When that passkey is the last factor the account holds, with no
@@ -217,6 +282,10 @@ call.
 
 ## Use passkeys
 
+Console v0.21.0 has no screen to register a passkey or to sign in with one, so
+this is done over the API, from a page of your own that calls the browser's
+`navigator.credentials` functions.
+
 Registering a passkey and marking one as the backup key need `mfa-pro`. Every
 sign-in with a passkey stays free, so a passkey enrolled while the license
 covered it keeps working after a lapse, through step-up, passwordless,
@@ -224,6 +293,23 @@ cross-device and recovery sign-in alike. Listing, renaming and removing a
 passkey, and clearing its backup mark, are free too. Without `mfa-pro` the
 register routes answer
 `402` with `{"error": "payment_required", "plugin": "mfa", "feature": "feature:mfa-pro", "upgrade_url": ""}`.
+
+:::caution[Turn on an authenticator app before the first passkey]
+A password sign-in challenges an account that holds a passkey, and the
+challenge takes only a code from an authenticator app or a backup code. An
+account whose only factor is a passkey has neither, so it signs in only
+through passwordless sign-in, which the admin console does not offer. Turn on
+the authenticator app first, which also gives the account its backup codes,
+and register the passkey after it.
+
+An account that is already passkey-only adds the app over the API. Sign in
+with the passkey through passwordless sign-in, send a passkey proof to
+`POST /api/admin/mfa/totp/setup` as
+[Add or remove a factor](#add-or-remove-a-factor) shows, and verify a code
+from the new key with `POST /api/admin/mfa/totp/verify`. The answer carries
+eight backup codes, and a password sign-in then finishes with a code from the
+app.
+:::
 
 Every WebAuthn route comes in a begin and complete pair:
 
@@ -248,6 +334,11 @@ session:
 
 The token lives for `JWT_EXPIRY_SECS`.
 
+`GET /api/admin/mfa/webauthn/credentials` lists the person's passkeys as
+`{"data": [...], "limit", "offset", "total_count"}`, each with its `id`,
+`name`, `is_backup`, `created_at` and `last_used_at`, and
+`GET /api/admin/mfa/status` then reads `"has_passkeys": true`.
+
 Mark a passkey as the backup key with
 `PUT /api/admin/mfa/webauthn/credentials/{id}/backup` and the body
 `{"is_backup": true}`. Recovery sign-in accepts only a backup key, and its
@@ -261,7 +352,8 @@ starts.
 
 ## Reset someone's MFA
 
-A super admin who acts across every tenant can turn off another person's MFA,
+The console has no screen for this on the current release, so it is an API
+call. A super admin who acts across every tenant can turn off another person's MFA,
 for example when they lost their phone and their backup codes:
 
 ```bash

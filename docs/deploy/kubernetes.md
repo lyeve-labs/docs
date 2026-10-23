@@ -557,7 +557,8 @@ volumes:
 With two `ReadWriteOnce` claims named `lyeve-state` (1Gi) and `lyeve-uploads` (10Gi), the engine
 creates its key on the state volume and keeps media on the uploads volume. Use
 `strategy: { type: Recreate }`, because a `ReadWriteOnce` claim cannot attach to the new pod
-while the old one holds it.
+while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
+restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
 ## Upgrading to 0.55.0 and console 0.21.0
 

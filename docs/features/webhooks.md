@@ -79,59 +79,108 @@ delays or blocks a write. A tenant's webhooks see only that tenant's content.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
-shows how to get one. Creating a webhook needs the `super_admin` role. The
-example assumes a content type named `post`, such as the one in
+For the console steps, you are signed in to the admin console. For the API
+steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
+Creating a webhook needs the `super_admin` role. The example assumes a content
+type named `post`, such as the one in
 [Create your first content type](../getting-started/first-content-type.md).
 
-1. Create a webhook. Replace the URL with an HTTPS address you control. Its
-   host must resolve to a public address when you save, so the placeholder
-   below answers `400 invalid input` until you change it:
+**1. Create a webhook.** Use an HTTPS address you control. Its host must
+resolve to a public address when you save.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/webhooks \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "name": "Rebuild site",
-           "url": "https://build.example.com/hooks/lyeve",
-           "events": ["after_create", "after_update", "after_delete"],
-           "schemas": ["post"],
-           "include_fields": ["id", "title", "slug"],
-           "secret": "replace-with-a-long-random-secret"
-         }'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the webhook, which never shows the secret. Copy its
-   `id` into `WEBHOOK_ID`.
+1. Open **Delivery > Webhooks** and choose **New webhook**.
+2. Enter `Rebuild site` in **Name** and your address in **URL**. Enter a long
+   random value in **Signing secret**.
+3. Under **Events**, tick `after_create`, `after_update` and `after_delete`.
+4. In **Schemas**, which reads **Every schema**, pick `post`.
+5. Choose **Create**.
 
-2. Send a test delivery to your endpoint:
+The form in console v0.21.0 has no field list, so this webhook sends every
+field of the entry. An entry saved in the console arrives in the shape
+[What your endpoint receives](#what-your-endpoint-receives) shows for it.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/test \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   { "success": true, "status_code": 200, "message": "OK" }
-   ```
+The placeholder URL below answers `400 invalid input` until you change it:
 
-   When your endpoint refuses it, `success` is `false` and `message` names the
-   status, such as `HTTP 405: webhook test failed`. The test body carries
-   `"event": "test"`, `"schema": "*"` and `"data": {"message": "webhook test from LyEve"}`,
-   trimmed by the field lists, so with the `include_fields` above `data`
-   arrives empty.
+```bash
+curl -X POST http://localhost:3001/api/admin/webhooks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Rebuild site",
+        "url": "https://build.example.com/hooks/lyeve",
+        "events": ["after_create", "after_update", "after_delete"],
+        "schemas": ["post"],
+        "include_fields": ["id", "title", "slug"],
+        "secret": "replace-with-a-long-random-secret"
+      }'
+```
 
-3. Read how deliveries have gone:
+The answer is `201` with the webhook, which never shows the secret. Copy its
+`id` into `WEBHOOK_ID`.
 
-   ```bash
-   curl http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries/stats \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   ```json
-   { "total": 1, "success_count": 1, "failure_count": 0, "success_rate": 100, "avg_latency_ms": 111, "last_24h": 1 }
-   ```
+**2. Send a test delivery to your endpoint.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Test**, the flask icon, on the webhook's row. The outcome shows under the row, such as
+`HTTP 204: No Content`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/test \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "success": true, "status_code": 200, "message": "OK" }
+```
+
+When your endpoint refuses it, `success` is `false` and `message` names the
+status, such as `HTTP 405: webhook test failed`.
+
+</div>
+</div>
+
+The test body carries `"event": "test"`, `"schema": "*"` and
+`"data": {"message": "webhook test from LyEve"}`, trimmed by the field lists,
+so with the `include_fields` of the API example `data` arrives empty.
+
+**3. Read how deliveries have gone.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Delivery history**, the clock icon, on the webhook's row. The dialog lists each
+delivery with its time, event, content type, status, duration, result and
+retry count. Console v0.21.0 shows no totals.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/deliveries/stats \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "total": 1, "success_count": 1, "failure_count": 0, "success_rate": 100, "avg_latency_ms": 111, "last_24h": 1 }
+```
+
+</div>
+</div>
 
 To write the receiver that checks the signature, follow
 [Add a webhook](../how-to/add-a-webhook.md).
@@ -175,6 +224,45 @@ Without a payload template, the body is this envelope:
   "timestamp": "2026-10-01T10:00:00Z"
 }
 ```
+
+An entry saved in console v0.21.0 arrives as the console stores it. The
+fields you typed sit in an object under `data.body`, and `data` also carries
+the entry's `id`, `slug`, `status`, `title`, its timestamps and the accounts
+that wrote it. This is a `post` created in the console with `Hello` as its
+body:
+
+```json
+{
+  "event": "after_create",
+  "schema": "post",
+  "data": {
+    "_status": "draft",
+    "body": {
+      "author_id": null,
+      "body": "<p>Hello</p>",
+      "slug": null,
+      "title": "Webhook check"
+    },
+    "created_at": "2026-10-23T16:31:35.423506701Z",
+    "created_by": "59ef432d-cfa3-4dc3-b90a-87f2eff13558",
+    "current_rev": 1,
+    "id": "8371ea04-24e5-49a8-93b0-0bb8b7d4baff",
+    "meta": {},
+    "schema": "post",
+    "slug": "webhook-check-omh0mr",
+    "status": "draft",
+    "tenant_id": "default",
+    "timezone": "UTC",
+    "title": "Webhook check",
+    "updated_at": "2026-10-23T16:31:35.423506701Z",
+    "updated_by": "59ef432d-cfa3-4dc3-b90a-87f2eff13558"
+  },
+  "timestamp": "2026-10-23T16:31:35Z"
+}
+```
+
+An entry created with the API arrives with its fields directly in `data`, as
+in the first example.
 
 `event` is `after_create`, `after_update`, `after_delete`, or `test` for a test
 delivery. On `after_delete`, `data` is the entry as it was. On `after_update`,
@@ -249,27 +337,111 @@ and the preview need `webhook-pro`, and the rest is free:
   `>=`, `<` or `<=`, after a path that starts with `$.event`, `$.schema`,
   `$.data`, `$.old_data` or `$.timestamp`. A path alone fires when its value is
   set and not `false` or `0`.
-- `include_fields` or `exclude_fields` trims `data`.
+- `include_fields` or `exclude_fields` trims `data`. Only the API sets them:
+  the **New webhook** form in console v0.21.0 has no field lists. Its
+  **Delivery options** hold the payload template, the JSONPath filter, the
+  field filters, the retries and the retry delay.
 
 A `payload_template` replaces the envelope with your own JSON. It sees the
 entry as `.Data` and the previous values as `.OldData`, and it has the helpers
-`toJSON`, `defaultVal`, `ifSet`, `ifCond`, `ifEq`, `ifNeq` and `dict`. This
-template posts a chat message:
+`toJSON`, `defaultVal`, `ifSet`, `ifCond`, `ifEq`, `ifNeq` and `dict`.
 
-```json
-{ "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}" }
+For example, a webhook that posts a chat message for one title only:
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Delivery > Webhooks**, choose **New webhook**. Enter `Chat notice` in
+   **Name** and the chat service's address in **URL**, tick `after_create`
+   under **Events**, and pick `post` in **Schemas**.
+2. Open **Delivery options**. Enter `{"text": "New post: {{.Data.title}}"}`
+   in **Payload template** and `title=Launch` in **Field filters**, one
+   `field=value` per line. A condition such as `$.data.title == "Launch"`
+   goes in **JSONPath filter** instead.
+3. Choose **Create**.
+
+A post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post
+with any other title sends nothing.
+
+![The New webhook form on an install licensed for webhook-pro, with post picked under Schemas and Delivery options open, showing a payload template and the field filter title=Launch.](images/webhooks-delivery-options.png)
+
+</div>
+<div data-path="api">
+
+Put the chat service's address in place of the example URL, which does not
+resolve:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/webhooks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Chat notice", "url": "https://chat.example.com/hooks/lyeve", "events": ["after_create"], "schemas": ["post"], "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}", "field_filters": {"title": "Launch"}}'
 ```
 
-Preview it with `POST /api/admin/webhooks/{id}/preview`, which renders the
-template and the headers against the `event`, `schema`, `data` and `old_data`
-you send. Send `{}` to use sample values. An empty request answers
-`400 invalid JSON`. The preview applies the field lists but not the filters.
+The answer is `201` with the new webhook. Copy its `id` into `CHAT_ID`. A
+post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post with
+any other title sends nothing.
+
+An update replaces the whole record, so send every writable field. A field
+you leave out is cleared, and only `secret` keeps its stored value when left
+out. This update swaps the field filter for a JSONPath condition, and its
+retry and size values are the defaults:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/webhooks/$CHAT_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Chat notice",
+        "url": "https://chat.example.com/hooks/lyeve",
+        "events": ["after_create"],
+        "schemas": ["post"],
+        "enabled": true,
+        "headers": {},
+        "payload_template": "{\"text\": \"New post: {{.Data.title}}\"}",
+        "field_filters": {},
+        "jsonpath_filter": "$.data.title == \"Release\"",
+        "include_fields": [],
+        "exclude_fields": [],
+        "max_retries": 4,
+        "retry_delay_seconds": 30,
+        "max_response_size": 1048576
+      }'
+```
+
+The answer is `200`. A post titled `Release` now sends
+`{"text":"New post: Release"}`, and a post titled `Launch` sends nothing.
+
+</div>
+</div>
+
+The console has no preview, so preview a template over the API with
+`POST /api/admin/webhooks/{id}/preview`, which renders the template and the
+headers against the `event`, `schema`, `data` and `old_data` you send. Send
+`{}` to use sample values. An empty request answers `400 invalid JSON`. The
+preview applies the field lists but not the filters:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/webhooks/$CHAT_ID/preview \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"event": "after_create", "schema": "post", "data": {"title": "Release"}}'
+```
+
+```json
+{"payload": "{\"text\": \"New post: Release\"}", "fields_used": ["title"]}
+```
 
 ## Retry policy
 
 A failed delivery (an error, a timeout, or a status outside `2xx`) is retried
 in the background. The worker looks for due retries every 30 seconds. With
-`webhook-pro`, set the policy per webhook. Without it the defaults below apply:
+`webhook-pro`, set the policy per webhook. Without it the defaults below apply.
+
+In the console, **Delivery options** on the webhook's form sets the webhook's
+own **Retries** and **Retry delay (seconds)**, the `max_retries` and
+`retry_delay_seconds` fields. The policy itself is set over the API, and it
+wins once a webhook has one:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/retry-config \
@@ -300,12 +472,24 @@ delivery moves to the dead-letter queue.
 
 ## Replay or dismiss a dead letter
 
-A delivery that runs out of attempts lands in the dead-letter queue:
+A delivery that runs out of attempts lands in the dead-letter queue.
+
+<div class="paths">
+<div data-path="console">
+
+On **Delivery > Webhooks**, choose **Dead letters**. The **Dead letter queue**
+dialog lists the entries, or says **No dead letter entries**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl "http://localhost:3001/api/admin/webhook-dead-letters?status=pending" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+</div>
+</div>
 
 Each entry carries the webhook, the event, the body that was sent, the last
 status code and error, and `total_attempts`. `status` is `pending`, `replayed`
@@ -314,20 +498,45 @@ or `dismissed`.
 Replaying and dismissing need `webhook-pro`. Reading and deleting an entry are
 free.
 
+<div class="paths">
+<div data-path="console">
+
+In the **Dead letter queue**, each pending entry has three buttons:
+
+- **Replay** sends the same body again. The row reads **Delivered (HTTP 200)**
+  when the endpoint takes it.
+- **Dismiss** marks the entry handled without sending. The row reads
+  **Dismissed**.
+- **Delete** removes the entry for good.
+
+Neither **Replay** nor **Dismiss** asks for confirmation. Without the license,
+the queue says that replaying and dismissing need it, and deleting stays open.
+
+</div>
+<div data-path="api">
+
 - `POST /api/admin/webhook-dead-letters/{id}/replay` sends the same body again,
   signed afresh. The answer is
   `{"id": "...", "status": "replayed", "http_status": 200}`. Read
   `http_status`: the entry is marked replayed only when it is `2xx`, and stays
   pending otherwise.
 - `POST /api/admin/webhook-dead-letters/{id}/dismiss` marks it handled without
-  sending.
+  sending, and answers `{"id": "...", "status": "dismissed"}`.
 - Either answers `409 dead letter entry is not pending` once the entry has left
   `pending`.
+
+</div>
+</div>
 
 ## Read the history
 
 Every attempt is recorded with its status code, duration, request body, retry
 count and error.
+
+In the console, **Delivery history** on a webhook's row lists its deliveries,
+and **Retry this delivery**, on a failed one, sends it again and shows the
+result, such as `OK`. Retrying needs `webhook-pro`. Delivery search and the
+payload preview have no screen in console v0.21.0.
 
 <details>
 <summary>History and health routes</summary>
@@ -364,6 +573,18 @@ the error text from the dead letter itself.
 
 ## Rotate the secret
 
+Rotating needs the `super_admin` role.
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Rotate the signing secret**, the key icon, on the webhook's row. The webhook gets a
+new secret at once, with no confirmation, and a dialog shows it with **Copy**.
+It is shown once, so save it before you choose **Close**.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/rotate-secret \
   -H "Authorization: Bearer $TOKEN" \
@@ -373,13 +594,33 @@ curl -X POST http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID/rotate-secret 
 
 `{}` generates a new secret. `{"new_secret": "..."}` sets one of at least 16
 characters. The answer carries `new_secret` once, so save it then. The body is
-required: an empty request answers `400 invalid JSON`. Rotating needs the
-`super_admin` role.
+required: an empty request answers `400 invalid JSON`.
+
+</div>
+</div>
 
 ## Take in webhooks from other services
 
 An incoming webhook turns a JSON payload from another service into a new entry.
-Creating or changing one needs the `super_admin` role and `webhook-pro`:
+Creating or changing one needs the `super_admin` role and `webhook-pro`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Delivery > Incoming webhooks** and choose **New incoming webhook**.
+2. Enter `Guest notes` in **Name** and pick `post` in **Target schema**.
+3. Enter a long random secret in **Signing secret**, and give it to the other
+   service.
+4. In **Field map**, enter `{"headline": "title", "text": "body"}`, which maps
+   the payload's `headline` to the entry's `title` and `text` to `body`.
+5. Leave **IP allowlist** empty to take requests from any address, or enter
+   one address or CIDR range per line. Choose **Create**.
+
+The list shows the webhook as **Enabled**, with **Schema: post** and the
+address the other service posts to, `POST /api/v1/webhooks/in/` and its id.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/incoming-webhooks \
@@ -393,6 +634,11 @@ curl -X POST http://localhost:3001/api/admin/incoming-webhooks \
         "allowed_ips": ["198.51.100.0/24"]
       }'
 ```
+
+The answer is `201` with the webhook and its `id`, and without the secret.
+
+</div>
+</div>
 
 `field_map` maps a key of the incoming JSON to a field of the content type, and
 it cannot be empty. Keys you do not map are ignored. `allowed_ips` takes

@@ -35,7 +35,9 @@ Railway's current pricing before you leave it unattended.
    refuses to start when it cannot write the key.
 
 Without the volume, every redeploy creates a new key and every token issued before it stops
-working.
+working. The volume keeps the key, not the sessions: refresh tokens live in the engine's memory
+unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, so a redeploy still signs everyone out once their access
+token expires, 15 minutes by default.
 
 ## Secrets
 
@@ -86,6 +88,8 @@ the one-time `setup_token` in the service's log, or `LYEVE_SETUP_TOKEN` when you
 This page sets up the engine alone. The admin console runs as its own service, from the image
 `ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
 settings and the routing it needs.
+[Run the engine and the console together](../getting-started/engine-and-console.md) shows the
+two side by side on one address.
 
 ## Next
 

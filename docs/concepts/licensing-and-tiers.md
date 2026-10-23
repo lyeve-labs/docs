@@ -206,12 +206,19 @@ You receive a license as a signed token, or as a license key that starts with
 docker run -e LYEVE_LICENSE_KEY="<token or key>" ... ghcr.io/lyeve-labs/lyeve-core:latest
 ```
 
+**On a running instance.** A super admin applies it without a restart:
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > License**, paste the token or key into **License token or
+key**, and select **Activate license**, or **Renew license** when one is
+already in force. A refused token or key shows the reason on the page.
+
 ![Settings > License: the current plan and status, links to plans and to the customer portal, and a box to paste a license token or key.](images/license.png)
 
-**In the admin console.** A super admin opens **Settings > License**, pastes
-the token or key into **License token or key**, and selects
-**Activate license**, or **Renew license** when one is already in force. The
-same call over the API:
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/license/renew \
@@ -225,8 +232,13 @@ curl -X POST http://localhost:3001/api/admin/license/renew \
 ```
 
 The route takes the `super_admin` role and a signed-in session, not an admin
-token or an API key. The instance stores what you enter, and encrypts a key with
-`ENCRYPTION_KEY`, so a restart and every replica pick it up.
+token or an API key.
+
+</div>
+</div>
+
+The instance stores what you enter, and encrypts a key with `ENCRYPTION_KEY`,
+so a restart and every replica pick it up.
 
 What changes at once and what waits for a restart:
 
@@ -327,12 +339,18 @@ reports `plugin not compiled into this build`, so a typo is easy to find.
 
 ## Check what is running
 
-**In the admin console**, **Operations > Plugins** lists every feature with its
-state and, for one that is off, the reason. Admins and super admins see it.
-**Settings > License** shows the plan, its state, the expiry and any license
-problem.
+<div class="paths">
+<div data-path="console">
 
-**Over the API**, three routes answer:
+**Operations > Plugins** lists every feature with its state and, for one that
+is off, the reason, such as `not granted by the capability set`. Filter it by
+category or by state. Admins and super admins see it. **Settings > License**
+shows the plan, its state, the expiry and any license problem.
+
+</div>
+<div data-path="api">
+
+Three routes answer:
 
 ```bash
 curl http://localhost:3001/api/admin/entitlements \
@@ -354,6 +372,12 @@ the license in force. A free install answers:
   "license_module": true
 }
 ```
+
+The other two, `GET /api/admin/plugins/status` and
+`GET /api/admin/plugins/running`, are described after the fields below.
+
+</div>
+</div>
 
 <details>
 <summary>Entitlement fields</summary>

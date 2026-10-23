@@ -198,7 +198,10 @@ Four volumes hold state:
 
 - `db-data` holds the database. Every tenant, entry and user lives here.
 - `engine-state` holds the signing key and the cached license. Lose it and every issued token
-  stops working, so every user signs in again.
+  stops working, so every user signs in again. Keeping it does not keep sessions through a
+  restart: refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and
+  `REDIS_URL` point at a Redis, so after a restart everyone signs in again once their access
+  token expires, 15 minutes by default.
 - `uploads-data` holds uploaded media when storage is on local disk, the default.
 - `caddy-data` holds the proxy's TLS certificates.
 
@@ -230,16 +233,40 @@ The answer is `{"status":"ok", ...}` with its checks once the engine is ready.
 
 ## Create the first administrator
 
-Open `https://admin.yourdomain.com`. A fresh instance sends you to `/setup`, which asks for a
-setup token before it creates the first administrator. The engine prints the token at startup
-while no account exists:
+Creating the first administrator takes a setup token. The engine prints it at startup while no
+account exists:
 
 ```bash
 docker compose logs engine | grep setup_token
 ```
 
 To choose the token yourself, set `LYEVE_SETUP_TOKEN` (16 characters or more) on the engine.
-Signing in exercises the whole path: the proxy, the console, the engine and Postgres.
+
+<div class="paths">
+<div data-path="console">
+
+Open `https://admin.yourdomain.com`. A fresh instance sends you to `/setup`. Paste the token
+into **Setup token**, enter your email address, and the password in **Password** and again in
+**Confirm password**, then choose **Create super admin account**. The console signs you in.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST https://admin.yourdomain.com/api/admin/setup \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@yourdomain.com", "password": "<a password>", "setup_token": "<the token>"}'
+```
+
+A success answers `201` with the new `user` and a `token`. The password has to meet the
+default policy: at least 12 characters, with an upper-case letter, a lower-case letter and a
+digit.
+
+</div>
+</div>
+
+Signing in to the console exercises the whole path: the proxy, the console, the engine and
+Postgres.
 
 ## Upgrades
 

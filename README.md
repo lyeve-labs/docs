@@ -74,6 +74,7 @@ docs/
 │   ├── reference/         configuration, API endpoints, CLI, flows, glossary
 │   └── trust/             security, data protection, source code, offline verification
 ├── redirects              every moved path and the page that holds its subject now
+├── versions.json          the engine and console releases the pages describe
 ├── CHANGELOG.md           Keep a Changelog, newest first
 ├── CONTRIBUTING.md        page shape, voice, workflow
 ├── VERSIONING.md          how this repository is versioned

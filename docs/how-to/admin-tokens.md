@@ -29,26 +29,33 @@ it makes, refused calls included.
 - You can sign in, and you know your password, or your authenticator code if
   your account has [MFA](../features/multi-factor-auth.md). Creating and
   rotating a token asks for it again.
-- You have a session token in `TOKEN`. The
-  [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 ## 1. Create the token
 
-In the admin console, open **Access > Admin tokens** and choose **New token**:
+<div class="paths">
+<div data-path="console">
+
+Open **Access > Admin tokens** and choose **New token**.
 
 ![Access > Admin tokens before any token exists, with the New token button.](images/admin-tokens.png)
 
 1. **Name** the job, such as `ci-schema-pull`.
 2. **Grants.** Pick only what the job calls. Each group lists the routes its
    grants open on your instance.
-3. **Expires.** Choose 7, 30 or 90 days, or pick a day.
+3. **Expires.** Choose 7, 30 or 90 days, or **Pick a day**. The form starts
+   on 30 days.
 4. **Allowed addresses** (optional). One address or CIDR range per line.
 5. **Tenant**, when you are a super admin and more than one tenant exists.
 6. **Your password**, or **Authentication code** when your account has MFA.
 
-Choose **Create** and copy the token. It is shown once.
+Choose **Create**. The dialog **Token ci-schema-pull issued** shows the token
+once. Copy it into `ADMIN_TOKEN`.
 
-The same call over HTTP:
+</div>
+<div data-path="api">
+
+You need a session token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/admin-tokens \
@@ -86,8 +93,13 @@ answer is `201`:
 }
 ```
 
-Copy `token` into `ADMIN_TOKEN` and `id` into `TOKEN_ID`. Only a hash and the
-short `display_prefix` are kept, so a lost token cannot be shown again.
+Copy `token` into `ADMIN_TOKEN` and `id` into `TOKEN_ID`.
+
+</div>
+</div>
+
+Only a hash and the short display prefix are kept, so a lost token cannot be
+shown again.
 
 ## 2. Use it
 
@@ -129,6 +141,16 @@ A route that takes no grant, such as `/api/admin/users`, answers
 
 ## 4. Read its request log
 
+<div class="paths">
+<div data-path="console">
+
+On **Access > Admin tokens**, choose the request log link on the token's row.
+**Request log** lists each call with its time, method, route, status and
+address, newest first.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl "http://localhost:3001/api/admin/admin-tokens/$TOKEN_ID/requests?limit=50" \
   -H "Authorization: Bearer $TOKEN"
@@ -146,15 +168,29 @@ curl "http://localhost:3001/api/admin/admin-tokens/$TOKEN_ID/requests?limit=50" 
 }
 ```
 
+</div>
+</div>
+
 Each row records the route pattern, such as `/api/admin/schemas/{name}`, not
-the path with its values. The console shows the same log from the token's row.
+the path with its values.
 
 ## 5. Rotate it before it expires
 
 Rotation issues a successor with the same name, grants, tenant and address
 list, and a new expiry. Only the owner can rotate a token, with the same
-password or MFA confirmation as creation. In the console, choose **Rotate** on
-the token. Over HTTP:
+password or MFA confirmation as creation.
+
+<div class="paths">
+<div data-path="console">
+
+On **Access > Admin tokens**, choose the rotate button on the token's row. The
+**Rotate ci-schema-pull** dialog says until when the old token keeps working.
+Pick **Expires**, enter **Your password** and choose **Rotate**. Copy the new
+token from the dialog that follows. The old token's status turns to
+**Replaced**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/admin-tokens/$TOKEN_ID/rotate \
@@ -164,21 +200,40 @@ curl -X POST http://localhost:3001/api/admin/admin-tokens/$TOKEN_ID/rotate \
 ```
 
 The answer is `201` with the new token, once, and `rotated_from` naming the
-old one. The old token keeps working for seven days or until its own expiry,
-whichever comes first, so a job can switch without a gap. A revoked or expired
-token cannot be rotated: that answers `409`.
+old one.
+
+</div>
+</div>
+
+The old token keeps working for seven days or until its own expiry, whichever
+comes first, so a job can switch without a gap. A revoked or expired token
+cannot be rotated: that answers `409`.
 
 ## 6. Revoke it
+
+<div class="paths">
+<div data-path="console">
+
+On **Access > Admin tokens**, choose the revoke button on the token's row. The
+dialog asks **Revoke token ci-schema-pull** with the token's prefix. Choose
+**Revoke**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X DELETE http://localhost:3001/api/admin/admin-tokens/$TOKEN_ID \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-The answer is `204`, or `409 This admin token is already revoked.` From then
-on the token answers `401 This admin token has been revoked.` A revoked token
-stays in the list with its request log. The owner or a super admin can revoke
-a token.
+The answer is `204`, or `409 This admin token is already revoked.`
+
+</div>
+</div>
+
+From then on the token answers `401 This admin token has been revoked.` A
+revoked token stays in the list with its request log. The owner or a super
+admin can revoke a token.
 
 ## How a token is checked
 
@@ -229,7 +284,10 @@ name outside it is refused at creation.
 
 Each grant opens routes of one feature, so it opens nothing where that feature
 is not running: `webhooks:read` does nothing without
-[webhooks](../features/webhooks.md). `GET /api/admin/admin-tokens/grants`
+[webhooks](../features/webhooks.md), and `audit:read` does nothing without a
+license that carries the [audit log](../features/audit-log.md). In the
+console, a group that opens nothing says **No route on this instance declares
+these grants yet.** `GET /api/admin/admin-tokens/grants`
 lists the routes each grant opens on your instance, and the admin OpenAPI
 document marks each one with an `x-admin-grant` extension.
 

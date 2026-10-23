@@ -20,7 +20,10 @@ when idle and starts on the next request.
 - Fly gives a Machine a blank file system each time it starts. The engine then creates a new
   signing key, so every start, an automatic stop and start included, signs everyone out. A Fly
   volume mounted at `/var/lib/lyeve` keeps the key, provided uid `65532` can write to it. In
-  production the engine refuses to start when it cannot write the key.
+  production the engine refuses to start when it cannot write the key. The volume keeps the key,
+  not the sessions: refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a
+  Redis, so a start still signs everyone out once their access token expires, 15 minutes by
+  default.
 :::
 
 ## Before you start
@@ -135,4 +138,6 @@ The first `curl` lists the engine's public signing key. The second goes over IPv
 ## Next
 
 - [Free-tier stack](free-tier-overview.md): the $0 recipe and its limits.
+- [Run the engine and the console together](../getting-started/engine-and-console.md): the admin
+  console in front of the engine, on one address.
 - [Production checklist](production-checklist.md): what to confirm before real traffic.

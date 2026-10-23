@@ -18,6 +18,8 @@ staging engine.
 - A free web service spins down after a period with no traffic. The next request waits for
   Render to start the container, then for the engine to start and connect to the database.
 - A free web service has no persistent disk, so every start creates a new signing key and users
+  sign in again. Refresh tokens also live in the engine's memory unless `CACHE_DRIVER=redis` and
+  `REDIS_URL` point at a Redis. Without Redis, a new instance cannot renew a session, so users
   sign in again.
 :::
 
@@ -99,6 +101,8 @@ start, which the engine logs as `boot_ms` on its `serving` line.
 This page sets up the engine alone. The admin console runs as its own service, from the image
 `ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
 settings and the routing it needs.
+[Run the engine and the console together](../getting-started/engine-and-console.md) shows the
+two side by side on one address.
 
 ## Next
 

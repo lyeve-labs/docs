@@ -61,62 +61,102 @@ Every export carries the same metrics:
 Traces are not part of this feature. To send traces, see
 [tracing under load](../scaling/index.md#tracing-under-load).
 
-## In the admin console
-
-Open **Insight > Observability > Telemetry**. **Metrics** lists every metric
-family the instance serves, with its current samples. Type part of a name in
-**Filter families**, or pick a type, to narrow the list. **Tenant destination**
-saves where the tenant's own series are pushed, by **OTLP** or
-**Pushgateway**, to a **URL** with headers from **Add header**. **Exporters**
-lists the backends the instance ships to, and reads
-**No exporter configured** until one is set.
-
-![The Telemetry page filtered to lyeve_requests_total, a counter with one sample per status class, method and tenant.](images/metrics-export.png)
+In the admin console, metrics export is under **Insight > Observability > Telemetry**.
+**Metrics** lists every metric family the instance serves, with its current samples. Type part
+of a name in **Filter families**, or pick a **Type**, to narrow the list. **Tenant destination**
+saves where the tenant's own series are pushed, by **OTLP** or **Pushgateway**, to a **URL**
+with headers from **Add header**. Without the `multitenant-customization` feature the section
+says that setting or changing a destination needs a license, and **Save** is turned off.
+**Exporters** lists the backends the instance ships to, and reads **No exporter configured**
+until one is set. Configuring a backend is done with settings, as step 3 shows.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+For the console steps, you are signed in to the admin console as a super admin. For the API
+steps, you need a super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+shows how to get one.
 
-1. Scrape the request metrics:
+**1. Read the request metrics.**
 
-   ```bash
-   curl -s http://localhost:3001/api/admin/telemetry/metrics \
-     -H "Authorization: Bearer $TOKEN" | grep '^lyeve_requests_total'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```text
-   lyeve_requests_total{code="2xx",method="GET",plugin="core",tenant="default"} 27
-   lyeve_requests_total{code="4xx",method="GET",plugin="core",tenant="default"} 3
-   ```
+Open **Insight > Observability > Telemetry** and type `lyeve_requests_total` in **Filter
+families**. The counter lists one sample per status class, method and tenant.
 
-2. List the exporters. On a fresh install none is configured:
+![The Telemetry page filtered to lyeve_requests_total, a counter with one sample per status class, method and tenant.](images/metrics-export.png)
 
-   ```bash
-   curl http://localhost:3001/api/admin/telemetry/exporters \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   { "data": [], "limit": 50, "offset": 0, "total_count": 0 }
-   ```
+```bash
+curl -s http://localhost:3001/api/admin/telemetry/metrics \
+  -H "Authorization: Bearer $TOKEN" | grep '^lyeve_requests_total'
+```
 
-3. Configure a backend. Set `METRICS_PUSHGATEWAY_URL` to your Pushgateway, such
-   as `https://pushgateway.example.com`, and restart the instance.
+```text
+lyeve_requests_total{code="2xx",method="GET",plugin="core",tenant="default"} 27
+lyeve_requests_total{code="4xx",method="GET",plugin="core",tenant="default"} 3
+```
 
-4. Export once without waiting for the schedule:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/telemetry/exporters/pushgateway/export \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**2. List the exporters.** On a fresh install none is configured.
 
-   ```json
-   { "status": "ok", "message": "export triggered for pushgateway" }
-   ```
+<div class="paths">
+<div data-path="console">
 
-   Without a configured Pushgateway the answer is `404` with
-   `exporter not found`.
+On the same page, **Exporters** reads **No exporter configured**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/telemetry/exporters \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "data": [], "limit": 50, "offset": 0, "total_count": 0 }
+```
+
+</div>
+</div>
+
+**3. Configure a backend.** Set `METRICS_PUSHGATEWAY_URL` to your Pushgateway, such as
+`https://pushgateway.example.com`, and restart the instance. A Pushgateway on your own network
+also needs its range in `METRICS_ALLOWED_PRIVATE_NETWORKS`, as
+[Reach a collector on your own network](#reach-a-collector-on-your-own-network) describes.
+
+**4. Export once without waiting for the schedule.**
+
+<div class="paths">
+<div data-path="console">
+
+**Exporters** now lists `pushgateway` as **Healthy**, with its last export and its counts of
+exports and failures. Choose the export button on its row, labeled **Export pushgateway now**.
+The page confirms `export triggered for pushgateway`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/telemetry/exporters/pushgateway/export \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "status": "ok", "message": "export triggered for pushgateway" }
+```
+
+Without a configured Pushgateway the answer is `404` with `exporter not found`.
+
+</div>
+</div>
+
+Manual exports are at least 5 seconds apart. A second one inside that window answers `429`
+with `rate_limited`.
 
 ## Choose a backend
 
@@ -142,7 +182,25 @@ manual export answers `422` and names the setting.
 
 With `multitenant-customization`, a tenant admin saves one destination for
 the tenant, and every export also pushes it the series labeled with that
-tenant and nothing else, the same samples the tenant's scrape shows:
+tenant and nothing else, the same samples the tenant's scrape shows.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Telemetry** and find **Tenant destination**.
+2. Pick **OTLP** in **Protocol** and enter `https://otlp.example.com/v1/metrics` in **URL**.
+3. Choose **Add header**, then enter `Authorization` in **Header** and
+   `Bearer <collector key>` in **Value**.
+4. Choose **Save**. The page says **Saved the destination**.
+
+The headers then read **Stored: Authorization. Their values are never shown.**, with a choice
+to **Keep the stored headers** or **Replace them**. After the next export the section shows
+whether the destination is healthy, the time of the last push and how many pushes worked and
+failed. **Delete destination** asks **Delete the destination** with its URL, and **Delete**
+removes it.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/telemetry/destination \
@@ -150,6 +208,13 @@ curl -X PUT http://localhost:3001/api/admin/telemetry/destination \
   -H "Content-Type: application/json" \
   -d '{"kind": "otlp", "url": "https://otlp.example.com/v1/metrics", "headers": {"Authorization": "Bearer <collector key>"}}'
 ```
+
+The answer is `200` with the destination and `"licensed": true`. After the next export,
+`GET` on the same path shows its `health`, with `healthy`, the time of the last export and the
+counts of exports and failures. `DELETE` answers `204`.
+
+</div>
+</div>
 
 | Field | Meaning |
 |---|---|
@@ -174,7 +239,7 @@ curl -X PUT http://localhost:3001/api/admin/telemetry/destination \
 ```json
 {
   "data": [
-    { "name": "pushgateway", "healthy": true, "last_export": "2026-10-01T09:40:00Z", "exports": 120, "failures": 0 }
+    { "name": "pushgateway", "healthy": true, "last_export": "2026-10-01T09:40:00Z", "last_failure": "0001-01-01T00:00:00Z", "exports": 120, "failures": 0 }
   ],
   "limit": 50,
   "offset": 0,
@@ -182,8 +247,11 @@ curl -X PUT http://localhost:3001/api/admin/telemetry/destination \
 }
 ```
 
-A backend that has failed also shows `last_failure`, `last_error` and
-`last_error_class`. Addresses and URLs in the error text are redacted.
+`last_failure` holds the time of the last failure, and reads the zero time
+until one happens. A backend that has failed also shows `last_error` and
+`last_error_class`. Addresses and URLs in the error text are redacted. In the
+admin console, **Exporters** on the Telemetry page shows the same state,
+counts and last error.
 
 ## Settings
 

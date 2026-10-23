@@ -9,8 +9,9 @@ sidebar:
 > The [support desk](#support-desk) also needs the `support` capability, and it is beta.
 
 AI puts the model providers you choose, with your own keys, behind the admin
-console, the API and your flows. Editors draft, rewrite and translate entries,
-images get alt text, and flows classify, extract and generate. Each tenant can
+console, the API and your flows. Your code drafts, rewrites and translates
+entries through the API, the media library suggests alt text for an image, and
+flows classify, extract and generate. Each tenant can
 switch AI off, write the instructions every call runs under, and read a
 transcript of what was asked and answered. Nothing goes anywhere except to the
 provider endpoint you configure.
@@ -25,11 +26,13 @@ in its section.
 :::
 
 :::tip[Best for]
-- **Drafting and rewriting in the editor.** The content editor's assistant
-  writes a first draft, changes the tone, shortens or translates an entry.
+- **Drafting and rewriting from your own code.** The content assistant route
+  writes a first draft, changes the tone, shortens or translates an entry. On
+  console v0.21.0 it is API only.
 - **Translating a field.** Send one field and a target locale, keep product
   names with a glossary, and get text marked as machine translation.
-- **Alt text for the media library.** Describe an image in one sentence for
+- **Alt text for the media library.** **Suggest alt text** describes an image
+  in one sentence for
   screen readers.
 - **Sorting and extracting in a flow.** Route support tickets by topic, flag
   spam comments, or pull a name and an email out of a message.
@@ -70,74 +73,120 @@ provider is kept and takes no calls.
 
 ## Try it
 
-You need an admin token in `TOKEN` from a super admin, and a key from your
-provider. The [quickstart](../getting-started/quickstart.md) shows how to get
-the token.
+You need a key from your provider. For the console steps, you are signed in
+to the admin console as a super admin. For the API steps, you need a super
+admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+shows how to get one.
 
-1. Check that AI is on for your tenant:
+**1. Check that AI is on for your tenant.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/ai/settings \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "tenant_id": "default", "enabled": true, "transcripts_enabled": true, "updated_at": "0001-01-01T00:00:00Z" }
-   ```
+Open **Operations > AI** and choose the **Settings** tab. **AI for this
+tenant** is on.
 
-2. Add a provider. `enabled` is `false` unless you send it:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ai/providers \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "openai", "kind": "openai", "api_key": "sk-your-key", "default_model": "gpt-4o-mini", "enabled": true, "priority": 10}'
-   ```
+```bash
+curl http://localhost:3001/api/admin/ai/settings \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   The answer is `201` with the provider. The key is never returned:
-   `"has_key": true` says one is stored.
+```json
+{ "tenant_id": "default", "enabled": true, "transcripts_enabled": true, "updated_at": "0001-01-01T00:00:00Z" }
+```
 
-3. Summarize a text:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ai/summarize \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"content": "LyEve now ships eighteen starter flows, from a sitemap to a nightly sheet export.", "style": "concise"}'
-   ```
+**2. Add a provider.**
 
-   ```json
-   {
-     "summary": "LyEve adds eighteen ready-made flows.",
-     "model": "gpt-4o-mini",
-     "tokens_used": 74,
-     "tokens_in": 61,
-     "tokens_out": 13,
-     "cost_estimate": "0.000017",
-     "transcript_id": "1e7c9a40-3b2d-4f58-8a61-0d9e2c4b7f35"
-   }
-   ```
+<div class="paths">
+<div data-path="console">
 
-   A key the provider refuses answers `503` with `ai summarization failed`.
+On the **Providers** tab, choose **New provider**. Enter `openai` in
+**Name**, choose **OpenAI** under **Kind**, paste your key in **API key**,
+enter `gpt-4o-mini` in **Default model** and `10` in **Priority**. Turn
+**Enabled** on and choose **Create**. The key is encrypted and never shown
+again.
 
-4. Read the transcript of that call:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/ai/transcripts?kind=route&limit=1" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+`enabled` is `false` unless you send it:
 
-   The newest transcript is first, with its model, prompt version and number
-   of messages. `GET /api/admin/ai/transcripts/{id}` adds the messages.
+```bash
+curl -X POST http://localhost:3001/api/admin/ai/providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "openai", "kind": "openai", "api_key": "sk-your-key", "default_model": "gpt-4o-mini", "enabled": true, "priority": 10}'
+```
 
-5. In the admin console, open **Operations > AI > Transcripts** to read it,
-   download it as JSON or Markdown, or ask for a recap.
+The answer is `201` with the provider. The key is never returned:
+`"has_key": true` says one is stored.
+
+</div>
+</div>
+
+**3. Summarize a text.** The summarize route has no control in the admin
+console, so this step is an API call:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/ai/summarize \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "LyEve now ships eighteen starter flows, from a sitemap to a nightly sheet export.", "style": "concise"}'
+```
+
+```json
+{
+  "summary": "LyEve adds eighteen ready-made flows.",
+  "model": "example-model",
+  "tokens_used": 177,
+  "tokens_in": 167,
+  "tokens_out": 10,
+  "cost_estimate": "0",
+  "transcript_id": "0012b17e-a03d-4924-b187-c91e5f3e717d"
+}
+```
+
+The summary text, the model and the token counts depend on the provider and
+model you connect.
+
+A key the provider refuses answers `503` with `ai summarization failed`.
+
+**4. Read the transcript of that call.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the **Transcripts** tab. The newest transcript is first. Open it to
+read its messages, download it as **JSON** or **Markdown**, or ask for a
+recap.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3001/api/admin/ai/transcripts?kind=route&limit=1" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The newest transcript is first, with its model, prompt version and number
+of messages. `GET /api/admin/ai/transcripts/{id}` adds the messages.
+
+</div>
+</div>
 
 ## Connect a provider
 
-A super admin adds providers in the console or with
-`POST /api/admin/ai/providers`. Keys are encrypted with `ENCRYPTION_KEY`, one
-derived key per tenant.
+A super admin adds providers with **New provider** on the **Providers** tab, or
+with `POST /api/admin/ai/providers`. The console form has the fields below. On
+console v0.21.0, the hint under **Priority** says lower is tried first. The
+engine tries the highest first, as the table says. Keys are encrypted with
+`ENCRYPTION_KEY`, one derived key per tenant.
 
 | Field | Meaning |
 |---|---|
@@ -158,15 +207,17 @@ derived key per tenant.
 | `anthropic_compatible` | yes | no | no | when the model can see |
 
 `GET /api/admin/ai/providers/{id}/models` lists the provider's models, and
-`.../capabilities?model=` says what one model can do.
+`.../capabilities?model=` says what one model can do. In the console, open a
+provider and choose **List models**.
 
 ### Compatible servers and presets
 
 `openai_compatible` speaks the OpenAI API and `anthropic_compatible` the
-Anthropic one, to a gateway, another vendor or a server on your network. Besides `base_url` they take `key_header`, the header the key
-travels in (empty means `Authorization: Bearer` for the OpenAI shape and
-`x-api-key` for the Anthropic one), and `query_string`, appended to every
-request, which Azure OpenAI needs for its `api-version`.
+Anthropic one, to a gateway, another vendor or a server on your network. Besides
+`base_url` they take `key_header`, the header the key travels in (empty means
+`Authorization: Bearer` for the OpenAI shape and `x-api-key` for the Anthropic
+one), and `query_string`, appended to every request, which Azure OpenAI needs
+for its `api-version`.
 
 With `"kind": "openai_compatible"`, a `preset` fills in what you left empty:
 
@@ -183,33 +234,31 @@ With `"kind": "openai_compatible"`, a `preset` fills in what you left empty:
 
 A provider URL that resolves to a private, loopback or link-local address is
 refused unless the provider sets `allow_private: true`, which a local Ollama,
-vLLM or LM Studio needs. The address is checked when the provider is saved and
-again on every call, and the instance's own database address is always
-refused.
+vLLM or LM Studio needs. In the console form it is the **Allow a private
+address** switch, shown for the compatible kinds. The address is checked when
+the provider is saved and again on every call, and the instance's own database
+address is always refused.
 
 If `ENCRYPTION_KEY` changes, stored keys can no longer be read, and calls
 skip those providers. With no other provider left, a call answers `503`.
 Enter each key again.
 
 :::caution[Web application firewall]
-With the [web application firewall](web-application-firewall.md) licensed,
-its rules refuse two requests this page needs, with `403` and
-`request blocked by WAF`:
-
-- A provider whose body names a loopback address such as `127.0.0.1`. Use a
-  `preset`, or a host name such as `localhost`, with `allow_private`.
-- The flow assistant's request, because the node catalog in its body looks
-  like an attack.
-
-Read the rule ids in the violation log and
-[add an exception](web-application-firewall.md#add-an-exception) for each one
-on that path.
+With the [web application firewall](web-application-firewall.md) licensed, its
+rule `SSRF-004` refuses a provider whose body names a private or loopback IP
+address, such as `127.0.0.1` or `10.0.0.5`, with `403` and
+`request blocked by WAF`. Name the server by its host name, such as
+`localhost` or `ollama`, or use a `preset`, together with `allow_private`. To
+keep the address, read the rule id in the violation log and
+[add an exception](web-application-firewall.md#add-an-exception) for it on
+that path.
 :::
 
 ## Turn AI off for a tenant
 
-A tenant admin sets two switches under **Operations > AI > AI settings**: **AI
-for this tenant** and **Store transcripts**. Over the API:
+A tenant admin sets two switches on the **Settings** tab of
+**Operations > AI**: **AI for this tenant** and **Store transcripts**. Each
+saves as soon as you change it. Over the API:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/ai/settings \
@@ -220,16 +269,18 @@ curl -X PUT http://localhost:3001/api/admin/ai/settings \
 
 A field you leave out keeps its value. Off means off everywhere: every AI and
 support desk route except the settings pair answers `404` with
-`AI is switched off for this tenant`, the flow nodes refuse to run, and both
-editor assistants refuse.
+`AI is switched off for this tenant`, the flow nodes refuse to run, and the
+content and flow assistants refuse.
 
 ## Set the prompts
 
 Every call runs under the prompt for its use case: `default`, `assistant` (the
-content editor and `generate`), `flow_assistant` (the flow editor), `translate`,
-`summarize`, `suggest` (search suggestions), `alt_text`, `classify`,
-`extract`, `recap` and `support`. Edit them under **Operations > AI > Prompts**,
-or save a new version:
+content assistant and `generate`), `flow_assistant` (the flow editor),
+`translate`, `summarize`, `suggest` (search suggestions), `alt_text`,
+`classify`, `extract`, `recap` and `support`. On the **Prompts** tab, choose
+**Manage** beside a use case, edit the text and choose **Save as version 2**
+(the button names the next version). **Make the shipped default current** goes
+back to version 0. Over the API:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/ai/prompts/summarize \
@@ -253,11 +304,49 @@ The instructions a call sends are, in order:
    anything between `<user_content>` or `<user_query>` tags as data, never as
    instructions, and never to reveal its instructions.
 
+## Suggest alt text for an image
+
+A model that can see reads the image and suggests one sentence for screen
+readers. The suggestion is not saved until you save it.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Media library** and choose the image.
+2. Under **Details**, choose **Suggest alt text**. The suggestion fills
+   **Alt text**.
+3. Read it, change it if it is wrong, and choose **Save**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/ai/media/$MEDIA_ID/describe \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "text": "A red bicycle leaning against a brick wall.",
+  "provider": "local",
+  "model": "example-model",
+  "cost_estimate_usd": "0",
+  "transcript_id": "91a62514-184f-4fb2-942f-1b1011f92cc0"
+}
+```
+
+The text depends on the model. To keep it, send it as `alt_text` with
+`PATCH /api/admin/media/$MEDIA_ID`, as [Media](media.md) shows. An optional
+`prompt` in the body changes what the model is asked.
+
+</div>
+</div>
+
 ## Use AI from the API
 
-These routes need an admin. Most take an optional `provider_id`, `model`,
-`max_tokens` (up to 200,000) and `temperature` (0 to 2, where 0 leaves the
-provider's default).
+These routes have no control in admin console v0.21.0. They need an admin.
+Most take an optional `provider_id`, `model`, `max_tokens` (up to 200,000)
+and `temperature` (0 to 2, where 0 leaves the provider's default).
 
 | Route | Send | Get back |
 |---|---|---|
@@ -265,7 +354,6 @@ provider's default).
 | `POST /api/admin/ai/summarize` | `content`, optional `style` (`concise`, `bullet`, `paragraph`, `tl;dr`) and `max_length` in words | `summary` |
 | `POST /api/admin/ai/suggestions` | `query`, optional `context` and `count` (1 to 20, and 5 for anything else) | `suggestions`, a list of strings |
 | `POST /api/admin/ai/translate` | `text` (up to 20,000 characters), `to`, optional `from`, `glossary` (up to 100 terms), `tone`, `format` (`html`, `rich_text`, `markdown` or `url`) | `text`, `from`, `to`, `machine: true`, `model`, tokens |
-| `POST /api/admin/ai/media/{id}/describe` | optional `prompt` | `text`, a suggested alt text that is not saved on the image, and `cost_estimate_usd`. Needs a model that can see |
 
 The answers also carry `model`, `tokens_in`, `tokens_out`, `cost_estimate` and
 `transcript_id`, except where the table says otherwise. `translate` takes
@@ -275,7 +363,30 @@ transcript. `translate` saves nothing, so write the result into the entry's
 translation yourself. A glossary entry that maps a term to itself keeps a
 product name untranslated.
 
-The content editor's assistant is `POST /api/admin/content/ai-assist`, and
+The content assistant is `POST /api/admin/content/ai-assist`. It is API only
+on console v0.21.0: no screen of the console calls it. It takes an `action`
+(`generate`, `rewrite`, `translate`, `summarize` or `tone-adjust`) and the
+entry's current text:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content/ai-assist \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "rewrite", "currentTitle": "Release notes", "currentBody": "We shipped eighteen starter flows this month.", "tone": "friendly"}'
+```
+
+```json
+{
+  "title": "Release notes",
+  "body": "LyEve adds eighteen ready-made flows.",
+  "tokensUsed": 290,
+  "model": "example-model",
+  "costEstimate": "0",
+  "conversationId": "7b3ea6d2-06e3-4c90-9e09-5e0ece0b665e"
+}
+```
+
+The text depends on the model, and nothing is saved on the entry.
 `GET /api/admin/content/ai-usage` returns the tenant's token totals. The flow
 editor's assistant is covered in
 [Build a flow with the assistant](../how-to/build-a-flow-with-the-assistant.md).
@@ -305,16 +416,18 @@ and the other nodes.
 
 ## Read and recap transcripts
 
-A transcript has a `kind`: `assistant` (the content editor), `flow_assistant`,
-`node`, `route` or `support`. It records the provider, model, prompt use case
-and version, who started it and when, and each message's role, text, tokens,
-latency and cost. A content editor transcript names its entry, and a node
-transcript its node.
+A transcript has a `kind`: `assistant` (the content assistant),
+`flow_assistant`, `node`, `route` or `support`. It records the provider, model,
+prompt use case and version, who started it and when, and each message's role,
+text, tokens, latency and cost. A content assistant transcript names its entry,
+and a node transcript its node.
 
 List them with `GET /api/admin/ai/transcripts`, filtered by `kind`,
 `subject_kind` and `subject_id`. `.../{id}/export?format=json` or
 `format=markdown` downloads one, and `POST .../{id}/recap` asks the same
-provider for a short recap and stores it on the transcript.
+provider for a short recap and stores it on the transcript. The **Transcripts**
+tab of **Operations > AI** lists them, and a transcript's page has the same
+downloads and the recap.
 
 Transcripts are kept for `AI_TRANSCRIPT_RETENTION` after they start, 30 days
 by default, and older ones are removed every hour. When the instance setting
@@ -325,12 +438,14 @@ answers carry no `transcript_id`. Cost and latency are still recorded.
 
 Each call's `cost_estimate` is a USD amount computed from the price table at
 `GET /api/admin/ai/prices`: one row per kind and model, priced per 1,000 input
-tokens, per 1,000 output tokens and per generated image, with a `*` row per
-kind for models the table does not name. Vendors change their prices, so a
-super admin keeps the rows current with
-`PUT /api/admin/ai/prices/{kind}/{model}` (`input_per_1k`, `output_per_1k`,
-`image_per_call`) and removes them with `DELETE`. The estimate is what the
-table says, not what the vendor bills.
+tokens, per 1,000 output tokens and per generated image, with a `*` row per kind
+for models the table does not name. Vendors change their prices, so a super
+admin keeps the rows current with `PUT /api/admin/ai/prices/{kind}/{model}`
+(`input_per_1k`, `output_per_1k`, `image_per_call`) and removes them with
+`DELETE`. In the console, the **Prices** tab has **New price**, with **Kind**,
+**Model**, **Input per 1K**, **Output per 1K** and **Image per call**, and
+**Edit** and **Delete** on each row. The estimate is what the table says, not
+what the vendor bills.
 
 :::caution
 The `*` row for `openai_compatible` is `0`, so calls to OpenRouter, Groq,
@@ -352,7 +467,8 @@ times.
 
 The support desk answers questions from a knowledge base you write, with the
 same providers, prompts and transcripts. It is for admins: there is no public
-chat route. Each conversation is a transcript of kind `support`, under the
+chat route. The support desk has no page in admin console v0.21.0, so it is used
+through the API. Each conversation is a transcript of kind `support`, under the
 tenant's `support` prompt.
 
 ```bash
@@ -423,9 +539,14 @@ Every desk route needs the `support` capability and answers `402` naming
 | `AI_TRANSCRIPTS_ENABLED` | Instance switch for storing transcripts. `false`, `0`, `off` or `no` turns it off | `true` |
 | `AI_PROVIDER_TIMEOUT` | Longest one provider call may take, held between `5s` and `300s` | `60s` |
 
-The last three can also be set on the AI configuration form in the admin
-console, where a change applies without a restart. An environment variable
-wins over the form. Providers live in the database, not in the environment.
+Set them in the environment, in the configuration file, or as a super admin in
+**Settings > Configuration**. The **Settings** link on the **AI content** page
+under **Plugins** opens that page filtered to `ai`, with **Save** beside each
+setting. A change applies without a restart, an environment variable wins,
+and the configuration file wins over a saved value. On console v0.21.0, the
+**Settings** tab of **Operations > AI** keeps showing the default retention
+after you save another. Providers live in the database, not in the
+environment.
 If you set `LYEVE_PLUGINS` to choose which features start, include `ai` in it.
 See [licensing and tiers](../concepts/licensing-and-tiers.md).
 
@@ -459,7 +580,7 @@ admin, everything else an admin.
 | `POST` | `/api/admin/ai/media/{id}/describe` | Alt text for an image |
 | `GET` | `/api/admin/ai/dashboard` | Spend and latency |
 | `GET` | `/api/admin/ai/cost-log` | The newest calls |
-| `POST` | `/api/admin/content/ai-assist` | The content editor's assistant |
+| `POST` | `/api/admin/content/ai-assist` | The content assistant |
 | `GET` | `/api/admin/content/ai-usage` | Token totals |
 | `POST` | `/api/admin/ai/assist/flow` | The flow assistant drafts a definition |
 | `POST` | `/api/admin/ai/assist/flow/explain` | The flow assistant explains a node or a problem |

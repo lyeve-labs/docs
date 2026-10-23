@@ -1,16 +1,17 @@
 ---
 title: Content lifecycle
-description: Move entries through draft, published and archived over the Admin API, compare and roll back revisions, schedule publishing, and link entries.
+description: Move entries through draft, published and archived in the admin console or over the Admin API, compare and roll back revisions, schedule publishing, and link entries.
 sidebar:
   order: 16
 ---
 
 > **Included free** on every install, with every revision kept and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
-This is the Admin API behind the admin console's **Content** screens. It creates and edits
-entries, moves them between draft, published and archived, and keeps a numbered revision of
-every write so you can compare two and roll back. An entry can also publish and archive
-itself at times you set, and link to other entries.
+The admin console's **Content** screens and the Admin API work on the same entries. Both
+create and edit entries, move them between draft and published, and keep a numbered revision
+of every write so you can roll back. Over the API an entry can also be archived, compared
+with an earlier revision, publish and archive itself at times you set, and link to other
+entries.
 
 :::tip[Best for]
 - **Publishing from a script.** Create drafts from a CI job or an import, and publish them
@@ -31,18 +32,6 @@ itself at times you set, and link to other entries.
 - Your site or app writes content. It uses the Content API, described on
   [the data model](../concepts/data-model.md#entries) page.
 :::
-
-## In the admin console
-
-Open **Content**, pick a content type and open an entry. The badge at the top shows its
-status, beside **Publish** or **Unpublish**. **History** opens the **Revision history** panel,
-and the number beside it counts the revisions. Choose a revision, then **Restore** to bring it
-back as a new revision.
-
-![An entry's page with the Revision history panel open beside it. The entry is published, with Unpublish and History (3) at the top, and the oldest of its three revisions is selected with a Restore button under it.](images/content-lifecycle.png)
-
-[Drafts and publishing](../guides/user/drafts-and-publishing.md) walks through these steps.
-Archiving, scheduling, comparing two revisions and change notes are on the Admin API, below.
 
 ## How it works
 
@@ -69,123 +58,239 @@ grant and the write routes with `content:write`.
 
 ## Try it
 
-This creates a draft, publishes it, rolls it back and schedules it. You need a token in
-`TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get one.
+This creates a draft, publishes it, rolls it back and schedules it. For the console steps,
+you are signed in to the admin console. For the API steps, you need a token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Create a `post` content type with draft and publish:
+**1. Create a `story` content type with draft and publish.** Only the API turns on drafts and
+publishing. The Schema builder in console v0.21.0 has no switch for them, so run this call
+even when you follow the console steps after it.
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows how to get a token with your console account:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "post", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "body", "field_type": "rich_text"}]}'
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "story", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "body", "field_type": "rich_text"}]}'
+```
 
-2. Create an entry. The content type requires `title`, so it goes in `body` as well as beside
-   it:
+**2. Create an entry.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"schema": "post", "slug": "hello", "title": "Hello", "body": {"title": "Hello", "body": "<p>First post.</p>"}}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "id": "ad39fb3d-eb5a-47ce-9cd5-e7d421acaa98",
-     "schema": "post",
-     "tenant_id": "default",
-     "slug": "hello",
-     "title": "Hello",
-     "body": { "title": "Hello", "body": "<p>First post.</p>" },
-     "meta": {},
-     "status": "draft",
-     "timezone": "UTC",
-     "created_by": "12dd433d-c110-4809-b476-12ef360afe7f",
-     "updated_by": "12dd433d-c110-4809-b476-12ef360afe7f",
-     "current_rev": 1,
-     "created_at": "2026-10-02T05:06:17.627726Z",
-     "updated_at": "2026-10-02T05:06:17.627726Z"
-   }
-   ```
+1. Open **Content** and pick **story**.
+2. Choose **New entry**.
+3. Enter `Hello` in **Title** and `First story.` in **Body**, then choose **Create**.
 
-   Copy its `id` into `ENTRY_ID`.
+The list shows the entry as a `draft`, with a slug made from its title. Choose its title to
+open it.
 
-3. Publish it, with a note for the history:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"status": "published", "change_note": "First release"}'
-   ```
+The content type requires `title`, so it goes in `body` as well as beside it:
 
-   The answer is `200` with `"status": "published"`, a `published_at` time and
-   `"current_rev": 2`.
+```bash
+curl -X POST http://localhost:3001/api/admin/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"schema": "story", "slug": "hello", "title": "Hello", "body": {"title": "Hello", "body": "<p>First story.</p>"}}'
+```
 
-4. List the revisions, newest first:
+```json
+{
+  "id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd",
+  "schema": "story",
+  "tenant_id": "default",
+  "slug": "hello",
+  "title": "Hello",
+  "body": { "title": "Hello", "body": "<p>First story.</p>" },
+  "meta": {},
+  "status": "draft",
+  "timezone": "UTC",
+  "created_by": "f1b49902-1ab9-44d3-91f4-e3d9c98cffe7",
+  "updated_by": "f1b49902-1ab9-44d3-91f4-e3d9c98cffe7",
+  "current_rev": 1,
+  "created_at": "2026-10-23T11:24:59.017672858Z",
+  "updated_at": "2026-10-23T11:24:59.017672858Z"
+}
+```
 
-   ```bash
-   curl http://localhost:3001/api/admin/content/$ENTRY_ID/revisions \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Copy its `id` into `ENTRY_ID`.
 
-   You see revision `2` with the note `First release` and revision `1` with the note
-   `initial revision`.
+</div>
+</div>
 
-5. Roll back to revision 1:
+**3. Publish it.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/rollback \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"to_revision": 1}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "message": "rolled back to revision 1",
-     "new_revision": {
-       "id": "fc1659a6-afa4-48e5-9089-b786fbb45d94",
-       "entry_id": "ad39fb3d-eb5a-47ce-9cd5-e7d421acaa98",
-       "tenant_id": "default",
-       "revision_num": 3,
-       "title": "Hello",
-       "body": { "title": "Hello", "body": "<p>First post.</p>" },
-       "meta": {},
-       "status": "draft",
-       "change_note": "rolled back to revision 1",
-       "created_by": "12dd433d-c110-4809-b476-12ef360afe7f",
-       "created_at": "2026-10-02T05:06:34.085365Z"
-     }
-   }
-   ```
+On the entry's page, choose **Publish**. The badge at the top reads `published`, **Unpublish**
+takes the place of **Publish**, and **History (2)** counts the revisions.
 
-6. Schedule it to publish and then archive:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID/entry-schedule \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"scheduled_publish_at": "2027-11-01T09:00:00+01:00", "scheduled_unpublish_at": "2027-12-01T09:00:00+01:00", "timezone": "Europe/Paris"}'
-   ```
+Publish it with a note for the history:
 
-   The answer is the entry with `scheduled_publish_at` and `scheduled_unpublish_at` stored in
-   UTC.
+```bash
+curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "published", "change_note": "First release"}'
+```
+
+The answer is `200` with `"status": "published"`, a `published_at` time and
+`"current_rev": 2`.
+
+</div>
+</div>
+
+**4. List the revisions.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **History (2)**. The **Revision history** panel opens beside the entry and lists each
+revision, newest first, by the time it was saved and the fields it holds.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/content/$ENTRY_ID/revisions \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+You see revision `2` with the note `First release` and revision `1` with the note
+`initial revision`, newest first.
+
+</div>
+</div>
+
+**5. Roll back to the first revision.**
+
+<div class="paths">
+<div data-path="console">
+
+In **Revision history**, choose the oldest revision, then **Restore**. The entry takes that
+revision's fields and status, so it is a `draft` again, and **History (3)** counts the restore
+as a new revision.
+
+![An entry's page with the Revision history panel open beside it. The entry is published, with Unpublish and History (3) at the top, and the oldest of its three revisions is selected with a Restore button under it.](images/content-lifecycle.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/rollback \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"to_revision": 1}'
+```
+
+```json
+{
+  "message": "rolled back to revision 1",
+  "new_revision": {
+    "id": "b0465eb5-55ae-43cf-b8fe-80f5c58200cc",
+    "entry_id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd",
+    "tenant_id": "default",
+    "revision_num": 3,
+    "title": "Hello",
+    "body": { "title": "Hello", "body": "<p>First story.</p>" },
+    "meta": {},
+    "status": "draft",
+    "change_note": "rolled back to revision 1",
+    "created_by": "f1b49902-1ab9-44d3-91f4-e3d9c98cffe7",
+    "created_at": "2026-10-23T11:25:15.651009706Z"
+  }
+}
+```
+
+</div>
+</div>
+
+**6. Schedule it to publish and then archive.** Schedules are API only. The console has no
+schedule control in v0.21.0:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID/entry-schedule \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"scheduled_publish_at": "2027-11-01T09:00:00+01:00", "scheduled_unpublish_at": "2027-12-01T09:00:00+01:00", "timezone": "Europe/Paris"}'
+```
+
+The answer is the entry with `scheduled_publish_at` and `scheduled_unpublish_at` stored in
+UTC.
+
+[Drafts and publishing](../guides/user/drafts-and-publishing.md) walks through the console
+steps with more detail.
 
 ## Find and read entries
 
+<div class="paths">
+<div data-path="console">
+
+Open **Content** and pick a content type. The list shows each entry's title, body, status and
+creation date, newest first. **All**, **Draft**, **Published** and **Archived** filter it by
+status. Choose a title to open the entry.
+
+</div>
+<div data-path="api">
+
 `GET /api/admin/content` lists entries, newest change first, 50 at a time by default and at
-most 500. Narrow it with `?schema=post` and `?status=published`, and page with `limit` and
-`offset`. This route filters by content type and status only: `filters[...]` answers `400`
-and points you to the Content API, which filters by field.
+most 500. Narrow it with `?schema=story` and `?status=published`, and page with `limit` and
+`offset`:
+
+```bash
+curl "http://localhost:3001/api/admin/content?schema=story&limit=2" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "data": [
+    { "id": "9585eff4-7423-45a0-a82f-ea246bf7cdfd", "schema": "story", "slug": "hello", "title": "Hello", "status": "draft", "current_rev": 3 },
+    { "id": "200e7e4b-2037-46be-8516-bf3f1243a494", "schema": "story", "slug": "third", "title": "Third story", "status": "draft", "current_rev": 1 }
+  ],
+  "limit": 2,
+  "offset": 0,
+  "total_count": 3
+}
+```
+
+Each item in `data` is a whole entry with the fields listed under
+[How it works](#how-it-works), shortened here to a few of them. `total_count` counts every
+entry that matches the filters, not only the ones on this page, so a call with `limit=1` tells
+you how many there are. This
+route filters by content type and status only: `filters[...]` answers `400` and points you to
+the Content API, which filters by field.
 
 Read one entry by id with `GET /api/admin/content/{id}`, or by slug with
-`GET /api/admin/content/slug/{slug}`. With [localization](localization.md), each read takes
-`?locale=fr` and answers the translated fields.
+`GET /api/admin/content/slug/{slug}`.
+
+</div>
+</div>
+
+With [localization](localization.md), each read on the Admin API takes `?locale=fr` and
+answers the translated fields.
 
 ## Edit, publish and archive
+
+<div class="paths">
+<div data-path="console">
+
+Open the entry, change its fields and choose **Save**. Each save is a new revision, and the
+console goes back to the list. **Publish** and **Unpublish** at the top of the entry change
+its status. To delete an entry, choose the delete button on its row in the list and confirm
+with **Delete**. Its revisions and translations go with it.
+
+</div>
+<div data-path="api">
 
 `PUT /api/admin/content/{id}` changes only the top-level fields you send, so
 `{"status": "published"}` leaves the title and body as they are. A `body` you send replaces
@@ -203,7 +308,16 @@ Publishing, unpublishing and archiving are changes of `status` on the same route
 You can also create an entry as published by sending `"status": "published"` on the create.
 `DELETE /api/admin/content/{id}` removes the entry and all its revisions, and answers `204`.
 
+</div>
+</div>
+
+Archiving and change notes are API only. The console in v0.21.0 has no archive control, and
+its saves record no note.
+
 ## Compare and roll back revisions
+
+In the console, **History** lists the revisions and **Restore** rolls back to the one you
+choose, as in step 5 above. Comparing two revisions is API only:
 
 | Method | Path | Result |
 |---|---|---|
@@ -234,6 +348,8 @@ and the older history comes back with it.
 
 ## Schedule a publish or an archive
 
+Schedules are API only. The console in v0.21.0 has no schedule control.
+
 `PUT /api/admin/content/{id}/entry-schedule` sets `scheduled_publish_at`,
 `scheduled_unpublish_at`, or both, with an optional `timezone`:
 
@@ -257,6 +373,8 @@ is `published` or `archived`. `GET /api/admin/content/{id}/schedules` lists them
 `DELETE /api/admin/content/{id}/schedules/{schedule_id}` cancels one.
 
 ## Link entries to each other
+
+Links are API only. The console in v0.21.0 has no control for them.
 
 A relationship links two entries directly, without a relation field in the content type. Use
 it for links an editor decides case by case, such as "see also". For links every entry of a
@@ -283,6 +401,9 @@ curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/relationships \
 the linked entries as `nodes` and `edges`, up to `depth` steps.
 
 ## See who changed an entry
+
+The console's **Revision history** shows when each revision was saved. The record of who
+made each change is API only.
 
 `GET /api/admin/content/{id}/audit` lists every change to the entry, newest first. Each item
 names the `action` (`created`, `updated`, `published`, `unpublished`, `archived`, `rollback`,

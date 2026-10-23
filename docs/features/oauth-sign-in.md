@@ -42,8 +42,8 @@ each provider with its issuer, scopes and roles, and whether it is enabled.
 1. Choose **New provider**.
 2. Fill in **Provider name**, **Issuer URL**, **Client ID** and **Client
    secret**. **Scopes**, **Roles claim** and **Default roles** are optional.
-3. Turn on **Enabled** to offer the provider on the login page, and choose
-   **Create**.
+3. **Enabled** is on when the form opens, which offers the provider on the
+   login page. Choose **Create**.
 
 The pencil on a row edits a provider. Leave **New client secret** blank to keep
 the stored one. Templates and the backup provider are set over the API below.
@@ -90,8 +90,27 @@ What you can rely on:
 
 ## Try it
 
-This adds Google from its template. You need a super admin token in `TOKEN`.
-The [quickstart](../getting-started/quickstart.md) shows how to get one.
+This adds Google as the install's provider. Create an OAuth client in the
+Google Cloud console first, and register
+`<LYEVE_BASE_URL>/api/admin/auth/oauth/google/callback` as its redirect
+address. Sign in as a super admin.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Access > OAuth providers** and choose **New provider**.
+2. Enter `google` in **Provider name**, `https://accounts.google.com` in
+   **Issuer URL**, and your client's **Client ID** and **Client secret**.
+   Leave **Scopes**, **Roles claim** and **Default roles** empty, which saves
+   `openid email profile`, `roles` and `editor`.
+3. Leave **Enabled** on and choose **Create**. The row shows the provider as
+   enabled.
+
+</div>
+<div data-path="api">
+
+You need a super admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
 1. List the templates:
 
@@ -111,9 +130,9 @@ The [quickstart](../getting-started/quickstart.md) shows how to get one.
    ```
 
    The answer holds the `template` and a `redirect_uri` such as
-   `https://lyeve.example.com/api/admin/auth/oauth/google/callback`. Register
-   that address in the Google Cloud console. Without `LYEVE_BASE_URL` the
-   answer is `500` with `OAuth is not configured: set base_url in configuration`.
+   `https://lyeve.example.com/api/admin/auth/oauth/google/callback`. Without
+   `LYEVE_BASE_URL` the answer is `500` with
+   `OAuth is not configured: set base_url in configuration`.
 
 3. Apply the template with your client's values:
 
@@ -135,6 +154,9 @@ The [quickstart](../getting-started/quickstart.md) shows how to get one.
        "roles_claim": "roles",
        "default_roles": ["editor"],
        "enabled": true,
+       "hosted_domain": "",
+       "kind": "oidc",
+       "org": "",
        "created_at": "2026-10-01T09:30:00Z",
        "updated_at": "2026-10-01T09:30:00Z"
      },
@@ -146,18 +168,21 @@ The [quickstart](../getting-started/quickstart.md) shows how to get one.
    The answer is `201`. A provider made from a template is enabled unless
    `overrides` holds `"enabled": false`.
 
-4. Check what the login page will offer:
+</div>
+</div>
 
-   ```bash
-   curl http://localhost:3001/api/admin/auth/oauth-providers
-   ```
+Check what the login page will offer. The route is public:
 
-   ```json
-   [{ "name": "google" }]
-   ```
+```bash
+curl http://localhost:3001/api/admin/auth/oauth-providers
+```
 
-5. Open the admin console's login page. Under **or continue with** it shows a
-   sign-in button for Google.
+```json
+[{ "name": "google" }]
+```
+
+Open the admin console's login page. Under **or continue with** it shows
+**Sign in with google**, which sends the browser to Google.
 
 ## Free and oauth-pro
 
@@ -177,7 +202,7 @@ provider or a change to a paid option is refused. A second provider on a free
 install answers:
 
 ```json
-{"error": "cap_exceeded", "cap": "oauth.providers", "limit": 1, "current": 1, "upgrade_url": ""}
+{"error": "cap_exceeded", "cap": "oauth.providers", "limit": 1, "current": 1, "upgrade_url": "https://app.lyeve.com/pricing?skus=plugin-oauth-pro&utm_campaign=oauth.providers&utm_medium=product&utm_source=admin"}
 ```
 
 A paid template or option answers `402` with
@@ -210,6 +235,20 @@ because the callback path uses the name.
 
 ## Add any OpenID Connect provider
 
+Register `{LYEVE_BASE_URL}/api/admin/auth/oauth/{name}/callback` as the
+redirect address with the provider, using the name you give it here.
+
+<div class="paths">
+<div data-path="console">
+
+On **Access > OAuth providers**, choose **New provider**. Enter `keycloak` in
+**Provider name**, the realm's address in **Issuer URL**, such as
+`https://sso.example.com/realms/staff`, and the client's **Client ID** and
+**Client secret**. Leave **Enabled** on and choose **Create**.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/oauth-providers \
   -H "Authorization: Bearer $TOKEN" \
@@ -225,9 +264,13 @@ curl -X POST http://localhost:3001/api/admin/oauth-providers \
   }'
 ```
 
-The answer is `201` with the saved provider. Register
-`{LYEVE_BASE_URL}/api/admin/auth/oauth/{name}/callback` as the redirect
-address with the provider.
+The answer is `201` with the saved provider. Leave out `enabled` and the
+provider is saved turned off.
+
+</div>
+</div>
+
+An issuer address that is private, internal or does not resolve is refused.
 
 <details>
 <summary>Provider fields</summary>

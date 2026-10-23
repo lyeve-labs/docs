@@ -33,26 +33,9 @@ rejected rows download as CSV, and a finished import can be rolled back.
   [Migrate existing content](../how-to/migrate-existing-content.md).
 :::
 
-## In the admin console
-
-Open **Insight > Imports**. **History** lists each import with what it created, updated,
-skipped and rejected. Its buttons open the import's rows, download the rows it rejected, and
-roll it back. **Mapping templates** lists the saved mappings, and **New template** adds one.
-
-![The Imports page. History lists store-pages.csv, imported into landing_page to create and update, which finished with rows rejected: 3 created and 1 rejected. Mapping templates starts below it.](images/bulk-import.png)
-
-**New import** opens a wizard in three steps:
-
-1. **Source.** Choose **Upload a file** or **From a web address**, pick the **Content type**,
-   and pick a **Mapping template** if you saved one. **Format** reads it from the file unless
-   you pick one. Choose **Read the file**.
-2. **Map.** Check the **Column in the file** for each field, guessed from the column names.
-   Under **When an entry already exists**, choose **Create only** or **Create and update**, and
-   pick the **Key field**, such as **Entry slug**. Choose **Dry run**.
-3. **Check.** Read how many rows **Would import** and **Would be rejected**, and why. Then
-   choose the import button, which names the count, such as **Import 2 rows**.
-
-![The Check step of a new import. Of 3 rows in the file, 2 would import and 1 would be rejected, row 3 for a missing title. Import 2 rows is at the bottom.](images/bulk-import-check.png)
+In the admin console, imports are under **Insight > Imports**. **New import** opens a wizard
+in three steps, **Source**, **Map** and **Check**, and **History** lists every import with
+what it created, updated, skipped and rejected.
 
 ## How it works
 
@@ -66,65 +49,155 @@ roll it back. **Mapping templates** lists the saved mappings, and **New template
 
 ## Try it
 
-You need a content type `post` with a `title` text field and a `body` rich text field, and a
-token in `TOKEN` for an `admin` or `super_admin`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. The file is one row,
-`title,body` then `Hello,First post`, base64-encoded:
+You need a content type `post` with a `title` text field and a `body` rich text field.
+[Your first content type](../getting-started/first-content-type.md) builds one. The file is
+one row, `title,body` then `Hello,First post`.
+
+For the console steps, you are signed in to the admin console as an `admin` or
+`super_admin`, and the file is saved as `posts.csv`:
+
+```text
+title,body
+Hello,First post
+```
+
+For the API steps, you need a token in `TOKEN` for one. The
+[quickstart](../getting-started/quickstart.md) shows how to get one. The API takes the file
+base64-encoded:
 
 ```bash
 FD=dGl0bGUsYm9keQpIZWxsbyxGaXJzdCBwb3N0Cg==
 ```
 
-1. Describe the file before you map it. Nothing is stored:
+**1. Describe the file before you map it.** Nothing is stored.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/imports/preview \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"source_name\": \"posts.csv\", \"file_data\": \"$FD\"}"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {"source_format": "csv", "source_name": "posts.csv", "columns": ["title", "body"], "rows": [{"body": "First post", "title": "Hello"}], "total_rows": 1, "errors": [], "export": false, "schemas": {}}
-   ```
+1. Open **Insight > Imports** and choose **New import**.
+2. Under **Source**, keep **Upload a file** and add `posts.csv` under **File**.
+3. Pick **post** in **Content type**, and keep **Format** at **Read it from the file**.
+4. Choose **Read the file**.
 
-2. Check every row against the mappings:
+The **Map** step opens with **1 row of CSV from posts.csv** and the row as a table.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/imports/validate \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d "{\"content_type\": \"post\", \"source_name\": \"posts.csv\", \"file_data\": \"$FD\", \"field_mappings\": [{\"source_field\": \"title\", \"target_field\": \"title\", \"required\": true, \"transform\": \"trim\"}, {\"source_field\": \"body\", \"target_field\": \"body\"}]}"
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   { "total_rows": 1, "valid_rows": 1, "error_rows": 0, "errors": [] }
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/imports/preview \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"source_name\": \"posts.csv\", \"file_data\": \"$FD\"}"
+```
 
-3. Start the import with the same body plus `"source_format": "csv"` and `"mode": "create"`,
-   sent to `POST http://localhost:3001/api/admin/imports`. The answer is `201` with the job and
-   `"status": "pending"`. Copy its `id` into `JOB`.
+```json
+{"source_format": "csv", "source_name": "posts.csv", "columns": ["title", "body"], "rows": [{"body": "First post", "title": "Hello"}], "total_rows": 1, "errors": [], "export": false, "schemas": {}}
+```
 
-4. Check its progress:
+</div>
+</div>
 
-   ```bash
-   curl http://localhost:3001/api/admin/imports/$JOB \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**2. Check every row against the mappings.**
 
-   Within a moment the job shows `"status": "completed"` and `"inserted_rows": 1`.
-   `GET .../imports/$JOB/rows` lists the row with `"status": "inserted"` and its `entry_id`.
+<div class="paths">
+<div data-path="console">
 
-5. Roll it back:
+1. In **Map**, check the **Column in the file** for each field. The console guesses them from
+   the column names, here `title` for **Entry title** and **title**, and `body` for **body**.
+2. Under **When an entry already exists**, keep **Create only**, and keep **Key field** at
+   **No key: every row is a new entry**.
+3. Choose **Dry run**.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/imports/$JOB/rollback \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The **Check** step shows **Rows in the file**, **Would import** and **Would be rejected**,
+here 1, 1 and 0, with **Every row passes.** A rejected row is listed with its reason.
 
-   ```json
-   { "removed": 1, "status": "rolled_back" }
-   ```
+![The Check step of a new import. Of 3 rows in the file, 2 would import and 1 would be rejected, row 3 for a missing title. Import 2 rows is at the bottom.](images/bulk-import-check.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/imports/validate \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"content_type\": \"post\", \"source_name\": \"posts.csv\", \"file_data\": \"$FD\", \"field_mappings\": [{\"source_field\": \"title\", \"target_field\": \"title\", \"required\": true, \"transform\": \"trim\"}, {\"source_field\": \"body\", \"target_field\": \"body\"}]}"
+```
+
+```json
+{ "total_rows": 1, "valid_rows": 1, "error_rows": 0, "errors": [] }
+```
+
+</div>
+</div>
+
+**3. Start the import.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the import button, which names the count, here **Import 1 row**. The page confirms
+**Import of posts.csv started**, and the import appears at the top of **History**.
+
+</div>
+<div data-path="api">
+
+Send the same body plus `"source_format": "csv"` and `"mode": "create"` to
+`POST http://localhost:3001/api/admin/imports`. The answer is `201` with the job and
+`"status": "pending"`. Copy its `id` into `JOB`.
+
+</div>
+</div>
+
+**4. Check its progress.**
+
+<div class="paths">
+<div data-path="console">
+
+**History** lists the import with its outcome, here **Every row imported**, and how many rows
+it created, updated, skipped and rejected. **Refresh** reads it again. The rows button on its
+line lists each row's outcome. For an import that rejected rows, a download button gives them
+as CSV.
+
+![The Imports page. History lists store-pages.csv, imported into landing_page to create and update, which finished with rows rejected: 3 created and 1 rejected. Mapping templates starts below it.](images/bulk-import.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/imports/$JOB \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Within a moment the job shows `"status": "completed"` and `"inserted_rows": 1`.
+`GET .../imports/$JOB/rows` lists the row with `"status": "inserted"` and its `entry_id`.
+
+</div>
+</div>
+
+**5. Roll it back.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the roll back button on the import's line in **History**. The dialog says how many
+entries it deletes, and that entries it updated keep the imported values. Choose
+**Roll back**. The outcome then reads **Rolled back**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/imports/$JOB/rollback \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "removed": 1, "status": "rolled_back" }
+```
+
+</div>
+</div>
 
 ## Formats
 
@@ -230,18 +303,39 @@ An unknown transform answers `400`. A request that names a paid transform withou
 ## Save a mapping as a template
 
 With `content-pro`, a tenant saves its mappings under a name, with the content type, the key
-field and the mode:
+field and the mode. This saves the mapping of the `posts.csv` file above.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Imports**. Under **Mapping templates**, choose **New template**.
+2. Enter `weekly-posts` in **Name** and pick `post` in **Content type**.
+3. Under **When an entry already exists**, pick **Create and update**, then **Entry slug** in
+   **Key field**.
+4. Enter `title` in **Column in the file** and pick `title` in **Field**. Choose
+   **Add column**, enter `body` and pick `body`.
+5. Choose **Create**.
+
+The page confirms **Created weekly-posts**, and the list shows the template with its content
+type, its columns and **Update it, key entry.slug**. To use it, pick it in **Mapping template** on the wizard's first step. The mapping step
+then says **Mapped from the template weekly-posts.**
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/imports/templates \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "weekly-products", "content_type": "product", "upsert_key": "entry.slug", "mode": "upsert", "field_mappings": [{"source_field": "Name", "target_field": "entry.title"}]}'
+  -d '{"name": "weekly-posts", "content_type": "post", "upsert_key": "entry.slug", "mode": "upsert", "field_mappings": [{"source_field": "title", "target_field": "title"}, {"source_field": "body", "target_field": "body"}]}'
 ```
 
-An import or a dry run then names it with `"template_id"` and may leave out `content_type`
-and `field_mappings`. What the request leaves out comes from the template, and the request's
-own `field_mappings` win when it sends them.
+The answer is `201` with the template. An import or a dry run then names it with
+`"template_id"` and may leave out `content_type` and `field_mappings`. What the request leaves
+out comes from the template, and the request's own `field_mappings` win when it sends them.
+
+</div>
+</div>
 
 A saved template keeps working after the license lapses, and listing, reading and deleting
 templates stay free. Saving or changing one needs `content-pro`, and a name already in use in

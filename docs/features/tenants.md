@@ -22,7 +22,7 @@ tenant, `default`. With a license you create as many as your plan allows.
 - **A staging copy of real content.** Clone a tenant into a new one on the same
   instance and try a change there first.
 - **Offboarding a customer.** Archive a tenant to freeze it read-only, or delete
-  everything it holds in one step.
+  its data in one step.
 :::
 
 :::note[Use something else when]
@@ -52,109 +52,142 @@ and write is then limited to the resolved tenant.
 ## In the admin console
 
 Open **Operations > Tenants**. A super admin sees every tenant with a record,
-with its slug, name, plan, status and creation date. On an install started
-without `MULTI_TENANT=true`, the `default` tenant has no record, so the list
-starts at **No tenants yet**. **New tenant** opens a form with a **Slug**, a
-**Display name** and an optional **Plan**, and **Create** adds the tenant. The
-buttons on a row edit, disable or delete the tenant.
+with its slug, name, plan, status and creation date, and the buttons on a row
+edit, disable or delete the tenant. Without `multitenant-provisioning` the page
+reads **Tenant provisioning** and **Not enabled on this instance**, and has no
+**New tenant** button. The tenant's name opens its page, with **Archive**,
+**What this tenant may use**, and its **Members** with **New member**.
 
-![The New tenant form open over the Tenants page, with the slug acme and the display name Acme Inc. filled in and the plan left empty.](images/tenants.png)
-
-The tenant's name opens its page, with **Archive**, **What this tenant may
-use**, and its **Members** with **New member**.
+The console has no tenant switcher. A super admin creates an account in any
+tenant from **Access > Users** with **New user**, choosing the tenant under
+**Tenant**. Under **Roles**, untick **editor** and tick the account's role,
+because the form keeps **editor** ticked beside any role you tick. An account
+with a membership in another tenant works in it by entering its slug in
+**Organization (optional)** on the sign-in page. A super admin's own session
+stays in its home tenant, so steps 3 to 5 below, which act
+inside `acme` from that session, are API only on v0.21.0.
 
 **Operations > Tenant costs**, which admins open too, shows what the tenant's
 usage costs this month in total and by resource, then its budgets and prices.
-**Aggregate now** reads the meters at once instead of on the hour, and
-**New budget** adds a budget.
-
-![The This month panel of Tenant costs, with 18.00 USD spent so far, all of it on the database, and no budget at risk.](images/tenants-costs.png)
+[Tenant costs](#tenant-costs) has its tasks.
 
 ## Try it
 
 This creates a second tenant, writes an entry into it and shows that the
 `default` tenant cannot see it. Creating a tenant needs a license with
-`multitenant-provisioning`. On a free install, step 2 answers `402`. You need a
-super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
-shows how to get one.
+`multitenant-provisioning`. On a free install, step 2 answers `402`. For the
+console steps, you are signed in to the admin console as a super admin. For the
+API steps, you need a super admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Check that this install may create tenants:
+**1. Check that this install may create tenants.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/tenants/provisioning \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {"enabled": true}
-   ```
+Open **Operations > Tenants**. The page has a **New tenant** button when this install may
+create tenants, and reads **Not enabled on this instance** under **Tenant provisioning** when
+it may not.
 
-   A free install answers `{"enabled": false}`.
+</div>
+<div data-path="api">
 
-2. Create the tenant:
+```bash
+curl http://localhost:3001/api/admin/tenants/provisioning \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/tenants \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"slug": "acme", "name": "Acme Inc."}'
-   ```
+```json
+{"enabled": true}
+```
 
-   The answer is `201` with the tenant. `plan` defaults to `free`.
+A free install answers `{"enabled": false}`.
 
-   ```json
-   {
-     "id": "3f64a521-1146-481c-aaf8-a3334f505aa3",
-     "slug": "acme",
-     "name": "Acme Inc.",
-     "plan": "free",
-     "enabled": true,
-     "created_at": "2026-10-02T05:05:55.15037Z",
-     "updated_at": "2026-10-02T05:05:55.15037Z",
-     "archived": false
-   }
-   ```
+</div>
+</div>
 
-3. Define a content type inside `acme`. As a super admin, `X-Tenant-ID` picks
-   the tenant:
+**2. Create the tenant.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/schemas \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "X-Tenant-ID: acme" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "note", "fields": [{"name": "title", "field_type": "text", "required": true}]}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `200` with the stored definition.
+1. Choose **New tenant**.
+2. Enter `acme` in **Slug** and `Acme Inc.` in **Display name**. Leave **Plan** empty.
+3. Choose **Create**. The page confirms **Created Acme Inc.**
 
-4. Write an entry into `acme`:
+![The New tenant form open over the Tenants page, with the slug acme and the display name Acme Inc. filled in and the plan left empty.](images/tenants.png)
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/content/note \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "X-Tenant-ID: acme" \
-     -H "Content-Type: application/json" \
-     -d '{"data": {"title": "Only in Acme"}}'
-   ```
+</div>
+<div data-path="api">
 
-   The answer is `201` with the entry.
+```bash
+curl -X POST http://localhost:3001/api/admin/tenants \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"slug": "acme", "name": "Acme Inc."}'
+```
 
-5. Read `note` from each tenant:
+The answer is `201` with the tenant.
 
-   ```bash
-   curl http://localhost:3002/api/v1/content/note \
-     -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: acme"
+```json
+{
+  "id": "3f64a521-1146-481c-aaf8-a3334f505aa3",
+  "slug": "acme",
+  "name": "Acme Inc.",
+  "plan": "free",
+  "enabled": true,
+  "created_at": "2026-10-02T05:05:55.15037Z",
+  "updated_at": "2026-10-02T05:05:55.15037Z",
+  "archived": false
+}
+```
 
-   curl http://localhost:3002/api/v1/content/note \
-     -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: default"
-   ```
+</div>
+</div>
 
-   The first lists the entry. The second answers `404`, because the `note`
-   content type exists only in `acme`.
+`plan` defaults to `free`.
 
-6. Open **Operations > Tenants** in the admin console. `acme` is in the list,
-   and its page shows its members and the features it may use.
+**3. Define a content type inside `acme`.** This is API only on v0.21.0 for a super admin's
+own session, because the console has no tenant switcher. As a super admin, `X-Tenant-ID` picks
+the tenant:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/schemas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Tenant-ID: acme" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "note", "fields": [{"name": "title", "field_type": "text", "required": true}]}'
+```
+
+The answer is `200` with the stored definition.
+
+**4. Write an entry into `acme`.** This is API only on v0.21.0.
+
+```bash
+curl -X POST http://localhost:3002/api/v1/content/note \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Tenant-ID: acme" \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"title": "Only in Acme"}}'
+```
+
+The answer is `201` with the entry.
+
+**5. Read `note` from each tenant.** This is API only on v0.21.0.
+
+```bash
+curl http://localhost:3002/api/v1/content/note \
+  -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: acme"
+
+curl http://localhost:3002/api/v1/content/note \
+  -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: default"
+```
+
+The first lists the entry. The second answers `404`, because the `note` content type exists
+only in `acme`.
+
+**6. Open the tenant in the admin console.** In **Operations > Tenants**, `acme` is in the
+list, and its page shows its members and the features it may use.
 
 ## Run more than one tenant
 
@@ -203,12 +236,61 @@ data. Purge those rows or choose another slug.
   and keeps its data. Every write to it answers `423` with
   `{"error":"tenant is archived - read-only"}`. Reads still work.
 - **Restore** (`POST /api/admin/tenants/{id}/restore`) makes it writable again.
-- **Delete** (`DELETE /api/admin/tenants/{id}`) removes everything the tenant
-  holds, across every feature, in one transaction. If any part fails, nothing
-  is deleted and the tenant stays. The answer is `204`. There is no undo.
+- **Delete** (`DELETE /api/admin/tenants/{id}`) removes the tenant's rows across
+  every feature, its media records included, in one transaction. The stored
+  files stay in your storage backend for you to remove. If any part fails,
+  nothing is deleted and the tenant stays. The answer is `204`. There is no undo.
 
 These routes take a signed-in session. An admin token or an API key cannot call
-them. Archive a tenant if you may need it back. Take a
+them.
+
+**Archive a tenant and restore it.**
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Operations > Tenants** and choose the tenant's name.
+2. Choose **Archive**. The dialog says reads keep working and every write is refused until
+   the tenant is restored. Confirm it, and the tenant's status reads **Archived**.
+3. Choose **Restore** to make it writable again. It asks no confirmation.
+
+</div>
+<div data-path="api">
+
+Copy the tenant's `id` from `GET /api/admin/tenants` into `TENANT_ID`, then:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/tenants/$TENANT_ID/archive \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+`POST /api/admin/tenants/$TENANT_ID/restore` makes it writable again. Both answer `200`.
+
+</div>
+</div>
+
+**Delete a tenant.**
+
+<div class="paths">
+<div data-path="console">
+
+On **Operations > Tenants**, choose **Delete** on the tenant's row and confirm in the dialog.
+The page confirms **Deleted** with the tenant's name.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/tenants/$TENANT_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
+
+Archive a tenant if you may need it back. Take a
 [backup](../how-to/backup-and-restore.md) first if you need its content after it
 is gone.
 
@@ -227,7 +309,8 @@ Map a hostname to a tenant, and a request to that host runs in that tenant
 without any credential naming it. This is how a public site reaches its own
 content on an install with several tenants. A mapping resolves only once it is
 verified: send `"verified": true` when you have already proved control of the
-domain, or set it later with `PUT`. These routes need a super admin.
+domain, or set it later with `PUT`. These routes need a super admin, and they
+are API only on v0.21.0.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/tenant-domains \
@@ -243,7 +326,21 @@ tenant answers `409`.
 ## Give an account more than one tenant
 
 An account belongs to the tenant it was created in, its home tenant. A super
-admin can grant it roles in other tenants:
+admin can grant it roles in other tenants.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Operations > Tenants** and choose `acme`.
+2. Under **Members**, choose **New member**.
+3. Enter the account's address in **Account email**. Under **Roles in this tenant**,
+   **editor** starts ticked, and **viewer** and **admin** are the other choices.
+4. Choose **Create**. The account is listed under **Members** with its role.
+
+</div>
+<div data-path="api">
+
+Copy the account's `id` from `GET /api/admin/users` into `USER_ID`, then:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/users/$USER_ID/memberships \
@@ -252,7 +349,11 @@ curl -X PUT http://localhost:3001/api/admin/users/$USER_ID/memberships \
   -d '{"tenant_id": "acme", "roles": ["editor"]}'
 ```
 
-The account then signs in to that tenant by naming it:
+</div>
+</div>
+
+The account then signs in to that tenant by naming it. On the console's sign-in
+page, that is the tenant's slug in **Organization (optional)**. Over the API:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/auth/login \
@@ -266,8 +367,7 @@ no membership in answers `401`, the same as a wrong password.
 tenants it may act in with `GET /api/admin/auth/memberships`, which is how a
 client builds a tenant switcher.
 
-Granting and revoking need a super admin with a signed-in session. In the
-console, open a tenant under **Operations > Tenants** and use **New member**.
+Granting and revoking need a super admin with a signed-in session.
 
 When the domain a sign-in arrives on is mapped to a tenant, that tenant decides
 whose account the address reaches, and `tenant` in the body cannot point it at
@@ -285,7 +385,17 @@ account may sign in without its provider. See
 A super admin can withhold features from one tenant while the rest of the
 install keeps them, for example to keep a trial customer off the AI features.
 The license stays the ceiling, and an empty list gives the tenant everything it
-allows.
+allows. These routes take a signed-in session.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Operations > Tenants** and choose `acme`.
+2. Under **What this tenant may use**, choose **Remove flow** on the `flow` feature.
+3. Choose **Save**. The page confirms that the tenant's next request follows it.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/tenant-features/acme \
@@ -294,18 +404,16 @@ curl -X PUT http://localhost:3001/api/admin/tenant-features/acme \
   -d '{"withheld": ["flow"]}'
 ```
 
-The answer lists `withheld` and `known`, every feature name the instance can
-withhold. A request in `acme` to a withheld feature then answers `403` with
-`This feature is not available to this tenant.` A name the instance does not
-serve answers `422`.
+The answer lists `withheld` and `known`, every feature name the instance can withhold.
 
-Paid capabilities can be withheld the same way. The tenant then meets the
-`402` an unlicensed install would, while every other tenant keeps the
-capability. `alerts-pro` is sold inside scheduled jobs, error tracking, logs
-and synthetic monitoring, so it is withheld by its own name, or by withholding
-all four of those features. Withholding only one of them leaves the tenant's
-alerts on the other three. These routes take a signed-in session. In the console, the
-tenant's page has **What this tenant may use**.
+</div>
+</div>
+
+A request in `acme` to a withheld feature then answers `403` with
+`This feature is not available to this tenant.` A name the instance does not
+serve answers `422`. The list holds features, not paid capabilities: a
+capability name such as `alerts-pro`, `flow-pro` or `rate-limit-pro` answers
+`422` the same way.
 
 ## Back up, clone and move content
 
@@ -317,7 +425,9 @@ tenant's page has **What this tenant may use**.
 
 The JSON Lines and portable dump routes under `/api/admin/migrate/` are free.
 An admin works on their own tenant there, and naming another tenant answers
-`403`. An imported record keeps its id when it can, so relations survive a move.
+`403`. The content types have to exist in the target tenant before an import,
+because neither route creates them. An imported record keeps its id when it
+can, so relations survive a move.
 
 The database migrator (`migration-toolkit`) copies a whole database from one
 connection string to another, in any pairing of PostgreSQL, MySQL and SQL
@@ -351,6 +461,48 @@ a [flow](flows.md) can notify someone. Its data carries `tenant_id`,
 
 Every cost route needs the `admin` role and works on the caller's tenant.
 
+**Read the meters now and set a budget.** For the console steps you are signed in as an
+admin, and for the API steps you need an admin token in `TOKEN`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Operations > Tenant costs** and choose **Aggregate now**. The page reports
+   **The feed ran**, with the cost lines written, the budget events published and the
+   anomalies opened.
+2. Choose **New budget**. Enter a **Name** and an **Amount**, keep **USD** as the
+   **Currency** and **Monthly** as the **Period**, and leave **Resource** at
+   **Every resource**. Set **First day** and **Last day**, keep the **Alert thresholds** of
+   50, 80 and 100, and choose **Create**. The page confirms **Budgets saved.**
+
+![The This month panel of Tenant costs, with 18.00 USD spent so far, all of it on the database, and no budget at risk.](images/tenants-costs.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cost-monitor/aggregate \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "tenant_id": "default", "entries_saved": 2, "budget_events": 0, "anomalies": 0 }
+```
+
+Then create the budget. `amount` is a string, and a number is refused:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cost-monitor/budgets \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Monthly cap", "period": "monthly", "amount": "25.00", "currency": "USD", "alert_thresholds": [50, 80, 100], "period_start": "2026-10-01T00:00:00Z", "period_end": "2026-11-01T00:00:00Z"}'
+```
+
+The answer is `201` with the budget and its `current_spend`.
+
+</div>
+</div>
+
 ## Brand the admin per tenant
 
 > **Requires** a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing/).
@@ -361,8 +513,9 @@ also gives each tenant its own [captcha provider](captcha.md#give-a-tenant-its-o
 and its own [metrics destination](metrics-export.md#send-a-tenant-its-own-metrics).
 
 - **Brand.** A display name of up to 60 characters in the header and tab title,
-  an accent color as `#RRGGBB`, a welcome line of up to 280 characters, and a
-  logo: a PNG, JPEG or WebP of up to 500 KB, stored in the media library.
+  an accent color as `#RRGGBB`, a welcome line of up to 280 characters, a
+  logo, a PNG, JPEG or WebP of up to 500 KB stored in the media library, and a
+  tab icon.
 - **Menu.** Hide entries the team never uses, pin the daily ones at the top, and
   add links to the team's own tools, each optionally limited to roles. Hiding an
   entry does not change who may open the page behind it.
@@ -371,6 +524,39 @@ and its own [metrics destination](metrics-export.md#send-a-tenant-its-own-metric
   could open anyway.
 - **Pages.** Up to 50 pages of your own, each up to 40 blocks, optionally
   limited to roles. One page can open at the top of the dashboard.
+
+**Set the brand.** For the console steps you are signed in to the tenant as an admin, and
+for the API steps you need that admin's token in `TOKEN`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Settings > Customization**.
+2. Under **Brand**, enter `Acme Studio` in **Name**, `#0F766E` in **Accent color** and a
+   line in **Welcome line**.
+3. Choose **Save** under those fields. The page confirms that every page of this tenant's
+   admin now carries it, and the sidebar and tab title read **Acme Studio**.
+
+**Logo** and **Tab icon** below each take a file, a library image or an address, with a
+**Save** of their own.
+
+</div>
+<div data-path="api">
+
+`PUT` replaces the whole of brand and menu, so a field you leave out is cleared. Read the
+current settings with `GET /api/admin/customization` first, change them and send them back:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/customization \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"brand": {"name": "Acme Studio", "accent": "#0F766E", "welcome": "Publish before noon on Fridays."}, "menu": {"hidden": [], "pinned": [], "links": []}}'
+```
+
+The answer is `200` with the saved settings.
+
+</div>
+</div>
 
 Without the license, reads answer `200` with `"entitled": false` and the stock
 admin, page reads answer `404`, and writes answer `402`. Saved settings are kept
@@ -431,7 +617,7 @@ Tenants are in beta. Plan around these limits:
 | `GET` | `/api/admin/tenants/provisioning` | `{"enabled": true}` when this install may create tenants. |
 | `GET` | `/api/admin/tenants/{id}` | One tenant. |
 | `PUT` | `/api/admin/tenants/{id}` | Change `name`, `plan` or `enabled`. |
-| `DELETE` | `/api/admin/tenants/{id}` | Delete a tenant and all its data. Session only. |
+| `DELETE` | `/api/admin/tenants/{id}` | Delete a tenant and its rows. Stored files stay. Session only. |
 | `POST` | `/api/admin/tenants/{id}/archive` | Make a tenant read-only. Session only. |
 | `POST` | `/api/admin/tenants/{id}/restore` | Make an archived tenant writable again. Session only. |
 | `POST` | `/api/admin/tenants/{id}/cold-archive` | Write an archived tenant's record to storage. Session only. |

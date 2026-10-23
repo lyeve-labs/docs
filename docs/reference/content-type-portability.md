@@ -49,8 +49,20 @@ where it would otherwise import a content type with no fields.
 
 ## Export
 
-`GET /api/admin/schemas/export` writes every content type in your tenant, in dependency order,
-so the file replays top to bottom. It takes `admin` or `super_admin`, or an
+An export holds every content type in your tenant, in dependency order, so the file replays
+top to bottom.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Schema builder**, then the three-dot menu labeled **Import and export**, and choose
+**Export as YAML** or **Export as JSON**. The browser downloads `lyeve-schemas.yaml` or the
+JSON file.
+
+</div>
+<div data-path="api">
+
+`GET /api/admin/schemas/export` takes `admin` or `super_admin`, or an
 [admin token](../how-to/admin-tokens.md) with the `schemas:read` grant.
 
 ```bash
@@ -61,16 +73,33 @@ curl "http://localhost:3001/api/admin/schemas/export?format=json" \
   -H "Authorization: Bearer $TOKEN" -o schemas.json
 ```
 
-The file also carries `version: 1` and a `source` line naming the instance it came from. In
-the console, open **Schema builder**, then the three-dot menu labeled **Import and export**,
-and choose **Export as YAML** or **Export as JSON**.
+</div>
+</div>
+
+The file also carries `version: 1` and a `source` line naming the instance it came from.
 
 ## Import
 
-`POST /api/admin/schemas/import` takes `super_admin` and a signed-in session, so an admin
-token cannot call it. Importing is two steps: the first call reports what would change and
-writes nothing, and the second applies it. Send YAML as `application/yaml` (`application/x-yaml`
-and `text/yaml` work too), or JSON as `application/json`, up to 4 MiB:
+Importing takes a `super_admin` and a signed-in session, so an admin token cannot do it. It
+is two steps: the first reports what would change and writes nothing, and the second applies
+it.
+
+<div class="paths">
+<div data-path="console">
+
+1. In **Schema builder**, open the **Import and export** menu and choose **Import**.
+2. Keep **LyEve export (YAML or JSON)** in **Where the definitions come from**.
+3. Add the file under **Definition file**, or paste it into **Or paste the definitions**. The
+   file is up to 4 MB.
+4. Choose **Check**. **What importing does** lists each content type, whether the import
+   creates or changes it, and its statements.
+5. Read them, then choose **Import**. The page confirms how many content types it imported.
+
+</div>
+<div data-path="api">
+
+`POST /api/admin/schemas/import` takes YAML as `application/yaml` (`application/x-yaml` and
+`text/yaml` work too), or JSON as `application/json`, up to 4 MiB:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/schemas/import \
@@ -102,9 +131,10 @@ curl -X POST "http://localhost:3001/api/admin/schemas/import?apply=true" \
   --data-binary @schemas.yaml
 ```
 
-The answer is the same shape with `"applied": true`. In the console, choose **Import** from the
-same menu, pick **Where the definitions come from**, add the file or paste it, press **Check**
-to see the plan, then **Import**.
+The answer is the same shape with `"applied": true`.
+
+</div>
+</div>
 
 ### Order and references
 
@@ -161,8 +191,24 @@ types other than the ones its configuration describes.
 
 ## Importing from another system
 
-Add `from` to convert as you import. The dry run still comes first, so you see the result before
-anything is written.
+The dry run still comes first, so you see the result before anything is written.
+
+<div class="paths">
+<div data-path="console">
+
+In the **Import** drawer, pick the system in **Where the definitions come from**:
+**JSON Schema**, **OpenAPI or Swagger components**, **Strapi content types**,
+**Contentful content model** or **WordPress (an ACF field-group export)**. Add or paste that
+system's file and choose **Check**. Under the plan, **Renamed to fit the engine's names** and
+**Read before importing** list what conversion changed.
+
+</div>
+<div data-path="api">
+
+Add `from` to the import, with one of the values in the table below.
+
+</div>
+</div>
 
 | System | `from` | What to send |
 |---|---|---|

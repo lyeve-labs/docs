@@ -37,14 +37,16 @@ row, and expanding it lists its rules: **Every schema** for the `*` rule, then
 one row per content type or flow. A filled dot is an action the rule allows,
 and **Field mask** lists the fields the role does not read.
 
-- **New role** adds a role. It starts with no actions anywhere.
+- **New role** adds a role. It starts with no actions anywhere, and it counts
+  toward the [role ceiling](#the-role-ceiling) at once. At the ceiling the
+  page says **3 of 3 roles** and offers no **New role**.
 - The plus button on a role's row adds a rule, and the pencil edits one. The
   rule form has a checkbox per action and a **Field mask** box for
   comma-separated field names.
 - **Show resources with no rule** lists the content types and flows a role has
   no rule for.
 
-![Access > Permissions with a reader role that reads post without its body, and a support role that reads every content type and updates author.](images/access-rules.png)
+![Access > Permissions with a support role that reads every content type and updates author, and a viewer role with an empty Every schema rule that reads post without its body.](images/access-rules.png)
 
 ## How it works
 
@@ -101,9 +103,30 @@ you write some.
 
 ## Try it
 
-This gives a `reader` role the titles of the `post` content type from the
-[quickstart](../getting-started/quickstart.md), with the body hidden. You need
-a super admin token in `TOKEN`. The quickstart shows how to get one.
+This gives a `viewer` role the titles of the `post` content type from the
+[quickstart](../getting-started/quickstart.md), with the body hidden, and
+creates an account that holds only that role. `viewer` has no rights of its
+own on the engine, and it is one of the four roles the console's user form
+offers. Sign in as a super admin first.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Access > Permissions**. If the page says **3 of 3 roles**, the
+   instance is at its [role ceiling](#the-role-ceiling) and takes no new role.
+2. Choose **New role**, enter `viewer` in **Role name** and choose **Create**.
+   The role's row appears with an empty **Every schema** rule.
+3. Choose the plus button on the `viewer` row. In **Resource**, pick `post`.
+   Tick **Read**, enter `body` in **Field mask** and choose **Create**. The row
+   now says **2 rules**.
+4. Open **Access > Users** and choose **New user**. Enter `viewer@example.com`
+   in **Email** and `Viewer-Account-2026` in **Password**. Under **Roles**,
+   untick **editor**, tick **viewer** and choose **Create**.
+
+</div>
+<div data-path="api">
+
+You need a super admin token in `TOKEN`. The quickstart shows how to get one.
 
 1. Check how many roles may still hold rules:
 
@@ -118,41 +141,19 @@ a super admin token in `TOKEN`. The quickstart shows how to get one.
 
    A `limit` of `0` means no ceiling.
 
-2. Create an account that holds only the `reader` role:
-
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/users \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"email": "reader@example.com", "password": "Reader-Account-2026", "roles": ["reader"]}'
-   ```
-
-   The answer is `201` with the new user.
-
-3. Sign in as that account and keep its token:
-
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"email": "reader@example.com", "password": "Reader-Account-2026"}'
-   ```
-
-   Copy `token` into `READER_TOKEN`. Reading posts now answers
-   `403` with `permission denied`, because no rule names `reader`.
-
-4. Write the rule:
+2. Write the rule:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/permissions \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"role": "reader", "schema_name": "post", "actions": ["read"], "field_mask": ["body"]}'
+     -d '{"role": "viewer", "schema_name": "post", "actions": ["read"], "field_mask": ["body"]}'
    ```
 
    ```json
    {
      "id": "72a42ef6-948b-445b-80df-b315e1480f8f",
-     "role": "reader",
+     "role": "viewer",
      "schema_name": "post",
      "actions": ["read"],
      "field_mask": ["body"],
@@ -164,25 +165,69 @@ a super admin token in `TOKEN`. The quickstart shows how to get one.
    The answer is `200`. Sending a rule for the same role and resource again
    replaces it.
 
-5. Read as the reader:
+3. Create an account that holds only the `viewer` role:
 
    ```bash
-   curl http://localhost:3002/api/v1/content/post \
-     -H "Authorization: Bearer $READER_TOKEN"
+   curl -X POST http://localhost:3001/api/admin/users \
+     -H "Authorization: Bearer $TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"email": "viewer@example.com", "password": "Viewer-Account-2026", "roles": ["viewer"]}'
    ```
 
-   Every entry comes back with `title` and without `body`.
+   The answer is `201` with the new user.
+
+</div>
+</div>
+
+Then read posts as that account. Reading content is a Content API call, so
+both paths end here. Sign in as the account and keep its token:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "viewer@example.com", "password": "Viewer-Account-2026"}'
+```
+
+Copy `token` into `VIEWER_TOKEN`, then read:
+
+```bash
+curl http://localhost:3002/api/v1/content/post \
+  -H "Authorization: Bearer $VIEWER_TOKEN"
+```
+
+Every entry comes back with `title` and without `body`. A role that no rule
+names gets `403` with `permission denied` instead.
 
 ## Shut a role out of one content type
 
 Write a rule for that content type with no actions. It overrides any `*` rule
-for the same role:
+for the same role.
+
+<div class="paths">
+<div data-path="console">
+
+On **Access > Permissions**, choose the plus button on the role's row and pick
+the content type in **Resource**. Leave every action clear and choose
+**Create**. Before you create it, the form says **This rule shuts** the role
+**out**, and that the role is denied every action on that content type.
+
+</div>
+<div data-path="api">
+
+Send the rule with an empty `actions` list to `POST /api/admin/permissions`:
 
 ```json
 { "role": "editor", "schema_name": "payroll", "actions": [] }
 ```
 
-To open it again, delete the rule or send it again with the actions you want.
+</div>
+</div>
+
+The empty rule needs a `*` rule or another grant to override. On a role with
+none, the console says **This rule would do nothing** and keeps **Create**
+off.
+
+To open it again, delete the rule or write it again with the actions you want.
 
 ## Rules and tenants
 
@@ -216,7 +261,7 @@ a license without `rbac-pro` does not raise that number. A rule for a fourth
 role answers `402`:
 
 ```json
-{ "error": "cap_exceeded", "cap": "rbac.roles", "limit": 3, "current": 3, "upgrade_url": "" }
+{ "error": "cap_exceeded", "cap": "rbac.roles", "limit": 3, "current": 3, "upgrade_url": "https://app.lyeve.com/pricing?skus=plugin-rbac-pro&utm_campaign=rbac.roles&utm_medium=product&utm_source=admin" }
 ```
 
 Editing a rule for a role that already has one is always allowed, because it
@@ -258,7 +303,7 @@ refused with `403 This route needs a signed-in session.`
 | `403` | `This route needs a signed-in session.` | An admin token called a rule route. |
 | `404` | `permission not found` | No rule has that id in your tenant. |
 | `422` | `role and schema_name are required` | A required field is empty. |
-| `422` | `invalid resource: a schema name, *, flows, flow:<slug>, reviews or review:<slug>` | The resource is not one a rule can name. |
+| `422` | `invalid resource: a schema name, *, flows, flow:<slug>, reviews or review:<slug>` | `flow:` or `review:` with no slug, or a slug that is not valid. Any other name is stored as given. |
 | `422` | `invalid action: <action>` | The action is unknown, or `activate` on a content type. |
 
 </details>

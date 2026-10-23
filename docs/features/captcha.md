@@ -74,7 +74,7 @@ whether the instance has one set. Under **Tenant settings**, pick a
 **Provider**, enter the **Site key** and **Secret key**, and choose **Save**.
 **Clear tenant settings** puts the tenant back on the instance captcha.
 
-![The Captcha settings page. A note says the admin login always uses the instance captcha, a summary says this tenant's flows check Turnstile with its own keys, and the tenant settings form shows Turnstile selected with a site key filled in.](images/captcha.png)
+![The Captcha settings page on an install licensed for multitenant-customization. A note says the admin login always uses the instance captcha, a summary says this tenant's flows check Turnstile with its own keys, and the tenant settings form shows Turnstile selected with a site key filled in.](images/captcha.png)
 
 Saving tenant settings needs `multitenant-customization`. The instance captcha
 comes from the settings in [Turn it on](#turn-it-on).
@@ -94,10 +94,23 @@ A change to these settings applies without a restart.
 
 ## Try it
 
-This needs a site key and a secret key from your provider.
+This needs a site key and a secret key from your provider. Set the three
+variables in [Turn it on](#turn-it-on) first.
 
-1. Set the three variables above and sign in with a wrong password three
-   times:
+<div class="paths">
+<div data-path="console">
+
+1. Open the console's sign-in page and sign in with a wrong password three
+   times. After the third, the page says **Complete the security check to try
+   again.** and shows the widget above **Sign in**, with your email still
+   filled in.
+2. Complete the widget, enter the right password and choose **Sign in**. You
+   are signed in, and the counts reset.
+
+</div>
+<div data-path="api">
+
+1. Sign in with a wrong password three times:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/auth/login \
@@ -132,8 +145,8 @@ This needs a site key and a secret key from your provider.
 
    A correct password now signs in and resets the counts.
 
-4. Open the admin console's sign-in page and fail three times. The widget
-   appears above **Sign in**.
+</div>
+</div>
 
 ## Check a token in a flow
 
@@ -158,12 +171,36 @@ With `multitenant-customization`, a tenant admin saves a provider and keys for
 the tenant's own surfaces: the `captcha.verify` node in its flows, such as a
 sign-up form, and the widget on its own pages.
 
+<div class="paths">
+<div data-path="console">
+
+1. Open **Settings > Captcha**.
+2. Under **Tenant settings**, pick `hCaptcha` in **Provider**, and enter the
+   keys from your hCaptcha account in **Site key** and **Secret key**.
+3. Choose **Save**. The page says **Saved the captcha settings**, and
+   **What is checked now** reads
+   **This tenant's flows check hCaptcha with its own keys.**
+
+**Clear tenant settings** asks **Clear the tenant captcha settings?**, and
+**Clear** puts the tenant back on the instance captcha. Without the license,
+the form says that saving or changing tenant captcha settings needs a license
+this install does not hold.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X PUT http://localhost:3001/api/admin/captcha/settings \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"provider": "hcaptcha", "site_key": "<site key>", "secret_key": "<secret key>"}'
 ```
+
+The answer is `200` with `"source": "tenant"`, described below the table.
+`DELETE` on the same path answers `204`.
+
+</div>
+</div>
 
 | Field | Meaning |
 |---|---|

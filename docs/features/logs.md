@@ -52,91 +52,115 @@ records that belong to no tenant in search, tail and the volume view. Naming
 restoring or deleting it, logs under no tenant, so no tenant admin sees it.
 Only a super admin reading the whole log does.
 
-## In the admin console
-
-Open **Insight > Logs**. **Volume and levels** counts the last 24 hours of
-entries by level, and a level chip shows only that level's entries. Under
-**Entries**, the search box reads **Message words, a request ID or a trace ID**.
-Type words from a message, or paste a request ID or a trace ID on its own to
-find every line of that request or trace, and press **Search**. You can also
-pick a level and a page size. **Volume alerts** opens the rules described under
-[Watch log volume](#watch-log-volume).
-
-![The Logs page searched for the word slow, listing WARN entries that read slow request detected, each with its time.](images/logs.png)
-
-**Insight > Observability** follows the live log under **Live log tail**, with
-a **Minimum level**, **Pause** and **Clear**. Changing levels and shipping
-records go through the API below.
+In the admin console, logs are under **Insight > Logs**. **Volume and levels** counts the last
+24 hours of entries, shows the **Default level** and the **Sinks**, and a level chip shows only
+that level's entries. Under **Entries**, the search box reads **Message words, a request ID or a
+trace ID**, beside a level picker and a page size. **Volume alerts** opens the rules described
+under [Watch log volume](#watch-log-volume). **Insight > Observability** follows the live log
+under **Live log tail**. The console reads the levels and the sinks but has no control to change
+them on v0.21.0, so changing levels, shipping records and setting retention go through the API.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+For the console steps, you are signed in to the admin console. For the API steps, and for step
+1, you need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows
+how to get one.
 
-1. Make a request and give it an id you choose. The instance accepts your
-   `X-Request-ID` and logs it with the request:
+**1. Make a request and give it an id you choose.** The instance accepts your `X-Request-ID`
+and logs it with the request:
 
-   ```bash
-   curl -s http://localhost:3001/api/admin/logging/levels \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "X-Request-ID: try-logs-1"
-   ```
+```bash
+curl -s http://localhost:3001/api/admin/logging/levels \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Request-ID: try-logs-1"
+```
 
-   The answer is the current levels:
-   `{"default_level": "INFO", "tenants": {}, "plugins": {}}`.
+The answer is the current levels: `{"default_level": "INFO", "tenants": {}, "plugins": {}}`.
+Any request works: every response carries an `X-Request-ID`, the one you sent or one the
+instance made.
 
-2. Search for that id:
+**2. Search for that id.**
 
-   ```bash
-   curl "http://localhost:3001/api/admin/logs/search?request_id=try-logs-1" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "results": [
-       {
-         "timestamp": "2026-10-01T09:12:44.067704Z",
-         "level": "INFO",
-         "message": "request",
-         "tenant_id": "default",
-         "trace_id": "00000000000000000000000000000000",
-         "span_id": "0000000000000000",
-         "request_id": "try-logs-1",
-         "fields": { "bytes": 51, "duration_ms": 1, "method": "GET", "path": "/api/admin/logging/levels", "status": 200 }
-       }
-     ],
-     "total": 1,
-     "limit": 100,
-     "offset": 0
-   }
-   ```
+Open **Insight > Logs**, enter `try-logs-1` in the search box under **Entries** and choose
+**Search**. One **INFO** entry reads `request`.
 
-3. Turn on debug output for your tenant:
+![The Logs page searched for the request ID try-logs-1, with one INFO entry that reads request.](images/logs.png)
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/logging/levels/tenant/default \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"level": "DEBUG"}'
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   { "tenant": "default", "level": "DEBUG" }
-   ```
+```bash
+curl "http://localhost:3001/api/admin/logs/search?request_id=try-logs-1" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-4. Follow the live log, starting with what is buffered. Press Ctrl+C to stop:
+```json
+{
+  "results": [
+    {
+      "timestamp": "2026-10-01T09:12:44.067704Z",
+      "level": "INFO",
+      "message": "request",
+      "tenant_id": "default",
+      "trace_id": "00000000000000000000000000000000",
+      "span_id": "0000000000000000",
+      "request_id": "try-logs-1",
+      "fields": { "bytes": 51, "duration_ms": 1, "method": "GET", "path": "/api/admin/logging/levels", "status": 200 }
+    }
+  ],
+  "total": 1,
+  "limit": 100,
+  "offset": 0
+}
+```
 
-   ```bash
-   curl -N "http://localhost:3001/api/admin/logs/stream?min_level=DEBUG&from_head=true" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   You see `log` events, then `replay_complete` and `connected`, then new
-   lines as they happen. A stream event gives `level` as a number: `-4` is
-   `DEBUG`, `0` is `INFO`, `4` is `WARN` and `8` is `ERROR`.
+**3. Turn on debug output for your tenant.** The console shows the **Default level** but has no
+control to change a level on v0.21.0, so this step is an API call:
 
-5. Put the level back with the same request as step 3 and `{"level": "INFO"}`.
+```bash
+curl -X PUT http://localhost:3001/api/admin/logging/levels/tenant/default \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"level": "DEBUG"}'
+```
+
+```json
+{ "tenant": "default", "level": "DEBUG" }
+```
+
+**4. Follow the live log.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Insight > Observability** and find **Live log tail**. Choose **DEBUG** under the minimum
+level. New lines appear as they happen, with **Pause** to hold them and **Clear** to empty the
+list.
+
+</div>
+<div data-path="api">
+
+Start with what is buffered, and press Ctrl+C to stop:
+
+```bash
+curl -N "http://localhost:3001/api/admin/logs/stream?min_level=DEBUG&from_head=true" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+You see `log` events, then `replay_complete` and `connected`, then new lines as they happen. A
+stream event gives `level` as a number: `-4` is `DEBUG`, `0` is `INFO`, `4` is `WARN` and `8` is
+`ERROR`.
+
+</div>
+</div>
+
+**5. Put the level back** with the same request as step 3 and `{"level": "INFO"}`.
 
 ## Find a line
 
@@ -279,6 +303,36 @@ A super admin sets volume rules with `PUT /api/admin/logging/alerts`:
 | `enabled` | Whether the rule is checked. |
 | `channels` | Where the alert goes: email on every install, and Slack, Discord, PagerDuty or a signed webhook with `alerts-pro`. See [Alerts](alerts.md#alert-on-log-volume). |
 | `cooldown` | The shortest time between two alerts from one rule. |
+
+To add one rule that emails your team when more than 500 errors arrive in five minutes, as a
+super admin:
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Logs** and choose **Volume alerts**. A fresh install lists two rules:
+   **ERROR entries** past `100 in 5m`, on, and **All entries** past `10,000 in 1h`, off.
+2. Choose **New rule**. Keep **Level** at **ERROR**, enter `500` in **Ceiling** and keep
+   **Window** at `5m`.
+3. Under **Channels**, enter `ops@example.com` in **Email**, then choose **Create**.
+
+The rule is listed with **On** and **1 email**. Without `alerts-pro`, the Slack, Discord,
+webhook and PagerDuty fields say they are not enabled on this instance.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/logging/alerts \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"level": "ERROR", "max_count": 500, "window": "5m", "enabled": true, "channels": {"email": ["ops@example.com"]}}'
+```
+
+The answer is `201` with the rule, its new `id`, and `licensed`.
+
+</div>
+</div>
 
 The rules are checked every minute in the background, on one replica at a
 time. A rule that fires sends its alert to the live tail as an `ALERT` record,

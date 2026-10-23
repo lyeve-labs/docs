@@ -60,82 +60,112 @@ resolve for a fix you want to confirm, and ignore for an error you have
 decided to live with.
 :::
 
-## In the admin console
-
-Open **Insight > Observability > Errors**. **Recent events** lists the newest
-events with their time, endpoint, status and message. **Spike alerts** sets
-where a spike is reported and what counts as one, as
-[Get told when errors spike](#get-told-when-errors-spike) describes.
+In the admin console, error tracking is under **Insight > Observability > Errors**. The top row
+counts the **Unacknowledged failures**, the ones **New in the last day** and the **Distinct
+failures tracked**. **Failures** lists each alert with its code's title, its message and top
+frame, its status, severity and how often it was seen, narrowed to **All**, **Open**,
+**Resolved** or **Ignored**. Each row carries buttons to acknowledge, resolve, ignore, reopen
+and assign it. **Recent events** lists the newest events with their time, endpoint, status and
+message. **Spike alerts** sets where a spike is reported and what counts as one, as
+[Get told when errors spike](#get-told-when-errors-spike) describes. Registering codes and
+sending events are done with the API.
 
 ![The Recent events table with six events: Gateway timed out three times at /checkout with status 504, Unsupported color profile in cover.png twice at /uploads/cover with 422, and Sync stopped after 30 seconds once at /jobs/newsletter-sync with 500.](images/error-tracking.png)
 
-Register codes and triage alerts through the API below.
-
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one.
+For the console steps, you are signed in to the admin console as a super admin. Steps 1 and 2
+are API calls, because the console has no control for them on v0.21.0, so every reader needs a
+super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to
+get one.
 
-1. Register a code. This needs a super admin:
+**1. Register a code.** This needs a super admin:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/error-tracking/codes \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"code": "PAYMENT_GATEWAY_DOWN", "title": "Payment gateway unreachable", "severity": "CRITICAL", "category": "network"}'
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/error-tracking/codes \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "PAYMENT_GATEWAY_DOWN", "title": "Payment gateway unreachable", "severity": "CRITICAL", "category": "network"}'
+```
 
-   The answer is `200` with the saved code. Copy its `id` into `CODE_ID`.
-   Sending the same `code` again updates it.
+The answer is `200` with the saved code. Copy its `id` into `CODE_ID`. Sending the same `code`
+again updates it.
 
-2. Send an event with a stack trace, so it groups into an alert:
+**2. Send an event with a stack trace,** so it groups into an alert:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/error-tracking/events/stack \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"error_code_id": "'"$CODE_ID"'", "endpoint": "/checkout", "message": "Gateway timed out", "http_status": 504, "stack_trace": "main.charge()\n\t/app/pay/gateway.go:42"}'
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/error-tracking/events/stack \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"error_code_id": "'"$CODE_ID"'", "endpoint": "/checkout", "message": "Gateway timed out", "http_status": 504, "stack_trace": "main.charge()\n\t/app/pay/gateway.go:42"}'
+```
 
-   The answer is `201` with the event, its `fingerprint`, and the
-   `source_file` and `source_line` read from the top frame.
+The answer is `201` with the event, its `fingerprint`, and the `source_file` and `source_line`
+read from the top frame.
 
-3. List the open alerts:
+**3. List the open alerts.**
 
-   ```bash
-   curl "http://localhost:3001/api/admin/error-tracking/alerts?unacknowledged_only=true" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "data": [
-       { "id": "2a47fbfa-ccce-4517-be05-767ea648c43f", "fingerprint": "b215a8cb55996cde03ed88af", "message_sample": "Gateway timed out", "error_count": 1, "acknowledged": false, "first_seen": "2026-10-01T09:07:01Z", "last_seen": "2026-10-01T09:07:01Z" }
-     ],
-     "limit": 50,
-     "offset": 0,
-     "total_count": 1
-   }
-   ```
+Open **Insight > Observability > Errors** and choose **Open** above **Failures**. The row reads
+**Payment gateway unreachable**, with `Gateway timed out` and `/app/pay/gateway.go:42`, status
+**Open**, severity **CRITICAL**, seen `1` time.
 
-4. Copy the alert's `id` into `ALERT_ID`, and resolve it once you have
-   fixed the cause:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/error-tracking/alerts/$ALERT_ID/resolve \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl "http://localhost:3001/api/admin/error-tracking/alerts?unacknowledged_only=true" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```json
-   { "status": "resolved" }
-   ```
+```json
+{
+  "data": [
+    { "id": "fcef431f-f7ef-4750-9d06-f48d9979b7d3", "fingerprint": "b215a8cb55996cde03ed88af", "message_sample": "Gateway timed out", "error_count": 1, "acknowledged": false, "status": "open", "assigned_to": "", "first_seen": "2026-10-23T11:46:59.735998Z", "last_seen": "2026-10-23T11:46:59.735998Z" }
+  ],
+  "limit": 50,
+  "offset": 0,
+  "total_count": 1
+}
+```
 
-   Send the event from step 2 again, and the alert is `open` once more.
+Copy the alert's `id` into `ALERT_ID`.
+
+</div>
+</div>
+
+**4. Resolve it once you have fixed the cause.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the resolve button on its row, labeled **Resolve this failure**. The alert leaves the
+**Open** list, and **Resolved** lists it with the status **Resolved**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/error-tracking/alerts/$ALERT_ID/resolve \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "status": "resolved" }
+```
+
+</div>
+</div>
+
+Send the event from step 2 again, and the alert is open once more.
 
 ## Triage alerts
 
 Every install resolves, ignores, reopens and assigns alerts. Each answers with
-the new state.
+the new state. In the admin console, the buttons on a row of **Failures** do the same:
+**Assign** asks for an **Assignee** and saves it with **Save**.
 
 | Request | What it does |
 |---|---|

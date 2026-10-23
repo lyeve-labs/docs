@@ -52,100 +52,115 @@ dropped rather than queued, and the server log counts them.
 Deleting a tenant deletes its captures. A privacy erasure request for a person
 deletes the captures that name them.
 
-## In the admin console
+In the admin console, request capture is under **Insight > Observability > Request capture**.
 
-Open **Insight > Observability > Request capture**.
+- **Captures from every tenant** lists the newest requests with their **Tenant**, **Status**,
+  how long each **Took** and when it was **Captured**. The list and its total cover every
+  tenant.
+- **Capture rules** lists each rule's route, method, sample, how long its captures are kept
+  and its state. **New rule** adds one.
+- **Replay sets** lists the saved sets. Select captures and press **New replay set** to save
+  them as a set.
 
-- **Capture rules** lists each rule's **Route**, **Method**, **Sample**, how
-  long its captures are **Kept for**, and its state. **New rule** adds one.
-- **Captures** lists the newest requests with their status, how long each
-  **Took** and when it was **Captured**. Select captures and press
-  **New replay set** to save them under a **Name**.
-- **Replay sets** lists the saved sets. **Replay** on a set runs it again
-  after you confirm, and gives each request's status and time beside the
-  original's.
-
-![The Request capture page with two rules, content reads kept for 7 days and every other request for 1 day, a replay set named Content smoke holding three captures, and the newest captures below.](images/request-capture.png)
-
-Reading one capture in full, replaying it on its own and comparing two
-captures go through the API below.
+Without the `request-capture-pro` feature, the page says that capture rules and replay sets
+are not included, and **New rule** and **New replay set** are turned off. Reading one capture in full, replaying it on its own and comparing
+two captures are done with the API on v0.21.0.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
+For the console step, you are signed in to the admin console as a super admin. Every other
+step is an API call, so you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. List the latest `GET` captures:
+**1. List the latest captures.**
 
-   ```bash
-   curl "http://localhost:3001/api/admin/request-captures?method=GET&limit=2" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "data": [
-       {
-         "id": "56cea807-47e3-413d-beca-28f6128a172e",
-         "captured_at": "2026-10-01T09:14:36Z",
-         "method": "GET",
-         "url": "/api/admin/logging/levels",
-         "request_headers": { "Authorization": ["[REDACTED]"], "User-Agent": ["curl/8.18.0"] },
-         "status_code": 200,
-         "response_headers": { "Content-Type": ["application/json"] },
-         "response_body": "{\"default_level\":\"INFO\",\"plugins\":{},\"tenants\":{}}",
-         "duration_ms": 1.548,
-         "tenant_id": "default",
-         "ttl_seconds": 86400
-       }
-     ],
-     "total_count": 247,
-     "limit": 2,
-     "offset": 0
-   }
-   ```
+Open **Insight > Observability > Request capture**. **Captures from every tenant** lists each
+request with its method and path, its tenant, its status, how long it took and when it was
+captured, newest first.
 
-   Copy an `id` into `CAPTURE_ID`.
+![The Request capture page on an install without the license: the list of captures from every tenant, newest first, each a GET with its tenant, a 200 status, the time it took and when it was captured.](images/request-capture.png)
 
-2. Fetch that one capture in full:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/request-captures/$CAPTURE_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Narrow the list to `GET` requests:
 
-3. Replay it. A `GET` needs only `confirm_replay`:
+```bash
+curl "http://localhost:3001/api/admin/request-captures?method=GET&limit=2" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/request-captures/$CAPTURE_ID/replay \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"confirm_replay": true}'
-   ```
+```json
+{
+  "data": [
+    {
+      "id": "56cea807-47e3-413d-beca-28f6128a172e",
+      "captured_at": "2026-10-01T09:14:36Z",
+      "method": "GET",
+      "url": "/api/admin/logging/levels",
+      "request_headers": { "Authorization": ["[REDACTED]"], "User-Agent": ["curl/8.18.0"] },
+      "status_code": 200,
+      "response_headers": { "Content-Type": ["application/json"] },
+      "response_body": "{\"default_level\":\"INFO\",\"plugins\":{},\"tenants\":{}}",
+      "duration_ms": 1.548,
+      "tenant_id": "default",
+      "ttl_seconds": 86400
+    }
+  ],
+  "total_count": 247,
+  "limit": 2,
+  "offset": 0
+}
+```
 
-   The answer holds `original`, `replay` and `diff`. The replay is stored as a
-   new capture, and its id is `replay.id`. Copy it into `REPLAY_ID`.
+</div>
+</div>
 
-4. Compare the two:
+The rest of the steps are API only on v0.21.0. They need a capture id, which the console list
+does not show, so take one from the API list above: copy an `id` into `CAPTURE_ID`.
 
-   ```bash
-   curl http://localhost:3001/api/admin/request-captures/$CAPTURE_ID/diff/$REPLAY_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**2. Fetch that one capture in full:**
 
-   ```json
-   { "id1": "56cea807-47e3-413d-beca-28f6128a172e", "id2": "aa51f554-ab7a-4aca-8e89-a762fb626029", "status_match": true, "status_code1": 200, "status_code2": 200, "duration1_ms": 1.548, "duration2_ms": 1.344 }
-   ```
+```bash
+curl http://localhost:3001/api/admin/request-captures/$CAPTURE_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   An unchanged answer carries neither `body_diff` nor `headers_diff`, as here.
-   [Read a diff](#read-a-diff) describes both.
+**3. Replay it.** A `GET` needs only `confirm_replay`:
 
-5. Delete the replay when you are done. The answer is `204`:
+```bash
+curl -X POST http://localhost:3001/api/admin/request-captures/$CAPTURE_ID/replay \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"confirm_replay": true}'
+```
 
-   ```bash
-   curl -X DELETE http://localhost:3001/api/admin/request-captures/$REPLAY_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+The answer holds `original`, `replay` and `diff`. The replay is stored as a new capture, and its
+id is `replay.id`. Copy it into `REPLAY_ID`.
+
+**4. Compare the two:**
+
+```bash
+curl http://localhost:3001/api/admin/request-captures/$CAPTURE_ID/diff/$REPLAY_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{ "id1": "56cea807-47e3-413d-beca-28f6128a172e", "id2": "aa51f554-ab7a-4aca-8e89-a762fb626029", "status_match": true, "status_code1": 200, "status_code2": 200, "duration1_ms": 1.548, "duration2_ms": 1.344 }
+```
+
+An unchanged answer carries neither `body_diff` nor `headers_diff`, as here.
+[Read a diff](#read-a-diff) describes both.
+
+**5. Delete the replay when you are done.** The answer is `204`:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/request-captures/$REPLAY_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## Replay a call safely
 
@@ -197,12 +212,28 @@ Capture rules need `request-capture-pro`. Without rules, every request is captur
 at least one enabled rule, it captures only the requests a rule matches, and
 the first matching rule, oldest first, decides how long each is kept.
 
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Request capture** and choose **New rule**.
+2. Enter `/api/v1/content/orders/**` in **Route** and pick `POST` in **Method**.
+3. Enter `50` in **Sample, as a percentage**, pick `7 days` in **Kept for**, and keep
+   **Apply this rule** on.
+4. Choose **Create**. **Capture rules** lists the rule with its route, `POST`, `50%`,
+   `7 days` and **Capturing**.
+
+</div>
+<div data-path="api">
+
 ```bash
 curl -X POST http://localhost:3001/api/admin/request-captures/rules \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"route_pattern": "/api/v1/content/orders/**", "method": "POST", "sample_rate": 0.5, "retention_seconds": 604800}'
 ```
+
+</div>
+</div>
 
 | Field | Meaning | Default |
 |---|---|---|
@@ -223,19 +254,45 @@ Creating a rule, turning one on and changing one that is on answer `402`.
 ## Replay a set of captures
 
 Creating a set needs `request-capture-pro`. A replay set is a named list of up to 50 of your captures, replayed together
-in order with each replay compared against its original:
+in order with each replay compared against its original.
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Observability > Request capture**. Under **Captures from every tenant**,
+   tick the box on each capture the set should hold, such as a `GET` of
+   `/api/admin/logging/levels`. Tick only captures from your own tenant,
+   because a set takes only captures the current tenant holds.
+2. Choose **New replay set from 1**, the count of captures you ticked, enter
+   `settings smoke` in **Name**, and choose **Create**. **Replay sets** lists it.
+3. Choose **Replay** on the set's row, then **Replay** in the dialog that asks
+   **Replay settings smoke?**.
+
+The page says **Replayed settings smoke** and
+**1 of 1 answered as they did when captured.**, and lists each call with **Same** or what
+changed, its status and its time then and now.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/request-captures/sets \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "checkout smoke", "capture_ids": ["'"$CAPTURE_ID"'"]}'
+```
 
+The answer is `201` with the set. Copy its `id` into `SET_ID`, and replay it:
+
+```bash
 curl -X POST http://localhost:3001/api/admin/request-captures/sets/$SET_ID/replay \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"confirm_replay": true}'
 ```
+
+</div>
+</div>
 
 The replay answers `set_id` and `results`, one per capture with its
 `capture_id`, the captured `method` and `path`, and either the `replay_id` and `diff`, or an `error` such as

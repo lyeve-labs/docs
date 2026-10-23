@@ -50,97 +50,188 @@ still change before it is marked stable.
   and `webhook` for the sections they hold. An instance exports only the
   sections it runs, and refuses a section it has nothing to apply to.
 
-## In the admin console
+## Try it
 
-Open **Settings > Config sync**.
+This exports an instance, compares the file with the same instance, and dry runs it, so no
+bundle is applied. Step 3 creates a webhook and step 5 deletes it, so the instance ends as it
+started. Run it on an install whose license carries `config-sync`. For the console
+steps, you are signed in to the admin console as a super admin. For the API steps, you need
+the super admin's token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows
+how to get one. The API steps use `jq` to build the request bodies.
 
-**Export.** Under **Export this instance**, enter a **Passphrase** and choose
-**Export**. When the bundle is ready, the page lists its sections. Choose the
-**Download** button to save it as `lyeve-config-<date>.json`.
+**1. Export the configuration with a passphrase.**
 
-**Apply.** Under **Apply a bundle**, on the target instance:
+<div class="paths">
+<div data-path="console">
 
-1. Choose the **Bundle file**. The page shows the file, where it was exported
-   from, when, and which sections it holds.
-2. Enter the **Passphrase** it was exported with.
-3. Tick **Delete what the bundle does not name** if the target should lose
-   what only it holds. See [Deleting what the bundle does not name](#deleting-what-the-bundle-does-not-name).
-4. Choose **Compare** to see the plan, or **Dry run** to run every check an
-   apply runs without writing.
-5. Choose **Apply**, then **Apply** again in **Apply this bundle?** to confirm.
+Open **Settings > Config sync**. Under **Export this instance**, enter a **Passphrase** and
+choose **Export**. The page says **The bundle is ready.** Choose the download link under it
+to save the bundle as `lyeve-config-<date>.json`.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/config-sync/export \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"passphrase": "a long passphrase from your secret store"}' \
+  -o bundle.json
+jq '{format, version, sections: (.sections | keys)}' bundle.json
+```
+
+```json
+{ "format": "lyeve-config", "version": 2, "sections": ["flows", "permissions", "schemas", "settings", "webhooks"] }
+```
+
+</div>
+</div>
+
+**2. Compare the file with the instance.**
+
+<div class="paths">
+<div data-path="console">
+
+1. Under **Apply a bundle**, choose the file in **Bundle file**. The page shows the file,
+   where it was exported from, when, and which sections it holds.
+2. Enter the same **Passphrase**.
+3. Choose **Compare**.
+
+</div>
+<div data-path="api">
+
+Wrap the file in a compare request:
+
+```bash
+jq -n --slurpfile b bundle.json \
+  '{passphrase: "a long passphrase from your secret store", bundle: $b[0]}' > plan.json
+curl -X POST http://localhost:3001/api/admin/config-sync/diff \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @plan.json
+```
+
+The answer lists every section, with `"changes": 0` and `"problems": 0`.
+
+</div>
+</div>
+
+The instance already matches its own export, so nothing changes. In the console, the plan
+under **What applying does** lists each section with how many items it creates, updates,
+deletes and leaves unchanged, and a row for each item that changes, with the fields an update
+touches. A problem stops the apply, and the plan names the item.
 
 ![The Apply a bundle form with a bundle file loaded and its passphrase entered, above the plan under What applying does, which says this instance already matches the bundle and lists each section as unchanged.](images/promote-configuration.png)
 
-The plan, under **What applying does**, lists each section with how many items
-it creates, updates, deletes and leaves unchanged, and a row for each item that
-changes, with the fields an update touches. A problem stops the apply, and the
-page names the item and, when a license limit is the cause, the feature that
-lifts it. Apply stays off until every problem is fixed.
+**3. Add something the bundle does not name, then compare with prune.** Create a webhook
+called `extra`, as on [Webhooks](webhooks.md), then compare again.
 
-## Try it
+<div class="paths">
+<div data-path="console">
 
-This exports an instance, compares the file with the same instance, and dry
-runs it, so nothing is written. Run it on an install whose license carries
-`config-sync`, signed in as a super admin with the token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one. It uses
-`jq` to build the request bodies.
+Tick **Delete what the bundle does not name** and choose **Compare**. Under **Webhooks**, the
+plan lists `outbound:extra` with the change **Delete**.
 
-1. Export the configuration with a passphrase:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/config-sync/export \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"passphrase": "a long passphrase from your secret store"}' \
-     -o bundle.json
-   jq '{format, version, sections: (.sections | keys)}' bundle.json
-   ```
+```bash
+jq '. + {prune: true}' plan.json > prune.json
+curl -X POST http://localhost:3001/api/admin/config-sync/diff \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @prune.json
+```
 
-   ```json
-   { "format": "lyeve-config", "version": 2, "sections": ["flows", "permissions", "schemas", "settings", "webhooks"] }
-   ```
+The webhooks section lists `{"key": "outbound:extra", "action": "delete"}` and
+`"changes": 1`.
 
-2. Wrap the file in a compare request and compare it with the instance:
+</div>
+</div>
 
-   ```bash
-   jq -n --slurpfile b bundle.json \
-     '{passphrase: "a long passphrase from your secret store", bundle: $b[0]}' > plan.json
-   curl -X POST http://localhost:3001/api/admin/config-sync/diff \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d @plan.json
-   ```
+Without prune the plan lists nothing, because an apply only creates and updates by default.
 
-   The answer lists every section, and `"changes": 0` and `"problems": 0`,
-   because the instance already matches its own export.
+**4. Dry run the apply.**
 
-3. Add something the bundle does not name, such as a webhook called `extra`,
-   then compare with `prune`:
+<div class="paths">
+<div data-path="console">
 
-   ```bash
-   jq '. + {prune: true}' plan.json > prune.json
-   curl -X POST http://localhost:3001/api/admin/config-sync/diff \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d @prune.json
-   ```
+Untick **Delete what the bundle does not name**, which is still ticked from step 3, and choose
+**Dry run**. The page shows **Dry run: what applying would do** and **Nothing was written.**,
+with the plan from step 2.
 
-   The webhooks section lists `{"key": "outbound:extra", "action": "delete"}`
-   and `"changes": 1`. Without `prune` it lists nothing, because an apply only
-   creates and updates by default.
+</div>
+<div data-path="api">
 
-4. Dry run the apply:
+```bash
+jq '. + {dry_run: true}' plan.json > dry.json
+curl -X POST http://localhost:3001/api/admin/config-sync/apply \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @dry.json
+```
 
-   ```bash
-   jq '. + {dry_run: true}' plan.json > dry.json
-   curl -X POST http://localhost:3001/api/admin/config-sync/apply \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d @dry.json
-   ```
+The answer carries the plan with `"applied": false` and `"dry_run": true`. Nothing was
+written.
 
-   The answer carries the plan with `"applied": false` and `"dry_run": true`.
-   Nothing was written.
+</div>
+</div>
+
+**5. Delete the webhook `extra`.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Delivery > Webhooks**, choose the delete button on the `extra` row, and confirm
+**Delete** in **Delete webhook extra**.
+
+</div>
+<div data-path="api">
+
+`GET /api/admin/webhooks` lists the webhooks. Copy the `id` of `extra` into `WEBHOOK_ID`,
+then:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/webhooks/$WEBHOOK_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
+
+## Apply a bundle
+
+On the target instance, compare the bundle first, then apply it.
+
+<div class="paths">
+<div data-path="console">
+
+1. Under **Apply a bundle**, choose the **Bundle file** and enter its **Passphrase**.
+2. Tick **Delete what the bundle does not name** if the target should lose what only it
+   holds. See [Deleting what the bundle does not name](#deleting-what-the-bundle-does-not-name).
+3. Choose **Apply**, then **Apply** again in **Apply this bundle?** to confirm.
+
+The page says **Applied. This instance now matches the bundle.**
+
+</div>
+<div data-path="api">
+
+Send the compare request to the apply route, with `prune` if the target should lose what only
+it holds:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/config-sync/apply \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @prune.json
+```
+
+The answer has `"applied": true`, the plan, and the sections it wrote.
+
+</div>
+</div>
 
 ## What a bundle carries
 

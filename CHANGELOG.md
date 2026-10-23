@@ -4,6 +4,42 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.6.0] - 2026-10-23
+
+### Added
+
+- Every page that shows a task offers two ways to follow it: in the admin console or with the engine's API. The site shows them as two tabs labeled with the releases the steps describe, admin console v0.21.0 and engine v0.55.0, and a task only one of them can do says which. Every step on both paths was run against those releases, the licensed parts on a licensed install.
+- `versions.json` at the root names the engine and console releases the pages describe, and the contributing guide says how to write a task with both paths.
+- The AI page shows how to suggest alt text for an image, from the media drawer or with the API.
+- The paid parts of free pages offer the console steps beside the API calls too, run on a licensed install: among them a review stage that needs two approvals, a provider for any HTTP mail API, tenant captcha settings, and a webhook's retries and dead letters.
+
+### Changed
+
+- The deploy and configuration pages say that a restart ends every session once its access token expires, unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis. A volume that keeps the signing key is not enough on its own.
+- The realtime page no longer offers a browser example for server-sent events, which the engine refuses from the instance's own address. A browser uses the WebSocket, and a server uses the event stream.
+- The CI gate in the guide to schema and flows as code signs in from stored secrets, because the plan route takes no API key and a session token lasts 15 minutes.
+
+### Fixed
+
+- The search page says a snippet is HTML with its text escaped and each match in mark tags, and every other field of a hit is plain text.
+- The data export page says to keep names and email addresses out of an export's S3 key, which outlives an erasure.
+- Getting started: setup asks for the password twice, the console does not fill in a content type's machine name, and only the API turns on drafts and publishing.
+- An MFA code cannot be used twice at sign-in, the example password meets the default policy, and a new sign-in provider starts with Enabled on in the console.
+- The custom API guide publishes its flow from a tenant account, because the first administrator belongs to no tenant and its flow stopped at the first content read.
+- The download of an export sent to S3, the tenant the quota lists show, the units of the quota form and how public search types are chosen are corrected.
+- A SAML sign-in through a form post completes, a directory sending the SCIM media type is accepted, a streamed audit entry can take about 30 seconds, and the audit log example filters on an action that is recorded.
+- The security controls page names the events the audit trail records on engine v0.55.0 and the account and sign-in events it does not.
+- Deleting a tenant removes its media records and leaves the stored files in the storage backend. A capability name cannot be withheld from a tenant, and a move between tenants needs the content types in place first.
+- A tenant with no API key reads its usage, a legal hold keeps an audit prune from removing the entries it covers, and the object storage page names the headers a direct upload must send.
+- Saved firewall settings survive a restart, the firewall skips the `sql` field of a backup validate or import, and two content types that refer to each other import in one apply.
+- Slow query analysis lists requests with no tenant and shows the statements with the highest average time since the statistics were last reset, and installing the PostgreSQL extension needs a restart.
+- The AI settings sit under Settings > Configuration, the common gRPC command line client cannot call the content services, a NATS server without TLS needs `NATS_TLS=false`, and on engine v0.55.0 a broker message carries the zero time.
+- The event replay prune names the tenant, because a super admin's prune that names none clears every tenant's events.
+- The two-factor page no longer says a passkey can finish a password sign-in. A password sign-in asks for an authenticator code, so an account whose only factor is a passkey cannot sign in to the console, and the page says to add an authenticator app first.
+- A webhook update replaces the whole webhook, so a field left out is cleared, and a retry policy set with the API wins over the webhook's own retry numbers.
+- On a review stage that needs several approvals, only an assignee may approve.
+- The console's New user form keeps editor ticked beside any role you tick, so the pages that create an account with another role say to untick it.
+
 ## [0.5.0] - 2026-10-20
 
 ### Added
