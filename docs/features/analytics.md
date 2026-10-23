@@ -55,68 +55,116 @@ button on a row changes it. A destination that is off is kept and receives
 nothing. **Deliveries owed** lists the events a destination refused, narrowed
 by **All**, **Retrying** or **Failed**.
 
-![The Analytics destinations page with one Google Analytics 4 destination named main-ga4, switched off, with one attempt per event and nothing owed.](images/analytics.png)
-
-The daily figures have no page in the console, so you work with them through
-the API below.
+The daily figures, sending and listing events, the usage across tenants and
+the privacy routes have no page in the console, so they are API only on
+v0.21.0.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
+For the console steps, you are signed in to the admin console as an admin. For the API
+steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Send an event of your own:
+**1. Send an event of your own.** This is API only on v0.21.0.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/analytics/events \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"event_name": "checkout_started", "event_category": "store", "properties": {"cart_value": 49}}'
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/analytics/events \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"event_name": "checkout_started", "event_category": "store", "properties": {"cart_value": 49}}'
+```
 
-   The answer is `201`:
+The answer is `201`:
 
-   ```json
-   { "id": "7c9fbec4-d3b2-4d06-aa63-2ee70f026940", "tenant_id": "default", "event_name": "checkout_started", "event_category": "store", "properties": { "cart_value": 49 }, "provider_types": null, "processed": false, "created_at": "2026-10-01T09:08:51Z" }
-   ```
+```json
+{ "id": "7c9fbec4-d3b2-4d06-aa63-2ee70f026940", "tenant_id": "default", "event_name": "checkout_started", "event_category": "store", "properties": { "cart_value": 49 }, "provider_types": null, "processed": false, "created_at": "2026-10-01T09:08:51Z" }
+```
 
-2. List the events in that category:
+**2. List the events in that category.** This is API only on v0.21.0.
 
-   ```bash
-   curl "http://localhost:3001/api/admin/analytics/events?category=store&limit=10" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl "http://localhost:3001/api/admin/analytics/events?category=store&limit=10" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   The answer is `{"data": [...], "total_count": n, "limit": 10, "offset": 0}`.
+The answer is `{"data": [...], "total_count": n, "limit": 10, "offset": 0}`.
 
-3. Connect a service. It stays off until `enabled` is `true`:
+**3. Connect a service, switched off for now.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/analytics/providers \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "main-ga4", "type": "ga4", "enabled": false, "config": {"measurement_id": "G-XXXXXXX", "api_secret": "<secret>"}}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201` with the saved connection. Its `config` comes back as
-   `{"redacted": true}`, so a secret is never returned. Saving a connection
-   needs `ENCRYPTION_KEY`, because its secrets are encrypted at rest. Without
-   it the answer is `503` with the code `analytics.secrets_unavailable`.
+1. Open **Insight > Analytics destinations** and choose **New destination**.
+2. Enter `main-ga4` in **Name** and keep **Google Analytics 4** as the **Type**.
+3. Turn **On** off. It starts on, and an off destination is kept and receives nothing.
+4. Under **Settings**, fill in **Measurement id** and **API secret**, then choose **Create**.
 
-4. List your connections:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/analytics/providers \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+```bash
+curl -X POST http://localhost:3001/api/admin/analytics/providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "main-ga4", "type": "ga4", "enabled": false, "config": {"measurement_id": "G-XXXXXXX", "api_secret": "<secret>"}}'
+```
 
-   The answer is `{"data": [...], "licensed": false}`. Each connection in
-   `data` carries its `id`, `name`, `type`, `enabled`, the redacted `config`
-   and its `retry_policy`. `licensed` says whether this install may use the
-   paid options below.
+The answer is `201` with the saved connection. Its `config` comes back as
+`{"redacted": true}`, so a secret is never returned.
 
-5. Remove it again with `DELETE /api/admin/analytics/providers/{id}`, which
-   answers `204`.
+</div>
+</div>
+
+Saving a connection needs `ENCRYPTION_KEY`, because its secrets are encrypted at rest.
+Without it the answer is `503` with the code `analytics.secrets_unavailable`.
+
+**4. List your connections.**
+
+<div class="paths">
+<div data-path="console">
+
+**Destinations** lists `main-ga4` with its type, **Off**, and **One attempt** under
+**Retries**. **Deliveries owed** reads **Nothing is owed**.
+
+![The Analytics destinations page with one Google Analytics 4 destination named main-ga4, switched off, with one attempt per event and nothing owed.](images/analytics.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/analytics/providers \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `{"data": [...], "licensed": false}`. Each connection in `data` carries its
+`id`, `name`, `type`, `enabled`, the redacted `config` and its `retry_policy`. `licensed`
+says whether this install may use the paid options below.
+
+</div>
+</div>
+
+**5. Remove it again.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Delete** on the `main-ga4` row, then confirm. The dialog says events stop going to
+it and its queued deliveries go with it, and the page confirms **Deleted main-ga4**.
+
+</div>
+<div data-path="api">
+
+Copy the connection's `id` from step 4 into `PROVIDER_ID`, then:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/analytics/providers/$PROVIDER_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 ## Compute daily figures
 
@@ -222,24 +270,60 @@ are not deleted.
 ## Retry and replay failed deliveries
 
 Without `analytics-pro`, each event gets one attempt per service. With it, a
-connection takes a retry policy:
+connection takes a retry policy. `max_attempts` counts the first attempt and goes
+from 1 to 10. The first retry waits `backoff_seconds`, from 1 to 3600, and each
+later one waits twice as long as the one before, up to an hour.
+
+**Give a connection retries.**
+
+<div class="paths">
+<div data-path="console">
+
+On **Insight > Analytics destinations**, choose the edit button on the destination's row.
+Stored settings are never shown, so fill in its **Settings** again. Under **Retries**, set
+**Attempts** to `5` and **First retry after, seconds** to `30`, then choose **Save**. The row
+then reads **5 attempts, first retry after 30s**.
+
+</div>
+<div data-path="api">
+
+Send the policy with `PUT /api/admin/analytics/providers/{id}`, or on the create:
 
 ```json
 {"retry_policy": {"max_attempts": 5, "backoff_seconds": 30}}
 ```
 
-`max_attempts` counts the first attempt and goes from 1 to 10. The first retry
-waits `backoff_seconds`, from 1 to 3600, and each later one waits twice as long
-as the one before, up to an hour. A delivery that runs out of attempts stays
-in the list as `failed` until you replay it:
+</div>
+</div>
+
+A delivery that runs out of attempts stays in the list as `failed` until you
+replay it.
+
+**Replay a failed delivery.** A replay sends once, now.
+
+<div class="paths">
+<div data-path="console">
+
+Under **Deliveries owed**, choose **Failed**, then **Send this delivery again** on the
+delivery's row. The page confirms **Delivered** when the service accepts it, and the
+delivery leaves the list.
+
+</div>
+<div data-path="api">
+
+Copy the delivery's `id` from `GET /api/admin/analytics/deliveries?status=failed` into
+`DELIVERY_ID`, then:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/analytics/deliveries/$DELIVERY_ID/replay \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-The answer is `{"delivered": true}`, or `false` with the delivery as it stands
-after the new failure. A replay sends once, now.
+The answer is `{"delivered": true}`, or `false` with the delivery as it stands after the
+new failure, its `attempts` one higher.
+
+</div>
+</div>
 
 Without `analytics-pro`, creating a PostHog, Amplitude or webhook connection,
 setting a retry policy and replaying answer `402` naming

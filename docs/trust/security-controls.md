@@ -8,8 +8,10 @@ sidebar:
 This page answers the security section of a vendor questionnaire. Each control
 is stated as the route, header or setting a reviewer can check against a running
 install with a `super_admin` token, and each section ends with how to check it.
-Where a control does not exist, the page says so, and the last section lists
-what is not built. Configuration lives on each feature's page.
+Where the admin console shows the same, the page gives both paths, and the
+console steps assume you are signed in as a super admin. Where a control does
+not exist, the page says so, and the last section lists what is not built.
+Configuration lives on each feature's page.
 
 | Control | Requires |
 |---|---|
@@ -34,10 +36,26 @@ security control at startup and logs the result. This route returns the same
 report evaluated live, so a control turned on by a license change after startup
 shows without a restart.
 
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Security**. The top row counts the controls that are **Enforcing**,
+**Not enforcing**, **Not configured** and **Not active**. Below it, each control has a card
+with its state, what it protects against and the engine's own detail line. A card that is not
+enforcing says **To turn it on** and what to do.
+
+</div>
+<div data-path="api">
+
 ```bash
-curl https://cms.example.com/api/admin/security/controls \
+curl http://localhost:3001/api/admin/security/controls \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+</div>
+</div>
+
+The answer, which the console reads:
 
 ```json
 {
@@ -50,12 +68,12 @@ curl https://cms.example.com/api/admin/security/controls \
 }
 ```
 
-| Status | Meaning |
-|---|---|
-| `PASS` | Included, configured and enforcing |
-| `WARN` | Included but not configured |
-| `FAIL` | Configured but not enforcing |
-| `SKIP` | Included but not running, for example without a license |
+| Status | Console | Meaning |
+|---|---|---|
+| `PASS` | **Enforcing** | Included, configured and enforcing |
+| `WARN` | **Not configured** | Included but not configured |
+| `FAIL` | **Not enforcing** | Configured but not enforcing |
+| `SKIP` | **Not active** | Included but not running, for example without a license |
 
 A row other than `PASS` carries `remedy`, the sentence that turns the control
 on. A control the server does not include has no row. The controls reported are
@@ -95,13 +113,17 @@ What is recorded includes:
 - schema and schema preset changes
 - API key create, revoke, delete and monthly limit changes
 - admin token changes
-- user, tenant and domain changes
+- tenant creation and deletion, and new domain mappings
 - sign-in factor changes: TOTP and passkey enrollment and removal, backup codes,
   an administrator's MFA reset (`mfa.admin.reset`)
 - password reset requests and completions
 - rate-limit and WAF rule changes
 - data export jobs
 - subject export and erasure
+
+Not recorded on v0.55.0: creating or deleting an account, changing its roles,
+setting its password, granting a tenant membership, a password or SAML sign-in,
+archiving a tenant and withholding a tenant's features.
 
 How entries change or leave, so a reviewer knows what the chain can and cannot
 show:
@@ -131,8 +153,11 @@ show:
 
 </details>
 
+In the console, **Insight > Audit log** lists the entries, filters them and
+exports them as JSON. Checking the chain is API only on v0.21.0.
+
 **Check it:** call `GET /api/admin/audit-log/verify` as a super admin and expect
-`"valid": true`. The list route returns `chain_hash` per entry, but not the
+`"valid": true`, with `"broken": 0` and an empty `broken_sequences`. The list route returns `chain_hash` per entry, but not the
 before and after state the hash covers, so the chain cannot be recomputed
 outside the server. See [Audit log](../features/audit-log.md#verify-the-chain).
 
@@ -175,7 +200,9 @@ the old key. SCIM provisioning tokens do rotate in place
 
 </details>
 
-**Check it:** create a key, use it once, and read `GET /api/admin/api-keys/{id}/audit`.
+**Check it:** create a key on **Access > API keys** or with `POST /api/admin/api-keys`, use
+it once, and read `GET /api/admin/api-keys/{id}/audit`. Each use is a row with its method,
+path, status and address. A key's history is API only on v0.21.0.
 
 ## Rate limits
 
@@ -418,4 +445,6 @@ An install that reaches its own services over Tailscale sets
 - **Recomputing the audit chain yourself.** The list route does not return the
   before and after state the hash covers, so only the verify route can check it.
 - **API key rotation in place.** Create, deploy, revoke.
+- **Account changes in the audit trail.** Account, role, password and membership
+  changes and sign-ins leave no audit entry.
 - **Mandatory MFA per role or tenant.** Enrollment is per user.

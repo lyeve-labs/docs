@@ -8,8 +8,10 @@ sidebar:
 This page answers the data-protection section of a vendor questionnaire. Every
 claim on it is a route or a setting, so a reviewer with a `super_admin` token
 can check each one against a running install. Where a control does not exist,
-the page says so. Each feature page carries the configuration and the full
-request and response shapes.
+the page says so. Where the admin console does the same as a route, the page
+gives both paths, and the console steps assume you are signed in as a super
+admin. Each feature page carries the configuration and the full request and
+response shapes.
 
 | Control | Requires |
 |---|---|
@@ -44,14 +46,26 @@ such. [Tenants](../features/tenants.md) explains how a request picks its tenant.
 ## Subject access: export
 
 `POST /api/admin/gdpr/export`, `super_admin`, rate limited per client address.
-In the admin console a super admin uses **Settings > Privacy requests**.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Privacy requests**. Under **Export subject data**, enter the address or user
+id in **Subject (email or ID)** and choose **Export**. The page counts what it found, such as
+**1 record from 1 of 4 plugins**, shows the bundle and offers **Download JSON**.
+
+</div>
+<div data-path="api">
 
 ```bash
-curl -X POST https://cms.example.com/api/admin/gdpr/export \
+curl -X POST http://localhost:3001/api/admin/gdpr/export \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"identifier": "person@example.com"}'
 ```
+
+</div>
+</div>
 
 `identifier` is an email address or a user id, 1 to 320 characters, with no
 control characters. Every feature that stores personal data contributes its
@@ -69,8 +83,9 @@ section, and the response merges them:
 On a multi-tenant install, `{"identifier": "...", "all_tenants": true}` sweeps
 every tenant. The result comes back keyed per tenant under `tenants` and lists
 `matched_tenants`. It is never merged flat, because the same address can name two
-different people in two tenants. On a single-tenant install the sweep reaches no
-tenant (its `scope` says `tenants_covered: 0`), so ask without the flag there.
+different people in two tenants. On a single-tenant install the sweep reaches the
+`default` tenant alone, and `scope` says `tenants_covered: 1`. The sweep is API
+only on v0.21.0: the console asks of your own tenant.
 
 The export is never masked (see [Masking](#masking)), so the bundle carries the
 subject's data as a subject access request requires.
@@ -81,6 +96,31 @@ subject's data as a subject access request requires.
 ## Right to erasure
 
 `POST /api/admin/gdpr/erase`, `super_admin`, rate limited, same body as export.
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > Privacy requests**, under **Erase subject data**, enter the subject in
+**Subject** and again in **Type the subject again to confirm**. **Erase permanently** stays
+unavailable until the two match. The result reads **Erasure complete** with the number of rows
+erased, and clears itself after a few seconds.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/gdpr/erase \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"identifier": "person@example.com"}'
+```
+
+```json
+{ "identifier": "person@example.com", "total_rows": 4, "errors": null }
+```
+
+</div>
+</div>
 
 Every feature that contributes to an export also erases. Erasure removes or
 anonymizes the subject's rows in each of them and answers:
@@ -96,7 +136,8 @@ An erasure by address reaches every account that address names, in every
 tenant. That includes accounts a tenant's identity provider, SCIM directory or
 magic link sign-up created, and what sign-in keeps about them: the SCIM
 directory record, with its external id and stored attributes, and the OAuth
-provider links.
+provider links. The account row itself stays, with its address replaced by
+`erased-<user id>@localhost` and its roles cleared.
 
 Erasure checks legal holds before it touches a row. A hold that cannot be
 checked is not treated as no hold: the server answers `503` with
@@ -123,7 +164,8 @@ admin reading every tenant's log sees it, never a tenant's admins. The entry nam
 the identifier, so the log proves the request happened without keeping who it
 was about: `sha256:` followed by the hex SHA-256 of the identifier exactly as
 the request sent it. To find the entry for a subject later, compute the digest
-and filter the audit log by it:
+and filter the audit log by it. This lookup is API only on v0.21.0, because the
+console's audit log search reads a resource id only when it is a UUID:
 
 ```bash
 printf '%s' 'ada@example.com' | sha256sum
@@ -148,10 +190,11 @@ Holds are part of the [Audit log](../features/audit-log.md).
 | `DELETE` | `/api/admin/legal-holds/{id}` | super_admin |
 
 A hold has a required `name`, a `description`, and filters: `filter_action`,
-`filter_resource_type`, `filter_resource_id`, `filter_actor` (a user id),
-`filter_from` and `filter_to`. A hold has no expiry. It stays in force until it
-is released. A released hold is kept for 30 days, so the record that it existed
-outlives it, and retention enforcement keeps honoring it for those 30 days.
+`filter_resource_type`, `filter_resource_id`, `filter_actor` (a user id, which
+must be a UUID), `filter_from` and `filter_to`. A hold has no expiry. It stays
+in force until it is released. A released hold is kept for 30 days, so the
+record that it existed outlives it, and retention enforcement keeps honoring it
+for those 30 days.
 
 Two things check holds:
 
@@ -160,12 +203,48 @@ Two things check holds:
   `filter_resource_id` or `filter_actor` equals the subject identifier, and
   refuses to erase while one exists.
 
+**Place a hold and release it.**
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Audit log** and choose **Retention and holds**.
+2. Choose **New hold**. Enter a **Name** and **Why it was raised**, and narrow it with
+   **Action**, **Resource type**, **Resource id** or **Tenant**. Leaving every filter empty
+   holds the entire audit log. The form has no actor or date filters, which the API takes.
+3. Choose **Create**. The hold is listed under **Legal holds**.
+4. To release it, choose **Release** on its row, then **Release** in the dialog. The page
+   confirms **Released** with the hold's name.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/legal-holds \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Supplier dispute", "description": "Keep what touches this customer", "filter_resource_id": "person@example.com"}'
+```
+
+The answer is `201` with the hold. With [masking](#masking) on, it shows the address as
+`[redacted-email]`, and so does the list. Copy its `id` into `HOLD_ID`. Release it with
+`DELETE /api/admin/legal-holds/$HOLD_ID`, which answers `204`.
+
+</div>
+</div>
+
+While the hold stands, an erasure of `person@example.com` erases nothing. The API answers
+`200` with `"total_rows": 0` and the hold under `holds`. The console reads **Erasure held**,
+names the hold and says to release it first. A user's own erasure on the Content API,
+under a hold whose `filter_actor` is their user id, answers `409`.
+
 A hold does not stop `POST /api/admin/audit-log/prune`, which a super admin can
 run by date.
 
 `POST /api/admin/retention/compliance-export` (super_admin) with
 `{"legal_hold_id": "...", "format": "json"}` (or `csv`) returns the entries a
-hold preserves, for disclosure to a court or a regulator.
+hold preserves, for disclosure to a court or a regulator. It is API only on
+v0.21.0.
 
 ## Retention
 
@@ -183,10 +262,48 @@ Audit-log retention is a policy per `event_type` and `resource_type`:
 
 `retention_days` is the window, 365 when omitted. With `archival_enabled` the
 expired entries are written to the configured storage before they are deleted,
-and an archive failure keeps the rows. The `enforce` route applies the policies
-of the caller's tenant and reports per policy `entries_archived`,
-`entries_deleted` and any `archive_error`. The body `{"cleanup_only": true}`
-deletes without archiving.
+and an archive failure keeps the rows.
+
+**Set a policy and enforce it now.**
+
+<div class="paths">
+<div data-path="console">
+
+1. Open **Insight > Audit log** and choose **Retention and holds**.
+2. Choose **New policy**. Enter the **Event type** and **Resource type** it covers, or leave
+   either empty to cover every one, and the window in **Keep for, in days**.
+3. **Archive before deleting** starts on. Name the storage backend in **Archive to**, or turn
+   the switch off to delete outright. The form refuses to save with archival on and no
+   backend named.
+4. Choose **Create**. The page confirms **Policy created**.
+5. Choose **Enforce now**, then **Delete them** in the dialog. The page reports how many
+   policies ran and how many entries were deleted.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/retention-policies \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "content.update", "resource_type": "content", "retention_days": 30}'
+```
+
+The answer is `201` with the policy, `"archival_enabled": false` unless you send it. Then
+enforce the policies at once:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/retention/enforce \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -d '{}'
+```
+
+</div>
+</div>
+
+The `enforce` route applies the policies of the caller's tenant and reports per
+policy `entries_archived`, `entries_deleted` and any `archive_error`. The body
+`{"cleanup_only": true}` deletes without archiving.
 
 A scheduled pass enforces the policies of every tenant that holds one, once at
 start and then every 24 hours, or every `RETENTION_ENFORCE_INTERVAL` when set.
@@ -214,12 +331,49 @@ tenant with no assignment passes. When the tenant's region cannot be read, the
 write is refused with `503` rather than allowed. Residency decides where a
 tenant's writes may land. It does not look at where a client connects from.
 
-`GET /api/admin/residency/report` lists every region, every tenant's assignment
-and a summary with `unassigned_count`, which is the number a reviewer wants at
-zero.
+**Define a region and read the report.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Data residency** and choose **New region**. Fill in **Slug**, such as
+`eu-central`, **Name** and **Runs on**, such as `aws`, then choose **Create**. The report at
+the top counts **Regions**, **Tenants**, **Replicated** and **Not placed**, and lists each
+tenant with its region. Placing a tenant in a region is API only on v0.21.0.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/regions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"slug": "eu-central", "display_name": "EU Central (Frankfurt)", "provider": "aws"}'
+```
+
+The answer is `201` with the region. Copy its `id` into `REGION`, and the tenant's id from
+`GET /api/admin/tenants` into `TENANT`. Then place the tenant:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/tenants/$TENANT/region \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"region_id\": \"$REGION\"}"
+```
+
+The answer is `200` with the tenant's `region_slug`. Read the report with
+`GET /api/admin/residency/report`.
+
+</div>
+</div>
+
+The report lists every region, every tenant's assignment and a summary with
+`unassigned_count`, which the console shows as **Not placed** and which a
+reviewer wants at zero.
 
 **Check it:** on an engine started with `INSTANCE_REGION`, write as a tenant
-assigned to a different region and expect the `421`. The security report's
+assigned to a different region and expect the `421`. Each write's answer also
+carries `X-CMS-Region` with the engine's own region. The security report's
 `data-residency` row reads `PASS` and names the region once the engine checks
 writes.
 
@@ -253,11 +407,29 @@ personal data to a signed-in caller, kept for `PII_MASK_RETENTION_DAYS`.
 
 Masking is a safety net. Roles, access rules and tenant scoping decide who may
 read a record, and masking catches what those let through into a log or a
-response.
+response. In the console, **Settings > PII masking** lists the built-in rules
+in the order they run, the tenant's own rules and the count of unmasked reads.
+[PII masking](../features/pii-masking.md) adds a rule both ways.
 
-**Check it:** `GET /api/admin/security/controls` shows the `pii-mask` row as
-`PASS` when masking is active. Then read any entry whose text holds an email
-address and see `[redacted-email]`.
+**Check it:**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Security**. The **PII masking** card reads **Enforcing** when masking is
+active.
+
+</div>
+<div data-path="api">
+
+`GET /api/admin/security/controls` shows the `pii-mask` row as `PASS` when masking is
+active.
+
+</div>
+</div>
+
+Then read any entry whose text holds an email address through the Content API
+and see `[redacted-email]` in its place.
 
 ## Tenant deletion
 
@@ -265,6 +437,25 @@ address and see `[redacted-email]`.
 
 `DELETE /api/admin/tenants/{id}`, `super_admin`, signed-in session only. See
 [Tenants](../features/tenants.md).
+
+<div class="paths">
+<div data-path="console">
+
+Open **Operations > Tenants**, choose **Delete** on the tenant's row and confirm in the
+dialog. The page confirms **Deleted** with the tenant's name.
+
+</div>
+<div data-path="api">
+
+Copy the tenant's `id` from `GET /api/admin/tenants` into `TENANT_ID`, then:
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/tenants/$TENANT_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+</div>
+</div>
 
 It is a hard delete, not a flag. Every row carrying the tenant is deleted in one
 transaction, and the request either removes all of it or none of it. The answer
@@ -275,14 +466,16 @@ rules: the delete removes the tenant's media records, not the objects.
 
 `POST /api/admin/tenants/{id}/archive` is the reversible alternative and deletes
 nothing. `POST /api/admin/tenants/{id}/restore` brings an archived tenant back.
+In the console, the tenant's own page has **Archive** and then **Restore**.
 
 ## Is it enforcing?
 
 `GET /api/admin/security/controls`, `super_admin`, reports each control's status
 live: `PASS` (enforcing), `WARN` (included but not configured), `FAIL`
 (configured but not enforcing) or `SKIP`, with a sentence on what turns it on.
-Its controls include `pii-mask` and `data-residency`. See
-[Security Controls](security-controls.md).
+Its controls include `pii-mask` and `data-residency`. In the console,
+**Settings > Security** shows the same report as cards. See
+[Security Controls](security-controls.md#is-it-enforcing).
 
 ## Not yet
 

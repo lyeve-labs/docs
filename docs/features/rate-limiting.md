@@ -66,84 +66,129 @@ and the **Engine limits**, which come from the environment and change only
 there. The edit button on a row changes that limit, and **New rule** adds a
 custom rule. **Right now** lists the callers close to a limit.
 
-![The Rate limits page counting two custom rules, with the global limit turned off at 50 per second and a burst of 100, and the sign-in protections at 5 attempts per address every 15 minutes.](images/rate-limiting.png)
-
 **Tenant controls** opens **Tenant rate limits**. **Set a limit** gives the
 tenant a limit of its own. The **Allow list** and **Deny list** each take
 entries through **New address**. **Refusal history** counts what was refused
 in the **Last hour**, **Last day** or **Last week**.
 
-![Tenant rate limits with no limit of the tenant's own, one allowed and one denied IPv6 range, each with a note, and the refusal history for the last day.](images/rate-limiting-tenant.png)
-
 ## Try it
 
-You need a super admin token in `TOKEN`. The
+For the console steps, you are signed in to the admin console as a super admin. For the API
+steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. See every limit in force:
+**1. See every limit in force.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/rate-limits/overview \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer holds `custom_licensed`, the `global` rule (`"enabled": false`
-   on a fresh install), the `protections` with their current and shipped
-   values, and the `engine` limits on public routes. An admin who is not a
-   super admin sees empty `protections` and `engine` lists.
+Open **Settings > Rate limits**. The **Global limit** row reads **Off** at 50 per second with
+a burst of 100 on a fresh install. **Sign-in and reset protections** lists each protection
+with its current and shipped value, and **Engine limits** the per-route limits on public
+routes.
 
-2. Watch the headers on any call:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -i -X POST http://localhost:3001/api/admin/auth/login \
-     -H "Content-Type: application/json" -d '{}'
-   ```
+```bash
+curl http://localhost:3001/api/admin/rate-limits/overview \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   A limited route answers with `RateLimit-Limit`, `RateLimit-Remaining`,
-   `RateLimit-Reset` and `RateLimit-Policy`, and the same values as
-   `X-RateLimit-*`.
+The answer holds `custom_licensed`, the `global` rule (`"enabled": false` on a fresh
+install), the `protections` with their current and shipped values, and the `engine` limits
+on public routes. An admin who is not a super admin sees empty `protections` and `engine`
+lists.
 
-3. Turn on the global limit:
+</div>
+</div>
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/rate-limits/global \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"rate": 50, "burst": 100, "enabled": true}'
-   ```
+**2. Watch the headers on any call.** This is a plain request, the same whichever path you
+follow:
 
-   The answer is the global rule with `"enforced": true`. Only a super admin
-   may do this.
+```bash
+curl -i -X POST http://localhost:3001/api/admin/auth/login \
+  -H "Content-Type: application/json" -d '{}'
+```
 
-4. With `rate-limit-pro`, add a rule that holds anonymous readers to 2
-   requests per second:
+A limited route answers with `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`
+and `RateLimit-Policy`, and the same values as `X-RateLimit-*`.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/rate-limits \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"endpoint": "GET /api/v1/*", "rate": 2, "burst": 10, "role": "anonymous"}'
-   ```
+**3. Turn on the global limit.** Only a super admin may do this.
 
-   ```json
-   {
-     "id": "0b9f6c1e-6f43-4c1a-9d0e-2a7c5f3e8b11",
-     "endpoint": "GET /api/v1/*",
-     "rate": 2,
-     "burst": 10,
-     "enabled": true,
-     "kind": "custom",
-     "role": "anonymous",
-     "key_by": "ip",
-     "created_at": "2026-10-01T09:00:00Z",
-     "updated_at": "2026-10-01T09:00:00Z",
-     "enforced": true
-   }
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The answer is `201`. A super admin's rule with no `tenant_id` applies to
-   every tenant, so the answer carries none. Without the license it is `402`
-   with `payment_required`.
+Choose **Edit the global limit**. Keep `50` in **Requests per second** and `100` in
+**Burst**, turn on **Enforce the global limit**, and choose **Save**. The page confirms
+**Saved the global limit**, and the row reads **On**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/rate-limits/global \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"rate": 50, "burst": 100, "enabled": true}'
+```
+
+The answer is the global rule with `"enforced": true`.
+
+</div>
+</div>
+
+**4. With `rate-limit-pro`, hold anonymous readers to 2 requests per second.** Without the
+license the console has no **New rule** button, and the API answers `402` with
+`payment_required`.
+
+<div class="paths">
+<div data-path="console">
+
+1. Choose **New rule**.
+2. Enter `GET /api/v1/*` in **Endpoint**, or choose it under **Pick a route**. Leave
+   **Tenant** empty, and enter `anonymous` in **Role**.
+3. Keep **Per address** under **Count**. Enter `2` in **Requests per second** and `10` in
+   **Burst**, and keep **Enforce this rule** on.
+4. Choose **Create**. The page confirms **Created** with the endpoint, and **Custom rules**
+   lists it for **Signed-out callers, per address**.
+
+![The Rate limits page counting two custom rules, with the global limit turned off at 50 per second and a burst of 100, and the sign-in protections at 5 attempts per address every 15 minutes.](images/rate-limiting.png)
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/rate-limits \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"endpoint": "GET /api/v1/*", "rate": 2, "burst": 10, "role": "anonymous"}'
+```
+
+```json
+{
+  "id": "0b9f6c1e-6f43-4c1a-9d0e-2a7c5f3e8b11",
+  "endpoint": "GET /api/v1/*",
+  "rate": 2,
+  "burst": 10,
+  "enabled": true,
+  "kind": "custom",
+  "role": "anonymous",
+  "key_by": "ip",
+  "created_at": "2026-10-01T09:00:00Z",
+  "updated_at": "2026-10-01T09:00:00Z",
+  "enforced": true
+}
+```
+
+The answer is `201`. A super admin's rule with no `tenant_id` applies to every tenant, so
+the answer carries none.
+
+</div>
+</div>
+
+An anonymous client that sends more than ten requests at once to a Content API route then
+gets `429` until its allowance refills.
 
 ## The sign-in protections
 
@@ -172,10 +217,35 @@ Other features add their own protections:
 | `mfa.verify` | 5 per 5 minutes | Code checks per user |
 | `mfa.setup` | 3 per hour | Authenticator setups per user |
 
-With `rate-limit-pro`, a super admin changes a protection with
-`PUT /api/admin/rate-limits/protections` and a body of `name`, `requests`
-(1 to 100000) and `window_seconds` (1 to 86400).
-`POST /api/admin/rate-limits/protections/reset` with `name` puts it back.
+With `rate-limit-pro`, a super admin changes a protection and can put it back
+to its shipped value. Putting it back needs no license.
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Settings > Rate limits**, choose **Edit password-reset.email**.
+2. Enter `2` in **Requests** and keep `5` in **Window in minutes**, then choose **Save**.
+   The page confirms **Saved the protection**, and the row reads **Changed** beside the
+   shipped 1 per 5 minutes.
+3. To put it back, choose **Reset password-reset.email to its shipped value**, then
+   **Reset** in the dialog.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/rate-limits/protections \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "password-reset.email", "requests": 2, "window_seconds": 300}'
+```
+
+`requests` is 1 to 100000 and `window_seconds` 1 to 86400. The answer is `204`.
+`POST /api/admin/rate-limits/protections/reset` with `{"name": "password-reset.email"}`
+puts it back.
+
+</div>
+</div>
 
 ## Write a custom rule
 
@@ -193,7 +263,19 @@ A change to a rule reaches every replica within about ten seconds.
 
 ## Give a tenant its own limit
 
-With `rate-limit-pro`, each tenant can set one global limit of its own:
+With `rate-limit-pro`, each tenant can set one global limit of its own.
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Settings > Rate limits**, choose **Tenant controls**.
+2. On **Tenant rate limits**, choose **Set a limit**.
+3. Enter `20` in **Rate, requests per second** and `40` in **Burst**, keep
+   **Enforce this limit** on, and choose **Save**. The page confirms
+   **Saved the tenant limit**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/rate-limits/tenant-global \
@@ -201,6 +283,9 @@ curl -X PUT http://localhost:3001/api/admin/rate-limits/tenant-global \
   -H "Content-Type: application/json" \
   -d '{"rate": 20, "burst": 40, "enabled": true}'
 ```
+
+</div>
+</div>
 
 The tenant limit applies beside the install-wide global limit, and a request
 has to pass both, so the stricter one always wins. An install-wide limit that
@@ -221,7 +306,7 @@ general public limit: 50 requests a second per address with a burst of 100,
 set by `PUBLIC_RATE_LIMIT_GLOBAL`.
 
 With `rate-limit-pro`, a super admin gives one of those routes a limit of its
-own, higher or lower than the general one:
+own, higher or lower than the general one. This is API only on v0.21.0:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/rate-limits/public-routes \
@@ -247,7 +332,20 @@ license. A stored limit keeps applying if the license lapses.
 ## Block or allow addresses
 
 With `rate-limit-pro`, each tenant keeps allow and deny entries, each an
-address or a CIDR range, up to 500 per tenant:
+address or a CIDR range, up to 500 per tenant.
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Tenant rate limits**, choose **New address**.
+2. Choose **Deny** under **List**, enter `203.0.113.0/24` in **Address or range** and
+   `scraper` in **Note**.
+3. Choose **Create**. The page confirms **Added 203.0.113.0/24 to the deny list**.
+
+![Tenant rate limits with no limit of the tenant's own, one allowed and one denied IPv6 range, each with a note, and the refusal history for the last day.](images/rate-limiting-tenant.png)
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/rate-limits/ip-rules \
@@ -256,13 +354,19 @@ curl -X POST http://localhost:3001/api/admin/rate-limits/ip-rules \
   -d '{"cidr": "203.0.113.0/24", "list": "deny", "note": "scraper"}'
 ```
 
+The answer is `201` with the entry.
+
+</div>
+</div>
+
 - A deny entry answers `403` with `requests from this address are not allowed`
   to the tenant's requests from that range, except a super admin's.
 - An allow entry wins over a deny entry. It also exempts the address from the
   tenant's own rules and its tenant limit, never from the install-wide global
   limit or the sign-in protections.
 - An entry that would deny the address you are calling from answers `409`, so
-  you cannot lock yourself out.
+  you cannot lock yourself out. A super admin's entry is saved anyway, because
+  a deny entry never refuses a super admin.
 
 The three `409` refusals carry a `code` beside the message, as
 `{"error": "...", "code": "rate_limit.self_lockout"}`, so a client can tell
@@ -281,12 +385,24 @@ refusal a tenant's request meets is counted under that tenant, whichever limit
 refused it: its own rules and address entries, the sign-in protections, and
 the install-wide global limit as kind `global`. The limit shared through Redis
 is counted as kind `global` with the rule id `shared`. Reading
-them needs `rate-limit-pro`:
+them needs `rate-limit-pro`.
+
+<div class="paths">
+<div data-path="console">
+
+On **Tenant rate limits**, **Refusal history** counts what was refused in the
+**Last hour**, **Last day** or **Last week**, with the rule or entry that refused it.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl "http://localhost:3001/api/admin/rate-limits/history?hours=24" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+</div>
+</div>
 
 The answer carries `hours`, `total_refused` and `minutes`, newest first and at
 most 5,000, each with `minute`, `rule_id`, `kind`, `endpoint` and `refused`.
