@@ -45,7 +45,7 @@ the log: without a mail relay the logged link has its token replaced by
 3. Open the link from the email. On **Sign in with your link**, choose
    **Continue** to finish signing in on that device.
 
-![The Sign in with an email link page with an email address entered and the Email me a link button.](images/magic-link-sign-in.png)
+![The Sign in with an email link page with an email address entered, the Organization (optional) field and the Email me a link button.](images/magic-link-sign-in.png)
 
 ## How it works
 
@@ -65,13 +65,29 @@ end:
   links go through it as the tenant's `magic-link` template, whose wording and
   design are yours to change. See
   [required templates](email.md#required-templates). Otherwise set `SMTP_HOST`, `SMTP_PORT` and `SMTP_FROM`,
-  plus `SMTP_USER` and `SMTP_PASS` if your relay needs them.
+  plus `SMTP_USER` and `SMTP_PASS` if your relay needs them. A relay on
+  loopback or a private network also needs `SMTP_ALLOWED_PRIVATE_NETWORKS`.
+  Without it no link is sent, and the log says
+  `SMTP host resolves to a restricted address`. See
+  [send through one relay](email.md#send-through-one-relay).
 - **The console's public address.** Set `LYEVE_CONSOLE_URL` to the address
   people open the admin console at. In production it is required and must use
   `https`, and magic link sign-in refuses to start without it. Outside
   production it defaults to `http://localhost:5173`.
 
 ## Try it
+
+<div class="paths">
+<div data-path="console">
+
+1. On the console's sign-in page, choose **Email me a sign-in link**.
+2. Enter your address in **Email** and choose **Email me a link**. The page
+   says a link is on its way if an account exists for that address.
+3. Open the link from the email. On **Sign in with your link**, choose
+   **Continue**, and the console opens signed in.
+
+</div>
+<div data-path="api">
 
 Both routes are public and need `Content-Type: application/json`.
 
@@ -117,7 +133,20 @@ Both routes are public and need `Content-Type: application/json`.
 4. Redeem the same token again. The answer is `400` with
    `invalid or expired magic link`.
 
+</div>
+</div>
+
 ## Finish a two-factor sign-in
+
+<div class="paths">
+<div data-path="console">
+
+After **Continue**, an account with MFA gets **Two-factor verification**.
+Enter the code from your authenticator app, or a backup code, in
+**Authenticator code** and choose **Verify**.
+
+</div>
+<div data-path="api">
 
 When the account has MFA, the redeem answer is a challenge:
 
@@ -126,10 +155,14 @@ When the account has MFA, the redeem answer is a challenge:
 ```
 
 Finish with `POST /api/admin/auth/mfa-verify` and
-`{"challenge_token": "...", "code": "123456"}`. If the instance cannot tell
-whether the account has a second factor, it answers `503` and issues no
-session. The link is not used up, so the same link works once the check runs
-again.
+`{"challenge_token": "...", "code": "123456"}`.
+
+</div>
+</div>
+
+If the instance cannot tell whether the account has a second factor, it
+answers `503` and issues no session. The link is not used up, so the same link
+works once the check runs again.
 
 ## Let new people sign up with a link
 

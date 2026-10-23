@@ -71,8 +71,16 @@ is refused at SAML sign-in, password reset and magic link from that moment,
 whatever the window says. An account that a magic link sign-up created has no
 provider, so the window does not apply to it.
 
-A tenant admin sets the window in the console under **Settings > Sign-in**, or
-over the API:
+A tenant admin sets the window:
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Sign-in**. Under **Without the identity provider**, enter
+the number in **Days since the last provider sign-in** and choose **Save**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/auth/provider-window \
@@ -84,6 +92,9 @@ curl -X PUT http://localhost:3001/api/admin/auth/provider-window \
 ```json
 { "days": 7 }
 ```
+
+</div>
+</div>
 
 `GET /api/admin/auth/provider-window` answers the same shape. Both routes need
 the `admin` or `super_admin` role and a signed-in session. An API key or an

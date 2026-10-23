@@ -50,7 +50,7 @@ it too, and then has a password it can sign in with, both within the tenant's
 The console checks that the password has at least 12 characters before it
 sends the token, so a password that is too short does not spend the link.
 
-![The Reset your password page with an email address entered and the Email me a reset link button.](images/password-reset.png)
+![The Reset your password page with an email address entered, the Organization (optional) field and the Email me a reset link button.](images/password-reset.png)
 
 ## How it works
 
@@ -67,7 +67,9 @@ Password reset runs on every install. To deliver the email, give the instance
 a mail relay. With the [email](email.md) feature configured, the mail goes
 through it and is the tenant's `password-reset` template, so its wording and
 design are yours to change. See [required templates](email.md#required-templates).
-Otherwise the instance's own SMTP settings are used. Set
+Otherwise the instance's own SMTP settings are used. A relay on loopback or a
+private network also needs `SMTP_ALLOWED_PRIVATE_NETWORKS`, as
+[send through one relay](email.md#send-through-one-relay) explains. Set
 `LYEVE_CONSOLE_URL` to the address people open the console at, such as
 `https://admin.example.com`. In production, password reset refuses to start
 without it.
@@ -77,6 +79,23 @@ The server log records that a token was issued, with only its first eight
 characters.
 
 ## Try it
+
+<div class="paths">
+<div data-path="console">
+
+1. On the console's sign-in page, choose **Forgot password?**.
+2. Enter your address in **Email** and choose **Email me a reset link**. The
+   page says a reset link is on its way if an account exists for that
+   address.
+3. Open the link from the email. On **Choose a new password**, enter `short`
+   in both fields and choose **Save**. The page says **Use at least 12
+   characters.** and keeps the link usable.
+4. Enter `A-new-Password-2026` in **New password** and **Confirm new
+   password**, then choose **Save**. The page says the password changed and
+   asks you to sign in with the new one.
+
+</div>
+<div data-path="api">
 
 Both routes are public and take no `Authorization` header.
 
@@ -111,17 +130,14 @@ Both routes are public and take no `Authorization` header.
    { "error": "Password must be at least 12 characters.", "code": "AUTH_PASSWORD_TOO_SHORT" }
    ```
 
-   The answer is `422`. The new password has to pass the same policy as a new
-   account's: `PASSWORD_MIN_LENGTH`, `PASSWORD_REQUIRE_COMPLEXITY`,
-   `PASSWORD_CHECK_COMMON` and the 72-byte limit. A refusal names the rule in
-   `code`, and the link stays usable for a better password.
+   The answer is `422`.
 
 4. Set the new password:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/auth/password-reset/confirm \
      -H "Content-Type: application/json" \
-     -d '{"token": "<token from the link>", "password": "a-new-password-2026"}'
+     -d '{"token": "<token from the link>", "password": "A-new-Password-2026"}'
    ```
 
    ```json
@@ -130,6 +146,17 @@ Both routes are public and take no `Authorization` header.
 
 5. Send the same token again. The answer is `400` with
    `invalid or expired reset token`, even when two confirms arrive at once.
+
+</div>
+</div>
+
+The new password has to pass the same policy as a new account's:
+`PASSWORD_MIN_LENGTH`, `PASSWORD_REQUIRE_COMPLEXITY`, `PASSWORD_CHECK_COMMON`
+and the 72-byte limit. With the defaults, a password of lower-case letters,
+digits and hyphens alone, such as `a-new-password-2026`, is refused with
+`AUTH_PASSWORD_NEEDS_COMPLEXITY`. A refusal names the rule in `code`, and the
+link stays usable for a better password. The account is now signed out
+everywhere, and the new password signs it in.
 
 ## Settings
 
@@ -188,7 +215,9 @@ Errors answer a JSON body with an `error` message.
 
 - **No email arrives.** Check that `SMTP_HOST` is set, or that the email
   feature is configured, and look in the server log for
-  `failed to send email`.
+  `failed to send email`. A log line with
+  `SMTP host resolves to a restricted address` means the relay is on a private
+  network that `SMTP_ALLOWED_PRIVATE_NETWORKS` does not list.
 - **The link points to the wrong address.** Set `LYEVE_CONSOLE_URL` to the
   console's public URL.
 - **No email arrives for an account an identity provider created.** The

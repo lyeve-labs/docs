@@ -42,14 +42,22 @@ Open **Access > API keys**. A super admin sees every key in the tenant with its
 roles, scopes, status, expiry and **Usage (this month)**. **All**, **Active**
 and **Revoked** narrow the list.
 
-1. Choose **New key**. Give it a **Name**, pick its **Roles**, and choose under
-   **Access** what it may reach on each part of the Content API. The form
-   lists the scopes it will grant.
+1. Choose **New key**. Give it a **Name** and pick its **Roles**, which start
+   with **editor** ticked. Choose under **Access** what it may reach on each
+   part of the Content API. The form lists the scopes it will grant.
 2. Set **Expires** and the **Request limits** if the key needs them, then
    choose **Create**.
 3. Copy the key from **API key created**. It is not shown again.
 
-Each row has buttons to set the key's request limits, revoke it and delete it.
+Under **Access**, **Content** chooses **Every schema** or **Chosen schemas**,
+with read, create, update and delete on each. **Schema catalog** lets the key
+discover the content types. Every other route group your instance opens to
+keys folds out below with its routes, and one whose path names something,
+such as flow endpoints, takes a list of the names the key may call under
+**Only these**.
+
+Each row has a **Request limits** button that changes the key's ceilings
+later, and buttons to revoke it and delete it.
 
 ![Access > API keys listing four keys with their roles, scopes, status and requests this month, one of them revoked.](images/api-keys-list.png)
 
@@ -128,37 +136,58 @@ the Admin API refuses it.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The
-[quickstart](../getting-started/quickstart.md) shows how to get one, and
-creates the `post` content type used here.
+This gives the `viewer` role read access to the `post` content type from the
+[quickstart](../getting-started/quickstart.md), then creates a key with that
+role that may only read content. A key reads only what its roles may read, and
+a key with no role reads nothing. Sign in as a super admin first.
 
-1. Give a role read access to `post`. A key reads only what its roles may
-   read, and a key with no role reads nothing:
+<div class="paths">
+<div data-path="console">
+
+1. Open **Access > Permissions**. If `viewer` has no rule on `post` yet, give
+   it one that ticks **Read**. [Access rules](access-rules.md#try-it) shows
+   the steps.
+2. Open **Access > API keys** and choose **New key**. Enter `website-build` in
+   **Name**. Under **Roles**, untick **editor**, which the form ticks for you,
+   and tick **viewer**.
+3. Leave **Content** on **Every schema** with **Read** ticked. The form also
+   keeps **Discover content types** ticked while content is readable, so the
+   summary reads **2 scopes: content:read, schemas:read**.
+4. Leave **Expires** on **No expiry** and choose **Create**.
+5. Copy the key from **API key created** into `KEY`. It is shown once. Only a
+   hash is kept, so a lost key cannot be recovered.
+
+</div>
+<div data-path="api">
+
+You need a super admin token in `TOKEN`. The quickstart shows how to get one.
+
+1. Give `viewer` read access to `post`:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/permissions \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"role": "site-reader", "schema_name": "post", "actions": ["read"]}'
+     -d '{"role": "viewer", "schema_name": "post", "actions": ["read"]}'
    ```
 
    The answer is `200` with the rule. [Access rules](access-rules.md) covers
    the rest of what a rule holds.
 
-2. Create a key with that role that may only read content:
+2. Create the key:
 
    ```bash
    curl -X POST http://localhost:3001/api/admin/api-keys \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "website-build", "roles": ["site-reader"], "scopes": ["content:read"]}'
+     -d '{"name": "website-build", "roles": ["viewer"], "scopes": ["content:read"]}'
    ```
 
    ```json
    {
      "id": "8c2e4f1a-3b6d-4a9e-b0c7-1d5f2e8a6b94",
      "name": "website-build",
-     "roles": ["site-reader"],
+     "roles": ["viewer"],
      "schemas": [],
      "scopes": ["content:read"],
      "tenant_id": "default",
@@ -171,11 +200,15 @@ creates the `post` content type used here.
    }
    ```
 
-   The answer is `201`. Copy `raw_key` into `KEY` and `id` into `KEY_ID`.
-   `raw_key` is shown once. Only a hash is kept, so a lost key cannot be
-   recovered.
+   The answer is `201`. Copy `raw_key` into `KEY`. `raw_key` is shown once.
+   Only a hash is kept, so a lost key cannot be recovered.
 
-3. Read content with the key:
+</div>
+</div>
+
+Then use the key. The Content API is the same on both paths.
+
+1. Read content with the key:
 
    ```bash
    curl http://localhost:3002/api/v1/content/post \
@@ -183,9 +216,9 @@ creates the `post` content type used here.
    ```
 
    The answer is the list of posts. Reading a content type no rule opens to
-   `site-reader` answers `403` with `permission denied`.
+   `viewer` answers `403` with `permission denied`.
 
-4. Try to write with it:
+2. Try to write with it:
 
    ```bash
    curl -X POST http://localhost:3002/api/v1/content/post \
@@ -198,38 +231,70 @@ creates the `post` content type used here.
    { "error": "insufficient scope" }
    ```
 
-5. See what the key did:
+See how much the key was used this month:
 
-   ```bash
-   curl "http://localhost:3001/api/admin/api-keys/$KEY_ID/audit?limit=10" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   [
-     { "id": "f3bc4e46-...", "api_key_id": "8c2e4f1a-...", "method": "POST", "path": "/api/v1/content/post", "status": 403, "ip": "203.0.113.7", "ts": "2026-10-01T09:31:02Z" },
-     { "id": "fcf64173-...", "api_key_id": "8c2e4f1a-...", "method": "GET", "path": "/api/v1/content/post", "status": 200, "ip": "203.0.113.7", "ts": "2026-10-01T09:31:00Z" }
-   ]
-   ```
+On **Access > API keys**, the key's row shows its requests under **Usage (this
+month)**, such as **2 req**.
 
-6. See this month's usage:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl http://localhost:3001/api/admin/usage/api-key/$KEY_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+Find the key's `id` in the list from `GET /api/admin/api-keys` and keep it in
+`KEY_ID`, then ask:
 
-   The answer holds `billing_period`, `requests`, `bytes_in` and `bytes_out`.
+```bash
+curl http://localhost:3001/api/admin/usage/api-key/$KEY_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-7. Revoke the key:
+The answer holds `billing_period`, `requests`, `bytes_in` and `bytes_out`.
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/api-keys/$KEY_ID/revoke \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+</div>
 
-   The answer is `204`. From then on the key answers `401` with
-   `authentication required`.
+Each request the key made is in its history, which the API serves. The console
+has no view of it on this release. With a super admin token in `TOKEN`, find
+the key's `id` in the list from `GET /api/admin/api-keys`, keep it in
+`KEY_ID`, and ask:
+
+```bash
+curl "http://localhost:3001/api/admin/api-keys/$KEY_ID/audit?limit=10" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+[
+  { "id": "f3bc4e46-...", "api_key_id": "8c2e4f1a-...", "method": "POST", "path": "/api/v1/content/post", "status": 403, "ip": "203.0.113.7", "ts": "2026-10-01T09:31:02Z" },
+  { "id": "fcf64173-...", "api_key_id": "8c2e4f1a-...", "method": "GET", "path": "/api/v1/content/post", "status": 200, "ip": "203.0.113.7", "ts": "2026-10-01T09:31:00Z" }
+]
+```
+
+Revoke the key when you are done:
+
+<div class="paths">
+<div data-path="console">
+
+On **Access > API keys**, choose the revoke button on the key's row. The
+dialog asks **Revoke key website-build?**. Choose **Revoke**. The row's status
+turns to **Revoked**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/api-keys/$KEY_ID/revoke \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
+
+From then on the key answers `401` with `authentication required`.
 
 ## Cap a key's requests
 
@@ -237,7 +302,8 @@ A tenant holds five active keys without `apikey-pro`. A revoked key does not
 count. If a license with `apikey-pro` ends while a tenant holds more than five,
 every key keeps working, and the tenant creates no new one until it is under
 five again. The request history is not shortened when a license ends: the
-console reads the last thirty days, and the rest returns with `apikey-pro`.
+history route reads the last thirty days, and the rest returns with
+`apikey-pro`.
 
 A key can carry an hourly, a daily and a monthly request limit, and past any of
 them the key answers `429` until that window ends. Setting a first limit or
@@ -248,7 +314,24 @@ is free. See [API key request limits](api-key-request-limits.md).
 
 Give it the `editor` role and the scopes for what it writes, and give `editor`
 an access rule that lets it do that on the content type. Only roles you hold
-can be granted, unless you are a super admin:
+can be granted, unless you are a super admin.
+
+<div class="paths">
+<div data-path="console">
+
+1. On **Access > Permissions**, give `editor` a rule on `product` that ticks
+   **Read**, **Create** and **Update**.
+2. On **Access > API keys**, choose **New key** and name it `catalog-import`.
+   Keep **editor** ticked under **Roles**.
+3. Under **Content**, choose **Chosen schemas** and tick **Read product**,
+   **Create product** and **Update product**. The form adds `schemas:read`,
+   and the key's content types become `product` alone.
+4. Choose **Create** and copy the key.
+
+</div>
+<div data-path="api">
+
+Write the rule:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/permissions \
@@ -257,9 +340,14 @@ curl -X POST http://localhost:3001/api/admin/permissions \
   -d '{"role": "editor", "schema_name": "product", "actions": ["read", "create", "update"]}'
 ```
 
+Then send this body to `POST /api/admin/api-keys`:
+
 ```json
 { "name": "catalog-import", "roles": ["editor"], "scopes": ["content.product:read", "content.product:create", "content.product:update"], "schemas": ["product"] }
 ```
+
+</div>
+</div>
 
 A write is checked in this order:
 
@@ -274,16 +362,6 @@ A `schemas` list on the key narrows it further. A key with
 credential` on any other content type, whatever its roles and scopes allow.
 The scopes already hold it there on the routes they gate, and the list holds
 it on every route that reads content.
-
-:::tip[In the admin console]
-**Access > API keys > New key** builds the scopes for you. **Content** chooses
-every schema or a table of schemas, with read, create, update and delete on
-each. **Schema catalog** lets the key discover the content types. Every other
-route group your instance opens to keys folds out below with its routes, and
-one whose path names something, such as flow endpoints, takes a list of the
-names the key may call. **Request limits** sets the hourly, daily and monthly
-ceilings, and the **Request limits** button on a key's row changes them later.
-:::
 
 ## Manage keys
 
