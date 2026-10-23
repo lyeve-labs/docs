@@ -142,7 +142,7 @@ What the less obvious lines do:
 | `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL` | Where the console's server reaches the engine: through the proxy, by its name inside the network |
 | `ADMIN_CONSOLE_KEY` | The same value on both sides. The console signs each call with the browser's address, so sign-in limits count each person rather than the console |
 | `TRUSTED_PROXIES` | The network's address range, which the `networks` block fixes. The engine then believes the client address the proxy passes on |
-| `engine-state` volume | Keeps the engine's signing key. Without it, every restart signs everyone out |
+| `engine-state` volume | Keeps the engine's signing key, so tokens it issued stay valid. Sessions still end at a restart, once each access token expires, because refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, and this stack runs none |
 
 ## 2. Write the secrets
 

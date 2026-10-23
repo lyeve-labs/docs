@@ -198,7 +198,10 @@ Four volumes hold state:
 
 - `db-data` holds the database. Every tenant, entry and user lives here.
 - `engine-state` holds the signing key and the cached license. Lose it and every issued token
-  stops working, so every user signs in again.
+  stops working, so every user signs in again. Keeping it does not keep sessions through a
+  restart: refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and
+  `REDIS_URL` point at a Redis, so after a restart everyone signs in again once their access
+  token expires, 15 minutes by default.
 - `uploads-data` holds uploaded media when storage is on local disk, the default.
 - `caddy-data` holds the proxy's TLS certificates.
 

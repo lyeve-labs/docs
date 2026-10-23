@@ -70,5 +70,7 @@ A `200` with `"status":"ok"` means the engine connected and applied its migratio
 
 - [Database on Neon](database-neon.md): another free managed Postgres.
 - [Free-tier stack](free-tier-overview.md): the $0 recipe with an engine host.
+- [Run the engine and the console together](../getting-started/engine-and-console.md): the admin
+  console in front of the engine, on one address.
 - [Supported databases](index.md#supported-databases): why SQLite, Turso and libSQL are not an
   option.

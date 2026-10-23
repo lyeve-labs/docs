@@ -64,7 +64,9 @@ public key without holding any secret.
 
 Ed25519 is the default (`JWT_ALG=EdDSA`). The instance creates the key pair at
 `JWT_KEY_PATH` on first start and reuses it after, so keep that path on
-persistent storage, or every restart signs everyone out. In production the
+persistent storage, or every restart signs everyone out. The key alone does not
+keep sessions through a restart: refresh tokens live in the engine's memory
+unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis. In production the
 file must be readable by its owner only (`0600`), and a key file the instance
 cannot create stops the start.
 

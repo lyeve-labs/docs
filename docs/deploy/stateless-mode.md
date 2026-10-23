@@ -175,7 +175,8 @@ leaving cron on. `GET /api/admin/flows` shows `fires_on_this_replica` on each cr
 
 ## Read status
 
-With a key holding `admin` or `super_admin`:
+The engine serves no sign-in or setup route in this mode, so admin console v0.21.0 cannot sign
+in. Status is read with the engine API, with a key holding `admin` or `super_admin`:
 
 | Route | What it returns |
 |---|---|
