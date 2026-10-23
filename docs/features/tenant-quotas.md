@@ -59,100 +59,137 @@ A quota is set over a tenant, so a tenant admin reads it and asks for more but
 never changes it. Setting, removing and reviewing are for a super admin, and a
 tenant admin who tries gets `403` even for their own tenant.
 
-## In the admin console
-
-Open **Operations > Quotas and usage** as a super admin. Each quota shows what
-its tenant has used against each limit. **Requests for more** lists the
-increases tenants have asked for, and each one has a button to approve it and
-one to deny it. **New quota** sets a quota on a tenant by its slug, and the edit
-button on a row opens the same form:
-
-- **API calls a month**, **Storage (GB)** and **Bandwidth a month (GB)**. `0`
-  leaves that limit unchecked.
-- **Hard limit** and **Block the tenant past a limit**. A quota blocks only
-  with both on. Otherwise the page says the quota is reported and never
-  enforced.
-- **Grace period (hours)**, **Warn at 80%** and **Warn at 90%**.
-
-![The quota form for the default tenant with 50000 API calls a month, 1 GB of storage and 10 GB of bandwidth a month, Hard limit and blocking off, a grace period of 24 hours, and both warnings on.](images/tenant-quotas.png)
-
 ## Try it
 
-Run this on an install whose license carries `usage-pro` and
-`multitenant-provisioning`, signed in as a super admin. You need the token in
-`TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get
-one. A test tenant keeps the block away from your real traffic.
+Run this on an install whose license carries `usage-pro` and `multitenant-provisioning`. For
+the console steps, you are signed in to the admin console as a super admin. The API steps
+need the super admin's token in `TOKEN`, and steps 3 to 5 use it in both paths. The
+[quickstart](../getting-started/quickstart.md) shows how to get one. A test tenant keeps the
+block away from your real traffic.
 
-1. Create a tenant to test on:
+**1. Create a tenant to test on.**
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/tenants \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"slug": "quotatest", "name": "Quota test"}'
-   ```
+<div class="paths">
+<div data-path="console">
 
-2. Give it a hard quota of five requests a month:
+Open **Operations > Tenants** and choose **New tenant**. Enter `quotatest` in **Slug** and
+`Quota test` in **Display name**, then choose **Create**. The page confirms
+**Created Quota test**.
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/quotas/quotatest \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"requests_limit": 5, "is_hard_limit": true, "block_on_exceeded": true}'
-   ```
+</div>
+<div data-path="api">
 
-   The answer is the quota, with `"requests_limit": 5` and `"blocked_at": null`.
+```bash
+curl -X POST http://localhost:3001/api/admin/tenants \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"slug": "quotatest", "name": "Quota test"}'
+```
 
-3. Call the Content API seven times as that tenant:
+The answer is `201` with the tenant. Copy its `id` into `TENANT_ID`.
 
-   ```bash
-   for i in 1 2 3 4 5 6 7; do
-     curl -s -o /dev/null -w "%{http_code} " http://localhost:3002/api/v1/quotas/status \
-       -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: quotatest"
-   done
-   ```
+</div>
+</div>
 
-   You see five `200` answers, then `429` twice. A blocked answer carries
-   `X-Quota-Blocked: true`:
+**2. Give it a hard quota of five requests a month.**
 
-   ```json
-   {"error": "quota exceeded - tenant is blocked", "tenant": "quotatest", "blocked_at": "2026-10-03T15:03:06Z", "requests_used": 5, "requests_limit": 5}
-   ```
+<div class="paths">
+<div data-path="console">
 
-4. Lift the block and the limit together:
+1. Open **Operations > Quotas and usage** and choose **New quota**.
+2. Enter `quotatest` in **Tenant** and `5` in **API calls a month**.
+3. Turn on **Hard limit** and **Block the tenant past a limit**. A quota blocks only with
+   both on.
+4. Choose **Create**.
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/quotas/quotatest \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"unblock": true, "requests_limit": 0}'
-   ```
+The page confirms **Quota saved for quotatest.** The **Quotas** list shows only the quota of
+the tenant you are signed in to, so this one does not appear in it.
 
-   The tenant is served again. Both changes are free.
+</div>
+<div data-path="api">
 
-5. Ask for more as the tenant, then approve it:
+```bash
+curl -X PUT http://localhost:3001/api/admin/quotas/quotatest \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"requests_limit": 5, "is_hard_limit": true, "block_on_exceeded": true}'
+```
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/quota-requests \
-     -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: quotatest" \
-     -H "Content-Type: application/json" \
-     -d '{"requests_limit": 100000, "reason": "Launch traffic in October"}'
-   ```
+The answer is the quota, with `"requests_limit": 5` and `"blocked_at": null`.
 
-   The answer is `201` with `"status": "pending"`. Copy its `id` into
-   `REQUEST_ID`, then:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/quota-requests/$REQUEST_ID/review \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"status": "approved"}'
-   ```
+**3. Call the Content API seven times as that tenant:**
 
-   The quota now reads `"requests_limit": 100000`.
+```bash
+for i in 1 2 3 4 5 6 7; do
+  curl -s -o /dev/null -w "%{http_code} " http://localhost:3002/api/v1/quotas/status \
+    -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: quotatest"
+done
+```
 
-6. Delete the test tenant with `DELETE /api/admin/tenants/{id}`. Its quota and
-   requests go with it.
+You see five `200` answers, then `429` twice. A blocked answer carries
+`X-Quota-Blocked: true`:
+
+```json
+{"error": "quota exceeded - tenant is blocked", "tenant": "quotatest", "blocked_at": "2026-10-03T15:03:06Z", "requests_used": 5, "requests_limit": 5}
+```
+
+**4. Lift the block and the limit together.** Lifting a block is API only. The console's quota
+form in v0.21.0 has no control for it:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/quotas/quotatest \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"unblock": true, "requests_limit": 0}'
+```
+
+The tenant is served again. Both changes are free.
+
+**5. Ask for more as the tenant, then approve it.** A tenant asks over the Content API:
+
+```bash
+curl -X POST http://localhost:3002/api/v1/quota-requests \
+  -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: quotatest" \
+  -H "Content-Type: application/json" \
+  -d '{"requests_limit": 100000, "reason": "Launch traffic in October"}'
+```
+
+The answer is `201` with `"status": "pending"`. Copy its `id` into `REQUEST_ID`. Approving
+this request is API only, because the console's **Requests for more** lists only the requests
+of the tenant you are signed in to:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/quota-requests/$REQUEST_ID/review \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "approved"}'
+```
+
+The quota now reads `"requests_limit": 100000`.
+
+**6. Delete the test tenant.** Its quota and requests go with it.
+
+<div class="paths">
+<div data-path="console">
+
+On **Operations > Tenants**, choose the delete button on the `quotatest` row and confirm
+**Delete** in **Delete Quota test?**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X DELETE http://localhost:3001/api/admin/tenants/$TENANT_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The answer is `204`.
+
+</div>
+</div>
 
 :::caution[A lone extra tenant takes anonymous requests]
 An install started without `MULTI_TENANT=true` keeps its `default` tenant
@@ -164,9 +201,36 @@ as you finish.
 
 ## Set a quota
 
-`PUT /api/admin/quotas/{tenantID}` creates or changes a quota. Fields you leave
-out keep their value. The answer is the full quota, with `id`, `tenant_id`,
-every limit, `blocked_at` and the timestamps.
+<div class="paths">
+<div data-path="console">
+
+On **Operations > Quotas and usage**, **New quota** sets a quota on a tenant by its slug, and
+the edit button on a row opens the same form:
+
+- **API calls a month**, **Storage (GiB)** and **Bandwidth a month (GiB)**. `0` leaves that
+  limit unchecked.
+- **Hard limit** and **Block the tenant past a limit**. A quota blocks only with both on.
+  Otherwise the page says the quota is reported and never enforced.
+- **Grace period (hours)**, **Warn at 80%** and **Warn at 90%**. A blank **Grace period**
+  saves `0`, and the engine blocks at once whatever the field's hint says.
+
+The edit button and the edit form's **Delete** work only on the quota of the tenant you are
+signed in to, because the list shows only that one. The edit form's **Delete** removes the
+quota. The list's **API calls** and **Bandwidth**
+columns count requests made with an API key only, as the page says, while a hard limit counts
+every request the tenant makes.
+
+</div>
+<div data-path="api">
+
+`PUT /api/admin/quotas/{tenantID}` creates or changes a quota. Fields you leave out keep their
+value. The answer is the full quota, with `id`, `tenant_id`, every limit, `blocked_at` and the
+timestamps. `DELETE /api/admin/quotas/{tenantID}` removes it.
+
+</div>
+</div>
+
+![The quota form for the default tenant with 50000 API calls a month, 1 GiB of storage and 10 GiB of bandwidth a month, Hard limit and blocking off, a grace period of 24 hours, and both warnings on.](images/tenant-quotas.png)
 
 | Field | Meaning | Default |
 |---|---|---|
@@ -176,7 +240,7 @@ every limit, `blocked_at` and the timestamps.
 | `is_hard_limit` | Whether the quota can block. | `false` |
 | `block_on_exceeded` | Block the tenant once a limit is passed. Takes effect only with `is_hard_limit`. | `false` |
 | `warn_at_pct_80`, `warn_at_pct_90` | Send the warning headers at 80% and 90%. | `true` |
-| `grace_period_hours` | Reported with the status. It does not delay a block. | `24` |
+| `grace_period_hours` | Reported with the status. It does not delay a block. | `24` over the API |
 | `unblock` | Send `true` to clear a block. | |
 
 | Write | Needs `usage-pro` |
@@ -190,6 +254,32 @@ every limit, `blocked_at` and the timestamps.
 | Lift a block with `unblock` | No |
 | Change the warning thresholds or the grace period | No |
 | Send back the values a quota already holds | No |
+
+## Review requests for more
+
+<div class="paths">
+<div data-path="console">
+
+**Requests for more** on **Operations > Quotas and usage** lists what the tenant you are
+signed in to has asked for, with the reason. The approve button on a request's row asks to
+confirm, such as **Approve more quota for default?**, and **Approve** raises the limits to what
+the tenant asked for. The deny button sits beside it.
+
+</div>
+<div data-path="api">
+
+`GET /api/admin/quota-requests?status=pending` lists the requests of the tenant the request
+runs as. Review one by its id with `{"status": "approved"}` or `{"status": "denied"}`:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/quota-requests/$REQUEST_ID/review \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "denied"}'
+```
+
+</div>
+</div>
 
 ## What a client sees
 
@@ -263,13 +353,13 @@ a tenant deletes its quota and increase requests.
 
 | Method | Path | Who | Purpose |
 |---|---|---|---|
-| `GET` | `/api/admin/quotas` | Admin | List quotas, with `limit` and `offset`. An admin sees their own tenant's. |
+| `GET` | `/api/admin/quotas` | Admin | The quota of the tenant the request runs as, a super admin's included, with `limit` and `offset`. Read another tenant's with the route below. |
 | `GET` | `/api/admin/quotas/{tenantID}` | Admin | One tenant's quota. |
 | `PUT` | `/api/admin/quotas/{tenantID}` | Super admin | Create or change a quota. |
 | `DELETE` | `/api/admin/quotas/{tenantID}` | Super admin | Remove a quota, which makes the tenant unlimited. |
 | `GET` | `/api/v1/quotas/status` | Signed in | The caller's tenant's usage and state. |
 | `POST` | `/api/v1/quota-requests` | Signed in | Ask for higher limits for the caller's tenant: `requests_limit`, `storage_bytes_limit`, `bandwidth_bytes_limit` and a required `reason`. |
-| `GET` | `/api/admin/quota-requests` | Admin | List increase requests, optionally `?status=pending`, `approved` or `denied`. |
+| `GET` | `/api/admin/quota-requests` | Admin | The increase requests of the tenant the request runs as, optionally `?status=pending`, `approved` or `denied`. |
 | `POST` | `/api/admin/quota-requests/{id}/review` | Super admin | Approve or deny a request: `{"status": "approved"}` or `"denied"`. |
 
 </details>

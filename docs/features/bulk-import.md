@@ -303,14 +303,22 @@ An unknown transform answers `400`. A request that names a paid transform withou
 ## Save a mapping as a template
 
 With `content-pro`, a tenant saves its mappings under a name, with the content type, the key
-field and the mode.
+field and the mode. This saves the mapping of the `posts.csv` file above.
 
 <div class="paths">
 <div data-path="console">
 
-Saving a template in the console needs `content-pro`. Without it, **Mapping templates** on
-**Insight > Imports** says that saving a template needs a license, and that templates already
-saved keep applying.
+1. Open **Insight > Imports**. Under **Mapping templates**, choose **New template**.
+2. Enter `weekly-posts` in **Name** and pick `post` in **Content type**.
+3. Under **When an entry already exists**, pick **Create and update**, then **Entry slug** in
+   **Key field**.
+4. Enter `title` in **Column in the file** and pick `title` in **Field**. Choose
+   **Add column**, enter `body` and pick `body`.
+5. Choose **Create**.
+
+The page confirms **Created weekly-posts**, and the list shows the template with its content
+type, its columns and **Update it, key entry.slug**. To use it, pick it in **Mapping template** on the wizard's first step. The mapping step
+then says **Mapped from the template weekly-posts.**
 
 </div>
 <div data-path="api">
@@ -319,12 +327,12 @@ saved keep applying.
 curl -X POST http://localhost:3001/api/admin/imports/templates \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "weekly-products", "content_type": "product", "upsert_key": "entry.slug", "mode": "upsert", "field_mappings": [{"source_field": "Name", "target_field": "entry.title"}]}'
+  -d '{"name": "weekly-posts", "content_type": "post", "upsert_key": "entry.slug", "mode": "upsert", "field_mappings": [{"source_field": "title", "target_field": "title"}, {"source_field": "body", "target_field": "body"}]}'
 ```
 
-An import or a dry run then names it with `"template_id"` and may leave out `content_type`
-and `field_mappings`. What the request leaves out comes from the template, and the request's
-own `field_mappings` win when it sends them.
+The answer is `201` with the template. An import or a dry run then names it with
+`"template_id"` and may leave out `content_type` and `field_mappings`. What the request leaves
+out comes from the template, and the request's own `field_mappings` win when it sends them.
 
 </div>
 </div>
