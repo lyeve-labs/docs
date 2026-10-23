@@ -78,7 +78,7 @@ five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 | Log volume | **Insight > Logs**, then **Volume alerts**. Each rule from **New rule** has its own **Channels**. |
 | An uptime probe | **Insight > Observability > Synthetic monitoring**, then **Notice channels** on the probe's row. |
 
-![The Spike alerts page with two addresses in Email and a webhook address in Slack webhook URL, above the Discord, HTTPS webhook and PagerDuty fields.](images/alerts.png)
+![The Spike alerts page on an install without alerts-pro: two addresses in Email, then Not enabled on this instance above the empty Slack, Discord, HTTPS webhook and PagerDuty fields.](images/alerts.png)
 
 ## Try it
 
@@ -346,6 +346,16 @@ and choose **Save**.
 
 </div>
 <div data-path="api">
+
+Look up the probe's id by its name, here `Public site`:
+
+```bash
+PROBE_ID=$(curl -s http://localhost:3001/api/admin/synthetic-monitoring/probes \
+  -H "Authorization: Bearer $TOKEN" \
+  | jq -r '.[] | select(.name == "Public site") | .id')
+```
+
+Then set its channels:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_ID/alert-channels \

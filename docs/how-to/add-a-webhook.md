@@ -165,6 +165,11 @@ node receiver.mjs        # or: python3 receiver.py
 listening on http://localhost:8787
 ```
 
+The receiver keeps this terminal. Run the API steps below in a second one, and
+export `WEBHOOK_SECRET` with the same value there, and `TOKEN` too. In a
+terminal where `WEBHOOK_SECRET` is unset, step 2 registers the webhook with no
+secret, and the receiver prints `refused: unsigned request` for every delivery.
+
 Both print the fields of the standard body. If you give the webhook a
 `payload_template`, the body is your own JSON, so change the line that prints
 it. Both check the raw bytes. If you move the check into a framework, read the body
@@ -247,9 +252,14 @@ Open **Content**, pick **Post** and choose **New entry**. Enter
 `Webhook check` in **Title** and `Hello` in **Body**, then choose **Create**.
 
 Within a moment the receiver prints an `after_create` line. An entry saved in
-console v0.21.0 arrives as the console stores it: the fields you typed sit
-under `body`, beside the entry's `id`, `slug`, `status`, `title` and its
-timestamps.
+console v0.21.0 arrives as the console stores it. The fields you typed sit in
+an object under `body`, which also holds the post's own `body` field, and
+beside that object are the entry's `id`, `slug`, `status`, `title`, its
+timestamps and the accounts that wrote it:
+
+```text
+accepted: after_create post {"_status":"draft","body":{"author_id":null,"body":"<p>Hello</p>","slug":null,"title":"Webhook check"},"created_at":"2026-10-23T16:31:35.423506701Z","created_by":"59ef432d-cfa3-4dc3-b90a-87f2eff13558","current_rev":1,"id":"8371ea04-24e5-49a8-93b0-0bb8b7d4baff","meta":{},"schema":"post","slug":"webhook-check-omh0mr","status":"draft","tenant_id":"default","timezone":"UTC","title":"Webhook check","updated_at":"2026-10-23T16:31:35.423506701Z","updated_by":"59ef432d-cfa3-4dc3-b90a-87f2eff13558"}
+```
 
 </div>
 <div data-path="api">

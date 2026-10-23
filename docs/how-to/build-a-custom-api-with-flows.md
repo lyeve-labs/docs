@@ -472,7 +472,8 @@ send the import as a super admin with `X-Tenant-ID` naming that tenant, as
 ## Next
 
 - [Flow templates](flow-templates.md): eighteen starter flows, among them a
-  larger version of this one.
+  larger version of this one. It filters on a `status` field, so change its
+  `orders` filter to `state` to run it on the types from this guide.
 - [Keep the content model and flows in git](schema-and-flows-as-code.md):
   review flow files in pull requests and promote them on release.
 - [Flows](../features/flows.md#your-own-endpoint-path): serve the endpoint at a

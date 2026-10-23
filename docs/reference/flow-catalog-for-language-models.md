@@ -17,10 +17,13 @@ any other flow.
 ## Use it with your own model
 
 **1. Give the model the catalog.** Copy everything from the heading
-"LyEve flow definitions" to the end of this page into the model's context. Or
-download your instance's own copy, which also lists the nodes your other
-features add. Only the API serves that copy: console v0.21.0 has no download
-for it.
+"LyEve flow definitions" to the end of this page into the model's context.
+This page is the current copy. The instance also serves a copy of its own, but
+on engine v0.55.0 that copy lags this page: it leaves out the node types other
+features add, and it describes a few behaviors the engine no longer has, such
+as the output of `data.aggregate` without `group_by`. Use this page. Only the
+API serves the instance's copy, because console v0.21.0 has no download for
+it.
 
 ```bash
 curl "http://localhost:3001/api/admin/flows/catalog/llm" \

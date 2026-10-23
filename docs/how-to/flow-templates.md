@@ -191,6 +191,13 @@ a signed-in session. See [connect outside systems](../features/flows.md#connect-
 
 ## What to know about each template
 
+Several templates read or write a content field named `status`, such as
+`join-three-tables-api`, `nightly-sheet-export`, `seo-sitemap`,
+`comment-moderation` and the `cdn-purge` filter below. On console v0.21.0 a
+field named `status` loses its value when an entry is saved in the console, so
+save those entries with the API, or give the field another name and change the
+template to read it.
+
 ### `join-three-tables-api`
 
 Loads orders filtered by `?status=` (default `open`) and, when you pass one, by
@@ -199,7 +206,10 @@ them. Its slug is `orders-with-customers`. An answer is cached for 30 seconds
 per customer and status, and each signed-in user, or each client address, may
 call it 120 times a minute.
 [Build a custom API with flows](build-a-custom-api-with-flows.md) builds a
-smaller version step by step.
+smaller version step by step, on an `orders` type whose field is `state`. To
+run this template on those types, open the `orders` node and change both
+`status:` keys in **filters** to `state:`. Without the change, a test fails
+with `unknown filter field "status"`. The query parameter stays `?status=`.
 
 ### `bulk-import`
 

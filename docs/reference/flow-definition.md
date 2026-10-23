@@ -47,7 +47,7 @@ nodes:
     position: { x: 120, y: 200 }
     config:
       schema: orders
-      filters: { status: "{{ trigger.query.status ?? 'open' }}" }
+      filters: { state: "{{ trigger.query.state ?? 'open' }}" }
       populate: [customer]
       limit: 100
       sort: "-created_at"
