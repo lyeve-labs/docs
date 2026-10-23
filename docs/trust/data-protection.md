@@ -262,6 +262,11 @@ When the addresses cannot be read, nothing is erased. The erasure reaches:
   happens to each is the tenant's choice, below. A submission that names the
   address inside a longer value, such as a message asking for a reply to it,
   stays.
+- Flow runs and their steps whose input or output names one of those
+  addresses, or the identifier you name. The whole input or output of each is
+  replaced with `{"redacted":true}`, and the run stays. Anything else that
+  input or output held goes with it, another person's data included. An
+  address inside a longer address does not match.
 
 Comments and form submissions are erased only in the person's own tenant,
 because the same address may belong to someone else in another. An address
