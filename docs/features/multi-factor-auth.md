@@ -183,8 +183,8 @@ Sign out, then sign in with your email and password. The page asks for
      -d '{"challenge_token": "'"$CHALLENGE"'", "code": "123456"}'
    ```
 
-   The answer is a normal sign-in, with `token` and `refresh_token`. Sending
-   the same challenge again answers `401` with
+   The answer is a normal sign-in, with `token` and `refresh_token`. Copy
+   `token` into `TOKEN`. Sending the same challenge again answers `401` with
    `The MFA challenge has expired. Please log in again.`
 
 </div>

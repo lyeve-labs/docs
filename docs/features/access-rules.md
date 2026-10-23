@@ -46,7 +46,7 @@ and **Field mask** lists the fields the role does not read.
 - **Show resources with no rule** lists the content types and flows a role has
   no rule for.
 
-![Access > Permissions with a reader role that reads post without its body, and a support role that reads every content type and updates author.](images/access-rules.png)
+![Access > Permissions with a support role that reads every content type and updates author, and a viewer role with an empty Every schema rule that reads post without its body.](images/access-rules.png)
 
 ## How it works
 
@@ -208,9 +208,8 @@ for the same role.
 
 On **Access > Permissions**, choose the plus button on the role's row and pick
 the content type in **Resource**. Leave every action clear and choose
-**Create**. Before you create it, the form warns that the rule shuts the role
-out. When the role has a `*` rule, the form also names the actions that rule
-grants and this one denies.
+**Create**. Before you create it, the form says **This rule shuts** the role
+**out**, and that the role is denied every action on that content type.
 
 </div>
 <div data-path="api">
@@ -223,6 +222,10 @@ Send the rule with an empty `actions` list to `POST /api/admin/permissions`:
 
 </div>
 </div>
+
+The empty rule needs a `*` rule or another grant to override. On a role with
+none, the console says **This rule would do nothing** and keeps **Create**
+off.
 
 To open it again, delete the rule or write it again with the actions you want.
 
@@ -300,7 +303,7 @@ refused with `403 This route needs a signed-in session.`
 | `403` | `This route needs a signed-in session.` | An admin token called a rule route. |
 | `404` | `permission not found` | No rule has that id in your tenant. |
 | `422` | `role and schema_name are required` | A required field is empty. |
-| `422` | `invalid resource: a schema name, *, flows, flow:<slug>, reviews or review:<slug>` | The resource is not one a rule can name. |
+| `422` | `invalid resource: a schema name, *, flows, flow:<slug>, reviews or review:<slug>` | `flow:` or `review:` with no slug, or a slug that is not valid. Any other name is stored as given. |
 | `422` | `invalid action: <action>` | The action is unknown, or `activate` on a content type. |
 
 </details>

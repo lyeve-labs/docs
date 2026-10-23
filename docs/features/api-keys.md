@@ -151,8 +151,9 @@ a key with no role reads nothing. Sign in as a super admin first.
    **Name**. Under **Roles**, untick **editor**, which the form ticks for you,
    and tick **viewer**.
 3. Leave **Content** on **Every schema** with **Read** ticked. The form also
-   keeps **Discover content types** ticked while content is readable, so the
-   summary reads **2 scopes: content:read, schemas:read**.
+   ticks **Discover content types** under **Schema catalog** for you, and you
+   may leave it, so the summary reads **2 scopes: content:read,
+   schemas:read**.
 4. Leave **Expires** on **No expiry** and choose **Create**.
 5. Copy the key from **API key created** into `KEY`. It is shown once. Only a
    hash is kept, so a lost key cannot be recovered.
@@ -200,7 +201,8 @@ You need a super admin token in `TOKEN`. The quickstart shows how to get one.
    }
    ```
 
-   The answer is `201`. Copy `raw_key` into `KEY`. `raw_key` is shown once.
+   The answer is `201`. Copy `raw_key` into `KEY` and `id` into `KEY_ID`.
+   `raw_key` is shown once.
    Only a hash is kept, so a lost key cannot be recovered.
 
 </div>
@@ -242,9 +244,6 @@ month)**, such as **2 req**.
 </div>
 <div data-path="api">
 
-Find the key's `id` in the list from `GET /api/admin/api-keys` and keep it in
-`KEY_ID`, then ask:
-
 ```bash
 curl http://localhost:3001/api/admin/usage/api-key/$KEY_ID \
   -H "Authorization: Bearer $TOKEN"
@@ -256,9 +255,12 @@ The answer holds `billing_period`, `requests`, `bytes_in` and `bytes_out`.
 </div>
 
 Each request the key made is in its history, which the API serves. The console
-has no view of it on this release. With a super admin token in `TOKEN`, find
-the key's `id` in the list from `GET /api/admin/api-keys`, keep it in
-`KEY_ID`, and ask:
+has no view of it on this release. The call needs a super admin token in
+`TOKEN`.
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows how to get one with your console account. If you made the key in the
+console, find its `id` in the list from `GET /api/admin/api-keys` and keep it
+in `KEY_ID`. Then ask:
 
 ```bash
 curl "http://localhost:3001/api/admin/api-keys/$KEY_ID/audit?limit=10" \
