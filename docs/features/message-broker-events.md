@@ -35,14 +35,16 @@ content write.
 ## In the admin console
 
 As a super admin, open **Settings > Message broker**. The counters show what
-was **Published**, **Refused by the broker** and had **Nowhere to send** since
-the process started. **Connection** gives the **Backend**, the **Target**,
-whether **TLS** is on, the **Topics** pattern and the **Last publish**. When no
-broker is set, **Connecting services** says that events are discarded. The
-page only reads the connection. The broker itself is set as
-[Settings](#settings) describes, and **Refresh** reads the page again.
+was **Published**, the **Attempts refused by the broker**, what had
+**Nowhere to send**, what is **Waiting in the outbox** and what was
+**Lost after every attempt**, since the process started. **Connection** gives
+the **Backend**, whether it is **Connected**, the **Target**, whether **TLS**
+is on, the **Topics** pattern and the **Last publish**. When no broker is set,
+**Connecting services** says that events are discarded. The page only reads
+the connection. The broker itself is set as [Settings](#settings) describes,
+and **Refresh** reads the page again.
 
-![The Message broker page on an instance with no broker configured, with the published count, the connection details, the topic pattern lyeve.tenant.{tenant}.{schema}.{event} and a warning that events are discarded until EVENT_BUS is set.](images/message-broker-events.png)
+![The Message broker page publishing to NATS JetStream, with one event published and none refused, waiting or lost, and the connection connected to nats://nats:4222 with TLS off and the topic pattern lyeve.tenant.{tenant}.{schema}.{event}.](images/message-broker-events.png)
 
 ## How it works
 
@@ -70,47 +72,95 @@ producer that waits for every in-sync replica.
 
 ## Try it
 
-This uses NATS. You need an admin token for a super admin in `TOKEN` (the
-[quickstart](../getting-started/quickstart.md) shows how to get one), a NATS
-server with JetStream, and the `nats` command line tool.
+This uses NATS. For the console steps, you are signed in to the admin console
+as a super admin. For the API steps, you need a super admin token in `TOKEN`.
+The [quickstart](../getting-started/quickstart.md) shows how to get one. You
+also need a NATS server with JetStream and the `nats` command line tool.
 
-1. Check what the instance publishes to now:
+**1. Check what the instance publishes to now.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/messagebroker/status \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   With no broker configured, `backend` is empty and `connected` still reads
-   `true`. Events are then discarded, although `published` still counts them.
+Open **Settings > Message broker**. With no broker configured,
+**Connecting services** says that events are discarded until `EVENT_BUS` is
+set.
 
-2. Point the instance at NATS and restart it:
+</div>
+<div data-path="api">
 
-   ```bash
-   EVENT_BUS=nats
-   NATS_URL=nats://nats.internal:4222
-   ```
+```bash
+curl http://localhost:3001/api/admin/messagebroker/status \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-3. Subscribe to everything in your tenant (here `default`):
+With no broker configured, `backend` is empty and `connected` still reads
+`true`. Events are then discarded, although `published` still counts them.
 
-   ```bash
-   nats sub "lyeve.tenant.default.>"
-   ```
+</div>
+</div>
 
-4. Create an entry, such as a `post`:
+**2. Point the instance at NATS and restart it.** This is set in the
+environment of the instance, not in the console or the API:
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/content/post \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"data": {"title": "Broker check", "slug": "broker-check"}}'
-   ```
+```bash
+EVENT_BUS=nats
+NATS_URL=nats://nats.internal:4222
+```
 
-   The subscriber prints a message on `lyeve.tenant.default.post.after_create`
-   with the entry's fields in `data`.
+TLS is on by default. For a NATS server without TLS, also set
+`NATS_TLS=false`, or the feature does not start.
 
-5. Read the status again. `backend` is `nats`, `connected` is `true`, and
-   `published` has grown.
+**3. Subscribe to everything in your tenant** (here `default`) with the
+`nats` tool:
+
+```bash
+nats sub "lyeve.tenant.default.>"
+```
+
+**4. Create an entry**, such as a `post`.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Content**, choose **Post**, then **New entry**. Fill in **Title** and
+**Slug** and choose **Create**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3002/api/v1/content/post \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"title": "Broker check", "slug": "broker-check"}}'
+```
+
+</div>
+</div>
+
+The subscriber prints a message on `lyeve.tenant.default.post.after_create`
+with the entry in `data`. An entry created through the API carries its fields
+in `data`. On console v0.21.0, an entry created in the console arrives with
+the whole stored entry in `data` and its fields under `data.body`.
+
+**5. Read the status again.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose **Refresh**. The badge reads **Publishing** with
+**NATS JetStream**, **Published** has grown, and **Connection** gives
+**Connected** as **Yes**, the **Target** and the **Last publish**.
+
+</div>
+<div data-path="api">
+
+Send the request of step 1 again. `backend` is `nats`, `connected` is `true`,
+and `published` has grown.
+
+</div>
+</div>
 
 ## What a message carries
 
@@ -128,6 +178,10 @@ Each message is the content event as JSON:
 | `instance_id` | The instance that raised the event |
 | `timestamp` | RFC 3339 time of the event |
 | `source` | Where the event came from, when set |
+
+On engine v0.55.0, `timestamp` reads `0001-01-01T00:00:00Z` instead of the
+time of the event, and `instance_id` is left out. Use the time your consumer
+received the message.
 
 The `event_id` also travels as a transport header, so a consumer can
 deduplicate without decoding the body: `Nats-Msg-Id` and an `event_id` header

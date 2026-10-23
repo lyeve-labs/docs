@@ -34,10 +34,11 @@ listeners that react to changes run as if the events had just happened.
 ## In the admin console
 
 Open **Insight > Events**. **Recorded**, **Carrying an error** and
-**Recent replays** count the log and the runs.
+**Replays** count the log and the runs.
 
 1. Under **Replay**, set **Replay from** and give the run a name in
-   **Run name**. Left empty, the run takes one shared name. The name decides
+   **Run name**. Left empty, the run takes one shared name, listed as
+   **Shared name**. The field empties after each run. The name decides
    only what a later run skips. A run for real reaches every listener,
    whatever its name.
 2. Leave **Rehearse first, posting nothing** ticked and choose **Rehearse**.
@@ -48,7 +49,7 @@ Each run is listed with its run name, status, progress and result, and a
 rehearsal is marked **rehearsal**. **Published** lists the log, with a search and
 **Only those carrying an error**.
 
-![The Events page with a completed rehearsal named search-rebuild that posted nothing, above the log of published events with their topic, type, source and content type.](images/event-replay.png)
+![The Events page with its three counters, the Replay form with Rehearse first ticked, and six completed runs, among them a rehearsal and two real runs named search-rebuild, the second of which skipped all eight events.](images/event-replay.png)
 
 ## How it works
 
@@ -65,86 +66,157 @@ copies.
 
 ## Try it
 
-You need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
-shows how to get one.
+For the console steps, you are signed in to the admin console as an admin.
+For the API steps, you need an admin token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Read the newest entries of the log:
+**1. Read the newest entries of the log.**
 
-   ```bash
-   curl "http://localhost:3001/api/admin/events?limit=5" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "data": [
-       {
-         "id": "3a9c73a4-d95b-4a44-917b-30b90aa7d6df",
-         "source": "hookbus",
-         "topic": "cms.tenant.default.post.after_create",
-         "schema_name": "post",
-         "event_type": "after_create",
-         "payload": { "id": "4c6cf7e0-7e24-4d42-83eb-0bb7cac3a5cb", "title": "Hello" },
-         "published_at": "2026-10-01T08:15:02Z",
-         "tenant_id": "default"
-       }
-     ],
-     "total_count": 1,
-     "limit": 5,
-     "offset": 0
-   }
-   ```
+Open **Insight > Events**. **Published** lists the log, newest first, with
+each event's topic, type, source and content type.
 
-   Pick a `published_at` from before the outage as your start time.
+</div>
+<div data-path="api">
 
-2. Count what a replay from that time would send, without sending it:
+```bash
+curl "http://localhost:3001/api/admin/events?limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -i -X POST http://localhost:3001/api/admin/events/replay \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"since": "2026-10-01T08:00:00Z", "handler": "search-rebuild", "dry_run": true}'
-   ```
+```json
+{
+  "data": [
+    {
+      "id": "3a9c73a4-d95b-4a44-917b-30b90aa7d6df",
+      "source": "hookbus",
+      "topic": "cms.tenant.default.post.after_create",
+      "schema_name": "post",
+      "event_type": "after_create",
+      "payload": { "id": "4c6cf7e0-7e24-4d42-83eb-0bb7cac3a5cb", "title": "Hello" },
+      "published_at": "2026-10-01T08:15:02Z",
+      "tenant_id": "default"
+    }
+  ],
+  "total_count": 1,
+  "limit": 5,
+  "offset": 0
+}
+```
 
-   The answer is `202` with a `Location` header,
-   `/api/admin/events/replay/<run_id>`, and the run with `status: running`.
-   Copy `run_id` into `RUN_ID`.
+</div>
+</div>
 
-3. Read the run:
+Pick a time from before the outage as your start time.
 
-   ```bash
-   curl http://localhost:3001/api/admin/events/replay/$RUN_ID \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+**2. Count what a replay from that time would send, without sending it.**
 
-   ```json
-   {
-     "run_id": "22764095-c193-4eba-b213-c214a98d401b",
-     "status": "completed",
-     "handler": "search-rebuild",
-     "since": "2026-10-01T08:00:00Z",
-     "dry_run": true,
-     "tenant_id": "default",
-     "total_events": 1,
-     "replayed": 1,
-     "skipped": 0,
-     "failed": 0,
-     "started_at": "2026-10-01T09:40:00Z",
-     "completed_at": "2026-10-01T09:40:00Z"
-   }
-   ```
+<div class="paths">
+<div data-path="console">
 
-   A dry run marks nothing as replayed, so the real run that follows still
-   sends the whole window.
+Under **Replay**, pick the day in **Replay from** and type the hour and
+minute beside it. Type `search-rebuild` in **Run name**. Leave
+**Rehearse first, posting nothing** ticked and choose **Rehearse**.
 
-4. Send the same request without `"dry_run": true`. The run publishes every
-   event, and your listeners react. A webhook watching the content type gets a
-   delivery for each one.
+</div>
+<div data-path="api">
 
-5. Send it once more. The new run reports the events as `skipped`, because
-   `search-rebuild` already replayed them.
+```bash
+curl -i -X POST http://localhost:3001/api/admin/events/replay \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"since": "2026-10-01T08:00:00Z", "handler": "search-rebuild", "dry_run": true}'
+```
+
+The answer is `202` with a `Location` header,
+`/api/admin/events/replay/<run_id>`, and the run with `status: running`.
+Copy `run_id` into `RUN_ID`.
+
+</div>
+</div>
+
+**3. Read the run.**
+
+<div class="paths">
+<div data-path="console">
+
+The run is listed under the form with its **Started** time, **Run name**,
+**Status**, **Progress** and **Result**. A rehearsal is marked **rehearsal**,
+and its result ends with **(nothing was posted)**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/events/replay/$RUN_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{
+  "run_id": "22764095-c193-4eba-b213-c214a98d401b",
+  "status": "completed",
+  "handler": "search-rebuild",
+  "since": "2026-10-01T08:00:00Z",
+  "dry_run": true,
+  "tenant_id": "default",
+  "total_events": 1,
+  "replayed": 1,
+  "skipped": 0,
+  "failed": 0,
+  "started_at": "2026-10-01T09:40:00Z",
+  "completed_at": "2026-10-01T09:40:00Z"
+}
+```
+
+</div>
+</div>
+
+A rehearsal marks nothing as replayed, so the real run that follows still
+sends the whole window.
+
+**4. Send the window for real.** The run publishes every event, and your
+listeners react. A webhook watching the content type gets a delivery for each
+one.
+
+<div class="paths">
+<div data-path="console">
+
+The form empties **Run name** after each run, so type `search-rebuild` again.
+Untick **Rehearse first, posting nothing**. The button now reads **Replay**.
+Choose it. The run starts at once, with no question first.
+
+</div>
+<div data-path="api">
+
+Send the request of step 2 without `"dry_run": true`.
+
+</div>
+</div>
+
+**5. Send it once more.** The new run reports the events as skipped, because
+`search-rebuild` already replayed them.
+
+<div class="paths">
+<div data-path="console">
+
+Type `search-rebuild` in **Run name** and choose **Replay** again. The result
+reads **0 replayed, 8 skipped, 0 failed** for a window of eight events.
+
+</div>
+<div data-path="api">
+
+Send the request of step 4 again. The run reports the events as `skipped`.
+
+</div>
+</div>
 
 ## Start a replay
+
+The API takes these fields. The console sets `since`, `handler` and `dry_run`
+from the form, and replays its own tenant.
 
 | Field | Meaning | Default |
 |---|---|---|
@@ -178,7 +250,8 @@ and a super admin sees every tenant.
 
 ## Prune the log
 
-Events older than 90 days are deleted every hour. To delete sooner:
+Events older than 90 days are deleted every hour. To delete sooner, call the
+API. The console has no prune control.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/events/prune \
@@ -237,7 +310,8 @@ All routes are on the Admin API and need the `admin` role.
 | `400` | `since is required (ISO 8601 timestamp)` | A replay without `since`. |
 | `400` | `since must be a valid RFC 3339 timestamp` | `since` does not parse, such as a bare date. |
 | `400` | `invalid request parameter` | A bad `limit` or `offset`. |
-| `404` | `The requested endpoint does not exist.` | The license does not include `events`, so the feature does not start. || `403` | `cannot prune other tenants` | A tenant admin named another tenant. |
+| `404` | `The requested endpoint does not exist.` | The license does not include `events`, so the feature does not start. |
+| `403` | `cannot prune other tenants` | A tenant admin named another tenant. |
 | `404` | `replay run not found` | A wrong run id. |
 | `409` | `a replay is already in progress` | Another replay is running. Wait for it. |
 

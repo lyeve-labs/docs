@@ -47,8 +47,9 @@ hash, disable the query or delete it. **New persisted query** registers one.
 
 ![The GraphQL page with the generated Queries, Mutations and Subscriptions, and two persisted queries, LatestPosts and PostBySlug, each with its hash and query text.](images/graphql-api.png)
 
-The sections below query, filter and subscribe over the API, and set the
-persisted query rules.
+**Try it in API labs** opens **Delivery > API labs**, where you choose
+**GraphQL** and run a query or a mutation as you. Subscriptions and requests by hash
+are made by a client, and the persisted query rules are settings.
 
 ## How the schema is built
 
@@ -106,68 +107,135 @@ schema and from subscriptions. See [Transports](../reference/api-endpoints.md#se
 
 ## Try it
 
-You need a token in `TOKEN` (the [quickstart](../getting-started/quickstart.md)
-shows how to get one) and a content type named `post`, such as the one in
+You need a content type named `post`, such as the one in
 [Create your first content type](../getting-started/first-content-type.md).
+For the console steps, you are signed in to the admin console as an admin.
+For the API steps, you need a token in `TOKEN`. The
+[quickstart](../getting-started/quickstart.md) shows how to get one.
 
-1. Check the endpoint is on:
+**1. Check the endpoint is on.**
 
-   ```bash
-   curl http://localhost:3002/api/v1/graphql -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "message": "GraphQL endpoint ready. POST a query to this URL.", "plugin": "graphql", "version": "..." }
-   ```
+Open **Delivery > GraphQL**. **Where it answers** gives the address for
+queries and mutations and the one for subscriptions.
 
-2. Create an entry. A mutation needs the `editor`, `admin` or `super_admin`
-   role:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/graphql \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "mutation { createPost(input: {title: \"From GraphQL\", slug: \"from-graphql\"}) { id title } }"}'
-   ```
+```bash
+curl http://localhost:3002/api/v1/graphql -H "Authorization: Bearer $TOKEN"
+```
 
-   ```json
-   { "data": { "createPost": { "id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "title": "From GraphQL" } } }
-   ```
+```json
+{ "message": "GraphQL endpoint ready. POST a query to this URL.", "plugin": "graphql", "version": "v0.55.0" }
+```
 
-3. Query it with a filter:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/graphql \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "{ post(limit: 5, where: {slug: \"from-graphql\"}) { id title } }"}'
-   ```
+**2. Create an entry.** A mutation needs the `editor`, `admin` or
+`super_admin` role.
 
-   ```json
-   { "data": { "post": [ { "id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "title": "From GraphQL" } ] } }
-   ```
+<div class="paths">
+<div data-path="console">
 
-4. Register that query as persisted, on the Admin API:
+Open **Delivery > API labs** and choose **GraphQL**. Paste this in
+**Query or mutation** and choose **Send**:
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/graphql/persisted-queries \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "{ post(limit: 10) { id title } }", "operation_name": "LatestPosts"}'
-   ```
+```graphql
+mutation { createPost(input: {title: "From GraphQL", slug: "from-graphql"}) { id title } }
+```
 
-   The answer is `201` with `query_hash`, the SHA-256 of the query text.
+The console asks **Send this mutation?** first. Choose **Send it**.
+**The answer** shows the status and the body with the new entry's `id`.
 
-5. Run it by hash alone:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3002/api/v1/graphql \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"extensions": {"persistedQuery": {"version": 1, "sha256Hash": "<query_hash>"}}}'
-   ```
+```bash
+curl -X POST http://localhost:3002/api/v1/graphql \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation { createPost(input: {title: \"From GraphQL\", slug: \"from-graphql\"}) { id title } }"}'
+```
 
-   The answer is the same `data` as sending the text.
+```json
+{ "data": { "createPost": { "id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "title": "From GraphQL" } } }
+```
+
+</div>
+</div>
+
+**3. Query it with a filter.**
+
+<div class="paths">
+<div data-path="console">
+
+In **API labs** with **GraphQL** chosen, replace the text in
+**Query or mutation** with this query and choose **Send**:
+
+```graphql
+{ post(limit: 5, where: {slug: "from-graphql"}) { id title } }
+```
+
+A query runs without a question.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3002/api/v1/graphql \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ post(limit: 5, where: {slug: \"from-graphql\"}) { id title } }"}'
+```
+
+```json
+{ "data": { "post": [ { "id": "6265e2d6-a68e-4c93-b18a-d25f424cd6a8", "title": "From GraphQL" } ] } }
+```
+
+</div>
+</div>
+
+**4. Register a query as persisted.**
+
+<div class="paths">
+<div data-path="console">
+
+Open **Delivery > GraphQL** and choose **New persisted query**. Enter
+`{ post(limit: 10) { id title } }` in **Query** and `LatestPosts` in
+**Operation name**, and choose **Create**. The query is listed under
+**Persisted queries** with its hash. **Copy the hash** copies it.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X POST http://localhost:3001/api/admin/graphql/persisted-queries \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ post(limit: 10) { id title } }", "operation_name": "LatestPosts"}'
+```
+
+The answer is `201` with `query_hash`, the SHA-256 of the query text.
+
+</div>
+</div>
+
+**5. Run it by hash alone.** Only a client sends a hash, so this step is an
+API call. Take the hash from **Copy the hash** in the console or from
+`query_hash`:
+
+```bash
+curl -X POST http://localhost:3002/api/v1/graphql \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"extensions": {"persistedQuery": {"version": 1, "sha256Hash": "<query_hash>"}}}'
+```
+
+The answer is the same `data` as sending the text.
 
 ## Query and filter
 

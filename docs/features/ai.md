@@ -70,73 +70,116 @@ provider is kept and takes no calls.
 
 ## Try it
 
-You need an admin token in `TOKEN` from a super admin, and a key from your
-provider. The [quickstart](../getting-started/quickstart.md) shows how to get
-the token.
+You need a key from your provider. For the console steps, you are signed in
+to the admin console as a super admin. For the API steps, you need a super
+admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
+shows how to get one.
 
-1. Check that AI is on for your tenant:
+**1. Check that AI is on for your tenant.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/ai/settings \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   { "tenant_id": "default", "enabled": true, "transcripts_enabled": true, "updated_at": "0001-01-01T00:00:00Z" }
-   ```
+Open **Operations > AI** and choose the **Settings** tab. **AI for this
+tenant** is on.
 
-2. Add a provider. `enabled` is `false` unless you send it:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ai/providers \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"name": "openai", "kind": "openai", "api_key": "sk-your-key", "default_model": "gpt-4o-mini", "enabled": true, "priority": 10}'
-   ```
+```bash
+curl http://localhost:3001/api/admin/ai/settings \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   The answer is `201` with the provider. The key is never returned:
-   `"has_key": true` says one is stored.
+```json
+{ "tenant_id": "default", "enabled": true, "transcripts_enabled": true, "updated_at": "0001-01-01T00:00:00Z" }
+```
 
-3. Summarize a text:
+</div>
+</div>
 
-   ```bash
-   curl -X POST http://localhost:3001/api/admin/ai/summarize \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"content": "LyEve now ships eighteen starter flows, from a sitemap to a nightly sheet export.", "style": "concise"}'
-   ```
+**2. Add a provider.**
 
-   ```json
-   {
-     "summary": "LyEve adds eighteen ready-made flows.",
-     "model": "gpt-4o-mini",
-     "tokens_used": 74,
-     "tokens_in": 61,
-     "tokens_out": 13,
-     "cost_estimate": "0.000017",
-     "transcript_id": "1e7c9a40-3b2d-4f58-8a61-0d9e2c4b7f35"
-   }
-   ```
+<div class="paths">
+<div data-path="console">
 
-   A key the provider refuses answers `503` with `ai summarization failed`.
+On the **Providers** tab, choose **New provider**. Enter `openai` in
+**Name**, choose **OpenAI** under **Kind**, paste your key in **API key**,
+enter `gpt-4o-mini` in **Default model** and `10` in **Priority**. Turn
+**Enabled** on and choose **Create**. The key is encrypted and never shown
+again.
 
-4. Read the transcript of that call:
+</div>
+<div data-path="api">
 
-   ```bash
-   curl "http://localhost:3001/api/admin/ai/transcripts?kind=route&limit=1" \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+`enabled` is `false` unless you send it:
 
-   The newest transcript is first, with its model, prompt version and number
-   of messages. `GET /api/admin/ai/transcripts/{id}` adds the messages.
+```bash
+curl -X POST http://localhost:3001/api/admin/ai/providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "openai", "kind": "openai", "api_key": "sk-your-key", "default_model": "gpt-4o-mini", "enabled": true, "priority": 10}'
+```
 
-5. In the admin console, open **Operations > AI > Transcripts** to read it,
-   download it as JSON or Markdown, or ask for a recap.
+The answer is `201` with the provider. The key is never returned:
+`"has_key": true` says one is stored.
+
+</div>
+</div>
+
+**3. Summarize a text.** The summarize route has no control in the admin
+console, so this step is an API call:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/ai/summarize \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"content": "LyEve now ships eighteen starter flows, from a sitemap to a nightly sheet export.", "style": "concise"}'
+```
+
+```json
+{
+  "summary": "LyEve adds eighteen ready-made flows.",
+  "model": "gpt-4o-mini",
+  "tokens_used": 74,
+  "tokens_in": 61,
+  "tokens_out": 13,
+  "cost_estimate": "0.000017",
+  "transcript_id": "1e7c9a40-3b2d-4f58-8a61-0d9e2c4b7f35"
+}
+```
+
+A key the provider refuses answers `503` with `ai summarization failed`.
+
+**4. Read the transcript of that call.**
+
+<div class="paths">
+<div data-path="console">
+
+Choose the **Transcripts** tab. The newest transcript is first. Open it to
+read its messages, download it as **JSON** or **Markdown**, or ask for a
+recap.
+
+</div>
+<div data-path="api">
+
+```bash
+curl "http://localhost:3001/api/admin/ai/transcripts?kind=route&limit=1" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The newest transcript is first, with its model, prompt version and number
+of messages. `GET /api/admin/ai/transcripts/{id}` adds the messages.
+
+</div>
+</div>
 
 ## Connect a provider
 
-A super admin adds providers in the console or with
-`POST /api/admin/ai/providers`. Keys are encrypted with `ENCRYPTION_KEY`, one
+A super admin adds providers with **New provider** on the **Providers** tab,
+or with `POST /api/admin/ai/providers`. The console form has the fields
+below. On console v0.21.0, the hint under **Priority** says lower is tried
+first. The engine tries the highest first, as the table says. Keys are encrypted with `ENCRYPTION_KEY`, one
 derived key per tenant.
 
 | Field | Meaning |
@@ -158,7 +201,8 @@ derived key per tenant.
 | `anthropic_compatible` | yes | no | no | when the model can see |
 
 `GET /api/admin/ai/providers/{id}/models` lists the provider's models, and
-`.../capabilities?model=` says what one model can do.
+`.../capabilities?model=` says what one model can do. In the console, open a
+provider and choose **List models**.
 
 ### Compatible servers and presets
 
@@ -183,7 +227,8 @@ With `"kind": "openai_compatible"`, a `preset` fills in what you left empty:
 
 A provider URL that resolves to a private, loopback or link-local address is
 refused unless the provider sets `allow_private: true`, which a local Ollama,
-vLLM or LM Studio needs. The address is checked when the provider is saved and
+vLLM or LM Studio needs. In the console form it is the
+**Allow a private address** switch, shown for the compatible kinds. The address is checked when the provider is saved and
 again on every call, and the instance's own database address is always
 refused.
 
@@ -192,24 +237,21 @@ skip those providers. With no other provider left, a call answers `503`.
 Enter each key again.
 
 :::caution[Web application firewall]
-With the [web application firewall](web-application-firewall.md) licensed,
-its rules refuse two requests this page needs, with `403` and
-`request blocked by WAF`:
-
-- A provider whose body names a loopback address such as `127.0.0.1`. Use a
-  `preset`, or a host name such as `localhost`, with `allow_private`.
-- The flow assistant's request, because the node catalog in its body looks
-  like an attack.
-
-Read the rule ids in the violation log and
-[add an exception](web-application-firewall.md#add-an-exception) for each one
-on that path.
+With the [web application firewall](web-application-firewall.md) licensed, its
+rule `SSRF-004` refuses a provider whose body names a private or loopback IP
+address, such as `127.0.0.1` or `10.0.0.5`, with `403` and
+`request blocked by WAF`. Name the server by its host name, such as
+`localhost` or `ollama`, or use a `preset`, together with `allow_private`. To
+keep the address, read the rule id in the violation log and
+[add an exception](web-application-firewall.md#add-an-exception) for it on
+that path.
 :::
 
 ## Turn AI off for a tenant
 
-A tenant admin sets two switches under **Operations > AI > AI settings**: **AI
-for this tenant** and **Store transcripts**. Over the API:
+A tenant admin sets two switches on the **Settings** tab of
+**Operations > AI**: **AI for this tenant** and **Store transcripts**. Each
+saves as soon as you change it. Over the API:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/ai/settings \
@@ -228,8 +270,10 @@ editor assistants refuse.
 Every call runs under the prompt for its use case: `default`, `assistant` (the
 content editor and `generate`), `flow_assistant` (the flow editor), `translate`,
 `summarize`, `suggest` (search suggestions), `alt_text`, `classify`,
-`extract`, `recap` and `support`. Edit them under **Operations > AI > Prompts**,
-or save a new version:
+`extract`, `recap` and `support`. On the **Prompts** tab, choose **Manage**
+beside a use case, edit the text and choose **Save as version 2** (the
+button names the next version). **Make the shipped default current** goes
+back to version 0. Over the API:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/ai/prompts/summarize \
@@ -255,7 +299,9 @@ The instructions a call sends are, in order:
 
 ## Use AI from the API
 
-These routes need an admin. Most take an optional `provider_id`, `model`,
+These routes have no control in the admin console, which writes with AI
+through the content editor's assistant instead. They need an admin. Most
+take an optional `provider_id`, `model`,
 `max_tokens` (up to 200,000) and `temperature` (0 to 2, where 0 leaves the
 provider's default).
 
@@ -314,7 +360,8 @@ transcript its node.
 List them with `GET /api/admin/ai/transcripts`, filtered by `kind`,
 `subject_kind` and `subject_id`. `.../{id}/export?format=json` or
 `format=markdown` downloads one, and `POST .../{id}/recap` asks the same
-provider for a short recap and stores it on the transcript.
+provider for a short recap and stores it on the transcript. The **Transcripts** tab of **Operations > AI** lists them, and a
+transcript's page has the same downloads and the recap.
 
 Transcripts are kept for `AI_TRANSCRIPT_RETENTION` after they start, 30 days
 by default, and older ones are removed every hour. When the instance setting
@@ -329,7 +376,10 @@ tokens, per 1,000 output tokens and per generated image, with a `*` row per
 kind for models the table does not name. Vendors change their prices, so a
 super admin keeps the rows current with
 `PUT /api/admin/ai/prices/{kind}/{model}` (`input_per_1k`, `output_per_1k`,
-`image_per_call`) and removes them with `DELETE`. The estimate is what the
+`image_per_call`) and removes them with `DELETE`. In the console, the **Prices** tab
+has **New price**, with **Kind**, **Model**, **Input per 1K**,
+**Output per 1K** and **Image per call**, and **Edit** and **Delete** on each
+row. The estimate is what the
 table says, not what the vendor bills.
 
 :::caution
@@ -352,7 +402,8 @@ times.
 
 The support desk answers questions from a knowledge base you write, with the
 same providers, prompts and transcripts. It is for admins: there is no public
-chat route. Each conversation is a transcript of kind `support`, under the
+chat route. The support desk has no page in admin console v0.21.0, so it
+is used through the API. Each conversation is a transcript of kind `support`, under the
 tenant's `support` prompt.
 
 ```bash
@@ -423,9 +474,9 @@ Every desk route needs the `support` capability and answers `402` naming
 | `AI_TRANSCRIPTS_ENABLED` | Instance switch for storing transcripts. `false`, `0`, `off` or `no` turns it off | `true` |
 | `AI_PROVIDER_TIMEOUT` | Longest one provider call may take, held between `5s` and `300s` | `60s` |
 
-The last three can also be set on the AI configuration form in the admin
-console, where a change applies without a restart. An environment variable
-wins over the form. Providers live in the database, not in the environment.
+Set them in the environment or the configuration file, and restart. The
+**Settings** tab of **Operations > AI** shows the retention and the instance
+transcript switch, and says they are set outside the admin. Providers live in the database, not in the environment.
 If you set `LYEVE_PLUGINS` to choose which features start, include `ai` in it.
 See [licensing and tiers](../concepts/licensing-and-tiers.md).
 
