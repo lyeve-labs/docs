@@ -451,7 +451,7 @@ At sign-in (`POST /api/admin/auth/mfa-verify`):
 
 | Status | Message | Cause |
 |---|---|---|
-| `422` | `The provided verification code is invalid.` | The code is wrong and is not an unused backup code. |
+| `422` | `The provided verification code is invalid.` | The code is wrong and is not an unused backup code. A wrong six-digit code counts toward the lockout even while backup codes cannot be read. |
 | `429` | `Too many MFA verification attempts. Please log in again to receive a new challenge.` | 5 wrong codes for the account within 15 minutes, or 5 tries on one challenge. |
 
 On the routes under `/api/admin/mfa`:

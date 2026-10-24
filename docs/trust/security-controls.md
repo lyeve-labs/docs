@@ -316,7 +316,12 @@ development signs with HMAC-SHA256 over `JWT_SECRET` instead.
 After five failed logins in 15 minutes the account is locked for the rest of the
 window. MFA codes have their own limits: five failed codes per user in 15
 minutes, five attempts per challenge, and a challenge that verifies once cannot
-be used again. With [Caching](../features/caching.md) on `CACHE_DRIVER=redis`
+be used again. Every attempt, password or code, is counted before it is
+checked, so wrong guesses sent at the same time cannot get more checked than
+the limit allows. A correct answer gives back only its own attempt: the wrong
+ones before it stay counted, so four wrong, one right and one more wrong locks
+the account. A wrong six-digit code is counted even while backup codes cannot
+be read. With [Caching](../features/caching.md) on `CACHE_DRIVER=redis`
 and `REDIS_URL` set, this state is shared: replicas enforce one limit between
 them, a restart does not lift a lock, and a used challenge is refused on every
 replica. Without it the state is per instance, and the server says which at

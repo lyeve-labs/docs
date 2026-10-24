@@ -386,7 +386,10 @@ curl -X POST http://localhost:3001/api/admin/search/reindex \
 
 The answer reports what was indexed, such as
 `"message": "elasticsearch: 1840 indexed, 0 skipped, 0 errors"`. After that, creates, updates
-and deletes reach the external index within about five seconds. On the database backend a
+and deletes reach the external index within about five seconds. A person's
+[erasure](../trust/data-protection.md#right-to-erasure) reaches it too: the
+document of an erased comment or form submission is removed, or indexed again
+as its row now reads. On the database backend a
 rebuild is rarely needed, and answers `rebuilt: <n> indexed, ...` on PostgreSQL.
 
 ## Settings
