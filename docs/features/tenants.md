@@ -156,7 +156,7 @@ curl -X POST http://localhost:3001/api/admin/schemas \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-Tenant-ID: acme" \
   -H "Content-Type: application/json" \
-  -d '{"name": "note", "fields": [{"name": "title", "field_type": "text", "required": true}]}'
+  -d '{"name": "ticket", "fields": [{"name": "title", "field_type": "text", "required": true}]}'
 ```
 
 The answer is `200` with the stored definition.
@@ -164,7 +164,7 @@ The answer is `200` with the stored definition.
 **4. Write an entry into `acme`.** This is API only on v0.21.0.
 
 ```bash
-curl -X POST http://localhost:3002/api/v1/content/note \
+curl -X POST http://localhost:3002/api/v1/content/ticket \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-Tenant-ID: acme" \
   -H "Content-Type: application/json" \
@@ -173,17 +173,17 @@ curl -X POST http://localhost:3002/api/v1/content/note \
 
 The answer is `201` with the entry.
 
-**5. Read `note` from each tenant.** This is API only on v0.21.0.
+**5. Read `ticket` from each tenant.** This is API only on v0.21.0.
 
 ```bash
-curl http://localhost:3002/api/v1/content/note \
+curl http://localhost:3002/api/v1/content/ticket \
   -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: acme"
 
-curl http://localhost:3002/api/v1/content/note \
+curl http://localhost:3002/api/v1/content/ticket \
   -H "Authorization: Bearer $TOKEN" -H "X-Tenant-ID: default"
 ```
 
-The first lists the entry. The second answers `404`, because the `note` content type exists
+The first lists the entry. The second answers `404`, because the `ticket` content type exists
 only in `acme`.
 
 **6. Open the tenant in the admin console.** In **Operations > Tenants**, `acme` is in the

@@ -90,7 +90,7 @@ The answer is `200` with the same settings.
 <div data-path="console">
 
 1. Open **Schema builder** and choose **New schema**.
-2. Enter `Article` in **Display name** and `article` in **Machine name**.
+2. Enter `News` in **Display name** and `news` in **Machine name**.
 3. Choose **Add field**, name it `title` and tick its **i18n** box, **Translated per locale**.
 4. Choose **Add field**, name it `text` and tick its **i18n** box.
 5. Choose **Save**.
@@ -102,7 +102,7 @@ The answer is `200` with the same settings.
 curl -X POST http://localhost:3001/api/admin/schemas \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name": "article", "fields": [{"name": "title", "field_type": "text", "localized": true}, {"name": "text", "field_type": "text", "localized": true}]}'
+  -d '{"name": "news", "fields": [{"name": "title", "field_type": "text", "localized": true}, {"name": "text", "field_type": "text", "localized": true}]}'
 ```
 
 </div>
@@ -113,7 +113,7 @@ curl -X POST http://localhost:3001/api/admin/schemas \
 <div class="paths">
 <div data-path="console">
 
-Open **Content**, pick **article** and choose **New entry**. Enter `Hello` in **Title** and
+Open **Content**, pick **news** and choose **New entry**. Enter `Hello` in **Title** and
 `First article.` in **Text**, then choose **Create**. Choose the entry's title in the list to
 open it.
 
@@ -124,7 +124,7 @@ open it.
 curl -X POST http://localhost:3001/api/admin/content \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"schema": "article", "slug": "hello-article", "title": "Hello", "body": {"text": "First article."}, "status": "published"}'
+  -d '{"schema": "news", "slug": "hello-article", "title": "Hello", "body": {"text": "First article."}, "status": "published"}'
 ```
 
 </div>
@@ -171,14 +171,14 @@ call your site makes, whichever way you wrote the entry. It needs a token in `TO
 shows how to get one with your console account:
 
 ```bash
-curl "http://localhost:3002/api/v1/content/article/$ENTRY?locale=fr-CA" \
+curl "http://localhost:3002/api/v1/content/news/$ENTRY?locale=fr-CA" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ```json
 {
   "id": "8c2b6f10-3d4e-4a57-9b81-0c2d3e4f5a67",
-  "schema_name": "article",
+  "schema_name": "news",
   "data": { "title": "Bonjour", "text": "Premier article." },
   "created_at": "2026-10-02T09:30:00Z",
   "updated_at": "2026-10-02T09:30:00Z",
@@ -200,7 +200,7 @@ fields written**.
 <div data-path="api">
 
 ```bash
-curl "http://localhost:3001/api/admin/content/$ENTRY/translations?schema=article" \
+curl "http://localhost:3001/api/admin/content/$ENTRY/translations?schema=news" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -298,7 +298,7 @@ send, and `DELETE` removes one.
 To see, field by field, where a reader's value comes from:
 
 ```bash
-curl "http://localhost:3001/api/admin/content/$ENTRY/translations/fr-CA/resolved?schema=article" \
+curl "http://localhost:3001/api/admin/content/$ENTRY/translations/fr-CA/resolved?schema=news" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
