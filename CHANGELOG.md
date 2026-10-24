@@ -4,6 +4,12 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.6.2] - 2026-10-24
+
+### Fixed
+
+- The tenants page and the localization page each create a content type no other page creates, `ticket` and `news`. Their old names, `note` and `article`, are also created by the schema changes page and the blog's Strapi migration guide. A reader who followed both pages met a refused rename or a list where the tenants page promised a 404, or lost an imported definition.
+
 ## [0.6.1] - 2026-10-24
 
 ### Changed
