@@ -4,6 +4,12 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.6.1] - 2026-10-24
+
+### Changed
+
+- The source code page limits the admin console's MIT entry to its public source, and names the plugin license agreement on lyeve.com as the terms for license verification, for the visual flow and schema editors and for any other LyEve code in the images whose source is not public. The license file the admin image ships for the editors is described as a summary of that agreement.
+
 ## [0.6.0] - 2026-10-23
 
 ### Added
