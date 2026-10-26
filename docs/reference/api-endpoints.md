@@ -79,7 +79,7 @@ travel under `data`.
 | `PUT` | `/api/v1/content/{schema}/{id}/unpublish` | `editor`, `admin`, `super_admin` | Take an entry back to draft |
 | `GET` | `/api/v1/content/{schema}/{id}/relations/{field}` | Any credential | The entries linked through a relation field, as `{"data": [...], "total": n}` |
 | `PUT` | `/api/v1/content/{schema}/{id}/relations/{field}` | `editor`, `admin`, `super_admin` | Replace the linked entries |
-| `GET` | `/api/v1/content/{schema}/{id}/revisions` | Any credential | An entry's revisions |
+| `GET` | `/api/v1/content/{schema}/{id}/revisions` | Any credential | An entry's revisions, kept when [content history](../features/content-history.md) is on for the type. Empty when none are stored |
 | `PUT` | `/api/v1/content/{schema}/{id}/revisions/{rev_id}/restore` | `editor`, `admin`, `super_admin` | Restore a revision as a new one |
 
 [Access rules](../features/access-rules.md) can narrow any of these per role and content type.
@@ -324,6 +324,7 @@ body, answer and role.
 
 | Feature | Paths | Needs |
 |---|---|---|
+| [Content history](../features/content-history.md) | `/api/admin/content/history/settings`, `/api/admin/content/history/usage`, `/api/admin/content/history/prune`, `/api/admin/content/history?schema=`, and activity at `/api/admin/content/activity`, across tenants at `/api/admin/content/activity/all` | Free. Reading versions older than 30 days needs `content-pro` |
 | [Content lifecycle](../features/content-lifecycle.md) | `/api/admin/content` and everything under it: revisions, diffs, schedules, relationships, previews | Free, with 30 days of revisions readable. Older revisions, [releases](../features/content-releases.md) and [comments](../features/editorial-comments.md) need `content-pro` |
 | [Editorial review](../features/editorial-review.md) | `/api/admin/review/` | Free, with one workflow per tenant. More, and escalation, quorum and conditions on a stage, need `review-pro` |
 | [Media](../features/media.md) | `/api/admin/media`, and `/api/v1/media/{id}/{name}` for a public file | Free, up to 1,000 [image transform](../features/image-transforms.md) variants per tenant. More need `media-pro` |

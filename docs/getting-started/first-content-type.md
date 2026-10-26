@@ -367,6 +367,8 @@ describes each kind of relation and what deleting an entry does to it.
 
 - [Drafts and publishing](../guides/user/drafts-and-publishing.md): how editors work with
   drafts, revisions and scheduled publishing in the admin console.
+- [Content history](../features/content-history.md): turn on revisions for the content types
+  that need them.
 - [Schema changes](../features/schema-changes.md): presets, renames and the history of every
   change.
 - [Webhooks](../features/webhooks.md): tell another system when a post is published.

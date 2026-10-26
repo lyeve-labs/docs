@@ -71,9 +71,10 @@ its job: `/api/admin/auth`, `/api/admin/users`, `/api/admin/invitations`,
 `/api/admin/gdpr`, `/api/admin/api-keys` and `/api/admin/admin-tokens`. Reads on
 those paths are still recorded in the access log.
 
-A super admin reads three more answers in full: the audit log, the compliance
-export of a legal hold and a tenant's member list. Each of those reads is
-recorded in the access log, and everyone else gets them masked.
+A super admin reads four more answers in full: the audit log, the
+[content activity log](content-history.md#activity-log), the compliance export
+of a legal hold and a tenant's member list. Each of those reads is recorded in
+the access log, and everyone else gets them masked.
 
 Admin API answers that hold configuration or text the product ships are sent
 as written and are not recorded, because none of it is personal data. These
@@ -264,7 +265,8 @@ rule name, or several joined by commas), `accessed_at` and `tenant_id`. An admin
 sees their own tenant. A super admin sees every tenant.
 
 A super admin's read is filed under the tenant the request names: the tenant
-in the member list's path, or the audit log's `tenant_id` filter. Every other
+in the member list's path, or the `tenant_id` filter on the audit log or on
+`GET /api/admin/content/activity/all`. Every other
 read by a super admin is filed under no tenant, so a tenant's admins never
 learn whose personal data a super admin read.
 

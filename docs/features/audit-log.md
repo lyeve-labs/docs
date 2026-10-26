@@ -363,7 +363,7 @@ A license with `audit` includes these routes. If the license lapses while the
 instance runs, they answer `402` and nothing is enforced. A license change
 applies without a restart. A privacy erasure of a subject that an active hold
 names in `filter_resource_id` or `filter_actor` erases nothing and reports the
-hold instead, whatever the license says.
+hold instead, whatever the license says. A hold set in any tenant counts.
 
 Enforcement runs once at start and then every 24 hours. Set
 `RETENTION_ENFORCE_INTERVAL` to a duration such as `6h` to change that.
@@ -433,7 +433,9 @@ curl -X POST http://localhost:3001/api/admin/legal-holds \
 
 Holds filter on `filter_action`, `filter_resource_type`, `filter_resource_id`,
 `filter_actor`, `filter_from`, `filter_to` and `filter_tenant_id`. `name` is
-required. A removed hold keeps protecting its entries for 30 days.
+required. A removed hold keeps protecting its entries for 30 days. A
+`filter_resource_id` that is a UUID is stored in lower case and matches the id
+written in lower or upper case.
 
 Run enforcement now:
 

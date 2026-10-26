@@ -17,7 +17,7 @@ shape, such as one blog post. This page builds a small blog, a `post` that belon
 | Relation | A field that links to an entry of another content type | a post's `author` |
 | Entry | One item written against a content type | the post "Hello, world" |
 | Status | Whether an entry is a draft, published or archived | `draft` |
-| Revision | A kept earlier version of an entry | the post before its last edit |
+| Revision | A kept earlier version of an entry, when history is on for its type | the post before its last edit |
 
 ## Content types
 
@@ -224,7 +224,7 @@ is served by the Content API under the same `id`.
 | Field values | Under `data` | Under `body`, beside `title`, `slug` and `status` |
 | Who may write | `editor`, `admin`, `super_admin` | `admin`, `super_admin` |
 | Unsafe HTML | Stored as sent | Removed on save |
-| Revisions | A copy before every update | Numbered, from `1` |
+| Revisions, when history is on | A copy before every update | Numbered, from `1` |
 
 On the Admin API the title and the slug are required. A slug is unique across the whole
 tenant, not only within one content type, so a second entry with the same slug answers `409`
@@ -276,19 +276,22 @@ database.
 
 ## Revisions
 
-LyEve keeps earlier versions of an entry, and each API keeps them its own way.
+LyEve keeps earlier versions of an entry when [content history](../features/content-history.md)
+is on for its content type. History is off on a new install. An administrator turns it on for
+every content type, for the ones they choose, or for one. Each API keeps versions its own way.
 
-- **Admin API and admin console.** Every write keeps a numbered revision: the title, the
-  body, the metadata, the status and a change note. Revisions start at `1`, never change once
-  written, and can be compared two at a time. Restoring one writes a new revision with the
-  old content, so history only grows.
+- **Admin API and admin console.** Every write that changes something keeps a numbered
+  revision: the title, the body, the metadata, the status and a change note. A save that
+  changes nothing keeps none. Revisions start at `1`, never change once written, and can be
+  compared two at a time. Restoring one writes a new revision with the old content.
 - **Content API.** Every update first keeps a copy of the entry as it was.
   `GET /api/v1/content/{type}/{id}/revisions` lists the copies, newest first, and
   `PUT /api/v1/content/{type}/{id}/revisions/{revision_id}/restore` writes one back. The
   restore keeps a copy of what it replaced.
 
-Every revision is kept on every install. A free install reads the last 30 days of them and
-each entry's newest revision, and a license with `content-pro` reads them all. See
+Revisions are kept for as long as the tenant's [retention](../features/content-history.md#retention)
+says, and forever when it sets none. A free install reads the last 30 days of them and each
+entry's newest revision, and a license with `content-pro` reads them all. See
 [Content lifecycle](../features/content-lifecycle.md#how-far-back-you-can-read).
 
 ## Changing a content type

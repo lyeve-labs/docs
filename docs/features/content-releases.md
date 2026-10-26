@@ -53,9 +53,10 @@ A release changes its entries in two stages:
   it.
 - If the instance stops partway, the release finishes going out a few minutes
   after it starts again.
-- Each entry that changes gets a revision and an audit entry, and sends the
-  same event a single publish sends, so webhooks, flows and search see every
-  entry.
+- Each entry that changes gets an audit entry, and a revision when
+  [content history](content-history.md) is on for its content type. It sends
+  the same event a single publish sends, so webhooks, flows and search see
+  every entry.
 
 A release moves through these states:
 

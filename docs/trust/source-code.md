@@ -22,7 +22,7 @@ These parts are commercial, and their source is not public:
 - **Every feature beyond the engine, including the ones included free.** They
   are commercial software under the [EULA](https://lyeve.com/legal/eula/). Free
   means free of charge, not open source. Content types, entries, draft and
-  publish, revisions and scheduled publishing come from two free features,
+  publish, content history and scheduled publishing come from two free features,
   [schema changes](../features/schema-changes.md) and
   [content lifecycle](../features/content-lifecycle.md). Access rules are a
   feature too.
