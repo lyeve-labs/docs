@@ -50,7 +50,7 @@ the tenant their credential belongs to. See [Tenants](../features/tenants.md).
 | `POST` | `/api/admin/auth/logout` | Signed in | End the session. An optional `refresh_token` in the body is revoked too |
 | `GET` | `/api/admin/auth/me` | Signed in | The caller's `id`, `email` and `roles` |
 | `GET` | `/api/admin/auth/memberships` | Signed in | The tenants the caller belongs to |
-| `POST` | `/api/v1/auth/token` | Anyone, rate limited | Sign in on the Content API with `email`, `password` and an optional `tenant`. Answers `token` and `expires_in`, in seconds |
+| `POST` | `/api/v1/auth/token` | Anyone, rate limited | Sign in on the Content API with `email`, `password` and an optional `tenant`. Answers `token` and `expires_in`, in seconds. An account with a second factor gets the `mfa_required` challenge instead, finished at `mfa-verify` |
 
 A token lasts `JWT_EXPIRY_SECS`, 900 seconds by default. Five failed sign-ins for one account
 within 15 minutes lock it for the rest of the window, and the lock answers exactly like a wrong

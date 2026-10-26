@@ -62,8 +62,9 @@ with a code, before it sets up an app.
 | **Backup codes** | Eight single-use codes shown when TOTP is turned on. Each one works once in place of a code. |
 | **Passkeys and security keys** | A second step, a sign-in without a password, or, for a key marked as the backup, a recovery sign-in. Enrolling one needs `mfa-pro`. |
 
-When an account has TOTP on, `POST /api/admin/auth/login` does not return a
-session. It returns a challenge:
+When an account holds a second factor, a password sign-in does not return a
+session, at `POST /api/admin/auth/login` or at the Content API's
+`POST /api/v1/auth/token`. It returns a challenge:
 
 ```json
 {
@@ -73,10 +74,13 @@ session. It returns a challenge:
 }
 ```
 
-`mfa_methods` is `["totp"]` for every account, with or without a passkey,
-because a passkey cannot finish a password sign-in's challenge. The
-challenge is exchanged for a session at `POST /api/admin/auth/mfa-verify`. Each
-challenge works once and expires five minutes after it is issued. TOTP secrets are encrypted at rest with the
+`mfa_methods` lists `totp` for every account, and adds `webauthn` for an
+account that holds a passkey. A code finishes the challenge at
+`POST /api/admin/auth/mfa-verify`, and a passkey finishes it as
+[Use passkeys](#use-passkeys) shows. Each challenge gives one session,
+whichever factor finishes it, and expires five minutes after it is issued. The
+session acts in the tenant the password step signed in to, with the roles the
+account holds there when the challenge is finished. TOTP secrets are encrypted at rest with the
 instance's `ENCRYPTION_KEY`.
 
 ## Turn it on
@@ -282,25 +286,25 @@ call.
 
 ## Use passkeys
 
-Console v0.21.0 has no screen to register a passkey or to sign in with one, so
+Console v0.22.0 has no screen to register a passkey or to sign in with one, so
 this is done over the API, from a page of your own that calls the browser's
 `navigator.credentials` functions.
 
 Registering a passkey and marking one as the backup key need `mfa-pro`. Every
 sign-in with a passkey stays free, so a passkey enrolled while the license
-covered it keeps working after a lapse, through step-up, passwordless,
+covered it keeps working after a lapse, through the second step of a password sign-in, passwordless,
 cross-device and recovery sign-in alike. Listing, renaming and removing a
 passkey, and clearing its backup mark, are free too. Without `mfa-pro` the
 register routes answer
 `402` with `{"error": "payment_required", "plugin": "mfa", "feature": "feature:mfa-pro", "upgrade_url": ""}`.
 
 :::caution[Turn on an authenticator app before the first passkey]
-A password sign-in challenges an account that holds a passkey, and the
-challenge takes only a code from an authenticator app or a backup code. An
-account whose only factor is a passkey has neither, so it signs in only
-through passwordless sign-in, which the admin console does not offer. Turn on
-the authenticator app first, which also gives the account its backup codes,
-and register the passkey after it.
+A password sign-in challenges an account that holds a passkey, and the admin
+console finishes the challenge only with a code from an authenticator app or a
+backup code. An account whose only factor is a passkey has neither, so it
+signs in only over the API, which the admin console does not use. Turn on the
+authenticator app first, which also gives the account its backup codes, and
+register the passkey after it.
 
 An account that is already passkey-only adds the app over the API. Sign in
 with the passkey through passwordless sign-in, send a passkey proof to
@@ -320,7 +324,16 @@ Every WebAuthn route comes in a begin and complete pair:
    with `?session_id=<session_id>` in the query.
 
 Registration takes an optional `&name=` in the query of the complete call, and
-answers `201` with `{"registered": true}`. Passwordless sign-in answers with a
+answers `201` with `{"registered": true}`.
+
+To finish a password sign-in's challenge with a passkey, send
+`{"challenge_token": "<challenge_token>"}` to
+`POST /api/admin/mfa/webauthn/auth/begin`. The complete call,
+`POST /api/admin/mfa/webauthn/auth/complete`, takes both
+`?challenge_token=<challenge_token>&session_id=<session_id>` in the query and
+answers `{"token": "eyJhbGciOi..."}`. Neither call needs a session. A
+challenge already finished, by a code or a passkey, answers `401` with
+`invalid challenge token`. Passwordless sign-in answers with a
 session:
 
 ```json
@@ -388,7 +401,8 @@ it.
 ## Routes
 
 The routes under `/api/admin/mfa` act on the signed-in person and need a
-session. An admin token is refused on all of them. The routes under
+session, apart from the two under `/api/admin/mfa/webauthn/auth`. An admin
+token is refused on all of them. Those two and the routes under
 `/api/admin/auth/webauthn` run before a session exists, so they are public,
 each with its own rate limit.
 
@@ -405,8 +419,8 @@ each with its own rate limit.
 | `POST` | `/api/admin/mfa/webauthn/register/begin` | signed in | Start registering a passkey |
 | `POST` | `/api/admin/mfa/webauthn/register/complete` | signed in | Finish registering a passkey. `201` |
 | `POST` | `/api/admin/mfa/proof/begin` | signed in | Start a passkey check that proves a factor before one is added or removed |
-| `POST` | `/api/admin/mfa/webauthn/auth/begin` | signed in | Start a passkey step-up check |
-| `POST` | `/api/admin/mfa/webauthn/auth/complete` | signed in | Finish a passkey step-up check |
+| `POST` | `/api/admin/mfa/webauthn/auth/begin` | public | Start finishing a password sign-in's challenge with a passkey |
+| `POST` | `/api/admin/mfa/webauthn/auth/complete` | public | Finish a password sign-in's challenge with a passkey and get a token |
 | `GET` | `/api/admin/mfa/webauthn/credentials` | signed in | List the person's passkeys |
 | `PUT` | `/api/admin/mfa/webauthn/credentials/{id}/name` | signed in | Rename a passkey |
 | `PUT` | `/api/admin/mfa/webauthn/credentials/{id}/backup` | signed in | Mark or unmark a passkey as the backup key |
@@ -464,6 +478,7 @@ codes in the `code` field:
 | `400` | `MFA not enabled` | Disable or regenerate was called on an account without MFA. |
 | `409` | `The authenticator setup changed while this code was checked. Start setup again.` | Another setup, verify or turn-off changed the pending key while TOTP verify checked the code. |
 | `401` | `The MFA challenge has expired. Please log in again.` | The challenge was used already or ran out. |
+| `401` | `invalid challenge token` | A passkey tried to finish a challenge that was used already, ran out or belongs to another tenant's domain. |
 | `403` | `admin-reset requires platform-level super_admin (no tenant scope)` | A super admin acting in one tenant called the reset. |
 | `503` | `WebAuthn not configured` | A passkey route was called while passkeys cannot run. |
 | `402` | `payment_required` | Registering a passkey, or marking one as the backup key, without `mfa-pro`. |
