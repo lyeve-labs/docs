@@ -173,7 +173,7 @@ covers renames and removals.
 ## 5. Turn on drafts and publishing
 
 With drafts on, each post carries a status: `draft`, `published` or `archived`. Only the API
-turns drafts on: the schema builder in console v0.21.0 has no switch for them. If you followed
+turns drafts on: the schema builder in console v0.22.0 has no switch for them. If you followed
 the API steps, `post-schema.json` turned them on in step 4, so go on to step 6.
 
 From the console path, run two commands. They use the address of

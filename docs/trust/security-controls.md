@@ -121,7 +121,7 @@ What is recorded includes:
 - data export jobs
 - subject export and erasure
 
-Not recorded on v0.55.0: creating or deleting an account, changing its roles,
+Not recorded on v0.56.0: creating or deleting an account, changing its roles,
 a super admin setting its password, granting a tenant membership, a password or SAML sign-in,
 archiving a tenant and withholding a tenant's features.
 
@@ -154,7 +154,7 @@ show:
 </details>
 
 In the console, **Insight > Audit log** lists the entries, filters them and
-exports them as JSON. Checking the chain is API only on v0.21.0.
+exports them as JSON. Checking the chain is API only on v0.22.0.
 
 **Check it:** call `GET /api/admin/audit-log/verify` as a super admin and expect
 `"valid": true`, with `"broken": 0` and an empty `broken_sequences`. The list route returns `chain_hash` per entry, but not the
@@ -202,7 +202,7 @@ the old key. SCIM provisioning tokens do rotate in place
 
 **Check it:** create a key on **Access > API keys** or with `POST /api/admin/api-keys`, use
 it once, and read `GET /api/admin/api-keys/{id}/audit`. Each use is a row with its method,
-path, status and address. A key's history is API only on v0.21.0.
+path, status and address. A key's history is API only on v0.22.0.
 
 ## Rate limits
 

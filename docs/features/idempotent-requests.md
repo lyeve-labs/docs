@@ -115,7 +115,7 @@ themselves.
 </div>
 </div>
 
-**5. Clear the key.** The console on v0.21.0 releases only a key whose request has not
+**5. Clear the key.** The console on v0.22.0 releases only a key whose request has not
 finished, so clear a stored key with the API. The answer is `204`, and the next request with
 the key runs again:
 

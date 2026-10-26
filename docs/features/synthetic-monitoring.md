@@ -58,7 +58,7 @@ has an open alert, an **Unacknowledged alerts** card lists it with an **Acknowle
 a **Timeout, in seconds**, the **Failures before an alert** and whether to **Run on the
 schedule**. The form has no region field, so a probe created there runs under all four region
 labels, and its timeout starts at `10` where the API's default is `30`. Response time trends
-are read with the API on v0.21.0.
+are read with the API on v0.22.0.
 
 ![The Synthetic monitoring page with two probes: Checkout API, a health check that is failing, and Partner feed webhook, a webhook delivery that is paused.](images/synthetic-monitoring.png)
 
@@ -118,7 +118,7 @@ Copy the `id` into `PROBE_ID`.
 Choose the run button on its row, labeled **Run Public site now**. The page reports
 `Public site passed in` with the response time, and **Last run** updates.
 
-On v0.21.0, **Run now** on a failing probe can stop before it records its results, so wait
+On v0.22.0, **Run now** on a failing probe can stop before it records its results, so wait
 for the schedule or use the API.
 
 </div>
@@ -141,7 +141,7 @@ an `error_message`. The run counts toward the alert threshold the same as a sche
 </div>
 </div>
 
-**3. Read the response time trend for the last hour.** This is API only on v0.21.0. If you
+**3. Read the response time trend for the last hour.** This is API only on v0.22.0. If you
 created the probe in the console, list the probes and copy its `id` into `PROBE_ID`:
 
 ```bash

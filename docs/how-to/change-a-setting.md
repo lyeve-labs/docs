@@ -155,7 +155,7 @@ refused the answer is `409`. A license goes to `POST /api/admin/license/renew`, 
 </div>
 </div>
 
-On console v0.21.0, **Settings > Configuration** lists only the settings one of the three places
+On console v0.22.0, **Settings > Configuration** lists only the settings one of the three places
 sets, so it cannot save a setting for the first time. Save that one with the API, or on its
 feature's own settings page.
 

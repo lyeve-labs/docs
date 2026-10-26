@@ -73,7 +73,7 @@ If you set `LYEVE_PLUGINS`, include `waf` in it.
 
 ## Try it
 
-Admin console v0.21.0 shows whether the firewall is enforcing under **Settings > Security**. It
+Admin console v0.22.0 shows whether the firewall is enforcing under **Settings > Security**. It
 has no screen for the rules, the violation log, exceptions or settings, so the steps on this page
 use the engine API.
 

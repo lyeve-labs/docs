@@ -28,7 +28,7 @@ in its section.
 :::tip[Best for]
 - **Drafting and rewriting from your own code.** The content assistant route
   writes a first draft, changes the tone, shortens or translates an entry. On
-  console v0.21.0 it is API only.
+  console v0.22.0 it is API only.
 - **Translating a field.** Send one field and a target locale, keep product
   names with a glossary, and get text marked as machine translation.
 - **Alt text for the media library.** **Suggest alt text** describes an image
@@ -184,7 +184,7 @@ of messages. `GET /api/admin/ai/transcripts/{id}` adds the messages.
 
 A super admin adds providers with **New provider** on the **Providers** tab, or
 with `POST /api/admin/ai/providers`. The console form has the fields below. On
-console v0.21.0, the hint under **Priority** says lower is tried first. The
+console v0.22.0, the hint under **Priority** says lower is tried first. The
 engine tries the highest first, as the table says. Keys are encrypted with
 `ENCRYPTION_KEY`, one derived key per tenant.
 
@@ -344,7 +344,7 @@ The text depends on the model. To keep it, send it as `alt_text` with
 
 ## Use AI from the API
 
-These routes have no control in admin console v0.21.0. They need an admin.
+These routes have no control in admin console v0.22.0. They need an admin.
 Most take an optional `provider_id`, `model`, `max_tokens` (up to 200,000)
 and `temperature` (0 to 2, where 0 leaves the provider's default).
 
@@ -364,7 +364,7 @@ translation yourself. A glossary entry that maps a term to itself keeps a
 product name untranslated.
 
 The content assistant is `POST /api/admin/content/ai-assist`. It is API only
-on console v0.21.0: no screen of the console calls it. It takes an `action`
+on console v0.22.0: no screen of the console calls it. It takes an `action`
 (`generate`, `rewrite`, `translate`, `summarize` or `tone-adjust`) and the
 entry's current text:
 
@@ -467,7 +467,7 @@ times.
 
 The support desk answers questions from a knowledge base you write, with the
 same providers, prompts and transcripts. It is for admins: there is no public
-chat route. The support desk has no page in admin console v0.21.0, so it is used
+chat route. The support desk has no page in admin console v0.22.0, so it is used
 through the API. Each conversation is a transcript of kind `support`, under the
 tenant's `support` prompt.
 
@@ -543,7 +543,7 @@ Set them in the environment, in the configuration file, or as a super admin in
 **Settings > Configuration**. The **Settings** link on the **AI content** page
 under **Plugins** opens that page filtered to `ai`, with **Save** beside each
 setting. A change applies without a restart, an environment variable wins,
-and the configuration file wins over a saved value. On console v0.21.0, the
+and the configuration file wins over a saved value. On console v0.22.0, the
 **Settings** tab of **Operations > AI** keeps showing the default retention
 after you save another. Providers live in the database, not in the
 environment.

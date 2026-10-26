@@ -89,7 +89,7 @@ every tenant. The result comes back keyed per tenant under `tenants` and lists
 `matched_tenants`. It is never merged flat, because the same address can name two
 different people in two tenants. On a single-tenant install the sweep reaches the
 `default` tenant alone, and `scope` says `tenants_covered: 1`. The sweep is API
-only on v0.21.0: the console asks of your own tenant.
+only on v0.22.0: the console asks of your own tenant.
 
 The export is never masked (see [Masking](#masking)), so the bundle carries the
 subject's data as a subject access request requires.
@@ -168,7 +168,7 @@ admin reading every tenant's log sees it, never a tenant's admins. The entry nam
 the identifier, so the log proves the request happened without keeping who it
 was about: `sha256:` followed by the hex SHA-256 of the identifier exactly as
 the request sent it. To find the entry for a subject later, compute the digest
-and filter the audit log by it. This lookup is API only on v0.21.0, because the
+and filter the audit log by it. This lookup is API only on v0.22.0, because the
 console's audit log search reads a resource id only when it is a UUID:
 
 ```bash
@@ -248,7 +248,7 @@ skips every entry a hold covers.
 `POST /api/admin/retention/compliance-export` (super_admin) with
 `{"legal_hold_id": "...", "format": "json"}` (or `csv`) returns the entries a
 hold preserves, for disclosure to a court or a regulator. It is API only on
-v0.21.0.
+v0.22.0.
 
 ## Retention
 
@@ -343,7 +343,7 @@ tenant's writes may land. It does not look at where a client connects from.
 Open **Settings > Data residency** and choose **New region**. Fill in **Slug**, such as
 `eu-central`, **Name** and **Runs on**, such as `aws`, then choose **Create**. The report at
 the top counts **Regions**, **Tenants**, **Replicated** and **Not placed**, and lists each
-tenant with its region. Placing a tenant in a region is API only on v0.21.0.
+tenant with its region. Placing a tenant in a region is API only on v0.22.0.
 
 </div>
 <div data-path="api">

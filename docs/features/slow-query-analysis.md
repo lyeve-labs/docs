@@ -46,7 +46,7 @@ endpoint got slow, and what to index.
 - A plan is read with `EXPLAIN`, without the statement's values. On
   PostgreSQL, `pg_stat_statements` replaces every value with a placeholder
   such as `$1`, and PostgreSQL refuses to plan a statement that still holds
-  one, so such a statement is skipped. On engine v0.55.0 that covers the
+  one, so such a statement is skipped. On engine v0.56.0 that covers the
   statements LyEve runs for content, so on PostgreSQL the plans you see come
   from statements written without values.
 - A server-sent event stream or a WebSocket is never captured, because it
@@ -225,7 +225,7 @@ The plan is PostgreSQL's JSON plan, shortened here:
 table, the columns and why, and `ddl` is the statement that would create the
 index. Here the first suggestion is the one to act on: the statement filters
 `_post` on `updated_at`, and an index on that column lets the database read
-only the recent rows. On engine v0.55.0 a suggestion for a sort names no
+only the recent rows. On engine v0.56.0 a suggestion for a sort names no
 table, and its `ddl` does not run, so skip a suggestion whose `table` is
 empty.
 

@@ -66,7 +66,7 @@ you are signed in to the admin console. For the API steps, you need a token in `
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Create a `story` content type with draft and publish.** Only the API turns on drafts and
-publishing. The Schema builder in console v0.21.0 has no switch for them, so run this call
+publishing. The Schema builder in console v0.22.0 has no switch for them, so run this call
 even when you follow the console steps after it.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows how to get a token with your console account:
@@ -244,7 +244,7 @@ curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/rollback \
 </div>
 
 **7. Schedule it to publish and then archive.** Schedules are API only. The console has no
-schedule control in v0.21.0:
+schedule control in v0.22.0:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID/entry-schedule \
@@ -342,7 +342,7 @@ You can also create an entry as published by sending `"status": "published"` on 
 </div>
 </div>
 
-Archiving and change notes are API only. The console in v0.21.0 has no archive control, and
+Archiving and change notes are API only. The console in v0.22.0 has no archive control, and
 its saves record no note.
 
 ## Compare and roll back revisions
@@ -380,7 +380,7 @@ and the older history comes back with it.
 
 ## Schedule a publish or an archive
 
-Schedules are API only. The console in v0.21.0 has no schedule control.
+Schedules are API only. The console in v0.22.0 has no schedule control.
 
 `PUT /api/admin/content/{id}/entry-schedule` sets `scheduled_publish_at`,
 `scheduled_unpublish_at`, or both, with an optional `timezone`:
@@ -406,7 +406,7 @@ is `published` or `archived`. `GET /api/admin/content/{id}/schedules` lists them
 
 ## Link entries to each other
 
-Links are API only. The console in v0.21.0 has no control for them.
+Links are API only. The console in v0.22.0 has no control for them.
 
 A relationship links two entries directly, without a relation field in the content type. Use
 it for links an editor decides case by case, such as "see also". For links every entry of a

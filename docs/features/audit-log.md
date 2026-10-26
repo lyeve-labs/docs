@@ -62,7 +62,7 @@ action, resource type or user id in the search box, or pick an action under
 super admin also sees **Prune**.
 
 **Export JSON**, and **Export all** for a super admin, sit beside **Prune**. On
-console v0.21.0, behind a proxy that sends `/api/admin` to the engine, as the
+console v0.22.0, behind a proxy that sends `/api/admin` to the engine, as the
 [Docker Compose guide](../deploy/docker-compose.md) sets up, these buttons
 answer with an error instead of a file. Export the log with the API there, as
 [Export the log](#export-the-log) shows.
@@ -171,7 +171,7 @@ The answer holds the `schema.create` entry with `"resource_id": "post"`.
 
 Download the newest rows as CSV, two at most. Use the API for this behind a proxy that
 sends `/api/admin` to the engine, where the console's export buttons fail on
-v0.21.0. If you work in the console, sign in over the API to get a token, as
+v0.22.0. If you work in the console, sign in over the API to get a token, as
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows, and keep it in `TOKEN`:
 

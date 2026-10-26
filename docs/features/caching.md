@@ -257,7 +257,7 @@ providers, use the same names with the `CACHE_PROVIDER_N_` prefix, such as
 ## Move to a new cache server
 
 Copy entries from one provider to another before you switch. This needs a
-super admin and `cache-pro`. Console v0.21.0 has no screen to move entries or
+super admin and `cache-pro`. Console v0.22.0 has no screen to move entries or
 to time the providers, so both run over the API:
 
 ```bash

@@ -142,7 +142,7 @@ that one with `GET /api/admin/email-templates/key/welcome` and use its `id`.
 </div>
 
 **3. Add a French translation.** Only the API holds translations: the
-template form in console v0.21.0 has no locale. From the console path, get a
+template form in console v0.22.0 has no locale. From the console path, get a
 token for your console account as
 [Sign in](../getting-started/quickstart.md#3-sign-in) shows, and read the
 template's id first:
@@ -299,7 +299,7 @@ The first SMTP provider is free. To add one:
 4. Keep **Priority** at `0`, enter `1000` in **Max per hour**, and choose
    **Create**.
 
-The SMTP form in console v0.21.0 has no field for `webhook_secret`, which the
+The SMTP form in console v0.22.0 has no field for `webhook_secret`, which the
 [delivery webhook](#record-bounces-opens-and-clicks) checks, so set that one
 over the API.
 
@@ -527,7 +527,7 @@ answered, and a failed send is logged without failing the write.
 ## Bounces and suppressions
 
 Bounce classification, the bounce list and its stats need `email-pro`. The
-suppression list is free. Only the API manages it: console v0.21.0 has no page
+suppression list is free. Only the API manages it: console v0.22.0 has no page
 for the suppression list or for bounces. A bounce is classified as `hard` or `soft`, with a category such as invalid
 mailbox, mailbox full, spam blocked, rate limited, DNS failure or TLS failure,
 from an enhanced status code such as `5.1.1`, a plain SMTP code or the

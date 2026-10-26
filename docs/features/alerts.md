@@ -94,7 +94,7 @@ failure.**
 <div class="paths">
 <div data-path="console">
 
-Console v0.21.0 cannot run a job on demand, so this job runs every minute.
+Console v0.22.0 cannot run a job on demand, so this job runs every minute.
 
 1. Open **Operations > Scheduled jobs** and choose **New job**.
 2. Enter `always-fails` in **Name**, `* * * * *` in **Cron schedule** and

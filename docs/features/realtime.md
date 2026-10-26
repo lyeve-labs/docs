@@ -47,7 +47,7 @@ reads the counts again.
 ![The Realtime page with two server-sent event streams and two WebSocket connections open, all held by the default tenant, and the events pushed and broadcasts sent so far.](images/realtime.png)
 
 **Delivery > API labs** opens a socket and shows what arrives, as [Try it](#try-it)
-shows. Console v0.21.0 has no screen to broadcast or to list who is online, so
+shows. Console v0.22.0 has no screen to broadcast or to list who is online, so
 those sections use the engine API.
 
 ## How it works
@@ -92,7 +92,7 @@ An API key that holds `ws:read` receives every content notice of its tenant on
 Every connection must come from an allowed origin: its `Origin` header must be
 in `CORS_ORIGINS` or match the instance's own host. Browsers send it on every
 WebSocket and on a stream opened from another origin. An SSE stream opened
-from a page on the instance's own origin carries none, and engine v0.55.0
+from a page on the instance's own origin carries none, and engine v0.56.0
 refuses it. A server-side client sets it, or it is refused with
 `403 origin not allowed`.
 
@@ -173,7 +173,7 @@ sends back as `Last-Event-ID`. A comment line keeps the stream open every 10
 seconds, which is inside the usual idle timeout of a proxy in front of the
 instance.
 
-A browser page cannot hold such a stream with its session on engine v0.55.0.
+A browser page cannot hold such a stream with its session on engine v0.56.0.
 From the instance's own origin it sends no `Origin`, and from another origin the
 Content API does not allow credentials. Use a WebSocket in the browser, and SSE
 from a server or a client that sets its own headers.

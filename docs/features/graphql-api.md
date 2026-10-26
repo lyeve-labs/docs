@@ -129,7 +129,7 @@ curl http://localhost:3002/api/v1/graphql -H "Authorization: Bearer $TOKEN"
 ```
 
 ```json
-{ "message": "GraphQL endpoint ready. POST a query to this URL.", "plugin": "graphql", "version": "v0.55.0" }
+{ "message": "GraphQL endpoint ready. POST a query to this URL.", "plugin": "graphql", "version": "v0.56.0" }
 ```
 
 </div>
