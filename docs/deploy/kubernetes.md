@@ -347,9 +347,10 @@ answers them with `404`, so point it at the admin host, which routes by path.
 The console refuses to start without it, so it names the same host.
 
 The console runs as one replica. It renews a session by trading the session's refresh token
-with the engine, and the engine ends the session when a token it already traded comes back.
-Two replicas renewing one session at the same moment send that token twice, so the user is
-signed out. To run more than one, the Gateway must pin each browser to one replica with a
+with the engine. A token traded again within ten seconds gets the same new token, so two
+replicas renewing one session at the same moment keep it. A token that comes back after those
+ten seconds ends the session, so a replica that renews with a stale token signs the user out.
+To run more than one, the Gateway must pin each browser to one replica with a
 cookie. [What the Gateway must do](#what-the-gateway-must-do) says where that is set.
 
 ## Gateway
@@ -467,7 +468,7 @@ Raise the limit to the largest body you send through this Gateway, or keep each 
 68 MiB.
 
 **One console replica, unless the Gateway pins a session to one replica.** The Admin console
-section above explains why two replicas sign users out. The Gateway API's own field for cookie
+section above explains how two replicas can sign users out. The Gateway API's own field for cookie
 session persistence is in its experimental channel only, so it needs the experimental CRDs, and
 it may change. Keep `replicas: 1` on the console unless your implementation pins each browser to
 one replica with a cookie.

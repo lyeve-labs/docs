@@ -46,7 +46,7 @@ the tenant their credential belongs to. See [Tenants](../features/tenants.md).
 |---|---|---|---|
 | `POST` | `/api/admin/auth/login` | Anyone, rate limited | Sign in with `email`, `password` and an optional `tenant`. Answers `user`, `token`, `csrf_token` and `refresh_token`, and sets the session cookie |
 | `POST` | `/api/admin/auth/mfa-verify` | Anyone, rate limited | Finish a sign-in that answered `{"mfa_required": true, "challenge_token": "..."}`. Send `challenge_token` and `code` |
-| `POST` | `/api/admin/auth/refresh` | Anyone, rate limited | Trade `refresh_token` for a new `token`, `refresh_token`, `csrf_token` and `expires_in`. A refresh token lasts `REFRESH_TOKEN_TTL_SECS`, 30 days by default |
+| `POST` | `/api/admin/auth/refresh` | Anyone, rate limited | Trade `refresh_token` for a new `token`, `refresh_token`, `csrf_token` and `expires_in`. A refresh token lasts `REFRESH_TOKEN_TTL_SECS`, 30 days by default. Trading the same `refresh_token` again within ten seconds answers the same new token once, then `409` with `AUTH_TOKEN_ROTATED`, and the session stays. A token traded again after that ends the session with `401` |
 | `POST` | `/api/admin/auth/logout` | Signed in | End the session. An optional `refresh_token` in the body is revoked too |
 | `GET` | `/api/admin/auth/me` | Signed in | The caller's `id`, `email` and `roles` |
 | `GET` | `/api/admin/auth/memberships` | Signed in | The tenants the caller belongs to |
