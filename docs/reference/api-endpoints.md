@@ -260,7 +260,7 @@ production instance without `LYEVE_CONSOLE_URL` answers the start with `503` and
 | `GET` | `/api/admin/plugins/running` | Signed in | `plugins`, the features serving your tenant, and `withheld`, the ones that run but are withheld from it |
 | `GET` | `/api/admin/plugins/{name}/schema` | `admin` | The JSON Schema of a feature's settings |
 | `GET` | `/api/admin/plugins/{name}/config` | `admin` | A feature's saved settings |
-| `PUT` | `/api/admin/plugins/{name}/config` | `super_admin` | Save a feature's settings |
+| `PUT` | `/api/admin/plugins/{name}/config` | `super_admin` | Save a feature's settings. A key the feature's schema does not list answers `422` with `not a setting of plugin <name>: <keys>`, and nothing is saved |
 | `POST` | `/api/admin/plugins/{name}/config/reset` | `super_admin` | Put a feature's settings back to the defaults |
 | `GET` | `/api/admin/entitlements` | `admin` | What the license grants. See [Licensing and tiers](../concepts/licensing-and-tiers.md) |
 | `GET` | `/api/admin/license` | Signed in | `links` for managing the license, and `renew`, whether the renew route accepts a key |
