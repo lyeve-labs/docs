@@ -174,8 +174,8 @@ shows. An [admin token](../how-to/admin-tokens.md) cannot change these settings.
    ```
 
    The list carries `"history_enabled": true`, and each version names its `action`, such as
-   `updated`, and its `source`, such as `console` or `api`. Sending the same title again
-   adds no version.
+   `updated`, and its `source`, here `console`, which the Admin API records as the console
+   does. Sending the same title again adds no version.
 
 4. See what history takes:
 
@@ -290,7 +290,7 @@ apart from history, so it can stay on while history is off. It is on by default.
 | Field | Values |
 |---|---|
 | `action` | `created`, `updated`, `published`, `unpublished`, `deleted`, `rollback`, `scheduled_publish`, `scheduled_unpublish`, and `history_settings` and `history_deleted` for the settings |
-| `source` | `console`, `api` for the Admin API, the Content API, GraphQL, gRPC and bulk writes over the API, `flow`, `release`, `schedule`, `import`, and `backfill` for an entry the content screens picked up after another writer created it |
+| `source` | `console` for the admin console and the Admin API, `api` for the Content API and for a status change another feature makes through it, such as an approval, `graphql`, `grpc`, `bulk-import` for a bulk import's direct writes, `import` for an entry another feature saves through the content screens' writer, `flow`, `release`, `schedule`, and `backfill` for an entry the content screens picked up after another writer created it |
 | `actor_id`, `actor_email` | Who made the change, or `null` when no one is known |
 | `actor_kind` | How the writer signed in: `user` for a session, `admin_token` or `api_key`. `null` when the writer is unknown |
 | `fields` | The names of the fields that changed |
