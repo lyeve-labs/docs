@@ -67,8 +67,12 @@ curl -X POST http://localhost:3001/api/admin/gdpr/export \
 </div>
 </div>
 
-`identifier` is an email address or a user id, 1 to 320 characters, with no
-control characters. Every feature that stores personal data contributes its
+`identifier` is an email address, a user id or an IP address, 1 to 320
+characters, with no control characters. Anything else, such as a first name,
+answers `422` with
+`identifier must be an email address, an account id or an IP address`, because
+erasure would redact that word in the records of everyone whose text holds it.
+Every feature that stores personal data contributes its
 section, and the response merges them:
 
 | Field | Meaning |
