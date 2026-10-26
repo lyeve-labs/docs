@@ -268,7 +268,9 @@ The relay is checked at every send. Its host is resolved once, and the send
 connects to the address it checked. A relay that resolves to loopback or a
 private network is refused unless `SMTP_ALLOWED_PRIVATE_NETWORKS` lists every
 address its name resolves to. `localhost` resolves to both `127.0.0.1` and
-`::1`, so list both.
+`::1`, so list both. A relay or an API provider host in `100.64.0.0/10`, the
+range Tailscale hands out, needs no entry when the engine runs with
+`LYEVE_OUTBOUND_ALLOW_CGNAT=true`.
 
 `SMTP_TLS=true` uses implicit TLS, usually on port 465. Any other value
 connects in plain text and upgrades with STARTTLS when the relay offers it, so

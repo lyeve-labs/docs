@@ -435,9 +435,9 @@ plain IPv6.
 
 An install that reaches its own services over Tailscale sets
 `LYEVE_OUTBOUND_ALLOW_CGNAT=true` to allow `100.64.0.0/10` for every tenant.
-[Email](../features/email.md) runs its own check and reads
-`SMTP_ALLOWED_PRIVATE_NETWORKS` instead, so a relay in that range needs
-`100.64.0.0/10` listed there.
+[Email](../features/email.md) honors it too: an SMTP relay or an API provider
+host in that range is accepted without an entry in
+`SMTP_ALLOWED_PRIVATE_NETWORKS`.
 
 ## Not yet
 
