@@ -28,7 +28,7 @@ too.
 
 ## Try it
 
-Admin console v0.21.0 has no screen of its own for the key set or for checking a token, so these
+Admin console v0.22.0 has no screen of its own for the key set or for checking a token, so these
 steps use the engine API.
 
 1. Fetch the key set from the Content API:

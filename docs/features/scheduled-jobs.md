@@ -118,7 +118,7 @@ The answer is `201` with the job:
 </div>
 
 **2. Run it now instead of waiting for 02:00.** Only the API runs a job on
-demand: console v0.21.0 has no button for it. From either path, find the
+demand: console v0.22.0 has no button for it. From either path, find the
 job's id and trigger it. From the console path, get a token for your console
 account as [Sign in](../getting-started/quickstart.md#3-sign-in) shows:
 
@@ -141,7 +141,7 @@ background, and your endpoint receives `{"format": "csv"}`.
 
 Reload **Operations > Scheduled jobs**. **Last run** shows when the job ran,
 with a check for a run that worked and a cross for one that failed. Console
-v0.21.0 shows no status code or error.
+v0.22.0 shows no status code or error.
 
 </div>
 <div data-path="api">

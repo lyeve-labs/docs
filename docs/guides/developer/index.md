@@ -34,6 +34,7 @@ The pages it links hold the detail. This page tells you which one to read next.
 | Check a LyEve token inside my own service | [Validate tokens with JWKS](../../integrations/validate-tokens-jwks.md) |
 | Page through entries, filter them, include related ones | [Query parameters](../../reference/api-endpoints.md#query-parameters) and [the data model](../../concepts/data-model.md) |
 | Publish, unpublish or restore a revision | [Drafts and publishing](../user/drafts-and-publishing.md) |
+| Turn content history on, set its retention or read who changed what | [Content history](../../features/content-history.md) |
 | Retry a write without creating it twice | [Idempotent requests](../../features/idempotent-requests.md) |
 | Shape an endpoint the way my frontend wants it | [Build a custom API with flows](../../how-to/build-a-custom-api-with-flows.md) |
 | Query over GraphQL or gRPC | [GraphQL API](../../features/graphql-api.md), [gRPC API](../../features/grpc-api.md) |

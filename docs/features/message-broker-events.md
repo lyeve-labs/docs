@@ -123,7 +123,7 @@ curl -X PUT http://localhost:3001/api/admin/config \
 ```
 
 The answer lists the keys it took under `saved`. Once saved, each key shows in
-**Settings > Configuration** with **Save** beside it. On console v0.21.0 that
+**Settings > Configuration** with **Save** beside it. On console v0.22.0 that
 page lists only settings that already have a value, so it changes a saved
 broker setting but cannot add the first one. The web application firewall
 refuses a URL that names a private IP address, so name the broker by its host
@@ -159,7 +159,7 @@ curl -X POST http://localhost:3002/api/v1/content/post \
 
 The subscriber prints a message on `lyeve.tenant.default.post.after_create`
 with the entry in `data`. An entry created through the API carries its fields
-in `data`. On console v0.21.0, an entry created in the console arrives with
+in `data`. On console v0.22.0, an entry created in the console arrives with
 the whole stored entry in `data` and its fields under `data.body`.
 
 **5. Read the status again.**
@@ -193,8 +193,8 @@ Each message is the content event as JSON:
 | `old_data` | The previous values, when the event carries them |
 | `record_id` | The entry's id |
 | `tenant_id` | The owning tenant |
-| `instance_id` | The instance that raised the event. Absent on engine v0.55.0. |
-| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.55.0. |
+| `instance_id` | The instance that raised the event. Absent on engine v0.56.0. |
+| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.56.0. |
 | `source` | Where the event came from, when set |
 
 Until `timestamp` carries the time of the event, use the time your consumer

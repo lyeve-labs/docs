@@ -243,7 +243,8 @@ from the form, and replays its own tenant.
 | `handler` | A name for the run. Events this name already replayed are skipped. | one shared name |
 | `limit` | Most events in this run. Larger values are cut to 10000. | `1000` |
 | `dry_run` | Count what would be replayed without publishing anything. | `false` |
-| `tenant_id` | Another tenant to replay. Super admin only. | your tenant |
+| `tenant_id` | Another tenant to replay. Super admin only: a tenant admin's `tenant_id` is ignored, and the run replays their own tenant. | your tenant |
+| `all_tenants` | `true` replays every tenant. Super admin only, and never with `tenant_id`. | `false` |
 
 `status` moves from `running` to `completed`, or to `failed` when any event
 failed to publish. A run gets 30 minutes. One replay runs at a time per
@@ -272,11 +273,9 @@ and a super admin sees every tenant.
 Events older than 90 days are deleted every hour. To delete sooner, call the
 API. The console has no prune control.
 
-:::caution
-A super admin who leaves `tenant_id` out prunes every tenant's events, and the
-answer reads `"tenant_id": ""`. The quickstart's token is a super admin's, so
-name the tenant in the body.
-:::
+A prune with no `tenant_id` prunes your own tenant, for a super admin too. A
+super admin prunes every tenant only with `"all_tenants": true`, and the answer
+then reads `"tenant_id": ""`.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/events/prune \
@@ -291,7 +290,11 @@ curl -X POST http://localhost:3001/api/admin/events/prune \
 
 `deleted` counts the events removed, none here because every event was newer
 than 30 days. `days` defaults to 90. A tenant admin prunes only their own
-tenant, and `tenant_id` names another tenant only for a super admin.
+tenant, and naming another tenant answers them `403`. Only a super admin names
+another tenant with `tenant_id`, and for a super admin a `tenant_id` that names
+no tenant answers `422`, on a prune and on a replay. A super admin whose session
+acts in no tenant sends `tenant_id` or `all_tenants`, or the prune or replay
+answers `400`.
 
 ## Use it in flows
 
@@ -336,7 +339,12 @@ All routes are on the Admin API and need the `admin` role.
 | `400` | `since must be a valid RFC 3339 timestamp` | `since` does not parse, such as a bare date. |
 | `400` | `invalid request parameter` | A bad `limit` or `offset`. |
 | `404` | `The requested endpoint does not exist.` | The license does not include `events`, so the feature does not start. |
+| `400` | `set tenant_id or all_tenants, not both` | A replay or prune sent both. |
+| `400` | `tenant_id must name a tenant` | A super admin sent a `tenant_id` of only spaces. |
+| `400` | `set tenant_id, or all_tenants to replay every tenant`, `set tenant_id, or all_tenants to prune every tenant` | A super admin whose session acts in no tenant sent neither field. |
 | `403` | `cannot prune other tenants` | A tenant admin named another tenant. |
+| `403` | `only a super admin may replay every tenant`, `only a super admin may prune every tenant` | A tenant admin sent `all_tenants`. |
+| `422` | `tenant_id names no tenant` | A super admin named a tenant that does not exist. |
 | `404` | `replay run not found` | A wrong run id. |
 | `409` | `a replay is already in progress` | Another replay is running. Wait for it. |
 

@@ -36,7 +36,7 @@ and with no provider the page reads **No provider configured**: uploads are
 then written to the engine's own directory. Each provider is a row with
 **Test**, **Edit**, **Duplicate** and **Delete** buttons, and a line under the
 list names the provider new uploads go to. Presigned and multipart uploads
-have no console screen, so they are API only on v0.21.0.
+have no console screen, so they are API only on v0.22.0.
 
 ## How it works
 
@@ -79,7 +79,7 @@ curl http://localhost:3001/api/admin/storage/health \
 
 With no provider configured, files go to local disk.
 
-**2. Ask for a presigned upload.** This is API only on v0.21.0. Local disk cannot presign, so
+**2. Ask for a presigned upload.** This is API only on v0.22.0. Local disk cannot presign, so
 this answers `501` until a bucket is added:
 
 ```bash

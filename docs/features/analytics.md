@@ -57,7 +57,7 @@ by **All**, **Retrying** or **Failed**.
 
 The daily figures, sending and listing events, the usage across tenants and
 the privacy routes have no page in the console, so they are API only on
-v0.21.0.
+v0.22.0.
 
 ## Try it
 
@@ -65,7 +65,7 @@ For the console steps, you are signed in to the admin console as an admin. For t
 steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-**1. Send an event of your own.** This is API only on v0.21.0.
+**1. Send an event of your own.** This is API only on v0.22.0.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/analytics/events \
@@ -80,7 +80,7 @@ The answer is `201`:
 { "id": "7c9fbec4-d3b2-4d06-aa63-2ee70f026940", "tenant_id": "default", "event_name": "checkout_started", "event_category": "store", "properties": { "cart_value": 49 }, "provider_types": null, "processed": false, "created_at": "2026-10-01T09:08:51Z" }
 ```
 
-**2. List the events in that category.** This is API only on v0.21.0.
+**2. List the events in that category.** This is API only on v0.22.0.
 
 ```bash
 curl "http://localhost:3001/api/admin/analytics/events?category=store&limit=10" \

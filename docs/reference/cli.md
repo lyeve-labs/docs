@@ -51,10 +51,14 @@ a hand repair or a partial restore that kept the schema but not the record. The 
 command to run:
 
 ```bash
-lyeve migrate mark-applied --plugin <plugin> --version <version>
+lyeve migrate mark-applied --plugin <plugin> --version <version> [--table <bookkeeping table>]
 ```
 
-Take `<plugin>` and `<version>` from the error. First check in the database that the change the
+Take `<plugin>`, `<version>` and, when the error names it, `<bookkeeping table>` from the
+error. `--table` names the bookkeeping table of the migration set to mark. A feature can keep
+more than one set of migrations, each recorded in its own table, and ship one version in two
+of them. For such a feature the error's command already carries `--table`, and without it the
+command refuses and says to name the set with `--table`. First check in the database that the change the
 migration makes is really there, because the command records the version as applied without
 running its script. Then run it from a shell on the engine's host, or with `docker exec` in its
 container, so it reads the same `DATABASE_URL` as the engine. It has no HTTP route, so a console
@@ -64,7 +68,10 @@ goes on past that migration.
 It refuses, and exits `1`, when:
 
 - the feature is not part of this binary, or does not declare its migrations
-- the feature ships no migration with that version for this database
+- the feature ships no migration with that version for this database, or none in the table
+  `--table` names
+- the feature ships that version in more than one set and `--table` is missing, or `--table`
+  names a table the feature does not declare
 - that version is already recorded as applied
 - an engine is applying migrations on this database at that moment. Run it again once that
   engine has finished starting.

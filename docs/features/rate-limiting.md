@@ -306,7 +306,7 @@ general public limit: 50 requests a second per address with a burst of 100,
 set by `PUBLIC_RATE_LIMIT_GLOBAL`.
 
 With `rate-limit-pro`, a super admin gives one of those routes a limit of its
-own, higher or lower than the general one. This is API only on v0.21.0:
+own, higher or lower than the general one. This is API only on v0.22.0:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/rate-limits/public-routes \

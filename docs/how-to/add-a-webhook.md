@@ -252,7 +252,7 @@ Open **Content**, pick **Post** and choose **New entry**. Enter
 `Webhook check` in **Title** and `Hello` in **Body**, then choose **Create**.
 
 Within a moment the receiver prints an `after_create` line. An entry saved in
-console v0.21.0 arrives as the console stores it. The fields you typed sit in
+console v0.22.0 arrives as the console stores it. The fields you typed sit in
 an object under `body`, which also holds the post's own `body` field, and
 beside that object are the entry's `id`, `slug`, `status`, `title`, its
 timestamps and the accounts that wrote it:

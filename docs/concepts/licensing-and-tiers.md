@@ -41,7 +41,7 @@ gates.
 | [Caching](../features/caching.md) | `cache` | One cache provider of any kind, and 10 response cache rules per tenant | `cache-pro` |
 | [Captcha](../features/captcha.md) | `captcha` | One provider for the instance | `multitenant-customization` |
 | [Concurrency tuning](../features/concurrency-tuning.md) | `goroutine-engine` | Every view of the worker pool, the parallel engine, async hooks and task status | `goroutine-engine-pro` |
-| [Content lifecycle](../features/content-lifecycle.md) | `content` | Everything except releases and comment threads, with every revision kept and the last 30 days of them readable | `content-pro` |
+| [Content lifecycle](../features/content-lifecycle.md) | `content` | Everything except releases and comment threads, with [content history](../features/content-history.md) for the content types you choose and the last 30 days of revisions readable | `content-pro` |
 | [Editorial review](../features/editorial-review.md) | `review` | One workflow per tenant, with every stage feature except escalation, quorum and conditions | `review-pro` |
 | [Email](../features/email.md) | `email` | One SMTP provider and five templates per tenant | `email-pro` |
 | [Error tracking](../features/error-tracking.md) | `error-tracking` | Grouping, triage and spike alerts by email, with 30 days of events readable | `alerts-pro` |

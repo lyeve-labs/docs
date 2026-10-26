@@ -6,9 +6,10 @@ sidebar:
 ---
 
 In a collection that uses draft and publish, every entry is either a **draft**, **published**
-or **archived**. You save work as a draft and publish it when it is ready. Every save is kept,
-so you can look back through an entry's history and bring an earlier version back. This page
-covers those steps in the admin console. You need the `admin` or `super_admin` role.
+or **archived**. You save work as a draft and publish it when it is ready. When history is on
+for the collection, every change is kept, so you can look back through an entry's history and
+bring an earlier version back. This page covers those steps in the admin console. You need the
+`admin` or `super_admin` role.
 
 What each status means, and how revisions are kept, is explained on
 [the data model](../../concepts/data-model.md#statuses) page. The same steps over the Admin
@@ -46,14 +47,22 @@ keep editing before it goes live. Publishing it again records a new publish time
 
 ## Look back through the history
 
-Every save, publish and restore keeps a revision of the entry. To read them:
+When history is on for the collection, every save, publish and restore that changes the entry
+keeps a revision of it. A save that changes nothing keeps none. History is off until an
+administrator turns it on under **Settings > Content history**, for every collection or the
+ones they choose. [Content history](../../features/content-history.md) explains the settings
+and how long revisions are kept. When the collection keeps no history, the entry page says
+**History is off for this type** and an administrator sees a link to turn it on.
+
+To read the revisions:
 
 1. Open the entry.
 2. Choose **History**. The number beside it counts the revisions.
 3. The **Revision history** panel lists each revision with its date and the fields it held.
 
-The first revision is the entry as it was created. A revision never changes once written, so
-the history is a complete record of how the entry got where it is.
+The first revision is the entry as it was when history started for it. A revision never
+changes once written. Retention may remove older revisions after the time or the count your
+administrator set, and always keeps the newest.
 
 ## Restore an earlier version
 
@@ -61,8 +70,8 @@ the history is a complete record of how the entry got where it is.
 2. Choose **Restore**.
 
 The entry takes that revision's content and status, and the restore is saved as a new
-revision. Nothing in the history is erased, so a restore can itself be undone by restoring
-the revision before it.
+revision. A restore erases nothing, so it can itself be undone by restoring the revision before
+it.
 
 ## What the console does not do
 

@@ -130,7 +130,7 @@ grpcurl -plaintext -H "authorization: Bearer $TOKEN" \
   localhost:3003 grpc.health.v1.Health/Check
 ```
 
-The answer is `{"status": "SERVING"}`. On engine v0.55.0, `grpcurl` cannot
+The answer is `{"status": "SERVING"}`. On engine v0.56.0, `grpcurl` cannot
 call the LyEve services. `grpcurl list` names them, but a call answers
 `target server does not expose service`. Call
 them from a client that sends JSON messages, as
@@ -172,7 +172,7 @@ The answer lists your content types as `schemas`, each with `name` and
 | `lyeve.core.v1.ContentService` | `Create`, `Update`, `Delete` | `editor` or `admin` |
 | `lyeve.core.v1.FlowService` | `Run`, `List` | any signed-in user, and the flow's own `auth` setting |
 | `grpc.health.v1.Health` | `Check`, `Watch` | none |
-| `grpc.reflection.v1.ServerReflection` | | a token, and only outside production. On engine v0.55.0 it lists the service names but not their methods. |
+| `grpc.reflection.v1.ServerReflection` | | a token, and only outside production. On engine v0.56.0 it lists the service names but not their methods. |
 
 A super admin may call every method. The services are defined in
 `schema.proto`, `content.proto` and `flow.proto`, package `lyeve.core.v1`.

@@ -55,7 +55,7 @@ returns, as long as it is back within ten minutes. Older messages are deleted.
 
 ## Try it
 
-Admin console v0.21.0 has no screen for the list of replicas, so these steps use the engine API.
+Admin console v0.22.0 has no screen for the list of replicas, so these steps use the engine API.
 This needs a license with `cluster` on every replica, and a super admin token
 in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get
 one.
@@ -80,7 +80,7 @@ one.
          "hostname": "lyeve-7f4c9b2",
          "started_at": "2026-10-20T04:11:02Z",
          "last_heartbeat": "2026-10-20T04:19:57Z",
-         "version": "v0.55.0",
+         "version": "v0.56.0",
          "listen_addr": "0.0.0.0:3002",
          "status": "running"
        }

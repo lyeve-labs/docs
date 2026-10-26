@@ -193,7 +193,7 @@ a signed-in session. See [connect outside systems](../features/flows.md#connect-
 
 Several templates read or write a content field named `status`, such as
 `join-three-tables-api`, `nightly-sheet-export`, `seo-sitemap`,
-`comment-moderation` and the `cdn-purge` filter below. On console v0.21.0 a
+`comment-moderation` and the `cdn-purge` filter below. On console v0.22.0 a
 field named `status` loses its value when an entry is saved in the console, so
 save those entries with the API, or give the field another name and change the
 template to read it.

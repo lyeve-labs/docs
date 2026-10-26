@@ -44,9 +44,11 @@ takes the status its body names, and is published when it names none. Only a cal
 both read and update the content type sees its drafts. Everyone else, such as a site reading
 with a `content:read` key, gets published entries only.
 
-Every save in the admin console is kept as a numbered revision. You can compare two
-revisions and restore an earlier one, and a restore adds a new revision rather than
-rewriting history. [The data model](data-model.md) covers statuses and revisions, and
+When [content history](../features/content-history.md) is on for a content type, every
+change to its entries is kept as a numbered revision. You can compare two revisions and
+restore an earlier one, and a restore adds a new revision rather than rewriting history.
+History is off until an administrator turns it on, for every type or the ones they choose.
+[The data model](data-model.md) covers statuses and revisions, and
 [Drafts and publishing](../guides/user/drafts-and-publishing.md) walks through them in the
 console.
 

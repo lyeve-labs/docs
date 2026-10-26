@@ -268,7 +268,7 @@ name outside it is refused at creation.
 
 | Grant | What it opens |
 |---|---|
-| `content:read` | Read content entries and their revisions. |
+| `content:read` | Read content entries, their revisions, the content activity log and what content history stores. Changing the history settings takes a signed-in session. |
 | `content:write` | Create, update, publish and delete content entries. |
 | `media:read` | List and download media files. |
 | `media:write` | Upload, replace and delete media files. |

@@ -46,11 +46,11 @@ the tenant their credential belongs to. See [Tenants](../features/tenants.md).
 |---|---|---|---|
 | `POST` | `/api/admin/auth/login` | Anyone, rate limited | Sign in with `email`, `password` and an optional `tenant`. Answers `user`, `token`, `csrf_token` and `refresh_token`, and sets the session cookie |
 | `POST` | `/api/admin/auth/mfa-verify` | Anyone, rate limited | Finish a sign-in that answered `{"mfa_required": true, "challenge_token": "..."}`. Send `challenge_token` and `code` |
-| `POST` | `/api/admin/auth/refresh` | Anyone, rate limited | Trade `refresh_token` for a new `token`, `refresh_token`, `csrf_token` and `expires_in`. A refresh token lasts `REFRESH_TOKEN_TTL_SECS`, 30 days by default |
+| `POST` | `/api/admin/auth/refresh` | Anyone, rate limited | Trade `refresh_token` for a new `token`, `refresh_token`, `csrf_token` and `expires_in`. A refresh token lasts `REFRESH_TOKEN_TTL_SECS`, 30 days by default. Trading the same `refresh_token` again within ten seconds answers the same new token once, then `409` with `AUTH_TOKEN_ROTATED`, and the session stays. A token traded again after that ends the session with `401` |
 | `POST` | `/api/admin/auth/logout` | Signed in | End the session. An optional `refresh_token` in the body is revoked too |
 | `GET` | `/api/admin/auth/me` | Signed in | The caller's `id`, `email` and `roles` |
 | `GET` | `/api/admin/auth/memberships` | Signed in | The tenants the caller belongs to |
-| `POST` | `/api/v1/auth/token` | Anyone, rate limited | Sign in on the Content API with `email`, `password` and an optional `tenant`. Answers `token` and `expires_in`, in seconds |
+| `POST` | `/api/v1/auth/token` | Anyone, rate limited | Sign in on the Content API with `email`, `password` and an optional `tenant`. Answers `token` and `expires_in`, in seconds. An account with a second factor gets the `mfa_required` challenge instead, finished at `mfa-verify` |
 
 A token lasts `JWT_EXPIRY_SECS`, 900 seconds by default. Five failed sign-ins for one account
 within 15 minutes lock it for the rest of the window, and the lock answers exactly like a wrong
@@ -79,7 +79,7 @@ travel under `data`.
 | `PUT` | `/api/v1/content/{schema}/{id}/unpublish` | `editor`, `admin`, `super_admin` | Take an entry back to draft |
 | `GET` | `/api/v1/content/{schema}/{id}/relations/{field}` | Any credential | The entries linked through a relation field, as `{"data": [...], "total": n}` |
 | `PUT` | `/api/v1/content/{schema}/{id}/relations/{field}` | `editor`, `admin`, `super_admin` | Replace the linked entries |
-| `GET` | `/api/v1/content/{schema}/{id}/revisions` | Any credential | An entry's revisions |
+| `GET` | `/api/v1/content/{schema}/{id}/revisions` | Any credential | An entry's revisions, kept when [content history](../features/content-history.md) is on for the type. Empty when none are stored |
 | `PUT` | `/api/v1/content/{schema}/{id}/revisions/{rev_id}/restore` | `editor`, `admin`, `super_admin` | Restore a revision as a new one |
 
 [Access rules](../features/access-rules.md) can narrow any of these per role and content type.
@@ -260,7 +260,7 @@ production instance without `LYEVE_CONSOLE_URL` answers the start with `503` and
 | `GET` | `/api/admin/plugins/running` | Signed in | `plugins`, the features serving your tenant, and `withheld`, the ones that run but are withheld from it |
 | `GET` | `/api/admin/plugins/{name}/schema` | `admin` | The JSON Schema of a feature's settings |
 | `GET` | `/api/admin/plugins/{name}/config` | `admin` | A feature's saved settings |
-| `PUT` | `/api/admin/plugins/{name}/config` | `super_admin` | Save a feature's settings |
+| `PUT` | `/api/admin/plugins/{name}/config` | `super_admin` | Save a feature's settings. A key the feature's schema does not list answers `422` with `not a setting of plugin <name>: <keys>`, and nothing is saved |
 | `POST` | `/api/admin/plugins/{name}/config/reset` | `super_admin` | Put a feature's settings back to the defaults |
 | `GET` | `/api/admin/entitlements` | `admin` | What the license grants. See [Licensing and tiers](../concepts/licensing-and-tiers.md) |
 | `GET` | `/api/admin/license` | Signed in | `links` for managing the license, and `renew`, whether the renew route accepts a key |
@@ -324,6 +324,7 @@ body, answer and role.
 
 | Feature | Paths | Needs |
 |---|---|---|
+| [Content history](../features/content-history.md) | `/api/admin/content/history/settings`, `/api/admin/content/history/usage`, `/api/admin/content/history/prune`, `/api/admin/content/history?schema=`, and activity at `/api/admin/content/activity`, across tenants at `/api/admin/content/activity/all` | Free. Reading versions older than 30 days needs `content-pro` |
 | [Content lifecycle](../features/content-lifecycle.md) | `/api/admin/content` and everything under it: revisions, diffs, schedules, relationships, previews | Free, with 30 days of revisions readable. Older revisions, [releases](../features/content-releases.md) and [comments](../features/editorial-comments.md) need `content-pro` |
 | [Editorial review](../features/editorial-review.md) | `/api/admin/review/` | Free, with one workflow per tenant. More, and escalation, quorum and conditions on a stage, need `review-pro` |
 | [Media](../features/media.md) | `/api/admin/media`, and `/api/v1/media/{id}/{name}` for a public file | Free, up to 1,000 [image transform](../features/image-transforms.md) variants per tenant. More need `media-pro` |

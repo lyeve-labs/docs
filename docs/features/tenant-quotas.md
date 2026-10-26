@@ -137,7 +137,7 @@ You see five `200` answers, then `429` twice. A blocked answer carries
 ```
 
 **4. Lift the block and the limit together.** Lifting a block is API only. The console's quota
-form in v0.21.0 has no control for it:
+form in v0.22.0 has no control for it:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/quotas/quotatest \
