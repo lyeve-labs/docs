@@ -178,7 +178,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.55.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.56.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -308,7 +308,7 @@ spec:
     spec:
       containers:
         - name: lyeve-admin
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.21.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-admin:0.22.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -323,7 +323,7 @@ spec:
               valueFrom:
                 secretKeyRef: { name: lyeve-secrets, key: ADMIN_CONSOLE_KEY }
           readinessProbe:
-            httpGet: { path: /, port: http }
+            httpGet: { path: /readyz, port: http }
             periodSeconds: 10
           resources:
             requests: { cpu: 50m, memory: 64Mi }
@@ -560,6 +560,21 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 `strategy: { type: Recreate }`, because a `ReadWriteOnce` claim cannot attach to the new pod
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
+
+## Upgrading to 0.56.0 and console 0.22.0
+
+Console 0.22.0 reads content history from engine 0.56.0, so upgrade the engine first and the
+console once the engine is ready. Back up the database first, because an engine before 0.56.0
+refuses to start on a database 0.56.0 has upgraded. A tenant that already holds content keeps
+content history on for every content type.
+[Docker Compose](docker-compose.md#upgrading-to-0560-and-console-0220) lists the other changes
+to read before the first start.
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.56.0
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.22.0
+```
 
 ## Upgrading to 0.55.0 and console 0.21.0
 
