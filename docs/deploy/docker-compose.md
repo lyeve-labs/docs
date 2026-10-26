@@ -278,12 +278,41 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.55.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.21.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.56.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.22.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
+
+### Upgrading to 0.56.0 and console 0.22.0
+
+Console 0.22.0 reads content history from engine 0.56.0, so upgrade the engine first. Read these
+before the first start of 0.56.0:
+
+- **Back up the database.** 0.56.0 adds the tables content history keeps, and an engine before
+  0.56.0 refuses to start on a database that holds them. The way back is the backup.
+- **Choose where content history runs.** A tenant that already holds content keeps history on
+  for every content type, and a new tenant starts with it off. Narrow it, or set how long
+  versions are kept, under **Settings > Content history**. See
+  [Content history](../features/content-history.md).
+- **Name the tenants your event prune scripts mean.** A super admin's prune with no
+  `tenant_id` now prunes the super admin's own tenant. Send `"all_tenants": true` to prune
+  every tenant. See [Event replay](../features/event-replay.md#prune-the-log).
+- **Finish second-factor sign-ins in your API clients.** `POST /api/v1/auth/token` answers an
+  account with a second factor with a challenge, finished at
+  `POST /api/admin/auth/mfa-verify`. See
+  [Multi-factor authentication](../features/multi-factor-auth.md#how-it-works).
+- **Expect the console to report unhealthy while the engine is down.** The console image's
+  health check asks `/readyz`, which answers `503` while the console cannot reach the engine.
+
+Then upgrade the engine, wait until it reports healthy, and upgrade the console:
+
+```bash
+docker compose pull engine admin
+docker compose up -d --wait engine
+docker compose up -d admin
+```
 
 ### Upgrading to 0.55.0 and console 0.21.0
 

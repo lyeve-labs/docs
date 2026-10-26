@@ -283,7 +283,7 @@ button too.
 
 :::caution
 Choosing the **pending migration** button at the top of a console page applies every queued
-change at once, in console v0.21.0, without asking first. Read the queue in **History** before
+change at once, in console v0.22.0, without asking first. Read the queue in **History** before
 you choose it.
 :::
 

@@ -22,7 +22,8 @@ answers `404`. To choose which features start, and to apply a license, see
 | Feature | Best for | Free or license | Where in the console |
 |---|---|---|---|
 | [Schema changes](schema-changes.md) | Creating and changing content types while the engine runs, with a preview first | Free. The schema canvas and presets of your own need `schema-pro`, and moving configuration between instances needs `config-sync` | Schema builder |
-| [Content lifecycle](content-lifecycle.md) | Drafts, revisions, rollbacks and scheduled publishing | Free, with 30 days of revision history readable. Older revisions, releases and comment threads need `content-pro` | Content |
+| [Content history](content-history.md) | Choosing which content types keep earlier versions, for how long, and who changed what | Free, off until you turn it on. Reading versions older than 30 days needs `content-pro` | Settings > Content history, Insight > Content activity |
+| [Content lifecycle](content-lifecycle.md) | Drafts, revisions, rollbacks and scheduled publishing | Free, with revisions kept for the content types that keep history and 30 days of them readable. Older revisions, releases and comment threads need `content-pro` | Content |
 | [Content releases](content-releases.md) | Publishing or unpublishing a set of entries together, now or at a set time | `content-pro` | Delivery > Releases, and the Release card on an entry |
 | [Editorial comments](editorial-comments.md) | Discussing an entry in threads, with mentions by email | `content-pro` | The Comments panel on an entry |
 | [Editorial review](editorial-review.md) | Sign-off in stages before an entry goes live | Free, with one workflow per tenant. More, escalation, quorums and conditional stages need `review-pro` | Reviews |

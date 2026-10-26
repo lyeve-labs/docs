@@ -195,7 +195,7 @@ when it is a full `http` or `https` address the target can reach.
 When both sides are LyEve tenants, the migrate routes export a tenant's content as a portable
 payload and import it into the same or another tenant, renaming fields on the way. An admin
 works on their own tenant. Naming another tenant in `tenant_id` takes `super_admin`. These
-routes are API only on v0.21.0.
+routes are API only on v0.22.0.
 
 The content types have to exist in the target tenant first. The import maps records onto
 them and never creates one, and a missing type answers `404` with `import failed`.
@@ -260,7 +260,7 @@ characters, so the dump suits a small tenant.
 The database migrator copies the database under an install from one connection string to
 another, in any pairing of PostgreSQL, MySQL and SQL Server. It copies tables and rows, not
 constraints, keys or indexes. `db` is the only job `type`, and the feature is in beta. It is
-API only on v0.21.0.
+API only on v0.22.0.
 
 1. Read the compatibility report. Nothing is touched:
 

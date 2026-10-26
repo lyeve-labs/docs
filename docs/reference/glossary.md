@@ -95,8 +95,9 @@ A field that links an entry to entries of another content type, such as a post t
 See [The data model](../concepts/data-model.md).
 
 **Revision**
-A stored earlier version of an entry. Every save in the admin console keeps one, and you can
-compare and restore them. See [The data model](../concepts/data-model.md).
+A stored earlier version of an entry. When history is on for the entry's content type, every
+save that changes something keeps one, and you can compare and restore them. See
+[Content history](../features/content-history.md).
 
 **Role**
 A name on an account or a key that decides what it may do. Three are built in: `super_admin`,

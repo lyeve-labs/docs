@@ -34,7 +34,7 @@ describes.
 3. [Creating and editing content](content-editing.md): fill in an entry under **Content** and
    see what each field type expects.
 4. [Drafts, publishing and revisions](drafts-and-publishing.md): publish, schedule, compare two
-   revisions and restore an earlier one.
+   revisions and restore an earlier one, when history is on for the collection.
 5. [Media library](media-library.md): upload files, sort them into folders and attach them to
    entries.
 6. [Users, roles and permissions](roles-and-permissions.md): who may do what, and how to give
@@ -48,6 +48,7 @@ describes.
 | Start from a ready-made content model | [Schema presets](../../reference/schema-presets.md) |
 | Write, save and publish an entry | [Creating and editing content](content-editing.md) |
 | Publish at a set time, or undo a change | [Drafts, publishing and revisions](drafts-and-publishing.md) |
+| Choose which collections keep history, and for how long | [Content history](../../features/content-history.md) |
 | Send an entry through review before it goes live | [Editorial review](../../features/editorial-review.md) |
 | Find entries once there are many | [Search and organization](search-and-organization.md) |
 | Upload an image and use it in an entry | [Media library](media-library.md) |

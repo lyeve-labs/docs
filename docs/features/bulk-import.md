@@ -8,8 +8,9 @@ sidebar:
 > **Included free** on every install, every format included. Saved mapping templates and the date, split and lookup transforms need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 Bulk import turns a file into entries. You map the file's columns onto the fields of one
-content type, check every row with a dry run, then import. Each row becomes an entry with a
-revision, exactly as if it had been created in the admin console. Every row's outcome is kept,
+content type, check every row with a dry run, then import. Each row becomes an entry exactly
+as if it had been created in the admin console, with a revision when
+[content history](content-history.md) is on for the type. Every row's outcome is kept,
 rejected rows download as CSV, and a finished import can be rolled back.
 
 :::tip[Best for]

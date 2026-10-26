@@ -75,7 +75,7 @@ sending events are done with the API.
 ## Try it
 
 For the console steps, you are signed in to the admin console as a super admin. Steps 1 and 2
-are API calls, because the console has no control for them on v0.21.0, so every reader needs a
+are API calls, because the console has no control for them on v0.22.0, so every reader needs a
 super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to
 get one.
 

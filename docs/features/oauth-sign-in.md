@@ -131,8 +131,11 @@ You need a super admin token in `TOKEN`. The
 
    The answer holds the `template` and a `redirect_uri` such as
    `https://lyeve.example.com/api/admin/auth/oauth/google/callback`. Without
-   `LYEVE_BASE_URL` the answer is `500` with
-   `OAuth is not configured: set base_url in configuration`.
+   `LYEVE_BASE_URL` the answer is `409`:
+
+   ```json
+   {"code":"oauth.base_url_required","error":"OAuth is not configured: set base_url in configuration"}
+   ```
 
 3. Apply the template with your client's values:
 
@@ -412,7 +415,8 @@ refused on them with `403`.
 
 | Status | Message | Cause |
 |---|---|---|
-| `500` | `OAuth is not configured: set base_url in configuration` | `LYEVE_BASE_URL` is not set. |
+| `503` | `OAuth sign-in is not available on this install` | A sign-in step ran while `LYEVE_BASE_URL` is not set. |
+| `409` | `OAuth is not configured: set base_url in configuration`, code `oauth.base_url_required` | A template was read while `LYEVE_BASE_URL` is not set. |
 | `403` | `email address is not verified by the identity provider` | The provider sent an unverified email. |
 | `409` | `an account with this email already exists; please log in with your existing credentials and link this provider from your account settings` | See [when an email already has an account](#when-an-email-already-has-an-account). |
 | `502` | `failed to reach identity provider` or `token exchange failed` | The provider is down or the client credentials are wrong. |

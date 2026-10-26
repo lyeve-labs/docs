@@ -4,6 +4,33 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.7.0] - 2026-10-26
+
+### Added
+
+- The content history page is new. Since engine v0.56.0, history is off on a fresh install, each content type turns it on, and it is kept by age and by count. The page covers the settings in the admin console and with the API, the server defaults, retention, legal holds and the activity log of who changed which entry, with the source each write records.
+- The configuration page lists the five variables that set content history and the activity log for every tenant.
+
+### Changed
+
+- Every page that names a release names engine v0.56.0 and admin console v0.22.0, and the console and API tabs carry those releases.
+- The deploy pages pin the new releases and probe the console at `/readyz`, which answers 503 while the console cannot reach the engine. Before the first start of 0.56.0, they say to back up, choose where content history runs, name the tenant an event prune means and finish second-factor sign-ins in API clients.
+- The Kubernetes upgrade to 0.56.0 scales the engine to zero before the new release starts, as the 0.55.0 upgrade does, so plan a short outage.
+- The pages that said every save is kept now say revisions are kept when history is on for the content type. A legal hold matches a UUID in either letter case.
+- The Content API's token route challenges an account with a second factor the way the console's sign-in does, and a passkey can finish the challenge. A sign-in whose second-factor check cannot be read answers 503 with `AUTH_MFA_STORE_ERROR` and issues no session.
+- A refresh token traded again within ten seconds answers the same new token once and then 409, instead of ending the session.
+- An event prune with no `tenant_id` prunes the caller's own tenant, and every tenant only with `all_tenants`. A replay of every tenant takes the same flag, and a tenant admin's replay and prune reach only their own tenant.
+- Request capture keeps a successful request's response body only when a capture rule chose the request. A diff says in `body_compared` whether it compared the response bodies.
+- Reading an OAuth provider template without a base URL answers 409, and the public sign-in steps answer 503, where both answered 500.
+- Subject export and erasure answer 422 for an identifier that is not an email address, an account id or an IP address.
+- Saving a feature's settings answers 422 for a key its schema does not declare.
+- `PROFILER_NO_HEAP_EXPORT` also refuses the heap and allocs profiles under the standard pprof URLs, and an allowed export there is logged with the account that took it.
+- The migrate command takes `--table` to mark a migration applied in a feature that ships one version in two migration sets.
+
+### Fixed
+
+- The email pages said email ignores `LYEVE_OUTBOUND_ALLOW_CGNAT`. With it set, an SMTP relay or API provider host in 100.64.0.0/10 is accepted without an `SMTP_ALLOWED_PRIVATE_NETWORKS` entry.
+
 ## [0.6.2] - 2026-10-24
 
 ### Fixed

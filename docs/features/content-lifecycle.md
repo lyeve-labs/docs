@@ -5,23 +5,26 @@ sidebar:
   order: 16
 ---
 
-> **Included free** on every install, with every revision kept and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
+> **Included free** on every install, with revisions kept for the content types you choose and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
 The admin console's **Content** screens and the Admin API work on the same entries. Both
-create and edit entries, move them between draft and published, and keep a numbered revision
-of every write so you can roll back. Over the API an entry can also be archived, compared
+create and edit entries and move them between draft and published. When
+[content history](content-history.md) is on for the content type, they keep a numbered
+revision of every change so you can roll back. Over the API an entry can also be archived, compared
 with an earlier revision, publish and archive itself at times you set, and link to other
 entries.
 
 :::tip[Best for]
 - **Publishing from a script.** Create drafts from a CI job or an import, and publish them
   when a person or a check says they are ready.
-- **Undoing a bad edit.** See what changed between two revisions and roll back to the good
-  one. The rollback is itself a revision, so nothing is lost.
+- **Undoing a bad edit.** With history on for the type, see what changed between two
+  revisions and roll back to the good one. The rollback is itself a revision, so nothing is
+  lost.
 - **Timed launches and embargoes.** Publish a page at 09:00 Paris time and archive it a
   month later, with no one at a keyboard.
 - **Answering "who changed this?"** Every create, edit, publish, rollback and schedule is
-  recorded with the account that made it.
+  recorded in the [content activity log](content-history.md#activity-log) with the account
+  that made it.
 - **Linking entries outside the content model.** Point an entry at related ones and walk the
   links as a graph.
 :::
@@ -44,7 +47,7 @@ An entry on this API has a few fields of its own beside the content type's field
 | `body` | The content type's field values. They are checked against its rules on every write. |
 | `meta` | Any JSON you want to keep beside the entry. |
 | `status` | `draft`, `published` or `archived`. A new entry is a `draft` unless you say otherwise. |
-| `current_rev` | The number of the newest revision. |
+| `current_rev` | The entry's version number. It moves on every change, whether history is on or not. |
 | `published_at` | When the entry last moved to published. |
 | `scheduled_publish_at`, `scheduled_unpublish_at`, `timezone` | Its schedule, when one is set. |
 
@@ -63,7 +66,7 @@ you are signed in to the admin console. For the API steps, you need a token in `
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Create a `story` content type with draft and publish.** Only the API turns on drafts and
-publishing. The Schema builder in console v0.21.0 has no switch for them, so run this call
+publishing. The Schema builder in console v0.22.0 has no switch for them, so run this call
 even when you follow the console steps after it.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows how to get a token with your console account:
@@ -75,7 +78,33 @@ curl -X POST http://localhost:3001/api/admin/schemas \
   -d '{"name": "story", "with_draft_publish": true, "fields": [{"name": "title", "field_type": "text", "required": true}, {"name": "body", "field_type": "rich_text"}]}'
 ```
 
-**2. Create an entry.**
+**2. Keep history for the `story` type.** History is off on a new install, so without this
+step the entry keeps no revisions.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Content history**. Under **History**, set **Keep versions for** to
+**Selected types**, tick **story** in **Content types that keep history**, and choose
+**Save**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/content/history/settings \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"history_mode": "selected", "schemas": ["story"]}'
+```
+
+The settings routes need the token from a sign-in. An
+[admin token](../how-to/admin-tokens.md) cannot change them.
+
+</div>
+</div>
+
+**3. Create an entry.**
 
 <div class="paths">
 <div data-path="console">
@@ -123,7 +152,7 @@ Copy its `id` into `ENTRY_ID`.
 </div>
 </div>
 
-**3. Publish it.**
+**4. Publish it.**
 
 <div class="paths">
 <div data-path="console">
@@ -149,7 +178,7 @@ The answer is `200` with `"status": "published"`, a `published_at` time and
 </div>
 </div>
 
-**4. List the revisions.**
+**5. List the revisions.**
 
 <div class="paths">
 <div data-path="console">
@@ -171,7 +200,7 @@ You see revision `2` with the note `First release` and revision `1` with the not
 </div>
 </div>
 
-**5. Roll back to the first revision.**
+**6. Roll back to the first revision.**
 
 <div class="paths">
 <div data-path="console">
@@ -214,8 +243,8 @@ curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/rollback \
 </div>
 </div>
 
-**6. Schedule it to publish and then archive.** Schedules are API only. The console has no
-schedule control in v0.21.0:
+**7. Schedule it to publish and then archive.** Schedules are API only. The console has no
+schedule control in v0.22.0:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID/entry-schedule \
@@ -294,8 +323,10 @@ with **Delete**. Its revisions and translations go with it.
 
 `PUT /api/admin/content/{id}` changes only the top-level fields you send, so
 `{"status": "published"}` leaves the title and body as they are. A `body` you send replaces
-the whole body, so send every field value, not only the one that changed. Every write saves a
-new revision. Send `change_note` to describe it. The note is `updated` when you leave it out.
+the whole body, so send every field value, not only the one that changed. When history is on
+for the content type, every write that changes something saves a new revision, and a write that
+changes nothing saves none. Send `change_note` to describe it. The note is `updated` when you
+leave it out.
 
 Publishing, unpublishing and archiving are changes of `status` on the same route:
 
@@ -311,24 +342,25 @@ You can also create an entry as published by sending `"status": "published"` on 
 </div>
 </div>
 
-Archiving and change notes are API only. The console in v0.21.0 has no archive control, and
+Archiving and change notes are API only. The console in v0.22.0 has no archive control, and
 its saves record no note.
 
 ## Compare and roll back revisions
 
 In the console, **History** lists the revisions and **Restore** rolls back to the one you
-choose, as in step 5 above. Comparing two revisions is API only:
+choose, as in step 6 above. Comparing two revisions is API only:
 
 | Method | Path | Result |
 |---|---|---|
 | `GET` | `/api/admin/content/{id}/revisions` | The revisions you can read, newest first, with `limit` and `offset`. |
 | `GET` | `/api/admin/content/{id}/revisions/{number}` | One revision: its title, body, meta, status and change note. |
 | `GET` | `/api/admin/content/{id}/diff?from=1&to=3` | The fields that changed between two revisions, with their old and new values, as text in `diff`. |
-| `POST` | `/api/admin/content/{id}/rollback` | `{"to_revision": 2}`. The entry takes that revision's title, body, meta and status, saved as a new revision. |
+| `POST` | `/api/admin/content/{id}/rollback` | `{"to_revision": 2}`. The entry takes that revision's title, body, meta and status, saved as a new revision when history is on. |
 
 ### How far back you can read
 
-Every revision of every entry is kept. Without `content-pro`, you list, read,
+Revisions are kept for as long as your [retention](content-history.md#retention) says, and
+forever when you set none. Without `content-pro`, you list, read,
 compare and roll back to the revisions of the last 30 days, plus the newest
 revision of each entry whatever its age, so a page nobody has touched in a year
 still shows its current state. The list says what it left out:
@@ -348,7 +380,7 @@ and the older history comes back with it.
 
 ## Schedule a publish or an archive
 
-Schedules are API only. The console in v0.21.0 has no schedule control.
+Schedules are API only. The console in v0.22.0 has no schedule control.
 
 `PUT /api/admin/content/{id}/entry-schedule` sets `scheduled_publish_at`,
 `scheduled_unpublish_at`, or both, with an optional `timezone`:
@@ -374,7 +406,7 @@ is `published` or `archived`. `GET /api/admin/content/{id}/schedules` lists them
 
 ## Link entries to each other
 
-Links are API only. The console in v0.21.0 has no control for them.
+Links are API only. The console in v0.22.0 has no control for them.
 
 A relationship links two entries directly, without a relation field in the content type. Use
 it for links an editor decides case by case, such as "see also". For links every entry of a
@@ -402,13 +434,20 @@ the linked entries as `nodes` and `edges`, up to `depth` steps.
 
 ## See who changed an entry
 
-The console's **Revision history** shows when each revision was saved. The record of who
-made each change is API only.
+The console's **Revision history** shows when each revision was saved. **Insight > Content
+activity** lists who changed which entry, with the action, the source and the fields it
+touched.
 
-`GET /api/admin/content/{id}/audit` lists every change to the entry, newest first. Each item
-names the `action` (`created`, `updated`, `published`, `unpublished`, `archived`, `rollback`,
-`scheduled_publish` or `scheduled_unpublish`), the `actor_id`, the `revision_num` and, for
-edits, a `diff`. The instance-wide record is the [audit log](audit-log.md).
+`GET /api/admin/content/{id}/audit` lists every change to the entry, newest first, while the
+content activity log is on. Each item names the `action` (`created`, `updated`, `published`,
+`unpublished`, `deleted`, `rollback`, `scheduled_publish` or `scheduled_unpublish`), the
+`actor_id`, the `revision_num` when history recorded one, the `source` of the write and the
+names of the `fields` that changed. Archiving records `updated`. A delete reads `deleted` on
+this route and on the activity log, including one recorded before content history. Items
+recorded before content history carry a `diff` of the edit. For newer ones, compare two
+revisions with the `diff` route above. [Content history](content-history.md#activity-log)
+covers the activity log across entries, and the instance-wide record is the
+[audit log](audit-log.md).
 
 ## Publish many entries at once
 
@@ -426,7 +465,8 @@ and reopening stay free after a lapse. See
 
 ## Settings
 
-Content lifecycle has no settings of its own. It runs on every install. If you set
+Which content types keep revisions, and for how long, is set under
+[content history](content-history.md#settings). Content lifecycle runs on every install. If you set
 `LYEVE_PLUGINS` to choose which features start, include `content` in it. See
 [licensing and tiers](../concepts/licensing-and-tiers.md).
 
@@ -441,7 +481,7 @@ Content lifecycle has no settings of its own. It runs on every install. If you s
 | `POST` | `/api/admin/content` | Create an entry. | `content:write` |
 | `GET` | `/api/admin/content/{id}` | One entry. | `content:read` |
 | `GET` | `/api/admin/content/slug/{slug}` | One entry by slug. | `content:read` |
-| `PUT` | `/api/admin/content/{id}` | Change an entry and save a revision. | `content:write` |
+| `PUT` | `/api/admin/content/{id}` | Change an entry, and save a revision when history is on. | `content:write` |
 | `DELETE` | `/api/admin/content/{id}` | Delete an entry and its revisions. | `content:write` |
 | `GET` | `/api/admin/content/{id}/revisions` | Revisions, newest first. | `content:read` |
 | `GET` | `/api/admin/content/{id}/revisions/{number}` | One revision. | `content:read` |
@@ -504,6 +544,8 @@ The release and comment errors are on [Content releases](content-releases.md#err
 
 - [Drafts and publishing](../guides/user/drafts-and-publishing.md): the same lifecycle in the
   admin console.
+- [Content history](content-history.md): which content types keep revisions, retention and
+  the activity log.
 - [Data model](../concepts/data-model.md): statuses, revisions and the Content API.
 - [Editorial review](editorial-review.md): stages and approval before publishing.
 - [Bulk import](bulk-import.md): create many entries from a file.

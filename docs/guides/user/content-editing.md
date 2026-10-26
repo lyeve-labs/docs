@@ -94,8 +94,9 @@ entry.
 
 ## Edit an entry
 
-Open the entry from its collection, change the fields and choose **Save**. Each save is kept
-as a revision, so you can look back at earlier versions and restore one. The entry page shows
+Open the entry from its collection, change the fields and choose **Save**. When history is on
+for the collection, each save that changes something is kept as a revision, so you can look
+back at earlier versions and restore one. The entry page shows
 when the entry was created and, if the collection keeps it, when it was last updated.
 [Drafts and publishing](drafts-and-publishing.md) covers publishing and the revision history.
 

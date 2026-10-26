@@ -89,7 +89,7 @@ none answers `[]`.
 
 `api_calls` and `bandwidth_bytes` count requests made with API keys.
 
-**2. Write this month's snapshot for every active tenant.** This is API only on v0.21.0.
+**2. Write this month's snapshot for every active tenant.** This is API only on v0.22.0.
 
 ```bash
 curl -X POST "http://localhost:3001/api/admin/usage/snapshot?period=2026-10" \
@@ -102,7 +102,7 @@ curl -X POST "http://localhost:3001/api/admin/usage/snapshot?period=2026-10" \
 
 Running it again for the same month replaces that month's snapshot.
 
-**3. Export every tenant's usage as CSV.** This is API only on v0.21.0.
+**3. Export every tenant's usage as CSV.** This is API only on v0.22.0.
 
 ```bash
 curl "http://localhost:3001/api/admin/usage/export?from=2026-10&to=2026-10&format=csv" \

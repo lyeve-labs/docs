@@ -25,11 +25,11 @@ Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.55.0` | Never. One release, exactly |
-| `0.55` | To the latest patch of that minor release |
+| `0.56.0` | Never. One release, exactly |
+| `0.56` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.55.0` is the image tag `0.55.0`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.56.0` is the image tag `0.56.0`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates
@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.55.0
+  ghcr.io/lyeve-labs/lyeve-core:0.56.0
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -122,7 +122,7 @@ is on [Configuration](../reference/configuration.md).
 |---|---|
 | Port | `3002` by default, set with `PORT` |
 | User | `node` |
-| Health check | Built in, an HTTP request to `/` on port `3002` |
+| Health check | Built in, an HTTP request to `/readyz` on port `3002`. It answers `503` while the console cannot reach the engine |
 
 | Variable | Purpose |
 |---|---|
@@ -187,6 +187,14 @@ with `{"setup_required":true,"token_source":"log"}`: the token is the one the en
 which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETUP_TOKEN` set,
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
+
+## Upgrading to 0.56.0 and console 0.22.0
+
+Upgrade the engine before the console: console 0.22.0 reads content history from engine 0.56.0.
+Back up the database first, because an engine before 0.56.0 refuses to start on a database
+0.56.0 has upgraded. A tenant that already holds content keeps content history on for every
+content type. [Docker Compose](docker-compose.md#upgrading-to-0560-and-console-0220) explains
+each step and the changes your API clients see.
 
 ## Upgrading to 0.55.0 and console 0.21.0
 

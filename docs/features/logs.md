@@ -58,7 +58,7 @@ that level's entries. Under **Entries**, the search box reads **Message words, a
 trace ID**, beside a level picker and a page size. **Volume alerts** opens the rules described
 under [Watch log volume](#watch-log-volume). **Insight > Observability** follows the live log
 under **Live log tail**. The console reads the levels and the sinks but has no control to change
-them on v0.21.0, so changing levels, shipping records and setting retention go through the API.
+them on v0.22.0, so changing levels, shipping records and setting retention go through the API.
 
 ## Try it
 
@@ -121,7 +121,7 @@ curl "http://localhost:3001/api/admin/logs/search?request_id=try-logs-1" \
 </div>
 
 **3. Turn on debug output for your tenant.** The console shows the **Default level** but has no
-control to change a level on v0.21.0, so this step is an API call:
+control to change a level on v0.22.0, so this step is an API call:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/logging/levels/tenant/default \

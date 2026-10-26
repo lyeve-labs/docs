@@ -14,10 +14,12 @@ again after a fix.
 
 :::tip[Best for]
 - **Seeing what a client really sent.** A capture holds the method, URL,
-  headers and body of the request, and the status, headers and body of the
-  answer.
+  headers and body of the request, and the status and headers of the answer.
+  It keeps the body of the answer when the status is 400 or above, or when a
+  capture rule chose the request.
 - **Finding what changed between a working call and a failing one.** The diff
-  shows the status, the response headers and a line diff of the bodies.
+  shows the status, the response headers and, when both captures hold a
+  response body, a line diff of the bodies.
 - **Checking a fix.** Replay the failing call after you deploy and compare the
   new answer with the old one.
 - **A regression suite from real traffic.** With `request-capture-pro`, save
@@ -41,13 +43,19 @@ again after a fix.
 |---|---|
 | Method, URL, status, duration in milliseconds, tenant. | Credential headers such as `Authorization` and `X-Api-Key`, stored as `[REDACTED]`. |
 | Request and response headers. | Sensitive values in JSON, XML, form and plain-text bodies, redacted before they are stored. |
-| Request and response bodies, up to 64 KiB each. | The bodies of routes that carry a credential, such as a password or a secret shown once. |
+| The request body, up to 64 KiB, so the capture can be replayed. | The bodies of routes that carry a credential, such as a password or a secret shown once. |
+| The response body, up to 64 KiB, when the status is 400 or above, or when a capture rule chose the request. | The response body of an answer below 400 that no capture rule chose. |
 
 Captures expire after 24 hours, or after the retention of the capture rule
 that kept them, and are deleted within ten minutes of expiring. A replay keeps
 the lifetime of the capture it replays.
-Capturing never slows a request down. Under heavy load some captures are
-dropped rather than queued, and the server log counts them.
+Capturing never slows a request down. Captures are written in batches, so a
+capture shows in the list within two seconds of its request. Under heavy
+load some captures are dropped rather than queued, and the server log counts
+them.
+
+A tenant's enabled capture rule keeps both bodies for every request it
+captures.
 
 Deleting a tenant deletes its captures. A privacy erasure request for a person
 deletes the captures that name them.
@@ -64,7 +72,7 @@ In the admin console, request capture is under **Insight > Observability > Reque
 
 Without the `request-capture-pro` feature, the page says that capture rules and replay sets
 are not included, and **New rule** and **New replay set** are turned off. Reading one capture in full, replaying it on its own and comparing
-two captures are done with the API on v0.21.0.
+two captures are done with the API on v0.22.0.
 
 ## Try it
 
@@ -104,7 +112,6 @@ curl "http://localhost:3001/api/admin/request-captures?method=GET&limit=2" \
       "request_headers": { "Authorization": ["[REDACTED]"], "User-Agent": ["curl/8.18.0"] },
       "status_code": 200,
       "response_headers": { "Content-Type": ["application/json"] },
-      "response_body": "{\"default_level\":\"INFO\",\"plugins\":{},\"tenants\":{}}",
       "duration_ms": 1.548,
       "tenant_id": "default",
       "ttl_seconds": 86400
@@ -119,7 +126,7 @@ curl "http://localhost:3001/api/admin/request-captures?method=GET&limit=2" \
 </div>
 </div>
 
-The rest of the steps are API only on v0.21.0. They need a capture id, which the console list
+The rest of the steps are API only on v0.22.0. They need a capture id, which the console list
 does not show, so take one from the API list above: copy an `id` into `CAPTURE_ID`.
 
 **2. Fetch that one capture in full:**
@@ -149,11 +156,14 @@ curl http://localhost:3001/api/admin/request-captures/$CAPTURE_ID/diff/$REPLAY_I
 ```
 
 ```json
-{ "id1": "56cea807-47e3-413d-beca-28f6128a172e", "id2": "aa51f554-ab7a-4aca-8e89-a762fb626029", "status_match": true, "status_code1": 200, "status_code2": 200, "duration1_ms": 1.548, "duration2_ms": 1.344 }
+{ "id1": "56cea807-47e3-413d-beca-28f6128a172e", "id2": "aa51f554-ab7a-4aca-8e89-a762fb626029", "status_match": true, "status_code1": 200, "status_code2": 200, "duration1_ms": 1.548, "duration2_ms": 1.344, "body_compared": false }
 ```
 
-An unchanged answer carries neither `body_diff` nor `headers_diff`, as here.
-[Read a diff](#read-a-diff) describes both.
+`body_compared` is `false`, because the capture is a `200` that no rule chose,
+so it holds no response body. The `diff` in the replay's answer carries
+`"body_compared": false` for the same reason. An unchanged answer carries
+neither `body_diff` nor `headers_diff`, as here. [Read a diff](#read-a-diff)
+describes all three.
 
 **5. Delete the replay when you are done.** The answer is `204`:
 
@@ -186,9 +196,16 @@ original scheme and host.
 
 ## Read a diff
 
-`status_match` says whether the two statuses agree. `body_diff` is a line diff
-of the response bodies, and `headers_diff` lists the response headers that
-differ, sorted by name. Each appears only when the two captures differ.
+`status_match` says whether the two statuses agree. `body_compared` is `true`
+when the response bodies were compared. A diff of two stored captures compares
+them only when both hold a response body. The `diff` in a replay's answer
+compares them whenever the capture it repeats holds a response body, because a
+replay keeps the answer it got, so a replay that comes back empty where the
+capture held a body reads as changed.
+
+`body_diff` is a line diff of the response bodies, and appears only when they
+were compared and differ. `headers_diff` lists the response headers that
+differ, sorted by name, and appears only when the two captures differ.
 
 A replay is read the way its original was stored. It does not forward
 `Accept-Encoding`, so the answer comes back uncompressed, and its body is
