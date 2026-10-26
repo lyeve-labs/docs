@@ -262,9 +262,9 @@ every running goroutine with its stack.
 :::danger
 A heap or allocs profile holds raw process memory, which can include content,
 credentials and personal data. Treat a downloaded profile like a database
-dump. Every heap or allocs download from the profiler is written to the server
-log with the caller's user id and address. Set `PROFILER_NO_HEAP_EXPORT=true`
-in production to refuse them.
+dump. Every heap or allocs download, from the profiler or from the standard
+pprof URLs below, is written to the server log with the caller's user id and
+address. Set `PROFILER_NO_HEAP_EXPORT=true` in production to refuse them all.
 :::
 
 ## Count goroutines
@@ -307,9 +307,10 @@ curl "http://localhost:3001/api/admin/debug/pprof/profile?seconds=10" \
 ```
 
 They give the same files as the profiler's exports, plus `block`, `mutex`,
-`threadcreate`, `trace`, `cmdline` and `symbol`. They take no setting:
-`PROFILER_NO_HEAP_EXPORT` does not apply to them, and the super admin role is
-the only control.
+`threadcreate`, `trace`, `cmdline` and `symbol`. `PROFILER_NO_HEAP_EXPORT`
+refuses `heap` and `allocs` here too, with the same `403`, and logs each one it
+serves. The other profiles take no setting, so the super admin role is their
+only control.
 
 ## Tune garbage collection
 
@@ -349,7 +350,7 @@ console. A saved setting takes effect on the next request.
 |---|---|---|
 | `PROFILER_RING_SIZE` | How many recent requests are kept, from 1 to 100000. A value outside that range is ignored. Changing it clears the requests already recorded. | `10000` |
 | `PROFILER_CAPTURE_MEMSTATS` | Record allocations, heap and goroutine count for each request. This pauses the process for about 50 to 200 microseconds per request, so leave it off unless you are chasing memory. The allocation fields stay `0` while it is off. | `false` |
-| `PROFILER_NO_HEAP_EXPORT` | Refuse the profiler's heap and allocs exports with `403`. Recommended in production. | `false` |
+| `PROFILER_NO_HEAP_EXPORT` | Refuse every heap and allocs export, from the profiler and from `/api/admin/debug/pprof/`, with `403`. Recommended in production. | `false` |
 
 The profiler runs on every install. If you set `LYEVE_PLUGINS` to choose which
 features start, include `profiler` in it. The latency ranking, the goroutine
