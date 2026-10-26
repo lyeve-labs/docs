@@ -441,6 +441,12 @@ each with its own rate limit.
 
 ## Limits and errors
 
+At the password step (`POST /api/admin/auth/login` and `POST /api/v1/auth/token`):
+
+| Status | Message | Cause |
+|---|---|---|
+| `503` | `Multi-factor authentication is temporarily unavailable. Please try again later.`, code `AUTH_MFA_STORE_ERROR` | The account's second factors could not be read. The password is not refused and no session is issued, so try again. |
+
 At sign-in (`POST /api/admin/auth/mfa-verify`):
 
 | Status | Message | Cause |
