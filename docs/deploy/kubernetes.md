@@ -570,11 +570,20 @@ content history on for every content type.
 [Docker Compose](docker-compose.md#upgrading-to-0560-and-console-0220) lists the other changes
 to read before the first start.
 
+Scale the engine to zero, wait until no engine pod is left, start 0.56.0, and move the console
+once the engine is ready:
+
 ```bash
+kubectl -n lyeve scale deploy/lyeve-core --replicas=0
+kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.56.0
+kubectl -n lyeve scale deploy/lyeve-core --replicas=2
 kubectl -n lyeve rollout status deploy/lyeve-core
 kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.22.0
 ```
+
+The engine answers nothing between the first command and the end of the rollout, so plan a short
+outage.
 
 ## Upgrading to 0.55.0 and console 0.21.0
 
