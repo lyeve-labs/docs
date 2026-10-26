@@ -116,82 +116,144 @@ the log, and the default applies.
 
 ## Try it
 
-This turns history on for one content type, edits an entry and reads what was kept.
-The settings routes need a signed-in session with the `admin` or `super_admin` role, so put
-the token from your login answer in `TOKEN`, as the [quickstart](../getting-started/quickstart.md)
-shows. An [admin token](../how-to/admin-tokens.md) cannot change these settings.
+This turns history on for one content type, edits an entry and reads what was kept. For the
+console steps, you are signed in to the admin console with the `admin` or `super_admin` role.
+For the API steps, the settings routes need a signed-in session, so put the token from your
+login answer in `TOKEN`, as the [quickstart](../getting-started/quickstart.md) shows. An
+[admin token](../how-to/admin-tokens.md) cannot change these settings.
 
-1. Read the settings:
+**1. Read the settings.**
 
-   ```bash
-   curl http://localhost:3001/api/admin/content/history/settings \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   ```json
-   {
-     "settings": {
-       "history_mode": "off",
-       "schemas": [],
-       "keep_days": 0,
-       "keep_versions": 0,
-       "activity_enabled": true,
-       "activity_keep_days": 0,
-       "updated_by": null,
-       "updated_at": null
-     },
-     "locked": [],
-     "env": { "history": "console", "activity": "console" },
-     "defaults": { "keep_days": 0, "keep_versions": 0, "activity_keep_days": 0 }
-   }
-   ```
+Open **Settings > Content history**. On a new install, **Keep versions for** reads **Off**,
+**Keep each version for** reads **Forever**, **Keep at most, per entry** reads **Unlimited**,
+and **Record who changed which entry** reads **On**. A banner names any setting the server's
+environment fixes.
 
-   `locked` names the fields the environment fixes, `env` holds `CONTENT_HISTORY` and
-   `CONTENT_ACTIVITY`, and `defaults` holds the three `KEEP` variables.
+</div>
+<div data-path="api">
 
-2. Keep history for the `story` type only, for 90 days and at most 20 versions an entry:
+```bash
+curl http://localhost:3001/api/admin/content/history/settings \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/content/history/settings \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"history_mode": "selected", "schemas": ["story"], "keep_days": 90, "keep_versions": 20}'
-   ```
+```json
+{
+  "settings": {
+    "history_mode": "off",
+    "schemas": [],
+    "keep_days": 0,
+    "keep_versions": 0,
+    "activity_enabled": true,
+    "activity_keep_days": 0,
+    "updated_by": null,
+    "updated_at": null
+  },
+  "locked": [],
+  "env": { "history": "console", "activity": "console" },
+  "defaults": { "keep_days": 0, "keep_versions": 0, "activity_keep_days": 0 }
+}
+```
 
-   The answer has the same shape as the read. A field you leave out keeps its value.
+`locked` names the fields the environment fixes, `env` holds `CONTENT_HISTORY` and
+`CONTENT_ACTIVITY`, and `defaults` holds the three `KEEP` variables.
 
-3. Edit a `story` entry, such as the one [Content lifecycle](content-lifecycle.md#try-it)
-   creates, with its id in `ENTRY_ID`. Then list its versions:
+</div>
+</div>
 
-   ```bash
-   curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID \
-     -H "Authorization: Bearer $TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"title": "Hello again"}'
+**2. Keep history for the `story` type only, for 90 days and at most 20 versions an entry.**
 
-   curl http://localhost:3001/api/admin/content/$ENTRY_ID/revisions \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+<div class="paths">
+<div data-path="console">
 
-   The list carries `"history_enabled": true`, and each version names its `action`, such as
-   `updated`, and its `source`, here `console`, which the Admin API records as the console
-   does. Sending the same title again adds no version.
+On **Settings > Content history**, under **History**:
 
-4. See what history takes:
+1. Set **Keep versions for** to **Selected types**, and tick **story** in **Content types
+   that keep history**.
+2. Set **Keep each version for** to **A number of days**, and enter `90` in **Days**.
+3. Set **Keep at most, per entry** to **A number of versions**, and enter `20` in
+   **Versions**.
+4. Choose **Save**.
 
-   ```bash
-   curl http://localhost:3001/api/admin/content/history/usage \
-     -H "Authorization: Bearer $TOKEN"
-   ```
+</div>
+<div data-path="api">
 
-   ```json
-   {"commits": 1, "objects": 2, "stored_bytes": 412, "logical_bytes": 1730, "legacy_rows": 0, "legacy_bytes": 0, "oldest_at": "2026-10-22T09:14:03Z"}
-   ```
+```bash
+curl -X PUT http://localhost:3001/api/admin/content/history/settings \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"history_mode": "selected", "schemas": ["story"], "keep_days": 90, "keep_versions": 20}'
+```
 
-   `commits` counts versions, `stored_bytes` is what they take, and `logical_bytes` is what
-   the same versions would take as full copies. `legacy_rows` and `legacy_bytes` count the
-   revisions recorded before your instance stored history this way. Retention removes those
-   too. `oldest_at` is the time of the oldest version.
+The answer has the same shape as the read. A field you leave out keeps its value.
+
+</div>
+</div>
+
+**3. Edit a `story` entry and list its versions.** Use an entry such as the one
+[Content lifecycle](content-lifecycle.md#try-it) creates.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Content**, pick **story** and open the entry. Change **Title** to `Hello again` and
+choose **Save**, then choose **History**. The **Revision history** panel lists the new version
+first. Saving the same title again adds no version.
+
+</div>
+<div data-path="api">
+
+Put the entry's id in `ENTRY_ID`:
+
+```bash
+curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Hello again"}'
+
+curl http://localhost:3001/api/admin/content/$ENTRY_ID/revisions \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The list carries `"history_enabled": true`, and each version names its `action`, such as
+`updated`, and its `source`, here `console`, which the Admin API records as the console
+does. Sending the same title again adds no version.
+
+</div>
+</div>
+
+**4. See what history takes.**
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > Content history**, **Storage** shows what the versions take under
+**Stored**, what the same versions would take whole under **As full copies**, and counts
+**Versions** and **Earlier revisions**, the revisions recorded before your instance stored
+history this way.
+
+</div>
+<div data-path="api">
+
+```bash
+curl http://localhost:3001/api/admin/content/history/usage \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```json
+{"commits": 1, "objects": 2, "stored_bytes": 412, "logical_bytes": 1730, "legacy_rows": 0, "legacy_bytes": 0, "oldest_at": "2026-10-22T09:14:03Z"}
+```
+
+`commits` counts versions, `stored_bytes` is what they take, and `logical_bytes` is what
+the same versions would take as full copies. `legacy_rows` and `legacy_bytes` count the
+revisions recorded before your instance stored history this way. Retention removes those
+too. `oldest_at` is the time of the oldest version.
+
+</div>
+</div>
 
 ## Retention
 
@@ -229,8 +291,19 @@ stored history this way.
 
 ### Prune now
 
-**Prune now** in the console, or `POST /api/admin/content/history/prune` with `{}`, runs
-retention for your tenant at once. It answers what it removed:
+Prune now runs retention for your tenant at once, instead of waiting for the daily run.
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > Content history**, under **Storage**, choose **Prune now**. The page says
+how many versions, earlier revisions and activity rows it removed, or how many so far while
+pruning continues in the background.
+
+</div>
+<div data-path="api">
+
+Send `POST /api/admin/content/history/prune` with `{}`. It answers what it removed:
 
 ```json
 {"commits": 140, "legacy_rows": 12, "activity_rows": 0, "done": true}
@@ -238,6 +311,9 @@ retention for your tenant at once. It answers what it removed:
 
 `commits` counts the versions removed, `legacy_rows` the revisions recorded before your
 instance stored history this way, and `activity_rows` the activity rows removed.
+
+</div>
+</div>
 
 `200` with `"done": true` means the run finished. A run that takes longer than about ten
 seconds answers `202` with `"done": false` and the counts so far, and keeps going in the
@@ -247,15 +323,34 @@ it deletes nothing.
 
 ### Delete one content type's history
 
-**Delete history** in the console, or
-`DELETE /api/admin/content/history?schema=story`, deletes every stored version of one content
-type. The entries stay as they are. The deleted versions cannot be recovered.
+Deleting one content type's history removes every stored version of that type. The entries
+stay as they are. The deleted versions cannot be recovered.
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > Content history**, under **Storage**, pick the type in **Content type** and
+choose **Delete history**. The dialog asks **Delete every version of** the type, and
+**Delete** confirms it. When a legal hold kept some versions, the page says how many.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X DELETE "http://localhost:3001/api/admin/content/history?schema=story" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ```json
 {"commits": 312, "held": 4}
 ```
 
-`held` counts the versions a legal hold kept. They stay until the hold is lifted. The delete
+`held` counts the versions a legal hold kept.
+
+</div>
+</div>
+
+Versions a legal hold kept stay until the hold is lifted. The delete
 is recorded in the activity log. While a legal hold covers the tenant's content as a whole, the
 delete removes nothing and answers `409`.
 
