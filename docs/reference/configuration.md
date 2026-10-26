@@ -474,6 +474,7 @@ Each feature lists its own settings on its page. Find a variable here by its pre
 |---|---|---|
 | Shared caching | `CACHE_*`, `REDIS_URL` | [Caching](../features/caching.md) |
 | Rate limits across replicas | `RATE_LIMIT_BACKEND`, `RATE_LIMIT_REDIS_URL` | [Rate limiting](../features/rate-limiting.md) |
+| Content history and the activity log | `CONTENT_HISTORY`, `CONTENT_HISTORY_KEEP_DAYS`, `CONTENT_HISTORY_KEEP_VERSIONS`, `CONTENT_ACTIVITY`, `CONTENT_ACTIVITY_KEEP_DAYS` | [Content history](../features/content-history.md#settings) |
 | Uploads and images | `MEDIA_*` | [Media](../features/media.md) |
 | Signed upload and download links | `MAX_PRESIGN_*`, `STORAGE_LOCAL_SIGNING_SECRET` | [Object storage](../features/object-storage.md) |
 | Keeping a tenant's files in its region without a data residency assignment | `STORAGE_TENANT_REGIONS` | [Object storage](../features/object-storage.md) |
