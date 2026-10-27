@@ -276,7 +276,7 @@ name outside it is refused at creation.
 | `flows:read` | Read flows and their runs. |
 | `flows:write` | Create, change, activate and delete flows. |
 | `webhooks:read` | Read webhooks and their deliveries. |
-| `webhooks:write` | Send a test delivery, retry a delivery and change a webhook's retry settings. Creating, changing and deleting a webhook take a super admin, so no token can. |
+| `webhooks:write` | Send a test delivery, retry a delivery, change a webhook's retry settings, and replay, dismiss and delete dead letters. Creating, changing and deleting a webhook take a super admin, so no token can. |
 | `jobs:read` | Read scheduled jobs and their runs. |
 | `jobs:write` | Create, change, trigger and delete scheduled jobs. |
 | `logs:read` | Read and export the instance logs. |
