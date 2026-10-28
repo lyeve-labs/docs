@@ -71,7 +71,7 @@ To create an editor:
 | Method | Path | Does |
 |---|---|---|
 | `GET` | `/api/admin/users` | List users. |
-| `POST` | `/api/admin/users` | Create a user: `email`, `password`, `roles`. `201`. |
+| `POST` | `/api/admin/users` | Create a user: `email`, `password`, `roles`. `201`. `roles` is required and names at least one role. |
 | `PUT` | `/api/admin/users/{id}/roles` | Replace a user's roles: `{"roles": [...]}`. |
 | `PUT` | `/api/admin/users/{id}/state` | Disable or enable a user, or set an account expiry: `disabled`, `expires_at`. |
 | `PUT` | `/api/admin/users/{id}/password` | Set a new password. It has to meet the password policy, and every session the user held ends. |
@@ -86,10 +86,12 @@ Create an editor:
 curl -X POST http://localhost:3001/api/admin/users \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"email": "sam@example.com", "password": "Editor-Account-2026"}'
+  -d '{"email": "sam@example.com", "password": "Editor-Account-2026", "roles": ["editor"]}'
 ```
 
-The answer is `201` with the user and `"roles": ["editor"]`.
+The answer is `201` with the user and `"roles": ["editor"]`. A request with no
+`roles`, or an empty list, creates nothing and answers `422` with the code
+`VALIDATION_REQUIRED`: there is no default role.
 
 </div>
 </div>
