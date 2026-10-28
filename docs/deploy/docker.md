@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.56.0
+  ghcr.io/lyeve-labs/lyeve-core:0.56.1
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
