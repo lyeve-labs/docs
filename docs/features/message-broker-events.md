@@ -158,9 +158,11 @@ curl -X POST http://localhost:3002/api/v1/content/post \
 </div>
 
 The subscriber prints a message on `lyeve.tenant.default.post.after_create`
-with the entry in `data`. An entry created through the API carries its fields
-in `data`. On console v0.22.0, an entry created in the console arrives with
-the whole stored entry in `data` and its fields under `data.body`.
+with the entry in `data`: its `id`, its fields and, when the content type has
+drafts, its `_status`. An entry created in the console arrives in the same
+shape as one created through the API. On engine v0.56.1 and earlier, an entry
+created in the console arrived with the whole stored entry in `data` and its
+fields under `data.body`.
 
 **5. Read the status again.**
 
