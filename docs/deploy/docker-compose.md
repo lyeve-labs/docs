@@ -278,7 +278,7 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.56.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.22.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.56.1` and `ghcr.io/lyeve-labs/lyeve-admin:0.22.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
