@@ -63,7 +63,8 @@ tenant from **Access > Users** with **New user**, choosing the tenant under
 **Tenant**. Under **Roles**, untick **viewer**, which is ticked already, and tick the
 account's role. An account
 with a membership in another tenant works in it by entering its slug in
-**Organization (optional)** on the sign-in page. A super admin's own session
+**Organization (optional)** on the sign-in page, which the console shows when
+it runs with `SIGN_IN_ORGANIZATION=true`. A super admin's own session
 stays in its home tenant, so steps 3 to 5 below, which act
 inside `acme` from that session, are API only on v0.23.0.
 
@@ -353,7 +354,8 @@ curl -X PUT http://localhost:3001/api/admin/users/$USER_ID/memberships \
 </div>
 
 The account then signs in to that tenant by naming it. On the console's sign-in
-page, that is the tenant's slug in **Organization (optional)**. Over the API:
+page, that is the tenant's slug in **Organization (optional)**, which the
+console shows when it runs with `SIGN_IN_ORGANIZATION=true`. Over the API:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/auth/login \
