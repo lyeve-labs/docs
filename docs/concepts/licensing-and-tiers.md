@@ -274,12 +274,16 @@ A **license key** is exchanged for a token:
 3. It caches the token in `LYEVE_LICENSE_CACHE_DIR` with a digest of the key,
    never the key itself. A later start uses the cached token with no network
    call until the token is within seven days of its expiry.
-4. From then on it exchanges the key again. A running engine checks every six
-   hours, and also retries while it holds no active token.
+4. A running engine checks every six hours. It exchanges the key again when it
+   holds no token, when its token is no longer active, or when its token is
+   within seven days of its expiry.
 
 Nothing else is sent: no content, users, configuration or usage. When the server
 refuses the key (`invalid_key`, `key_revoked` or `quota_exceeded`), the cached
-token is discarded and the install runs the free tier. When the server cannot be
+token is discarded. At start the install then runs the free tier. A running
+engine keeps the token it already holds until that token expires, and through
+the seven days of grace that follow, so the free tier begins at the end of grace
+or at the next start, whichever comes first. When the server cannot be
 reached, a cached token keeps working, and with none the install runs the free
 tier. Any other answer, such as a proxy's `403`, counts as unreachable. The
 reason is logged and reported as `license_error` by `GET /api/admin/entitlements`.

@@ -97,8 +97,10 @@ GET /.well-known/jwks.json
 ```
 
 An empty set means the instance signs with HMAC instead: `JWT_ALG=HS256` is
-set, or, outside production, the key file at `JWT_KEY_PATH` could not be
-created. In production an unreadable key file stops the start instead. HMAC
+set, or, outside production, the key file at `JWT_KEY_PATH` could not be used.
+That covers a file that cannot be read or created, does not parse, holds a key
+of the wrong length, or holds a public key that does not match its seed. In
+production any of these stops the start instead. HMAC
 tokens can only be checked with `JWT_SECRET`, so do not use JWKS validation
 against such an instance. See
 [sign tokens with Ed25519](../how-to/secure-your-instance.md#2-sign-tokens-with-ed25519).
