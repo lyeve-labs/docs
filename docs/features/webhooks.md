@@ -764,6 +764,7 @@ See [Admin tokens](../how-to/admin-tokens.md).
 | `409` | `replayed request` | An incoming request reused a nonce. |
 | `422` | `failed to create content record` | An incoming payload left out a required field, or a value did not fit its field. |
 | `422` | `<field>: the related entry does not exist` | An incoming payload links a relation to an entry the webhook's tenant does not hold. |
+| `422` | `<field>: the field map names this field twice` | The field map sends two values to one field, such as targets that differ only in case, or a relation and its key column. |
 | `422` | `the webhook's content type is not defined` | The incoming webhook's content type does not exist in its tenant. |
 
 </details>

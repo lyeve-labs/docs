@@ -103,6 +103,13 @@ production tenant on a dump you have not loaded somewhere else.
 | `truncate` | Empty each target table **before** loading. This deletes the existing data. |
 | `skip_existing` | Leave any table that already has rows untouched. |
 
+Export, import and restore each answer with an `X-Operation-Id` header naming the operation.
+`GET /api/admin/tenant-backup/progress?op_id=<id>` follows it as Server-Sent Events, until an
+event with `"done": true`. An import and a restore answer only when they finish, so to follow
+one while it runs, send a UUID of your own in `X-Operation-Id` and open the progress stream
+with it once the call has started. A value that is not a UUID answers `400`, and the id of an
+operation still running answers `409`.
+
 ## Back up to S3
 
 A backup job exports a tenant, checksums it, encrypts it and uploads it to an S3
@@ -305,7 +312,7 @@ the same slug.
 | `POST` | `/api/admin/tenant-backup/validate` | Parse a dump and count it. Nothing is written. |
 | `POST` | `/api/admin/tenant-backup/import` | Load a dump into a tenant. Session only. |
 | `GET` | `/api/admin/tenant-backup/tables` | The tenant's tables with row and column counts. |
-| `GET` | `/api/admin/tenant-backup/progress` | Follow a running export or import as Server-Sent Events, with `?op_id=`. |
+| `GET` | `/api/admin/tenant-backup/progress` | Follow a running export, import or restore as Server-Sent Events, with `?op_id=`. |
 | `GET`, `POST` | `/api/admin/tenant-backup/jobs` | List or create backup jobs. |
 | `GET`, `PUT`, `DELETE` | `/api/admin/tenant-backup/jobs/{id}` | Read, change or delete a job. |
 | `POST` | `/api/admin/tenant-backup/jobs/{id}/trigger` | Run a job now. |

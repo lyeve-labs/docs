@@ -70,6 +70,7 @@ travel under `data`.
 | `GET` | `/api/v1/schemas/{name}` | A caller who may read the type | One content type. Any other caller gets `403` |
 | `GET` | `/api/v1/content/{schema}` | Any credential | List entries. Answers a bare array |
 | `GET` | `/api/v1/content/{schema}/cursor` | Any credential | List with a cursor, for walking a large set |
+| `GET` | `/api/v1/content/{schema}/stream` | Any credential | Follow the content type's changes as Server-Sent Events. See [Follow changes](#follow-changes) |
 | `GET` | `/api/v1/content/{schema}/{id}` | Any credential | One entry. An entry that is not published answers `404` unless the caller may read drafts |
 | `POST` | `/api/v1/content/{schema}` | `editor`, `admin`, `super_admin` | Create an entry from `{"data": {...}}` |
 | `POST` | `/api/v1/content/{schema}/bulk` | `editor`, `admin`, `super_admin` | Create several entries in one call |
@@ -117,6 +118,41 @@ The cursor list answers `{"data": [...], "next_cursor": "..."}`. Send `next_curs
 always carries one, so a set whose size is a multiple of `limit` ends on an empty page. Cursor
 paging stays fast at depth and never repeats an entry when rows change during the walk. Offset
 paging lets you jump to a page number.
+
+### Follow changes
+
+`GET /api/v1/content/{schema}/stream` keeps the connection open and sends one Server-Sent
+Event for each entry created, updated or deleted in the content type, in your tenant. It
+replays nothing written before it opened.
+
+```bash
+curl -N http://localhost:3002/api/v1/content/article/stream \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```text
+: connected to article stream
+
+data: {"data":{"id":"0f8fad5b-d9cb-469f-a165-70867728950e","title":"Hello"},"event":"after_create","schema":"article"}
+
+: heartbeat
+```
+
+- `event` is `after_create`, `after_update` or `after_delete`. `data` is the entry after the
+  change, or as it was before a delete, without the fields a read withholds from the caller.
+  Relations are not populated and translations are not applied. A change to a draft reaches
+  only a caller who may read drafts.
+- A `: heartbeat` comment line arrives every 10 seconds, so a proxy keeps an idle stream open.
+- When the token expires, the credential is revoked or the caller can no longer read the
+  content type, the stream sends one last event named `error`, such as
+  `{"error": "credential expired or revoked"}`, and closes.
+- A change carries no event `id`, so a client that reconnects cannot resume where it stopped.
+  Reconnect with a valid credential, then read the list once to pick up what changed in
+  between. A client that reads more slowly than changes arrive misses some of them.
+- One credential holds at most 8 open streams and one tenant at most 128. The next one answers
+  `429` `too many open change streams` with `Retry-After: 10`.
+- A browser's `EventSource` cannot send an `Authorization` header, so read the stream with
+  `fetch` or from your server.
 
 ### Updating an entry
 
@@ -186,6 +222,7 @@ Each group below is folded. Open the one you need.
 | `PUT` | `/api/admin/schemas/{name}` | `super_admin` | Save a content type |
 | `DELETE` | `/api/admin/schemas/{name}` | `admin` | Delete a content type |
 | `PUT` | `/api/admin/schemas/{name}/rename` | `admin` | Rename a content type |
+| `DELETE` | `/api/admin/schemas/{name}/rename` | `admin` | Abandon a rename that stopped partway, under either name. The content type goes back to its old name |
 | `PUT` | `/api/admin/schemas/{name}/fields/{field}/rename` | `admin` | Rename a field to `{"new_name": "..."}` |
 | `POST` | `/api/admin/schemas/{name}/preview`, `.../preview-ddl` | `admin` | Show the database statements a save would run, without running them. The body is the content type |
 | `GET` | `/api/admin/schemas/{name}/history` | `super_admin` | What each save ran against the table, and what is still queued |
@@ -331,7 +368,7 @@ body, answer and role.
 | [Object storage](../features/object-storage.md) | `/api/admin/storage/`, `/api/v1/storage/local/{provider}` | Free |
 | [Bulk import](../features/bulk-import.md) | `/api/admin/imports`, and mapping templates at `/api/admin/imports/templates` | Free. Saving a template, and the date, split and lookup transforms, need `content-pro` |
 | [Search](../features/search.md) | `/api/admin/search`, `/api/v1/search/{schema}` | `search` |
-| [Localization](../features/localization.md) | `/api/admin/localization/locales`, `/api/admin/content/{id}/translations`, `/api/admin/translations/`, `/api/v1/localization/resolve` | Free, with two locales per tenant. More need `localization-pro` |
+| [Localization](../features/localization.md) | `/api/admin/localization/locales`, `/api/admin/localization/rich-text-repairs`, `/api/admin/content/{id}/translations`, `/api/admin/translations/`, `/api/v1/localization/resolve` | Free, with two locales per tenant. More need `localization-pro` |
 | [Recommendations](../features/recommendations.md) | `/api/admin/recommendations/`, `/api/v1/recommendations/` | `recommendations` |
 | [A/B testing](../features/ab-testing.md) | `/api/admin/ab/experiments`, `/api/v1/ab/expose`, `/api/v1/ab/convert` | `ab-testing` |
 | [AI](../features/ai.md) | `/api/admin/ai/`, `/api/admin/content/ai-assist`, `/api/admin/content/ai-usage`, and the support desk at `/api/admin/support/` | `ai`, and `support` for the desk |
