@@ -1,6 +1,6 @@
 ---
 title: Content lifecycle
-description: Move entries through draft, published and archived in the admin console or over the Admin API, compare and roll back revisions, schedule publishing, and link entries.
+description: Move entries through draft, published and archived, compare and roll back revisions, schedule publishing and link entries, in the admin console or Admin API.
 sidebar:
   order: 16
 ---

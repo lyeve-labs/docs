@@ -4,6 +4,13 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.7.1] - 2026-10-31
+
+### Changed
+
+- The deploy pages pin engine v0.56.1, and the console and API tabs name it. The Kubernetes page's 0.55.0 upgrade notes send the reader to the newest upgrade section, so every command there starts the newest release.
+- The content lifecycle page's description fits in a search result.
+
 ## [0.7.0] - 2026-10-26
 
 ### Added
