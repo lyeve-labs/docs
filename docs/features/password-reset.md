@@ -48,7 +48,9 @@ it too, and then has a password it can sign in with, both within the tenant's
    **Save**.
 
 The console checks that the password has at least 12 characters before it
-sends the token, so a password that is too short does not spend the link.
+sends the token, so a password that is too short does not spend the link. The
+engine then applies the install's password policy, so a `PASSWORD_MIN_LENGTH`
+above 12 asks for more.
 
 ![The Reset your password page with an email address entered, the Organization (optional) field and the Email me a reset link button.](images/password-reset.png)
 
@@ -58,7 +60,7 @@ sends the token, so a password that is too short does not spend the link.
 |---|---|
 | Request | The console posts the address, and the organization when one was entered, to `/api/admin/auth/password-reset/request`. The answer is the same, in about the same time, whether or not the account exists, and whether or not another tenant holds the address. A new request cancels the account's earlier unused links. |
 | Email | The link `<LYEVE_CONSOLE_URL>/reset-password?token=<token>` is mailed. When the account has a tenant, the link adds `&tenant=<tenant>`, and the console carries it on to the sign-in page, which fills in the organization. |
-| Confirm | The person chooses a new password of at least 12 characters, and the console sends it with the token. The account is checked again, so a link mailed before the account was disabled, or before its sign-in window closed, sets no password. |
+| Confirm | The person chooses a new password, and the console sends it with the token. The engine holds it to the install's password policy before it reads the token, so a refused password leaves the link usable. The account is checked again, so a link mailed before the account was disabled, or before its sign-in window closed, sets no password. |
 | Sign-out | Every session and refresh token the account held ends. |
 
 ## Turn it on

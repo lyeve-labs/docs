@@ -478,6 +478,7 @@ Which content types keep revisions, and for how long, is set under
 | Method | Path | Purpose | Grant |
 |---|---|---|---|
 | `GET` | `/api/admin/content` | List entries. `?schema=`, `?status=`, `limit`, `offset`. | `content:read` |
+| `GET` | `/api/admin/content/rich-text-repairs` | Rich text repairs that have not finished, after a field became `rich_text`: `content_type`, `field`, `phase` (`entries` or `table`), `attempts`, `last_error`, `next_attempt_at`. See [Schema changes](schema-changes.md#how-it-works). | `content:read` |
 | `POST` | `/api/admin/content` | Create an entry. | `content:write` |
 | `GET` | `/api/admin/content/{id}` | One entry. | `content:read` |
 | `GET` | `/api/admin/content/slug/{slug}` | One entry by slug. | `content:read` |
