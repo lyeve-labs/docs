@@ -48,7 +48,7 @@ An entry on this API has a few fields of its own beside the content type's field
 | `meta` | Any JSON you want to keep beside the entry. |
 | `status` | `draft`, `published` or `archived`. A new entry is a `draft` unless you say otherwise. |
 | `current_rev` | The entry's version number. It moves on every change, whether history is on or not. |
-| `published_at` | When the entry last moved to published. |
+| `published_at` | When the entry was published. A publish in the console or with the Admin API sets it again, and a release, a rollback or a Content API publish keeps an earlier time. |
 | `scheduled_publish_at`, `scheduled_unpublish_at`, `timezone` | Its schedule, when one is set. |
 
 The status holds on the Content API too, where only a caller who may read drafts sees an entry
@@ -442,7 +442,10 @@ touched.
 content activity log is on. Each item names the `action` (`created`, `updated`, `published`,
 `unpublished`, `deleted`, `rollback`, `scheduled_publish` or `scheduled_unpublish`), the
 `actor_id`, the `revision_num` when history recorded one, the `source` of the write and the
-names of the `fields` that changed. Archiving records `updated`. A delete reads `deleted` on
+names of the `fields` that changed. A change of `status` records `published` when the entry
+was not published before, and `updated` otherwise, so archiving and unpublishing record
+`updated`. A [release](content-releases.md) that takes a published entry to another status
+records `unpublished`. A delete reads `deleted` on
 this route and on the activity log, including one recorded before content history. Items
 recorded before content history carry a `diff` of the edit. For newer ones, compare two
 revisions with the `diff` route above. [Content history](content-history.md#activity-log)

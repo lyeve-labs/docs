@@ -241,7 +241,7 @@ one. The `author` does not, so every author is live.
 | Status | Meaning |
 |---|---|
 | `draft` | Work in progress. A new entry in the admin console starts here. |
-| `published` | Live. Each time an entry moves to published, the Admin API records the time in `published_at`. |
+| `published` | Live. `published_at` holds the time of a publish. A publish in the admin console or with the Admin API sets it each time. A publish with the Content API or in a release sets it only when the entry has none, and a rollback leaves it as it was. |
 | `archived` | Retired, but kept. |
 
 On the Content API:
