@@ -199,7 +199,9 @@ default and at most 50.
 
 ## Let anyone search your site
 
-List the content types anyone may search.
+List the content types anyone may search. A public search matches every field of their
+published entries, and its snippets can quote any of them, so list only the types whose fields
+may all be public.
 
 <div class="paths">
 <div data-path="console">

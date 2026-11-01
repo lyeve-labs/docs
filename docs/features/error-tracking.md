@@ -194,7 +194,7 @@ the new state. In the admin console, the buttons on a row of **Failures** do the
 | `detail` | Extra detail for you. |
 | `http_status` | The status your service answered. |
 | `tenant_id` | A tenant slug. Only a super admin may set it. Everyone else records in their own tenant. |
-| `stack_trace` | The stack trace. Stack events only. |
+| `stack_trace` | The stack trace, up to 8,192 characters. Stack events only. |
 | `panic_value` | A recovered panic value, added to the message. Stack events only. |
 
 ## Read errors back
@@ -315,6 +315,7 @@ admin.
 | `400` | `invalid JSON body`, `invalid query parameters` |
 | `400` | `code is required`, `title is required` |
 | `400` | `error_code_id is required`, `error_code_id: invalid UUID` |
+| `400` | A validation error with a `fields` object, such as a `stack_trace` over 8,192 characters |
 | `400` | `tenant_id must be a tenant slug` |
 | `400` | `by must be one of: error_code, endpoint, tenant, severity` |
 | `400` | `status must be one of: open, resolved, ignored` |

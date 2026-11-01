@@ -21,7 +21,9 @@ are the people who can sign in.
 - **Offboarding from one place.** A user the directory deactivates or removes
   is refused at SAML sign-in, password reset and magic link from that moment,
   and their sessions end. With `"deprovision_action": "delete"`, a user the
-  directory deletes loses their LyEve account.
+  directory deletes loses their LyEve account. An account that holds `admin`
+  or `super_admin` is the exception: the directory never adopts, disables or
+  deletes it, so offboard it in LyEve.
 - **Several directories on one instance.** Each connection has its own token
   and sees only the users and groups it created.
 :::

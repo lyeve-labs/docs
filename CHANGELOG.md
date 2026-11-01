@@ -4,6 +4,26 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.8.0] - 2026-11-01
+
+### Added
+
+- The deploy pages carry an upgrade section for engine v0.57.0 and console v0.23.0. On MySQL and SQL Server it says to stop every engine while the first start rebuilds the accounts table, how long that took on a test host, and how to recover a start stopped halfway. It covers the index builds on content tables, the Kubernetes startup probe, the new content event shape, the API changes clients see, the form submissions an erasure deletes, short flow secrets and public search lists.
+- The API endpoints page describes the content change stream at `/api/v1/content/{schema}/stream`.
+- The schema changes page says how to abandon a content type rename that stopped partway, and lists the rich text repairs a field change starts.
+- Backup and restore says how to follow an export, import or restore with `X-Operation-Id`.
+
+### Changed
+
+- The console and API tabs name engine v0.57.0 and console v0.23.0, and the deploy pages pin both images.
+- The webhook and message broker pages show the one content event shape: an entry saved in the console carries its fields at the top level of `data` and its status under `_status`, as a Content API write does. They say how a receiver or filter written for the older nested shape reads it. Events carry their time and the instance that raised them from engine v0.57.0.
+- A public search matches every field of the listed content types, and the search pages say to list only types whose fields may all be public.
+- `published_at` and the content history actions are described as the engine records them for console, Admin API, Content API and release publishes.
+- A running engine exchanges its license key again when its token is within seven days of expiry, and keeps an expired token through the seven days of grace.
+- Password reset holds the new password to the install's password policy, and the admin token grant for webhook writes names the dead-letter actions it opens.
+- A directory never adopts, disables or deletes an account that holds `admin` or `super_admin`.
+- Error tracking names the 8,192 character limit on `stack_trace`, the JWKS page names every key file state that falls back to HMAC, and the import plan says when it answers `unchanged`.
+
 ## [0.7.1] - 2026-10-31
 
 ### Changed

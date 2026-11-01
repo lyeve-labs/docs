@@ -379,6 +379,7 @@ cannot call them.
 | `POST` | `/api/admin/translations/bulk-import` | Import translations. |
 | `POST` | `/api/admin/translations/bulk-export` | Export translations. |
 | `GET`, `PUT` | `/api/admin/localization/locales` | Locale settings. |
+| `GET` | `/api/admin/localization/rich-text-repairs` | Translation repairs that have not finished, after a field became `rich_text`: `content_type`, `field`, `attempts`, `last_error`, `next_attempt_at`. |
 | `GET`, `POST` | `/api/v1/localization/resolve` | Resolve one entry, with no credential. |
 
 </details>

@@ -122,6 +122,12 @@ curl -X POST http://localhost:3001/api/admin/schemas/import \
 
 Each content type gets an `action` of `create`, `update` or `unchanged`, with the statements it
 would run in `ddl`. Read them before you apply: a change can drop columns as well as add them.
+
+`unchanged` means the instance stores exactly the definition in the file, as an export writes
+it. A shorter file like the one above, sent again after it was applied, lists `update` with no
+`ddl`, because the instance also stores the `id` and relation key fields it adds and every
+field flag the file leaves out. Applying it runs no statement. Export the content types and
+keep that file to see `unchanged`.
 Then send the same file with `?apply=true`:
 
 ```bash

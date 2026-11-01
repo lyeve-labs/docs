@@ -116,8 +116,8 @@ The engine serves two HTTP APIs, each on its own port:
 
 | API | Default port | Base path | Used for | Credential |
 |---|---|---|---|---|
-| Admin API | 3001 | `/api/admin/` | Sign-in, content types, users, permissions, media, settings and every admin console screen | A session token or an [admin token](../how-to/admin-tokens.md) |
-| Content API | 3002 | `/api/v1/` | Reading and writing entries from your own sites, apps and services | A session token or an [API key](../features/api-keys.md) in `X-API-Key` |
+| Admin API | 3001 | `/api/admin/` | Sign-in, content types, users, permissions, media, settings and most admin console screens | A session token or an [admin token](../how-to/admin-tokens.md) |
+| Content API | 3002 | `/api/v1/` | Reading and writing entries from your own sites, apps and services, and the console's **Delivery > API access**, **API labs** and **GraphQL** pages | A session token or an [API key](../features/api-keys.md) in `X-API-Key` |
 
 `ADMIN_LISTEN_ADDR` and `API_LISTEN_ADDR` move them. The token from
 `POST /api/admin/auth/login` works on both, and the

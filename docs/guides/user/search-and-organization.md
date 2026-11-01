@@ -67,7 +67,9 @@ The **Search** page holds the settings that shape every search in your tenant.
   weights of its own.
 - **Public search.** Under **Anyone may search**, check each collection your site may search
   without signing in, and choose **Save**. Your site's developer then calls the public search
-  route described on [Search](../../features/search.md#let-anyone-search-your-site).
+  route described on [Search](../../features/search.md#let-anyone-search-your-site). A public
+  search matches every field of a listed collection, and its snippets can quote any of them, so
+  list only collections whose fields may all be public.
 
 **Last 30 days** shows how many searches ran and how many found nothing. A `super_admin` also
 sees **Rebuild index**, which is needed once after your operator moves search to

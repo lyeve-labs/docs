@@ -43,6 +43,7 @@ Each save compares the new definition with the stored one and acts on the differ
 | Add a field | Applied at once. Existing entries have no value for it. |
 | Turn `required`, `unique` or `indexed` on or off | Applied at once. |
 | Change a field's type | Applied at once, and the stored values are converted. On PostgreSQL a value that does not convert, such as `abc` into a number, fails the save with `422` `schema migration failed`, and nothing changes. |
+| Make a field `rich_text` | Applied at once. About 30 seconds later the values the field already holds, in entries and in their translations, are cleaned of unsafe markup in the background. A repair that fails is tried again later. `GET /api/admin/content/rich-text-repairs` and `GET /api/admin/localization/rich-text-repairs` list the repairs that have not finished, with `attempts`, `next_attempt_at` and the reason the last attempt failed in `last_error`. |
 | Remove a field, or turn off `with_soft_delete` or `with_draft_publish` | Queued. The data stays until a super admin applies it. |
 | Rename a field or the content type | Use the rename routes below. A definition that just uses the new name is read as one field added and one removed. |
 
@@ -264,6 +265,13 @@ and answers its stored definition.
 A renamed content type's Content API path moves to the new name, and the entries stored there
 move with it. A name another content type already uses answers `409`.
 
+A rename that stops before it finishes holds both names. Until it ends, a save, a rename or a
+delete of either name answers `409` and says the rename has not finished. Running the same
+rename again, or restarting the service, finishes it. To go back instead, send
+`DELETE /api/admin/schemas/{name}/rename` with either name. The content type and its entries
+return to the old name, and the answer is its definition. A name no unfinished rename of your
+tenant holds answers `404`.
+
 ## Apply removals
 
 A removal waits in a queue until a super admin applies it, because it changes stored data
@@ -405,6 +413,7 @@ takes a signed-in session.
 | `PUT` | `/api/admin/schemas/{name}` | `super_admin` | Replace a content type's definition. |
 | `DELETE` | `/api/admin/schemas/{name}` | `admin` | Delete a content type and its entries. `?content=soft` keeps the entries. |
 | `PUT` | `/api/admin/schemas/{name}/rename` | `admin` | Rename a content type. Body: `new_name`. |
+| `DELETE` | `/api/admin/schemas/{name}/rename` | `admin` | Abandon a rename that stopped partway. `{name}` is either name. |
 | `PUT` | `/api/admin/schemas/{name}/fields/{field}/rename` | `admin` | Rename a field and keep its data. Body: `new_name`. |
 | `POST` | `/api/admin/schemas/{name}/preview-ddl` | `admin` | The statements a definition would run, with queued ones marked. |
 | `POST` | `/api/admin/schemas/{name}/preview` | `admin` | The same statements, unmarked. |
@@ -436,7 +445,11 @@ The two you meet most:
 | `400` | The reason the definition was refused | `PUT` with an invalid field or option. |
 | `402` | `payment_required` | Saving the canvas layout needs `schema-pro`, or a configuration bundle route needs `config-sync`. |
 | `404` | `schema not found` or `field not found in schema` | Unknown name. |
+| `404` | `no unfinished rename of this schema` | An abandon names a content type no unfinished rename of your tenant holds. |
+| `404` | `the rename of this schema ended before it could be abandoned: it finished, or another request abandoned it` | The rename ended while the abandon waited. |
 | `409` | `a schema with that name already exists` | A rename onto a name in use. |
+| `409` | A message that starts `a rename of this schema` and says it has not finished | A save, rename or delete of a name an unfinished rename holds. Run the rename again, or abandon it. |
+| `409` | `the rename cannot be abandoned: a schema of another tenant holds its old name` | Another tenant created a content type under the old name. |
 | `409` | `another schema shares this table and defines it differently: ...` | Another tenant's content type of the same name stores the field as another type, or with a name that differs only in case. |
 | `413` | `layout too large` | The canvas layout is over 256 KiB. |
 | `422` | `invalid schema: ...` | `POST` with an invalid name, field or option. |
@@ -445,6 +458,7 @@ The two you meet most:
 | `422` | `content must be hard or soft` | Bad `content` on delete. |
 | `429` | `schema mutation rate limit exceeded` | Over ten changes in five minutes. |
 | `503` | `another instance is applying DDL for this schema; retry in 1s` | Another replica is changing the same content type. Retry. |
+| `503` | `a lock on this schema's tables is held elsewhere: retry in a few seconds` | An abandon waited on a lock another session holds. Retry after the `Retry-After` seconds. |
 | `503` | A static message | The database could not be reached. |
 
 </details>
