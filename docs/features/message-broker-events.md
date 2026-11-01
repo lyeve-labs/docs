@@ -123,7 +123,7 @@ curl -X PUT http://localhost:3001/api/admin/config \
 ```
 
 The answer lists the keys it took under `saved`. Once saved, each key shows in
-**Settings > Configuration** with **Save** beside it. On console v0.22.0 that
+**Settings > Configuration** with **Save** beside it. On console v0.23.0 that
 page lists only settings that already have a value, so it changes a saved
 broker setting but cannot add the first one. The web application firewall
 refuses a URL that names a private IP address, so name the broker by its host

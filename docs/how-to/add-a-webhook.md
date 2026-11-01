@@ -252,13 +252,12 @@ Open **Content**, pick **Post** and choose **New entry**. Enter
 `Webhook check` in **Title** and `Hello` in **Body**, then choose **Create**.
 
 Within a moment the receiver prints an `after_create` line. An entry saved in
-console v0.22.0 arrives as the console stores it. The fields you typed sit in
-an object under `body`, which also holds the post's own `body` field, and
-beside that object are the entry's `id`, `slug`, `status`, `title`, its
-timestamps and the accounts that wrote it:
+the console arrives in the same shape as one saved with the API: its `id`,
+each field under its own name and its status under `_status`. A field you left
+empty arrives as `null`:
 
 ```text
-accepted: after_create post {"_status":"draft","body":{"author_id":null,"body":"<p>Hello</p>","slug":null,"title":"Webhook check"},"created_at":"2026-10-23T16:31:35.423506701Z","created_by":"59ef432d-cfa3-4dc3-b90a-87f2eff13558","current_rev":1,"id":"8371ea04-24e5-49a8-93b0-0bb8b7d4baff","meta":{},"schema":"post","slug":"webhook-check-omh0mr","status":"draft","tenant_id":"default","timezone":"UTC","title":"Webhook check","updated_at":"2026-10-23T16:31:35.423506701Z","updated_by":"59ef432d-cfa3-4dc3-b90a-87f2eff13558"}
+accepted: after_create post {"_status":"draft","author_id":null,"body":"<p>Hello</p>","id":"8371ea04-24e5-49a8-93b0-0bb8b7d4baff","slug":null,"title":"Webhook check"}
 ```
 
 </div>
