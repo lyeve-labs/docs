@@ -228,9 +228,9 @@ Without a payload template, the body is this envelope:
 `data` is the entry as its content type's table holds it: its `id`, each
 field under its own name, and `_status` when the content type has drafts. A
 relation to one entry arrives under its key column, such as `author_id`, and a
-field with no value arrives as `null`. An entry saved in the admin console
-arrives in the same shape as one saved with the API. This is a `post` created
-in the console with `Hello` as its body:
+field with no value arrives as its default, or as `null` when it has none. An
+entry saved in the admin console arrives in the same shape as one saved with
+the API. This is a `post` created in the console with `Hello` as its body:
 
 ```json
 {
@@ -251,9 +251,9 @@ in the console with `Hello` as its body:
 On engine v0.56.1 and earlier, an entry saved in the admin console arrived in
 another shape. Its fields sat in an object under `data.body`, and `data` also
 carried the entry's `slug`, `status`, `title`, its timestamps and the accounts
-that wrote it. A receiver written for that shape reads `data.body.title`, which
-is now `data.title`. It reads the status from `data._status`, and the time of
-the change from `timestamp`. A field filter or a JSONPath filter written for
+that wrote it. A receiver written for that shape now reads `data.title` where
+it read `data.body.title`, the status from `data._status`, and the time of the
+change from `timestamp`. A field filter or a JSONPath filter written for
 it changes the same way: `$.data.body.total > 100` becomes
 `$.data.total > 100`.
 

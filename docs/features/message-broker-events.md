@@ -195,12 +195,12 @@ Each message is the content event as JSON:
 | `old_data` | The previous values, when the event carries them |
 | `record_id` | The entry's id |
 | `tenant_id` | The owning tenant |
-| `instance_id` | The instance that raised the event. Absent on engine v0.56.0. |
-| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.56.0. |
+| `instance_id` | The instance that raised the event. Absent on engine v0.56.1 and earlier. |
+| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.56.1 and earlier. |
 | `source` | Where the event came from, when set |
 
-Until `timestamp` carries the time of the event, use the time your consumer
-received the message.
+On engine v0.56.1 and earlier, use the time your consumer received the
+message instead of `timestamp`.
 
 The `event_id` also travels as a transport header, so a consumer can
 deduplicate without decoding the body: `Nats-Msg-Id` and an `event_id` header
