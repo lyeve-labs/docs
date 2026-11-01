@@ -209,7 +209,7 @@ step with its input, output, timing and error.
 - Add `"until_node": "<id>"` to stop after one node while you work on the
   steps before it.
 
-On the editor's **Test** tab, **Live side effects** and **Until node** do the
+On the editor's **Test** tab, **Allow side effects** and **Stop after node** do the
 same.
 
 A flow's status tells you whether it runs:

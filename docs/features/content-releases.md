@@ -85,7 +85,7 @@ the API steps, copy their ids into `PAGE_A` and `PAGE_B`.
 1. Open **Delivery > Releases** and choose **New release**.
 2. Enter `Spring launch` in **Name** and choose **Create**. The release's page opens.
 3. Choose **Include entry**. Pick the first entry under **Entry**, keep **Publish it** under
-   **When the release goes out**, and choose **Include**. The page confirms **Entry added to
+   **When the release publishes**, and choose **Include**. The page confirms **Entry added to
    the release.**
 4. Include the second entry the same way.
 
@@ -161,7 +161,7 @@ of them, then look at the other.
 <div data-path="console">
 
 1. Create two releases as in step 1, and include the second entry in each.
-2. On one of the two releases, pick a date and a time under **Goes out at** and choose
+2. On one of the two releases, pick a date and a time under **Publish at** and choose
    **Schedule**. The card shows when it goes out, in UTC, with **Unschedule** beside it.
 3. Open the other release. Its **Conflicts** card says that a conflict stops the release,
    with **Open the other release**. **Publish now** and **Schedule** stay off until you take
@@ -249,7 +249,7 @@ Entries can change only while the release is a `draft` or `scheduled`.
 <div class="paths">
 <div data-path="console">
 
-Under **Schedule**, pick a date and a time in **Goes out at** and choose **Schedule**.
+Under **Schedule**, pick a date and a time in **Publish at** and choose **Schedule**.
 **Unschedule** returns the release to draft, and **Cancel release** cancels it before it goes
 out.
 

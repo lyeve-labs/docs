@@ -65,7 +65,7 @@ The **Search** page holds the settings that shape every search in your tenant.
 - **Ranking weights.** Set how much a match in the **Title**, the **Body** and the **Tags**
   counts, from 0 to 10, and choose **Save**. These apply to every collection that has no
   weights of its own.
-- **Public search.** Under **Anyone may search**, check each collection your site may search
+- **Public search.** Under **Searchable by anyone**, check each collection your site may search
   without signing in, and choose **Save**. Your site's developer then calls the public search
   route described on [Search](../../features/search.md#let-anyone-search-your-site). A public
   search matches every field of a listed collection, and its snippets can quote any of them, so

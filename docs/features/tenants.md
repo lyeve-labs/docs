@@ -56,7 +56,7 @@ with its slug, name, plan, status and creation date, and the buttons on a row
 edit, disable or delete the tenant. Without `multitenant-provisioning` the page
 reads **Tenant provisioning** and **Not enabled on this instance**, and has no
 **New tenant** button. The tenant's name opens its page, with **Archive**,
-**What this tenant may use**, and its **Members** with **New member**.
+**Features**, and its **Members** with **New member**.
 
 The console has no tenant switcher. A super admin creates an account in any
 tenant from **Access > Users** with **New user**, choosing the tenant under
@@ -393,7 +393,7 @@ allows. These routes take a signed-in session.
 <div data-path="console">
 
 1. Open **Operations > Tenants** and choose `acme`.
-2. Under **What this tenant may use**, choose **Remove flow** on the `flow` feature.
+2. Under **Features**, choose **Remove flow** on the `flow` feature.
 3. Choose **Save**. The page confirms that the tenant's next request follows it.
 
 </div>
@@ -469,7 +469,7 @@ admin, and for the API steps you need an admin token in `TOKEN`.
 <div class="paths">
 <div data-path="console">
 
-1. Open **Operations > Tenant costs** and choose **Aggregate now**. The page reports
+1. Open **Operations > Tenant costs** and choose **Update costs**. The page reports
    **Costs updated**, with the cost lines written, the budget events published and the
    anomalies opened.
 2. Choose **New budget**. Enter a **Name** and an **Amount**, keep **USD** as the

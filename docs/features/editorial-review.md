@@ -312,7 +312,7 @@ there is no ceiling.
 
 With `review-pro`, a tenant holds any number of definitions, and each stage can take three
 more settings. The console's **New definition** form shows them on each stage as
-**On an SLA breach, hand it to**, **Approvals needed** and **Only when the field**.
+**Escalate to**, **Approvals needed** and **Condition field**.
 
 | Stage setting | What it does |
 |---|---|

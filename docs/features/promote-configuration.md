@@ -129,7 +129,7 @@ called `extra`, as on [Webhooks](webhooks.md), then compare again.
 <div class="paths">
 <div data-path="console">
 
-Tick **Delete what the bundle does not name** and choose **Compare**. Under **Webhooks**, the
+Tick **Delete items not in the bundle** and choose **Compare**. Under **Webhooks**, the
 plan lists `outbound:extra` with the change **Delete**.
 
 </div>
@@ -156,7 +156,7 @@ Without prune the plan lists nothing, because an apply only creates and updates 
 <div class="paths">
 <div data-path="console">
 
-Untick **Delete what the bundle does not name**, which is still ticked from step 3, and choose
+Untick **Delete items not in the bundle**, which is still ticked from step 3, and choose
 **Dry run**. The page shows **Dry run: what applying would do** and **Nothing was written.**,
 with the plan from step 2.
 
@@ -209,7 +209,7 @@ On the target instance, compare the bundle first, then apply it.
 <div data-path="console">
 
 1. Under **Apply a bundle**, choose the **Bundle file** and enter its **Passphrase**.
-2. Tick **Delete what the bundle does not name** if the target should lose what only it
+2. Tick **Delete items not in the bundle** if the target should lose what only it
    holds. See [Deleting what the bundle does not name](#deleting-what-the-bundle-does-not-name).
 3. Choose **Apply**, then **Apply** again in **Apply this bundle?** to confirm.
 

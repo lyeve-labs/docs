@@ -33,7 +33,7 @@ listeners that react to changes run as if the events had just happened.
 
 ## In the admin console
 
-Open **Insight > Events**. **Recorded**, **Carrying an error** and
+Open **Insight > Events**. **Recorded**, **With errors** and
 **Replays** count the log and the runs.
 
 1. Under **Replay**, set **Replay from** and give the run a name in
@@ -41,7 +41,7 @@ Open **Insight > Events**. **Recorded**, **Carrying an error** and
    **Shared name**. The field empties after each run. The name decides
    only what a later run skips. A run for real reaches every listener,
    whatever its name.
-2. Leave **Rehearse first, posting nothing** ticked and choose **Rehearse**.
+2. Leave **Rehearse without publishing** ticked and choose **Rehearse**.
    The run counts the events in the window and posts nothing.
 3. Untick it to send the events for real. The button then reads **Replay**.
 
@@ -52,7 +52,7 @@ Open **Insight > Events**. **Recorded**, **Carrying an error** and
 
 Each run is listed with its run name, status, progress and result, and a
 rehearsal is marked **rehearsal**. **Published** lists the log, with a search and
-**Only those carrying an error**.
+**Only events with errors**.
 
 ![The Events page with its three counters, the Replay form with Rehearse first ticked, and three completed runs named search-rebuild: a rehearsal, a real run that replayed three events, and a second real run that skipped all three.](images/event-replay.png)
 
@@ -131,7 +131,7 @@ Pick a time from before the outage as your start time.
 
 Under **Replay**, pick the day in **Replay from** and type the hour and
 minute beside it. Type `search-rebuild` in **Run name**. Leave
-**Rehearse first, posting nothing** ticked and choose **Rehearse**.
+**Rehearse without publishing** ticked and choose **Rehearse**.
 
 </div>
 <div data-path="api">
@@ -203,7 +203,7 @@ from the API alike.
 <div data-path="console">
 
 The form empties **Run name** after each run, so type `search-rebuild` again.
-Untick **Rehearse first, posting nothing**. The button now reads **Replay**.
+Untick **Rehearse without publishing**. The button now reads **Replay**.
 Choose it. The result reads **3 replayed, 0 skipped, 0 failed**.
 
 </div>

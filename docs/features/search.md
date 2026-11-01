@@ -134,7 +134,7 @@ curl http://localhost:3001/api/admin/search/analytics \
 
 The autocomplete in step 2 is not counted. Each search you run in the console is.
 
-![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card lists landing_page under Anyone may search, and the Ranking weights card starts below it.](images/search.png)
+![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card lists landing_page under Searchable by anyone, and the Ranking weights card starts below it.](images/search.png)
 
 [Search and organization](../guides/user/search-and-organization.md) walks through searching
 from the console step by step.
@@ -206,7 +206,7 @@ may all be public.
 <div class="paths">
 <div data-path="console">
 
-On **Search**, pick the content types under **Anyone may search** in the **Public search**
+On **Search**, pick the content types under **Searchable by anyone** in the **Public search**
 card and choose **Save**. Each one shows as a chip, and the card shows an **Example GET
 request** to copy.
 
