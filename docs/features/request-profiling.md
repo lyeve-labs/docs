@@ -62,9 +62,8 @@ super admin can open it.
 - **Slowest endpoints** ranks the twenty slowest endpoints by p95, with their count, average,
   p50, p99 and maximum. **By plugin** groups the same timings by feature.
 - **Flamegraph** records a CPU profile over a **Window** of seconds and draws it.
-- **pprof export** lists a **CPU**, **Goroutines**, **Heap** and **Allocations** profile. On
-  v0.22.0 these buttons answer with an error instead of a file, so download a profile with
-  the API, as the Engine API tab of step 3 shows.
+- **pprof export** downloads a **CPU**, **Goroutines**, **Heap** or **Allocations** profile as a
+  file.
 
 **Insight > Observability** also ranks endpoints by latency, under **Latency rankings**.
 
