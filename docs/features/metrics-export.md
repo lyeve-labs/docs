@@ -67,7 +67,7 @@ of a name in **Filter families**, or pick a **Type**, to narrow the list. **Tena
 saves where the tenant's own series are pushed, by **OTLP** or **Pushgateway**, to a **URL**
 with headers from **Add header**. Without the `multitenant-customization` feature the section
 says that setting or changing a destination needs a license, and **Save** is turned off.
-**Exporters** lists the backends the instance ships to, and reads **No exporter configured**
+**Exporters** lists the backends the instance ships to, and reads **No exporters configured**
 until one is set. Configuring a backend is done with settings, as step 3 shows.
 
 ## Try it
@@ -107,7 +107,7 @@ lyeve_requests_total{code="4xx",method="GET",plugin="core",tenant="default"} 3
 <div class="paths">
 <div data-path="console">
 
-On the same page, **Exporters** reads **No exporter configured**.
+On the same page, **Exporters** reads **No exporters configured**.
 
 </div>
 <div data-path="api">
@@ -191,7 +191,7 @@ tenant and nothing else, the same samples the tenant's scrape shows.
 2. Pick **OTLP** in **Protocol** and enter `https://otlp.example.com/v1/metrics` in **URL**.
 3. Choose **Add header**, then enter `Authorization` in **Header** and
    `Bearer <collector key>` in **Value**.
-4. Choose **Save**. The page says **Saved the destination**.
+4. Choose **Save**. The page says **Destination saved.**
 
 The headers then read **Stored: Authorization. Their values are never shown.**, with a choice
 to **Keep the stored headers** or **Replace them**. After the next export the section shows

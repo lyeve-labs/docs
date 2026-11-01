@@ -121,7 +121,7 @@ and `RateLimit-Policy`, and the same values as `X-RateLimit-*`.
 
 Choose **Edit the global limit**. Keep `50` in **Requests per second** and `100` in
 **Burst**, turn on **Enforce the global limit**, and choose **Save**. The page confirms
-**Saved the global limit**, and the row reads **On**.
+**Global limit saved.**, and the row reads **On**.
 
 </div>
 <div data-path="api">
@@ -226,7 +226,7 @@ to its shipped value. Putting it back needs no license.
 
 1. On **Settings > Rate limits**, choose **Edit password-reset.email**.
 2. Enter `2` in **Requests** and keep `5` in **Window in minutes**, then choose **Save**.
-   The page confirms **Saved the protection**, and the row reads **Changed** beside the
+   The page confirms **Protection saved.**, and the row reads **Changed** beside the
    shipped 1 per 5 minutes.
 3. To put it back, choose **Reset password-reset.email to its shipped value**, then
    **Reset** in the dialog.
@@ -273,7 +273,7 @@ With `rate-limit-pro`, each tenant can set one global limit of its own.
 2. On **Tenant rate limits**, choose **Set a limit**.
 3. Enter `20` in **Rate, requests per second** and `40` in **Burst**, keep
    **Enforce this limit** on, and choose **Save**. The page confirms
-   **Saved the tenant limit**.
+   **Tenant limit saved.**
 
 </div>
 <div data-path="api">

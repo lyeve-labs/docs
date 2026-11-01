@@ -470,7 +470,7 @@ admin, and for the API steps you need an admin token in `TOKEN`.
 <div data-path="console">
 
 1. Open **Operations > Tenant costs** and choose **Aggregate now**. The page reports
-   **The feed ran**, with the cost lines written, the budget events published and the
+   **Costs updated**, with the cost lines written, the budget events published and the
    anomalies opened.
 2. Choose **New budget**. Enter a **Name** and an **Amount**, keep **USD** as the
    **Currency** and **Monthly** as the **Period**, and leave **Resource** at

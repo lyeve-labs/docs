@@ -47,7 +47,7 @@ What the tab says after you press **Send** tells you what is missing:
 | The tab says | What to fix |
 |---|---|
 | "The assistant is switched off" | The tenant's AI switch is off on the **Settings** tab of **Operations > AI**, or the license does not carry `ai`. |
-| "The assistant is not available on this engine" | Read the message under it. `no enabled AI provider configured` means the tenant needs an enabled provider. |
+| "The assistant is not available" | Read the message under it. `no enabled AI provider configured` means the tenant needs an enabled provider. |
 
 </div>
 <div data-path="api">
@@ -167,7 +167,7 @@ edges:
 <div data-path="console">
 
 The draft is shown read-only under **Draft**, beside your prompt. Under it,
-the panel either says "The validator accepts this draft." or lists what is
+the panel either says "This draft has no problems." or lists what is
 still wrong. Each line names the node, or `flow`, with the path to the
 setting, then the problem:
 

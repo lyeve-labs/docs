@@ -192,7 +192,7 @@ List the retention policies. A new install has none:
 <div data-path="console">
 
 Open the **Retention and holds** tab. **Policies** reads **No retention
-policy** and **Legal holds** reads **Nothing is held**.
+policies yet** and **Legal holds** reads **No legal holds yet**.
 
 </div>
 <div data-path="api">

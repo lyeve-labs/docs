@@ -113,7 +113,7 @@ it. Adding to a release and starting a comment need a license with `content-pro`
 ## Delete an entry
 
 In the collection's list, choose the delete button at the end of the entry's row and confirm
-with **Delete**. Its revisions and translations go with it.
+with **Delete**. Its revisions and translations are deleted too.
 
 ## Where to go next
 

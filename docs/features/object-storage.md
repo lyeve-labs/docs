@@ -32,7 +32,7 @@ straight to the bucket.
 ## In the admin console
 
 Open **Settings > Storage**. **How storage works** explains where uploads go,
-and with no provider the page reads **No provider configured**: uploads are
+and with no provider the page reads **No providers yet**: uploads are
 then written to the engine's own directory. Each provider is a row with
 **Test**, **Edit**, **Duplicate** and **Delete** buttons, and a line under the
 list names the provider new uploads go to. Presigned and multipart uploads
@@ -60,7 +60,7 @@ steps, you need a super admin token in `TOKEN`. The
 <div data-path="console">
 
 Open **Settings > Storage**. With no provider configured, the page reads
-**No provider configured** and says uploads are written to the engine's own directory.
+**No providers yet** and says uploads are written to the engine's own directory.
 
 </div>
 <div data-path="api">

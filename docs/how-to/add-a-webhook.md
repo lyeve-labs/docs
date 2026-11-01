@@ -417,7 +417,7 @@ which counts what would be sent and sends nothing.
    hour and minute the receiver went down in **Replay from**, and enter
    `my-receiver-catchup` in **Run name**.
 2. Keep **Rehearse first, posting nothing** ticked and choose **Rehearse**.
-   The page says **Rehearsed. Nothing was published.**, and the run's row
+   The page says **Rehearsal started**, and the run's row
    shows how many events it counted, marked **rehearsal** and
    **(nothing was posted)**.
 3. Clear **Rehearse first, posting nothing**. The button now reads

@@ -208,8 +208,8 @@ for the same role.
 
 On **Access > Permissions**, choose the plus button on the role's row and pick
 the content type in **Resource**. Leave every action clear and choose
-**Create**. Before you create it, the form says **This rule shuts** the role
-**out**, and that the role is denied every action on that content type.
+**Create**. Before you create it, the form says **This rule blocks** the role,
+and that the role is denied every action on that content type.
 
 </div>
 <div data-path="api">
