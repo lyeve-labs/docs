@@ -60,9 +60,8 @@ To create an editor:
 
 1. Choose **New user**.
 2. Enter `sam@example.com` in **Email** and a password in **Password**.
-3. Under **Roles**, keep **editor**, which is ticked already. For another role
-   instead, untick **editor** and tick that role, because the form keeps
-   **editor** ticked beside any role you tick.
+3. Under **Roles**, untick **viewer**, which is ticked already, and tick
+   **editor**. A user saved with no role ticked gets **viewer**.
 4. Choose **Create**. The account appears in the list with its roles.
 
 </div>
@@ -71,7 +70,7 @@ To create an editor:
 | Method | Path | Does |
 |---|---|---|
 | `GET` | `/api/admin/users` | List users. |
-| `POST` | `/api/admin/users` | Create a user: `email`, `password`, `roles`. `201`. |
+| `POST` | `/api/admin/users` | Create a user: `email`, `password`, `roles`. `201`. `roles` is required and names at least one role. |
 | `PUT` | `/api/admin/users/{id}/roles` | Replace a user's roles: `{"roles": [...]}`. |
 | `PUT` | `/api/admin/users/{id}/state` | Disable or enable a user, or set an account expiry: `disabled`, `expires_at`. |
 | `PUT` | `/api/admin/users/{id}/password` | Set a new password. It has to meet the password policy, and every session the user held ends. |
@@ -86,10 +85,12 @@ Create an editor:
 curl -X POST http://localhost:3001/api/admin/users \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"email": "sam@example.com", "password": "Editor-Account-2026"}'
+  -d '{"email": "sam@example.com", "password": "Editor-Account-2026", "roles": ["editor"]}'
 ```
 
-The answer is `201` with the user and `"roles": ["editor"]`.
+The answer is `201` with the user and `"roles": ["editor"]`. A request with no
+`roles`, or an empty list, creates nothing and answers `422` with the code
+`VALIDATION_REQUIRED`: there is no default role.
 
 </div>
 </div>

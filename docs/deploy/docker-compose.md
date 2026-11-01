@@ -316,8 +316,9 @@ Upgrade the engine first, then the console. Read these before the first start of
   scheduled publish or a release now reaches webhooks, flows and the message broker with each
   field at the top level of `data` and the status under `data._status`, as a Content API write
   does. A receiver that read `data.body.title` reads `data.title`, and on a content type with
-  drafts one that read `data.status` reads `data._status`. A flow that reads `trigger.data.status`, one made from the
-  `chat-notify` or `cdn-purge` template included, reads `trigger.data._status`. See
+  drafts one that read `data.status` reads `data._status`. A flow that reads
+  `trigger.data.status` for the publication status, one made from the `chat-notify` or
+  `cdn-purge` template included, reads `trigger.data._status`. See
   [Webhooks](../features/webhooks.md).
 - **Update your API clients.** `POST /api/admin/users` must name the account's roles, so send
   `"roles": ["editor"]` where a request with no roles used to create an editor. A data subject

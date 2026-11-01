@@ -202,8 +202,9 @@ Both apply, and the protection is the stricter. `PUBLIC_RATE_LIMITS` moves
 the per-route limit, not the protection.
 
 Apart from these limits, every install refuses an account's password sign-in
-once it has 5 failures within 15 minutes, until that window ends. The refusal
-looks the same as a wrong password, and no setting changes it.
+once it has 5 failures within 15 minutes, until that window ends. A correct
+password does not clear the failures before it. The refusal looks the same as
+a wrong password, and no setting changes it.
 
 Other features add their own protections:
 
@@ -306,7 +307,7 @@ general public limit: 50 requests a second per address with a burst of 100,
 set by `PUBLIC_RATE_LIMIT_GLOBAL`.
 
 With `rate-limit-pro`, a super admin gives one of those routes a limit of its
-own, higher or lower than the general one. This is API only on v0.22.0:
+own, higher or lower than the general one. This is API only on v0.23.0:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/rate-limits/public-routes \

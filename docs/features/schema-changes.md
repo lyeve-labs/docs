@@ -289,10 +289,11 @@ In the console, **History** applies one content type's queue after a confirmatio
 5 above. The count at the top of every console page, such as **1 pending migration**, is a
 button too.
 
-:::caution
-Choosing the **pending migration** button at the top of a console page applies every queued
-change at once, in console v0.22.0, without asking first. Read the queue in **History** before
-you choose it.
+:::note
+Choosing the **pending migration** button at the top of a console page opens a dialog that
+lists each queued statement with its content type and marks every drop or clear that destroys
+data. Nothing runs until you confirm. If the queue changes while the dialog is open, the apply
+is refused and the dialog shows the new queue.
 :::
 
 ## Delete a content type

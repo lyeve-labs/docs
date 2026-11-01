@@ -257,7 +257,7 @@ providers, use the same names with the `CACHE_PROVIDER_N_` prefix, such as
 ## Move to a new cache server
 
 Copy entries from one provider to another before you switch. This needs a
-super admin and `cache-pro`. Console v0.22.0 has no screen to move entries or
+super admin and `cache-pro`. Console v0.23.0 has no screen to move entries or
 to time the providers, so both run over the API:
 
 ```bash
@@ -353,6 +353,9 @@ it:
 - A content create, update or delete clears, in its tenant, the answers of
   every rule tagged with that content type and of every rule with no tags.
 - Changing or deleting a rule clears what it cached.
+- A person's [erasure](../trust/data-protection.md#right-to-erasure) clears,
+  in every tenant, the answers of every rule tagged `comments` or
+  `form_submissions` and of every rule with no tags.
 - `POST /api/admin/cache/rules/{id}/purge` clears one rule's answers.
   `POST /api/admin/cache/rules/purge` with `{"tag": "posts"}` clears every rule
   carrying the tag, and with no tag every answer the tenant has cached.

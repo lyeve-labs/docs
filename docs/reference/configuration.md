@@ -442,7 +442,7 @@ See [Idempotent requests](../features/idempotent-requests.md).
 | `INSTANCE_REGION` | The data region this install serves. Answers carry it in `X-CMS-Region`, and [Data residency](../features/data-residency.md) compares a tenant's region against it. | unset |
 
 An active legal hold stops `POST /api/admin/gdpr/erase` from erasing the person it covers. The
-request succeeds with `total_rows: 0` and names the holds. Holds need the `audit-retention`
+request succeeds with `total_rows: 0` and `complete: false`, and names the holds. Holds need the `audit-retention`
 feature. See [Data protection](../trust/data-protection.md).
 
 ## Concurrency and resources

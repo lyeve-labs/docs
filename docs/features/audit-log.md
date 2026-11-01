@@ -61,11 +61,8 @@ action, resource type or user id in the search box, or pick an action under
 **All actions** and a **From** and **To** date, then choose **Search**. A
 super admin also sees **Prune**.
 
-**Export JSON**, and **Export all** for a super admin, sit beside **Prune**. On
-console v0.22.0, behind a proxy that sends `/api/admin` to the engine, as the
-[Docker Compose guide](../deploy/docker-compose.md) sets up, these buttons
-answer with an error instead of a file. Export the log with the API there, as
-[Export the log](#export-the-log) shows.
+**Export JSON**, and **Export all** for a super admin, sit beside **Prune**. Each
+downloads the log as JSON, under the filter in force.
 
 ![The Entries tab of the audit log listing recent actions, newest first, each with its time, action, resource and the user who acted.](images/audit-log.png)
 
@@ -169,9 +166,8 @@ The answer holds the `schema.create` entry with `"resource_id": "post"`.
 </div>
 </div>
 
-Download the newest rows as CSV, two at most. Use the API for this behind a proxy that
-sends `/api/admin` to the engine, where the console's export buttons fail on
-v0.22.0. If you work in the console, sign in over the API to get a token, as
+Download the newest rows as CSV, two at most. The console exports JSON only, so this step
+is an API call. If you work in the console, sign in over the API to get a token, as
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows, and keep it in `TOKEN`:
 

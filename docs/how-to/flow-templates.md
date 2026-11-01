@@ -193,10 +193,10 @@ a signed-in session. See [connect outside systems](../features/flows.md#connect-
 
 Several templates read or write a content field named `status`, such as
 `join-three-tables-api`, `nightly-sheet-export`, `seo-sitemap`,
-`comment-moderation` and the `cdn-purge` filter below. On console v0.22.0 a
-field named `status` loses its value when an entry is saved in the console, so
-save those entries with the API, or give the field another name and change the
-template to read it.
+`comment-moderation` and the `cdn-purge` filter below. Such a field is yours,
+and its value reaches the flow as `trigger.data.status`. The publication status
+of an entry whose content type has drafts is a different value, which reaches
+the flow as `trigger.data._status`.
 
 ### `join-three-tables-api`
 
@@ -287,9 +287,10 @@ It purges two URLs: the entry's page (`/<type>/<slug or id>`) and its listing
 `https://api.cloudflare.com/client/v4` and bearer auth with an API token that
 has the Zone.Cache Purge permission, or a global API key pair in its headers
 as `X-Auth-Email` and `X-Auth-Key`. `site_url` is the scheme and host with no
-trailing slash. The event carries the entry's own fields, not its publication
-status, so to purge on a value of a `status` field of yours, add the filter
-`trigger.data.status == 'published'`.
+trailing slash. The event carries the entry's fields and, when its content type
+has drafts, its publication status as `_status`. To purge only published
+entries, add the filter `trigger.data._status == 'published'`. To purge on a
+`status` field of your own, filter on `trigger.data.status` instead.
 
 ### `seo-sitemap` and `seo-robots`
 
@@ -359,8 +360,10 @@ sends the email as the last name when a customer has no `last_name`.
 
 ### `chat-notify`
 
-Posts the content type and event as the title, the entry's id and status as
-fields, and the entry as JSON text, in each service's own format. Set
+Posts the content type and event as the title, the entry's id and its
+`status` field as fields, and the entry as JSON text, in each service's own
+format. To post the publication status of a content type with drafts instead,
+change the `status` field of the notify step to `{{ trigger.data._status }}`. Set
 `chat_provider` and the `chat` datasource's `base_url`:
 
 | Provider | `base_url` |

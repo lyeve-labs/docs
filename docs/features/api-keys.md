@@ -43,8 +43,10 @@ roles, scopes, status, expiry and **Usage (this month)**. **All**, **Active**
 and **Revoked** narrow the list.
 
 1. Choose **New key**. Give it a **Name** and pick its **Roles**, which start
-   with **editor** ticked. Choose under **Access** what it may reach on each
-   part of the Content API. The form lists the scopes it will grant.
+   with **viewer** ticked. Choose under **Access** what it may reach on each
+   part of the Content API. The form lists the scopes it will grant. A key
+   that creates, updates or deletes content needs **editor**, and the form
+   refuses it without that role.
 2. Set **Expires** and the **Request limits** if the key needs them, then
    choose **Create**.
 3. Copy the key from **API key created**. It is not shown again.
@@ -148,11 +150,9 @@ a key with no role reads nothing. Sign in as a super admin first.
    it one that ticks **Read**. [Access rules](access-rules.md#try-it) shows
    the steps.
 2. Open **Access > API keys** and choose **New key**. Enter `website-build` in
-   **Name**. Under **Roles**, untick **editor**, which the form ticks for you,
-   and tick **viewer**.
-3. Leave **Content** on **Every schema** with **Read** ticked. The form also
-   ticks **Discover content types** under **Schema catalog** for you, and you
-   may leave it, so the summary reads **2 scopes: content:read,
+   **Name**. Under **Roles**, keep **viewer**, which the form ticks for you.
+3. Leave **Content** on **Every schema** with **Read** ticked. Open **Schema
+   catalog** and tick **Discover content types**, so the summary reads **2 scopes: content:read,
    schemas:read**.
 4. Leave **Expires** on **No expiry** and choose **Create**.
 5. Copy the key from **API key created** into `KEY`. It is shown once. Only a
@@ -324,7 +324,7 @@ can be granted, unless you are a super admin.
 1. On **Access > Permissions**, give `editor` a rule on `product` that ticks
    **Read**, **Create** and **Update**.
 2. On **Access > API keys**, choose **New key** and name it `catalog-import`.
-   Keep **editor** ticked under **Roles**.
+   Under **Roles**, untick **viewer** and tick **editor**.
 3. Under **Content**, choose **Chosen schemas** and tick **Read product**,
    **Create product** and **Update product**. The form adds `schemas:read`,
    and the key's content types become `product` alone.

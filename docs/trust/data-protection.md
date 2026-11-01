@@ -72,7 +72,8 @@ characters, with no control characters. Anything else, such as a first name,
 answers `422` with
 `identifier must be an email address, an account id or an IP address`, because
 erasure would redact that word in the records of everyone whose text holds it.
-Every feature that stores personal data contributes its
+A user id names the same account in upper or lower case, in braces, with a
+`urn:uuid:` prefix or without hyphens. Every feature that stores personal data contributes its
 section, and the response merges them:
 
 | Field | Meaning |
@@ -89,13 +90,54 @@ every tenant. The result comes back keyed per tenant under `tenants` and lists
 `matched_tenants`. It is never merged flat, because the same address can name two
 different people in two tenants. On a single-tenant install the sweep reaches the
 `default` tenant alone, and `scope` says `tenants_covered: 1`. The sweep is API
-only on v0.22.0: the console asks of your own tenant.
+only on v0.23.0: the console asks of your own tenant.
+
+The export looks for the person under the addresses an erasure reaches (see
+[Right to erasure](#right-to-erasure)), with the same rule for tenants: an
+address read from an account is listed only in that account's tenant. Beside
+each feature's own section, `plugins.schema_presets` lists:
+
+- `comments`: each comment whose author an erasure anonymizes, with its id,
+  `author_email`, `author_name` and body.
+- `form_submissions`: each submission an erasure reaches, with its id, its
+  `form_id` and its `created_at`. A submission whose only email addresses are
+  the person's is listed whole, under `data`. One that also holds someone
+  else's address lists, under `fields`, only each field whose value is one of
+  the person's addresses, as its `field` name and its `value`, because someone
+  else may have filled in the form and named the person in one field. A field
+  inside a nested value is named by its path, such as `contact.email`, and an
+  item of a list by its position, such as `guests.0.email`. The export splits
+  submissions this way whatever the tenant chose for its erasures.
+
+When the person's addresses cannot be read, the server answers `503` with
+`the subject's addresses could not be read; export was not attempted`, and
+nothing is read. Repeat the request.
 
 The export is never masked (see [Masking](#masking)), so the bundle carries the
 subject's data as a subject access request requires.
 
 **Check it:** export an address you know, then read `scope.tenants_covered` and
 `incomplete` before you trust the bundle.
+
+### A person's own export
+
+A signed-in person can export their own data without an admin, as
+[Analytics](../features/analytics.md#let-users-export-or-erase-their-data)
+describes. It runs the same features, in the tenant the request is made in,
+and answers one NDJSON file. The tenant chooses which features' sections it
+offers and which roles may export, and a super admin chooses what a person
+proves before exporting. Two things in it differ from the export above, so
+that it shows nothing about someone else who held or used the person's
+address:
+
+- Rows found through an email address (mail, sign-in links and attempts,
+  comments, form submissions and flow runs) appear only when they were created
+  in or after the second the account was created.
+- The IP address of whoever asked for a sign-in link to the person's address
+  reads `[withheld]`.
+
+A flow run the person may not read on the flow routes keeps only its shape.
+The export above keeps every row, IP and run.
 
 ## Right to erasure
 
@@ -127,26 +169,228 @@ curl -X POST http://localhost:3001/api/admin/gdpr/erase \
 </div>
 
 Every feature that contributes to an export also erases. Erasure removes or
-anonymizes the subject's rows in each of them and answers:
+anonymizes the subject's rows in each of them.
+
+The person is signed out and their account locked as the erasure starts,
+before anything is erased, so nobody can sign in and write new rows behind it.
+The account itself is anonymized last, only after every other part has
+erased. Until then it keeps the address the other parts find the person by.
+
+The status says whether the erasure finished:
+
+| Status | Meaning |
+|---|---|
+| `200` | Every part erased, and `complete` is `true`. When a legal hold stopped the erasure, `complete` is `false`, `holds` names the holds and nothing was erased. |
+| `207` | The erasure did not finish, and `complete` is `false`. When a part failed or never ran, the account is not erased: it stays signed out and locked, and repeating the request finishes the erasure. When rows were kept because they cannot be told apart from another account's data, the account is erased, and repeating the request does not reach those rows. Both are described below. |
+| `503` | Nothing was erased, because the legal hold check could not answer, the person could not be signed out, or the person's addresses could not be read. Repeat the request. |
+
+The answer carries:
 
 | Field | Meaning |
 |---|---|
 | `identifier` | The identifier erased. |
 | `total_rows` | Rows removed or anonymized across every feature. |
-| `errors` | `["one or more erasers failed"]` when a feature failed. |
+| `complete` | `true` only when every part erased. |
+| `failed` | On a `207` from a part that failed, the parts that failed or never ran, named by the feature they belong to. The account is among them. |
+| `errors` | On a `207`, a line for each reason the erasure is unfinished. `null` otherwise. |
 | `holds` | The active legal holds that stopped the erasure, each with `id` and `reason`. Non-empty means nothing was erased. |
+
+A `207` reads like this:
+
+```json
+"errors": [
+  "not finished: <the parts named in failed>",
+  "the account was not erased: it is signed out and locked until every other part has erased",
+  "repeat the request to finish the erasure"
+]
+```
+
+Erasure deletes the files the person uploaded in their account's tenant and in
+every tenant they are a member of: the stored file, its thumbnails and its
+transformed versions, on every storage provider the file may be on. Some
+things stay:
+
+- A file they uploaded in another tenant, which they could reach only as a
+  super admin, stays in that tenant's library, with them removed as its
+  uploader and the personal fields stripped from its metadata.
+- A copy a CDN or a browser already cached is out of reach.
+- Content they wrote is kept, with them removed as its author.
+
+A file whose storage provider is unavailable or refuses the delete is kept, and
+the erasure answers `207`. Repeating the request deletes the files that are
+left.
 
 An erasure by address reaches every account that address names, in every
 tenant. That includes accounts a tenant's identity provider, SCIM directory or
 magic link sign-up created, and what sign-in keeps about them: the SCIM
 directory record, with its external id and stored attributes, and the OAuth
 provider links. The account row itself stays, with its address replaced by
-`erased-<user id>@localhost` and its roles cleared.
+`erased-<user id>@localhost` and its roles cleared. An OAuth provider link whose
+address you name is erased even when no account holds that address. The links
+are erased just before the account, and only when every other part has erased,
+so a repeated request still finds the addresses they hold.
+
+Some data is kept under an email address rather than an account. At the start
+of each run, the erasure works out every address of the person:
+
+- The address you name, when you erase by address. It is reached in every
+  tenant.
+- For each account the identifier names, the account's own address, the
+  address its identity provider asserted and the address of each sign-in
+  identity linked to it. Each is reached only in that account's tenant,
+  because that tenant's identity provider or admins control it.
+
+When the addresses cannot be read, nothing is erased. The erasure reaches:
+
+- Mail sent to one of those addresses: the recipient of each sent message,
+  delivery events, opens and clicks with their IP address and user agent,
+  bounces and suppressions. A suppression is deleted. Everywhere else the
+  recipient is replaced with `[redacted]`, and the subject and body of a sent
+  message stay. Mail recorded with no tenant is reached only by the address
+  you name.
+- Magic link sign-in links and the record of each sign-in attempt under one of
+  those addresses. Both are deleted. A link or attempt recorded with no tenant
+  is reached by the address you name and by the addresses of accounts in the
+  `default` tenant.
+- Comments in a `comments` content type, such as the one the
+  [`comments` preset](../reference/schema-presets.md) creates, whose
+  `author_email` is the address. The `author_email` becomes
+  `erased-<id>@erased.invalid`, where `<id>` is the comment's id, the
+  `author_name` is left empty, and the comment stays.
+- Rows of a `form_submissions` content type, such as the one the `forms`
+  preset creates, whose `data` holds the address as a whole value. What
+  happens to each is the tenant's choice, below. A submission that names the
+  address inside a longer value, such as a message asking for a reply to it,
+  stays.
+- Flow runs and their steps whose input or output names one of those
+  addresses, or the identifier you name. The whole input or output of each is
+  replaced with `{"redacted":true}`, and the run stays. Anything else that
+  input or output held goes with it, another person's data included. An
+  address inside a longer address does not match.
+
+Comments and form submissions are erased only in the person's own tenant,
+because the same address may belong to someone else in another. An address
+read from an account uses that account's tenant. The address you name uses the
+tenant of each account whose address, or address from its identity provider,
+is that address. When no account holds the address, it uses the tenant the
+request is made in: your own, or the tenant you name with `X-Tenant-ID` (see
+[Tenants](../features/tenants.md)). An export follows the same rule, so it
+lists the comments and form submissions an erasure of the same request would
+reach. That holds for an export with `all_tenants` too: an address no account
+holds is read only in the tenant the request is made in.
+
+Two accounts in one tenant can hold the same address, for example when the
+tenant's identity provider asserts an address another account already uses.
+An address read from the person's account that another account in the same
+tenant also holds is left out of the erasure. Rows under it stay, because they
+cannot be told apart from that account's data. The rest of the erasure runs.
+The person's account is still anonymized, its sessions end and its refresh
+tokens are revoked.
+
+The answer is a `207` with `complete` set to `false`, and `errors` carries
+this line:
+
+```json
+"errors": [
+  "not finished: some rows were kept because they cannot be told apart from another account's data"
+]
+```
+
+The answer names neither the address nor the other account, because either
+would tell you about that account. A repeated request does not reach the kept
+rows. Do not erase by that address to reach them: an erasure by address
+reaches every account that holds it, so it anonymizes the other account too. When no
+part failed, the admin console shows this answer as **Erasure kept some
+records**.
+
+A form has no field that says whose submission it is, so a submission
+someone else made may name the person in one field, such as an invitation.
+Each tenant chooses what an erasure does with a matching submission:
+
+| Mode | What an erasure does |
+|---|---|
+| `auto` | The default. A submission whose only email addresses are the person's is deleted. One that also holds another address keeps its row, and each value that is one of the person's addresses becomes `null`. |
+| `soft` | Every matching submission keeps its row, and only the person's values become `null`. |
+| `hard` | Every matching submission is deleted, with whatever anyone else entered in it. |
+
+Another address is a value that is a whole email address and none of the
+person's. Every other value stays as it was.
+
+<div class="paths">
+<div data-path="console">
+
+Open **Settings > Privacy**. Under **Form submissions on erasure**, choose
+**Decide for each submission** (`auto`), **Always clear the person's values**
+(`soft`) or **Always delete the submission** (`hard`), then choose **Save**.
+
+</div>
+<div data-path="api">
+
+```bash
+curl -X PUT https://cms.example.com/api/admin/schemas/form-erasure \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"mode": "soft"}'
+```
+
+It answers the mode it stored, and `GET` on the same path reads the tenant's
+mode, `auto` when it never chose. Any other mode is a `400`, and so is a
+request that names no tenant, such as a super admin's with no tenant chosen.
+With the `audit` feature licensed, a change writes the audit entry
+`schema.form_erasure.update` with the mode before and after.
+
+</div>
+</div>
+
+An admin of the tenant sets it, and it applies to every erasure that runs
+after it is saved.
+
+A comment or form submission can leave copies outside its row. Once the rows
+have changed, the erasure reaches each copy:
+
+- Cached reads of the content. Reads through the content API show the erasure
+  at once, not when the cache entry expires.
+- The entry the content editor keeps for the row, with its version history.
+  The entry is deleted when its row is gone, and copied again from the row
+  when the row changed. An entry under a legal hold is kept.
+- The external search index, when the instance uses Elasticsearch or
+  Meilisearch. The document of a deleted row is removed, and a changed row is
+  indexed again as it now reads.
+- Answers a response cache rule kept. In every tenant that has a rule, the
+  answers of rules tagged `comments` or `form_submissions` and of rules with
+  no tags are cleared.
+
+An address the person used in the past and no longer holds is out of reach.
+No record keeps an account's earlier addresses, so data kept under one is
+erased only by a request that names that address.
 
 Erasure checks legal holds before it touches a row. A hold that cannot be
 checked is not treated as no hold: the server answers `503` with
 `legal hold status is unavailable; erasure was not attempted`, and the request
 can be retried. `LYEVE_GDPR_HOLD_CHECK=proceed` changes that to erase anyway.
+When the person cannot be signed out, the server answers `503` with
+`the subject could not be signed out; erasure was not attempted`, and nothing
+is erased either. When the person's addresses cannot be read, the server
+answers `503` with
+`the subject's addresses could not be read; erasure was not attempted`. The
+person is already signed out and locked by then, and nothing is erased. Repeat
+the request.
+
+An erasure keeps running when the caller disconnects or a proxy gives up, and
+a long one still gets its answer, because the erase request has no write
+timeout. A run stops after 15 minutes, and the parts it did not reach make the
+answer a `207`. Every run logs its outcome as `subject_erasure_outcome`, with
+the status, whether it completed, the rows and the parts that failed, even when
+nobody reads the answer.
+
+A log line about a person names them by `subject_ref`, a 12-character
+reference keyed from `ENCRYPTION_KEY`, or from `JWT_SECRET` when
+`ENCRYPTION_KEY` is unset. Every line about one identifier carries the same
+reference, so the lines of a run correlate, and without the key a list of
+addresses cannot be matched against them. Changing that key changes every
+reference, so a line written before the change no longer matches one written
+after it for the same person. A stateless engine with neither key
+picks a new one each time it starts.
 
 In the audit log, erasure redacts the subject's entries in place rather than
 deleting them: the user id is cleared, the address and user agent become
@@ -168,7 +412,7 @@ admin reading every tenant's log sees it, never a tenant's admins. The entry nam
 the identifier, so the log proves the request happened without keeping who it
 was about: `sha256:` followed by the hex SHA-256 of the identifier exactly as
 the request sent it. To find the entry for a subject later, compute the digest
-and filter the audit log by it. This lookup is API only on v0.22.0, because the
+and filter the audit log by it. This lookup is API only on v0.23.0, because the
 console's audit log search reads a resource id only when it is a UUID:
 
 ```bash
@@ -248,7 +492,7 @@ skips every entry a hold covers.
 `POST /api/admin/retention/compliance-export` (super_admin) with
 `{"legal_hold_id": "...", "format": "json"}` (or `csv`) returns the entries a
 hold preserves, for disclosure to a court or a regulator. It is API only on
-v0.22.0.
+v0.23.0.
 
 ## Retention
 
@@ -343,7 +587,7 @@ tenant's writes may land. It does not look at where a client connects from.
 Open **Settings > Data residency** and choose **New region**. Fill in **Slug**, such as
 `eu-central`, **Name** and **Runs on**, such as `aws`, then choose **Create**. The report at
 the top counts **Regions**, **Tenants**, **Replicated** and **Not placed**, and lists each
-tenant with its region. Placing a tenant in a region is API only on v0.22.0.
+tenant with its region. Placing a tenant in a region is API only on v0.23.0.
 
 </div>
 <div data-path="api">

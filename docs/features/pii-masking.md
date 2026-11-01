@@ -115,11 +115,6 @@ built-in rules, which cannot be edited. **New rule** opens a form with
 **Run it**, and stores nothing. **Unmasked reads**, lower on the page, is the
 access log.
 
-On console v0.22.0 the rule form has no button that saves it, so a new rule,
-or a change to one, is saved over the API. To change a rule there, find its id
-in `custom[].id` of `GET /api/admin/pii/rules`. Testing a pattern, reading the
-access log and deleting a rule work in the console.
-
 ![The PII masking page with one rule of the tenant's own, EMPLOYEE_ID, replacing EMP- and six digits with a redacted-employee placeholder, above the built-in presets in the order they run.](images/pii-masking.png)
 
 ## Try it
@@ -163,11 +158,18 @@ A pattern that is not valid answers `200` with `"valid": false` and an
 </div>
 </div>
 
-Save it as a rule. Only the API saves a rule on this release. If you work in
-the console, sign in over the API to get a token, as
-[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
-shows, and keep it in `TOKEN`. A rule is off until you send
-`"enabled": true`:
+Save it as a rule. A rule is off until you turn it on.
+
+<div class="paths">
+<div data-path="console">
+
+On **Settings > PII masking**, choose **New rule**. Enter `EMPLOYEE_ID` in
+**Name**, `Staff numbers` in **Description**, `EMP-[0-9]{6}` in **Pattern** and
+`[redacted-employee]` in **Replaced with**. Turn **Masking** on and choose
+**Create**. The rule shows under **Your own rules**.
+
+</div>
+<div data-path="api">
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/pii/rules \
@@ -177,9 +179,15 @@ curl -X POST http://localhost:3001/api/admin/pii/rules \
 ```
 
 The answer is `201` with the rule, its `id` and `"priority": 100`. Copy the
-`id` into `RULE_ID`. The rule shows under **Your own rules** in the console.
+`id` into `RULE_ID`.
 
-Write an entry that carries a staff number. This is the same on both paths:
+</div>
+</div>
+
+Write an entry that carries a staff number. This is the same on both paths. If
+you work in the console, sign in over the API to get a token, as
+[Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
+shows, and keep it in `TOKEN`:
 
 ```bash
 curl -X POST http://localhost:3002/api/v1/content/post \

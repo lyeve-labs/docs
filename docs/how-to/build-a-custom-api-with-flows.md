@@ -46,7 +46,7 @@ An order belongs to a customer, and a shipment belongs to an order.
    relation named `order` that belongs to one **Order**, with **Req** ticked,
    then two `text` fields, `carrier` and `tracking_number`. Choose **Save**.
 
-The schema builder in console v0.22.0 has no switch for a unique field, so
+The schema builder in console v0.23.0 has no switch for a unique field, so
 `email` is not unique on this path. Nothing below depends on it.
 
 </div>
@@ -381,8 +381,7 @@ administrator.
 
 1. Open **Access > API keys** and choose **New key**.
 2. Enter `orders-frontend` in **Name**.
-3. Under **Content**, untick **Read**. Open **Schema catalog** and untick
-   **Discover content types**. Open **Flows** and tick **Read**. The summary
+3. Under **Content**, untick **Read**. Open **Flows** and tick **Read**. The summary
    below the sections reads `1 scope: flows:read`.
 4. Choose **Create**.
 
