@@ -99,7 +99,7 @@ resolve to a public address when you save.
 4. In **Schemas**, which reads **Every schema**, pick `post`.
 5. Choose **Create**.
 
-The form in console v0.22.0 has no field list, so this webhook sends every
+The form in console v0.23.0 has no field list, so this webhook sends every
 field of the entry. An entry saved in the console arrives in the shape
 [What your endpoint receives](#what-your-endpoint-receives) shows for it.
 
@@ -165,7 +165,7 @@ so with the `include_fields` of the API example `data` arrives empty.
 
 Choose **Delivery history**, the clock icon, on the webhook's row. The dialog lists each
 delivery with its time, event, content type, status, duration, result and
-retry count. Console v0.22.0 shows no totals.
+retry count. Console v0.23.0 shows no totals.
 
 </div>
 <div data-path="api">
@@ -227,10 +227,10 @@ Without a payload template, the body is this envelope:
 
 `data` is the entry as its content type's table holds it: its `id`, each
 field under its own name, and `_status` when the content type has drafts. A
-relation to one entry arrives under its key column, such as `author_id`, and a
-field with no value arrives as its default, or as `null` when it has none. An
+relation to one entry arrives under its key column, such as `author_id`. An
 entry saved in the admin console arrives in the same shape as one saved with
-the API. This is a `post` created in the console with `Hello` as its body:
+the API, and a field saved there with no value arrives as its default, or as
+`null` when it has none. This is a `post` created in the console with `Hello` as its body:
 
 ```json
 {
@@ -241,7 +241,7 @@ the API. This is a `post` created in the console with `Hello` as its body:
     "author_id": null,
     "body": "<p>Hello</p>",
     "id": "8371ea04-24e5-49a8-93b0-0bb8b7d4baff",
-    "slug": "webhook-check",
+    "slug": null,
     "title": "Webhook check"
   },
   "timestamp": "2026-10-23T16:31:35Z"
@@ -331,7 +331,7 @@ and the preview need `webhook-pro`, and the rest is free:
   `$.data`, `$.old_data` or `$.timestamp`. A path alone fires when its value is
   set and not `false` or `0`.
 - `include_fields` or `exclude_fields` trims `data`. Only the API sets them:
-  the **New webhook** form in console v0.22.0 has no field lists. Its
+  the **New webhook** form in console v0.23.0 has no field lists. Its
   **Delivery options** hold the payload template, the JSONPath filter, the
   field filters, the retries and the retry delay.
 
@@ -529,7 +529,7 @@ count and error.
 In the console, **Delivery history** on a webhook's row lists its deliveries,
 and **Retry this delivery**, on a failed one, sends it again and shows the
 result, such as `OK`. Retrying needs `webhook-pro`. Delivery search and the
-payload preview have no screen in console v0.22.0.
+payload preview have no screen in console v0.23.0.
 
 <details>
 <summary>History and health routes</summary>
