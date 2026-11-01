@@ -81,8 +81,8 @@ The tab labels name the releases the pages describe, which `versions.json` holds
 
 ```json
 {
-  "engine": "v0.56.0",
-  "console": "v0.22.0"
+  "engine": "v0.57.0",
+  "console": "v0.23.0"
 }
 ```
 
