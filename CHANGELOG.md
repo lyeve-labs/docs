@@ -4,6 +4,22 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.9.0] - 2026-11-01
+
+### Added
+
+- Analytics describes a person's own data export in full: the sections a tenant offers, the roles that may export, the proof a super admin can require before an export, the emailed code, the once an hour limit and every refusal. It also lists the erasures that did not finish and how a super admin runs one again.
+- Data protection describes the erasure answers (`200`, `207` and `503` with `complete`, `failed` and `errors`), the account locked at the start and anonymized last, the uploaded files an erasure deletes, the addresses and tenants an erasure and an export reach, the rows kept for an address another account holds, the form submission erasure modes, the copies an erasure reaches, and the keyed `subject_ref` in log lines.
+
+### Changed
+
+- The console steps for a new user, tenant member and API key start from the viewer role, and the API example for a new user names its roles, which the engine requires.
+- The security controls page lists the account changes, sign-ins and tenant changes the audit log records from engine v0.57.0.
+- The webhook guide shows the flat payload a console save sends, and the flow templates say which value carries an entry's publication status.
+- Pending migrations open a confirmation dialog in the console, PII masking rules save in the console, profiler exports and audit exports download from the console, and the AI provider priority hint matches the engine's order.
+- The sign-in and second-factor lockouts count each attempt before it is checked, and a correct answer gives back only its own attempt.
+- Every other statement about what console v0.22.0 or engine v0.56.0 does or lacks was checked against the new releases and names console v0.23.0 or engine v0.57.0.
+
 ## [0.8.0] - 2026-11-01
 
 ### Added
