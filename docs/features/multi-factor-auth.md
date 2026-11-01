@@ -286,7 +286,7 @@ call.
 
 ## Use passkeys
 
-Console v0.22.0 has no screen to register a passkey or to sign in with one, so
+Console v0.23.0 has no screen to register a passkey or to sign in with one, so
 this is done over the API, from a page of your own that calls the browser's
 `navigator.credentials` functions.
 
