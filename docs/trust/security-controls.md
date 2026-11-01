@@ -120,10 +120,15 @@ What is recorded includes:
 - rate-limit and WAF rule changes
 - data export jobs
 - subject export and erasure
+- account changes: `user.create`, `user.roles.update`, `user.state.update`,
+  `user.password.set` and `user.delete`, with the roles before and after
+- password, passkey, OAuth and SAML sign-ins, as `auth.login`,
+  `auth.login.mfa_required` or `auth.login.refused`
+- archiving and restoring a tenant, granting or revoking an account's access to
+  it, changes to its console settings, pages and dashboards, and withholding
+  features from it (`license.tenant_features.update`)
 
-Not recorded on v0.56.0: creating or deleting an account, changing its roles,
-a super admin setting its password, granting a tenant membership, a password or SAML sign-in,
-archiving a tenant and withholding a tenant's features.
+Engine v0.56.1 and earlier recorded none of the last three items.
 
 How entries change or leave, so a reviewer knows what the chain can and cannot
 show:
@@ -154,7 +159,7 @@ show:
 </details>
 
 In the console, **Insight > Audit log** lists the entries, filters them and
-exports them as JSON. Checking the chain is API only on v0.22.0.
+exports them as JSON. Checking the chain is API only on v0.23.0.
 
 **Check it:** call `GET /api/admin/audit-log/verify` as a super admin and expect
 `"valid": true`, with `"broken": 0` and an empty `broken_sequences`. The list route returns `chain_hash` per entry, but not the
@@ -202,7 +207,7 @@ the old key. SCIM provisioning tokens do rotate in place
 
 **Check it:** create a key on **Access > API keys** or with `POST /api/admin/api-keys`, use
 it once, and read `GET /api/admin/api-keys/{id}/audit`. Each use is a row with its method,
-path, status and address. A key's history is API only on v0.22.0.
+path, status and address. A key's history is API only on v0.23.0.
 
 ## Rate limits
 
@@ -450,7 +455,4 @@ host in that range is accepted without an entry in
 - **Recomputing the audit chain yourself.** The list route does not return the
   before and after state the hash covers, so only the verify route can check it.
 - **API key rotation in place.** Create, deploy, revoke.
-- **Account changes in the audit trail.** Creating or deleting an account,
-  changing its roles or memberships, a super admin setting its password, and a
-  password or SAML sign-in leave no audit entry.
 - **Mandatory MFA per role or tenant.** Enrollment is per user.
