@@ -225,11 +225,12 @@ Without a payload template, the body is this envelope:
 }
 ```
 
-An entry saved in console v0.22.0 arrives as the console stores it. The
-fields you typed sit in an object under `data.body`, and `data` also carries
-the entry's `id`, `slug`, `status`, `title`, its timestamps and the accounts
-that wrote it. This is a `post` created in the console with `Hello` as its
-body:
+`data` is the entry as its content type's table holds it: its `id`, each
+field under its own name, and `_status` when the content type has drafts. A
+relation to one entry arrives under its key column, such as `author_id`, and a
+field with no value arrives as its default, or as `null` when it has none. An
+entry saved in the admin console arrives in the same shape as one saved with
+the API. This is a `post` created in the console with `Hello` as its body:
 
 ```json
 {
@@ -237,32 +238,24 @@ body:
   "schema": "post",
   "data": {
     "_status": "draft",
-    "body": {
-      "author_id": null,
-      "body": "<p>Hello</p>",
-      "slug": null,
-      "title": "Webhook check"
-    },
-    "created_at": "2026-10-23T16:31:35.423506701Z",
-    "created_by": "59ef432d-cfa3-4dc3-b90a-87f2eff13558",
-    "current_rev": 1,
+    "author_id": null,
+    "body": "<p>Hello</p>",
     "id": "8371ea04-24e5-49a8-93b0-0bb8b7d4baff",
-    "meta": {},
-    "schema": "post",
-    "slug": "webhook-check-omh0mr",
-    "status": "draft",
-    "tenant_id": "default",
-    "timezone": "UTC",
-    "title": "Webhook check",
-    "updated_at": "2026-10-23T16:31:35.423506701Z",
-    "updated_by": "59ef432d-cfa3-4dc3-b90a-87f2eff13558"
+    "slug": "webhook-check",
+    "title": "Webhook check"
   },
   "timestamp": "2026-10-23T16:31:35Z"
 }
 ```
 
-An entry created with the API arrives with its fields directly in `data`, as
-in the first example.
+On engine v0.56.1 and earlier, an entry saved in the admin console arrived in
+another shape. Its fields sat in an object under `data.body`, and `data` also
+carried the entry's `slug`, `status`, `title`, its timestamps and the accounts
+that wrote it. A receiver written for that shape now reads `data.title` where
+it read `data.body.title`, the status from `data._status`, and the time of the
+change from `timestamp`. A field filter or a JSONPath filter written for
+it changes the same way: `$.data.body.total > 100` becomes
+`$.data.total > 100`.
 
 `event` is `after_create`, `after_update`, `after_delete`, or `test` for a test
 delivery. On `after_delete`, `data` is the entry as it was. On `after_update`,

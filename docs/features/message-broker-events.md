@@ -158,9 +158,11 @@ curl -X POST http://localhost:3002/api/v1/content/post \
 </div>
 
 The subscriber prints a message on `lyeve.tenant.default.post.after_create`
-with the entry in `data`. An entry created through the API carries its fields
-in `data`. On console v0.22.0, an entry created in the console arrives with
-the whole stored entry in `data` and its fields under `data.body`.
+with the entry in `data`: its `id`, its fields and, when the content type has
+drafts, its `_status`. An entry created in the console arrives in the same
+shape as one created through the API. On engine v0.56.1 and earlier, an entry
+created in the console arrived with the whole stored entry in `data` and its
+fields under `data.body`.
 
 **5. Read the status again.**
 
@@ -193,12 +195,12 @@ Each message is the content event as JSON:
 | `old_data` | The previous values, when the event carries them |
 | `record_id` | The entry's id |
 | `tenant_id` | The owning tenant |
-| `instance_id` | The instance that raised the event. Absent on engine v0.56.0. |
-| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.56.0. |
+| `instance_id` | The instance that raised the event. Absent on engine v0.56.1 and earlier. |
+| `timestamp` | RFC 3339 time of the event. Zero time, `0001-01-01T00:00:00Z`, on engine v0.56.1 and earlier. |
 | `source` | Where the event came from, when set |
 
-Until `timestamp` carries the time of the event, use the time your consumer
-received the message.
+On engine v0.56.1 and earlier, use the time your consumer received the
+message instead of `timestamp`.
 
 The `event_id` also travels as a transport header, so a consumer can
 deduplicate without decoding the body: `Nats-Msg-Id` and an `event_id` header
