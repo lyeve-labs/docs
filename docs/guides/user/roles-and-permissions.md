@@ -60,9 +60,8 @@ To create an editor:
 
 1. Choose **New user**.
 2. Enter `sam@example.com` in **Email** and a password in **Password**.
-3. Under **Roles**, keep **editor**, which is ticked already. For another role
-   instead, untick **editor** and tick that role, because the form keeps
-   **editor** ticked beside any role you tick.
+3. Under **Roles**, untick **viewer**, which is ticked already, and tick
+   **editor**. A user saved with no role ticked gets **viewer**.
 4. Choose **Create**. The account appears in the list with its roles.
 
 </div>
