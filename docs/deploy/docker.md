@@ -25,11 +25,11 @@ Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.56.0` | Never. One release, exactly |
-| `0.56` | To the latest patch of that minor release |
+| `0.57.0` | Never. One release, exactly |
+| `0.57` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.56.0` is the image tag `0.56.0`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.57.0` is the image tag `0.57.0`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates
@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.56.1
+  ghcr.io/lyeve-labs/lyeve-core:0.57.0
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -187,6 +187,16 @@ with `{"setup_required":true,"token_source":"log"}`: the token is the one the en
 which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETUP_TOKEN` set,
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
+
+## Upgrading to 0.57.0 and console 0.23.0
+
+Upgrade the engine before the console, and back up the database first. On MySQL or SQL Server,
+stop every engine container before you start 0.57.0: its first start rebuilds the accounts
+table, which took about 18 seconds per million accounts on MySQL and about 3 seconds per
+million on SQL Server on a test host, and an older engine must not run beside it. Content
+events about entries saved in the console now carry their fields at the top level of `data`.
+[Docker Compose](docker-compose.md#upgrading-to-0570-and-console-0230) explains each step and
+the changes your API clients, webhook receivers and flows see.
 
 ## Upgrading to 0.56.0 and console 0.22.0
 
