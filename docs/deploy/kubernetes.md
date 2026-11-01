@@ -178,7 +178,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.56.1   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.57.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -308,7 +308,7 @@ spec:
     spec:
       containers:
         - name: lyeve-admin
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.22.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-admin:0.23.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -561,6 +561,35 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
+## Upgrading to 0.57.0 and console 0.23.0
+
+Upgrade the engine first and the console once the engine is ready. Back up the database first.
+[Docker Compose](docker-compose.md#upgrading-to-0570-and-console-0230) lists the changes to
+read before the first start, among them the new shape of content events and the API changes
+your clients see.
+
+On MySQL or SQL Server, the first start rebuilds the accounts table, and an older engine must
+not run beside it. On a test host the rebuild took about 18 seconds per million accounts on
+MySQL and about 3 seconds per million on SQL Server. A pod applies its migrations before it
+listens, so the startup probe above, which allows 120 seconds, restarts a pod whose rebuild
+takes longer. For the first start, raise the probe's `failureThreshold` until
+`periodSeconds` times `failureThreshold` covers the rebuild, and set it back afterwards.
+
+Scale the engine to zero, wait until no engine pod is left, start 0.57.0, and move the console
+once the engine is ready:
+
+```bash
+kubectl -n lyeve scale deploy/lyeve-core --replicas=0
+kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.57.0
+kubectl -n lyeve scale deploy/lyeve-core --replicas=2
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.23.0
+```
+
+The engine answers nothing between the first command and the end of the rollout, so plan a short
+outage.
+
 ## Upgrading to 0.56.0 and console 0.22.0
 
 Console 0.22.0 reads content history from engine 0.56.0, so upgrade the engine first and the
@@ -570,20 +599,9 @@ content history on for every content type.
 [Docker Compose](docker-compose.md#upgrading-to-0560-and-console-0220) lists the other changes
 to read before the first start.
 
-Scale the engine to zero, wait until no engine pod is left, start 0.56.1, and move the console
-once the engine is ready:
-
-```bash
-kubectl -n lyeve scale deploy/lyeve-core --replicas=0
-kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
-kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.56.1
-kubectl -n lyeve scale deploy/lyeve-core --replicas=2
-kubectl -n lyeve rollout status deploy/lyeve-core
-kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.22.0
-```
-
-The engine answers nothing between the first command and the end of the rollout, so plan a short
-outage.
+Read these notes and the ones above for each newer release, then upgrade with the steps under
+[Upgrading to 0.57.0 and console 0.23.0](#upgrading-to-0570-and-console-0230), which start the
+newest release.
 
 ## Upgrading to 0.55.0 and console 0.21.0
 
@@ -612,7 +630,7 @@ does not allow. Read these before the first start of 0.55.0:
   lists the changes they see.
 
 Read these notes and the ones above for each newer release, then upgrade with the steps under
-[Upgrading to 0.56.0 and console 0.22.0](#upgrading-to-0560-and-console-0220), which start the
+[Upgrading to 0.57.0 and console 0.23.0](#upgrading-to-0570-and-console-0230), which start the
 newest release.
 
 ## Before you go live

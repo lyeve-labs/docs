@@ -278,12 +278,73 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.56.1` and `ghcr.io/lyeve-labs/lyeve-admin:0.22.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.57.0` and `ghcr.io/lyeve-labs/lyeve-admin:0.23.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
+
+### Upgrading to 0.57.0 and console 0.23.0
+
+Upgrade the engine first, then the console. Read these before the first start of 0.57.0:
+
+- **Back up the database.** The first start indexes every content table and, on MySQL and SQL
+  Server, rebuilds the accounts table. The backup is the way back.
+- **On MySQL or SQL Server, stop every engine first.** The first start rewrites every stored
+  account address into one Unicode form and rebuilds the accounts table, so an older engine
+  must not run beside it. On a test host the rebuild took about 18 seconds per million accounts
+  on MySQL, where account writes wait for it, and about 3 seconds per million on SQL Server,
+  where reads and writes both wait. Start the new release on every instance together.
+- **Let the first start finish.** If it is stopped during the rebuild, the database rolls the
+  change back and the next start refuses with `Dirty database version 12`. Set the recorded
+  version back with `UPDATE engine_schema_migrations SET version = 11, dirty = false`
+  (`dirty = 0` on SQL Server) and start again.
+- **Upgrade large instances in a quiet window.** The first start builds an index on every
+  content table, one table at a time, while the engine serves. Writes to a table pause while its
+  index builds, from milliseconds on PostgreSQL to about 2 seconds on MySQL, and SQL Server
+  Standard and Express hold writes for the whole build. Until it ends, saving that content
+  type's definition answers `503` with `Retry-After`. The first start also removes duplicate
+  rows from the query log and indexes it, which took up to 35 seconds for a million rows on SQL
+  Server.
+- **Read the first start's log on MySQL or SQL Server.** It names each account that kept its
+  address because another account already holds that address. A SCIM record
+  whose user name now collides with an earlier record of the same directory is deactivated and
+  renamed, the audit log records `scim_user.collision_rename` for it, and single sign-on through
+  the directory is refused for that person until the directory renames or removes the record.
+- **Update your webhook receivers and flows.** An entry saved in the console, an import, a
+  scheduled publish or a release now reaches webhooks, flows and the message broker with each
+  field at the top level of `data` and the status under `data._status`, as a Content API write
+  does. A receiver that read `data.body.title` reads `data.title`, and on a content type with
+  drafts one that read `data.status` reads `data._status`. A flow that reads `trigger.data.status`, one made from the
+  `chat-notify` or `cdn-purge` template included, reads `trigger.data._status`. See
+  [Webhooks](../features/webhooks.md).
+- **Update your API clients.** `POST /api/admin/users` must name the account's roles, so send
+  `"roles": ["editor"]` where a request with no roles used to create an editor. A data subject
+  erasure through `POST /api/admin/gdpr/erase` reports `complete`: treat a `207` as unfinished
+  and retry a `503`. An account under erasure cannot sign in until its erasure completes. A
+  person's own data export answers only a signed-in session, once an hour per account, so move
+  an API key or admin token that exported through it to a session or to
+  `POST /api/admin/gdpr/export`.
+- **Choose what an erasure does with form submissions.** An erasure deletes the files the
+  person uploaded and, by default, each form submission that holds only the person's addresses.
+  If submissions must stay, send `PUT /api/admin/schemas/form-erasure` with `{"mode": "soft"}`
+  as a tenant admin before the next erasure.
+- **Replace short flow secrets.** Saving a flow secret variable shorter than 8 bytes is
+  refused. A shorter one saved before keeps working but is masked only where it appears whole,
+  so replace it with a longer one.
+- **Check your public search lists.** Public search on Elasticsearch and Meilisearch now finds
+  entries published with the Content API and matches every field. List only content types whose
+  fields may all be public. See [Search](../features/search.md#let-anyone-search-your-site).
+
+Then upgrade the engine, wait until it reports healthy, and upgrade the console:
+
+```bash
+docker compose stop engine
+docker compose pull engine admin
+docker compose up -d --wait engine
+docker compose up -d admin
+```
 
 ### Upgrading to 0.56.0 and console 0.22.0
 
