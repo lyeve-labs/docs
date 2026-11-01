@@ -181,7 +181,7 @@ The status says whether the erasure finished:
 | Status | Meaning |
 |---|---|
 | `200` | Every part erased, and `complete` is `true`. When a legal hold stopped the erasure, `complete` is `false`, `holds` names the holds and nothing was erased. |
-| `207` | Part of the erasure did not finish, and `complete` is `false`. The account is not erased: it stays signed out and locked. Repeat the request to finish the erasure. |
+| `207` | The erasure did not finish, and `complete` is `false`. When a part failed or never ran, the account is not erased: it stays signed out and locked, and repeating the request finishes the erasure. When rows were kept because they cannot be told apart from another account's data, the account is erased, and repeating the request does not reach those rows. Both are described below. |
 | `503` | Nothing was erased, because the legal hold check could not answer, the person could not be signed out, or the person's addresses could not be read. Repeat the request. |
 
 The answer carries:
@@ -191,8 +191,8 @@ The answer carries:
 | `identifier` | The identifier erased. |
 | `total_rows` | Rows removed or anonymized across every feature. |
 | `complete` | `true` only when every part erased. |
-| `failed` | On a `207`, the parts that failed or never ran, named by the feature they belong to. The account is among them. |
-| `errors` | On a `207`, what is unfinished, that the account was not erased, and that repeating the request finishes it. `null` otherwise. |
+| `failed` | On a `207` from a part that failed, the parts that failed or never ran, named by the feature they belong to. The account is among them. |
+| `errors` | On a `207`, a line for each reason the erasure is unfinished. `null` otherwise. |
 | `holds` | The active legal holds that stopped the erasure, each with `id` and `reason`. Non-empty means nothing was erased. |
 
 A `207` reads like this:
@@ -279,6 +279,30 @@ lists the comments and form submissions an erasure of the same request would
 reach. That holds for an export with `all_tenants` too: an address no account
 holds is read only in the tenant the request is made in.
 
+Two accounts in one tenant can hold the same address, for example when the
+tenant's identity provider asserts an address another account already uses.
+An address read from the person's account that another account in the same
+tenant also holds is left out of the erasure. Rows under it stay, because they
+cannot be told apart from that account's data. The rest of the erasure runs.
+The person's account is still anonymized, its sessions end and its refresh
+tokens are revoked.
+
+The answer is a `207` with `complete` set to `false`, and `errors` carries
+this line:
+
+```json
+"errors": [
+  "not finished: some rows were kept because they cannot be told apart from another account's data"
+]
+```
+
+The answer names neither the address nor the other account, because either
+would tell you about that account. A repeated request does not reach the kept
+rows. Do not erase by that address to reach them: an erasure by address
+reaches every account that holds it, so it anonymizes the other account too. When no
+part failed, the admin console shows this answer as **Erasure kept some
+records**.
+
 A form has no field that says whose submission it is, so a submission
 someone else made may name the person in one field, such as an invitation.
 Each tenant chooses what an erasure does with a matching submission:
@@ -320,6 +344,21 @@ With the `audit` feature licensed, a change writes the audit entry
 
 An admin of the tenant sets it, and it applies to every erasure that runs
 after it is saved.
+
+A comment or form submission can leave copies outside its row. Once the rows
+have changed, the erasure reaches each copy:
+
+- Cached reads of the content. Reads through the content API show the erasure
+  at once, not when the cache entry expires.
+- The entry the content editor keeps for the row, with its version history.
+  The entry is deleted when its row is gone, and copied again from the row
+  when the row changed. An entry under a legal hold is kept.
+- The external search index, when the instance uses Elasticsearch or
+  Meilisearch. The document of a deleted row is removed, and a changed row is
+  indexed again as it now reads.
+- Answers a response cache rule kept. In every tenant that has a rule, the
+  answers of rules tagged `comments` or `form_submissions` and of rules with
+  no tags are cleared.
 
 An address the person used in the past and no longer holds is out of reach.
 No record keeps an account's earlier addresses, so data kept under one is
