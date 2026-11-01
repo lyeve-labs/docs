@@ -322,8 +322,14 @@ A build without license support answers `404` on both license routes and reports
 |---|---|---|---|
 | `POST` | `/api/admin/gdpr/export` | `super_admin`, rate limited | Export everything the instance holds about one person. `503` with `the subject's addresses could not be read; export was not attempted` when nothing was read |
 | `POST` | `/api/admin/gdpr/erase` | `super_admin`, rate limited | Erase it. `200` when every part erased, `207` when part of it did not finish and a repeat finishes it, `503` when nothing was erased |
+| `GET`, `PUT` | `/api/admin/schemas/form-erasure` | `admin` | What an erasure does with the tenant's form submissions: `auto`, `soft` or `hard` |
+| `GET` | `/api/v1/gdpr/export/sections` | Signed-in session | The sections of their own data a person may export |
+| `POST` | `/api/v1/gdpr/export` | Signed-in session, once an hour | A person's own data as NDJSON |
+| `POST` | `/api/v1/gdpr/export/step-up/email` | Signed-in session | Mail the person a code their export asks for |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-sections`, `/api/admin/analytics/gdpr/export-roles` | `admin`, signed-in session | The sections the tenant offers, and the roles that may export |
+| `GET`, `PUT` | `/api/admin/analytics/gdpr/export-step-up` | `super_admin`, signed-in session | What every person proves before exporting their own data |
 
-[Data protection](../trust/data-protection.md) has the bodies and what each one covers.
+[Data protection](../trust/data-protection.md) has the bodies and what each one covers, and [Analytics](../features/analytics.md#let-users-export-or-erase-their-data) has a person's own export.
 
 </details>
 
@@ -438,7 +444,7 @@ body, answer and role.
 | [Logs](../features/logs.md) | `/api/admin/logs/`, `/api/admin/logging/`, with volume alert rules at `/api/admin/logging/alerts` and one rule at `/api/admin/logging/alerts/{id}` | Free. Paid [alert](../features/alerts.md) channels on a rule need `alerts-pro` |
 | [Metrics export](../features/metrics-export.md) | `/api/admin/telemetry/`, with a tenant's own destination at `/api/admin/telemetry/destination` | Free. Saving a tenant destination needs `multitenant-customization` |
 | [Error tracking](../features/error-tracking.md) | `/api/admin/error-tracking/`, with triage at `/api/admin/error-tracking/alerts/{id}/resolve`, `/ignore`, `/reopen` and `/assignee`, and spike alerts at `/api/admin/error-tracking/alert-settings` | Free, with 30 days of events. Paid alert channels, a tenant's own threshold and older events need `alerts-pro` |
-| [Analytics](../features/analytics.md) | `/api/admin/analytics/`, with the delivery queue at `/api/admin/analytics/deliveries` and `/api/admin/analytics/deliveries/{id}/replay`, `/api/v1/analytics`, a person's own analytics at `/api/v1/gdpr/export` and `/api/v1/gdpr/erase`, and unfinished erasures at `/api/admin/analytics/gdpr/erasures` and `/api/admin/analytics/gdpr/erasures/{user_id}/rerun` | Free. Retry policies, replay and the PostHog, Amplitude and webhook destinations need `analytics-pro` |
+| [Analytics](../features/analytics.md) | `/api/admin/analytics/`, with the delivery queue at `/api/admin/analytics/deliveries` and `/api/admin/analytics/deliveries/{id}/replay`, `/api/v1/analytics`, a person's own data at `/api/v1/gdpr/export`, `/api/v1/gdpr/export/sections`, `/api/v1/gdpr/export/step-up/email` and `/api/v1/gdpr/erase`, the export's settings at `/api/admin/analytics/gdpr/export-sections`, `/api/admin/analytics/gdpr/export-roles` and `/api/admin/analytics/gdpr/export-step-up`, and unfinished erasures at `/api/admin/analytics/gdpr/erasures` and `/api/admin/analytics/gdpr/erasures/{user_id}/rerun` | Free. Retry policies, replay and the PostHog, Amplitude and webhook destinations need `analytics-pro` |
 | [Request capture](../features/request-capture.md) | `/api/admin/request-captures`, with rules at `/api/admin/request-captures/rules` and replay sets at `/api/admin/request-captures/sets` | Free, kept 24 hours. Creating rules and sets needs `request-capture-pro` |
 | [Request profiling](../features/request-profiling.md) | `/api/admin/debug/profiler/` | Free |
 | [Concurrency tuning](../features/concurrency-tuning.md) | `/api/admin/debug/goroutines/status`, `/pool`, `/parallel`, `/async-hooks`, `/tuning` | Free to read. Writes to `/pool`, `/parallel` and `/async-hooks` need `goroutine-engine-pro` |
