@@ -173,8 +173,8 @@ In setup mode the engine connects to no database and serves only setup:
 | `GET /api/admin/setup/status` | What is missing, with the `X-Setup-Token` header |
 | Anything else | `503` with the code `SETUP_REQUIRED` |
 
-To see what is missing, you need the setup token: the one in the engine's log, or
-`LYEVE_SETUP_TOKEN` when you set it.
+To see what is missing, you need the setup token: the one the engine writes to its standard
+error, or `LYEVE_SETUP_TOKEN` when you set it.
 
 <div class="paths">
 <div data-path="console">

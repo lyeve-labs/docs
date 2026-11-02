@@ -76,8 +76,8 @@ when the engine printed one, `env` when you set `LYEVE_SETUP_TOKEN`.
 ## 2. Create the first administrator
 
 Creating the first administrator takes the setup token, so nobody else who can reach the
-port claims the install before you do. While no account exists, the engine prints a one-time
-token to its log:
+port claims the install before you do. While no account exists, the engine writes a one-time
+token to its standard error, outside its log:
 
 ```bash
 docker logs lyeve-engine 2>&1 | grep setup_token

@@ -184,7 +184,7 @@ curl -s -H 'X-Forwarded-Proto: https' http://localhost:3001/api/admin/setup
 The probe answers `{"status":"ok", ...}` with its checks. The other two paths redirect to
 HTTPS under `SECURE_COOKIE=true`, so these local checks send the header your proxy would. The
 JWKS response lists the engine's public signing key. A new install answers the setup request
-with `{"setup_required":true,"token_source":"log"}`: the token is the one the engine printed,
+with `{"setup_required":true,"token_source":"log"}`: the token is the one the engine wrote to its standard error,
 which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETUP_TOKEN` set,
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.

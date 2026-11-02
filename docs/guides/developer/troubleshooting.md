@@ -18,7 +18,7 @@ follow the request id into the engine's log, which names the cause.
 | `401` `API keys with an admin role are not accepted on the admin API. Use an admin token.` | An API key holding `admin` or `super_admin` called the Admin API | Use an [admin token](../../how-to/admin-tokens.md) |
 | `401` `Admin tokens are accepted on the admin API only.` | An admin token called the Content API or a public route | Use an [API key](../../features/api-keys.md) or a session token there |
 | `401` `invalid metrics token` | `METRICS_TOKEN` is set, and the bearer token sent to `/api/admin/metrics` is not it. This includes a super admin's own session token | Send `METRICS_TOKEN` |
-| `401` on `POST /api/admin/setup` | The setup token is wrong, or setup already finished and the token was retired | Use the token from the engine's log or `LYEVE_SETUP_TOKEN`. If an account exists, sign in instead |
+| `401` on `POST /api/admin/setup` | The setup token is wrong, or setup already finished and the token was retired | Use the token from the engine's standard error or `LYEVE_SETUP_TOKEN`. If an account exists, sign in instead |
 | `409` `The initial setup has already been completed.` | The first administrator already exists | Sign in |
 | `403` `insufficient scope` | The API key's scopes do not cover this method and path | Give the key the scope, such as `content:write`. See [API keys](../../features/api-keys.md) |
 | `403` `permission denied` | No access rule lets the caller's roles do this on this content type. A fresh install has no rules, and an API key with no role is refused every content type | Write a rule for the role under **Access > Permissions** and give the key that role. See [access rules](../../features/access-rules.md) |
