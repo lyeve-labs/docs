@@ -25,11 +25,11 @@ Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.57.0` | Never. One release, exactly |
-| `0.57` | To the latest patch of that minor release |
+| `0.58.0` | Never. One release, exactly |
+| `0.58` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.57.0` is the image tag `0.57.0`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.58.0` is the image tag `0.58.0`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates

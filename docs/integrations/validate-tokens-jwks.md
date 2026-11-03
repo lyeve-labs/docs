@@ -28,7 +28,7 @@ too.
 
 ## Try it
 
-Console v0.23.0 has no screen of its own for the key set or for checking a token, so these
+Console v0.25.0 has no screen of its own for the key set or for checking a token, so these
 steps use the engine API.
 
 1. Fetch the key set from the Content API:
