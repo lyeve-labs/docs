@@ -11,7 +11,7 @@ provide.
 | Image | What it is | Listens on |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | The engine: the Admin API and the Content API | `3001` (Admin API), `3002` (Content API) |
-| `ghcr.io/lyeve-labs/lyeve-admin` | LyEve Console, a Node server that calls the engine for the browser | `3002` |
+| `ghcr.io/lyeve-labs/lyeve-console` | LyEve Console, a Node server that calls the engine for the browser | `3002` |
 
 The engine is a long-running server. It keeps a pool of database connections open, holds its
 signing key, and applies its migrations when it starts. A platform that starts a process per
@@ -75,8 +75,8 @@ Both are a `DATABASE_URL` value and nothing more. For an engine with no database
 ## The console needs a server, not Vercel or Cloudflare Pages
 
 The console is a long-running Node server. It ships as the container image
-`ghcr.io/lyeve-labs/lyeve-admin`, and its source is public in
-[`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin). Vercel and Cloudflare Pages run
+`ghcr.io/lyeve-labs/lyeve-console`, and its source is public in
+[`lyeve-console`](https://github.com/lyeve-labs/lyeve-console). Vercel and Cloudflare Pages run
 neither a container image nor a long-running server, so neither runs the console as it ships.
 
 Run the image as its own service on a host that runs containers.

@@ -6,7 +6,7 @@ sidebar:
 ---
 
 This page gives you the whole stack in two files: the engine
-(`ghcr.io/lyeve-labs/lyeve-core`), LyEve Console (`ghcr.io/lyeve-labs/lyeve-admin`), a
+(`ghcr.io/lyeve-labs/lyeve-core`), LyEve Console (`ghcr.io/lyeve-labs/lyeve-console`), a
 Postgres database and a Caddy proxy that obtains TLS certificates. Copy both files, write the
 `.env`, and run `docker compose up -d`.
 
@@ -79,7 +79,7 @@ services:
         condition: service_healthy
 
   admin:
-    image: ghcr.io/lyeve-labs/lyeve-admin:latest
+    image: ghcr.io/lyeve-labs/lyeve-console:latest
     restart: unless-stopped
     environment:
       ORIGIN: https://admin.yourdomain.com

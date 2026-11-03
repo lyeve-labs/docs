@@ -9,7 +9,7 @@ LyEve runs on Kubernetes as two Deployments, one per image:
 
 - `ghcr.io/lyeve-labs/lyeve-core`, the engine: the Admin API on **3001**, and the Content API and
   `/.well-known/jwks.json` on **3002**.
-- `ghcr.io/lyeve-labs/lyeve-admin`, LyEve Console: a Node server on **3002** that calls the
+- `ghcr.io/lyeve-labs/lyeve-console`, LyEve Console: a Node server on **3002** that calls the
   engine for the browser. It holds no database connection.
 
 :::tip[Best for]
@@ -29,7 +29,7 @@ Every value marked `# cluster-specific` must be replaced before you apply the ma
 | Workload | Image | Ports | Reached through |
 |---|---|---|---|
 | `lyeve-core` | `ghcr.io/lyeve-labs/lyeve-core` | 3001, 3002 | The Gateway: `/api` on the admin host, everything on the API host |
-| `lyeve-admin` | `ghcr.io/lyeve-labs/lyeve-admin` | 3002 | The Gateway: the admin host |
+| `lyeve-console` | `ghcr.io/lyeve-labs/lyeve-console` | 3002 | The Gateway: the admin host |
 
 Both Services are `ClusterIP`. Only the Gateway faces the internet. Give port 3001 no public
 host or `LoadBalancer` of its own: the admin host routes `/api/admin` to it, which is all the console needs.
@@ -295,18 +295,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lyeve-admin
+  name: lyeve-console
   namespace: lyeve
 spec:
   replicas: 1
   selector:
-    matchLabels: { app: lyeve-admin }
+    matchLabels: { app: lyeve-console }
   template:
     metadata:
-      labels: { app: lyeve-admin }
+      labels: { app: lyeve-console }
     spec:
       containers:
-        - name: lyeve-admin
+        - name: lyeve-console
           image: ghcr.io/lyeve-labs/lyeve-admin:0.23.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
@@ -331,10 +331,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: lyeve-admin
+  name: lyeve-console
   namespace: lyeve
 spec:
-  selector: { app: lyeve-admin }
+  selector: { app: lyeve-console }
   ports:
     - { name: http, port: 80, targetPort: http }
 ```
@@ -369,7 +369,7 @@ admin host routes by path. The Gateway matches the longest prefix first.
 | admin | `/api/admin` | `lyeve-core` 3001 |
 | admin | `/api` | `lyeve-core` 3002 |
 | admin | `/.well-known` | `lyeve-core` 3002 |
-| admin | `/` | `lyeve-admin` 80 |
+| admin | `/` | `lyeve-console` 80 |
 | api | `/` | `lyeve-core` 3002 |
 
 ```yaml
@@ -416,7 +416,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: lyeve-admin
+  name: lyeve-console
   namespace: lyeve
 spec:
   parentRefs: [{ name: lyeve, sectionName: https-admin }]
@@ -429,7 +429,7 @@ spec:
     - matches: [{ path: { type: PathPrefix, value: /.well-known } }]
       backendRefs: [{ name: lyeve-core, port: 3002 }]
     - matches: [{ path: { type: PathPrefix, value: / } }]
-      backendRefs: [{ name: lyeve-admin, port: 80 }]
+      backendRefs: [{ name: lyeve-console, port: 80 }]
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -583,7 +583,7 @@ kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.57.0
 kubectl -n lyeve scale deploy/lyeve-core --replicas=2
 kubectl -n lyeve rollout status deploy/lyeve-core
-kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.23.0
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-admin:0.23.0
 ```
 
 The engine answers nothing between the first command and the end of the rollout, so plan a short

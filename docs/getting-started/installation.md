@@ -121,13 +121,13 @@ setup.
 ## Run the console
 
 ```bash
-docker run -d --name lyeve-admin \
+docker run -d --name lyeve-console \
   -e CORE_INTERNAL_URL=http://<engine-host>:3001 \
   -e CORE_API_INTERNAL_URL=http://<engine-host>:3002 \
   -e ORIGIN=http://localhost:3000 \
   -e PORT=3000 \
   -p 3000:3000 \
-  ghcr.io/lyeve-labs/lyeve-admin:latest
+  ghcr.io/lyeve-labs/lyeve-console:latest
 ```
 
 | Variable | Purpose |

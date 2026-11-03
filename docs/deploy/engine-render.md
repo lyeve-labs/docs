@@ -100,7 +100,7 @@ start, which the engine logs as `boot_ms` on its `serving` line.
 ## LyEve Console
 
 This page sets up the engine alone. The console runs as its own service, from the image
-`ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
+`ghcr.io/lyeve-labs/lyeve-console`. [The admin image](docker.md#the-admin-image) lists its
 settings and the routing it needs.
 [Run the engine and the console together](../getting-started/engine-and-console.md) shows the
 two side by side on one address.

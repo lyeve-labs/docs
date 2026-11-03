@@ -19,7 +19,7 @@ proxy, copy the files on [Docker Compose](docker-compose.md).
 | Image | What it runs | Platforms |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | The engine: the Admin API, the Content API and every feature | `linux/amd64`, `linux/arm64` |
-| `ghcr.io/lyeve-labs/lyeve-admin` | LyEve Console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
+| `ghcr.io/lyeve-labs/lyeve-console` | LyEve Console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
 
 Each release publishes three tags per image:
 

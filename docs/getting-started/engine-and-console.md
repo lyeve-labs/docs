@@ -77,7 +77,7 @@ services:
         condition: service_healthy
 
   admin:
-    image: ghcr.io/lyeve-labs/lyeve-admin:latest
+    image: ghcr.io/lyeve-labs/lyeve-console:latest
     restart: unless-stopped
     environment:
       ORIGIN: http://localhost:8080
