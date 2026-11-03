@@ -136,7 +136,7 @@ What the less obvious lines do:
 |---|---|
 | `APP_ENV: development` | Relaxes the checks a production engine makes, such as HTTPS-only cookies, so the stack runs on plain `http` |
 | `sslmode=disable` | The database is reachable only inside the Compose network, so the connection needs no TLS here |
-| `LYEVE_SETUP_TOKEN` | You choose the token that guards the first administrator, so you do not have to find it in the engine's log |
+| `LYEVE_SETUP_TOKEN` | You choose the token that guards the first administrator, so you do not have to find it in the engine's standard error |
 | `ORIGIN` | The address you open in the browser. It has to match exactly, port included, or sign-in fails |
 | `LYEVE_CONSOLE_URL` | The same address, for the engine. Password reset and sign-in link emails point there |
 | `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL` | Where the console's server reaches the engine: through the proxy, by its name inside the network |

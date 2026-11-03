@@ -100,8 +100,9 @@ With `--port=3001`:
 curl https://lyeve-engine-<hash>-<region>.a.run.app/api/admin/setup
 ```
 
-A new install answers `{"setup_required":true,"token_source":"log"}`. The setup token is the
-one-time `setup_token` in the service's log, or `LYEVE_SETUP_TOKEN` when you set it. The
+A new install answers `{"setup_required":true,"token_source":"log"}`. The setup token is
+the one-time `setup_token` the engine writes to its standard error, or `LYEVE_SETUP_TOKEN`
+when you set it. The service's logs show standard error, so search them for `setup_token`. The
 [quickstart](../getting-started/quickstart.md) continues from step 2.
 
 With `--port=3002`, fetch `/.well-known/jwks.json` instead. Only the Content API serves it.

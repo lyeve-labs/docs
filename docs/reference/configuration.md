@@ -250,7 +250,7 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 | `JWT_KEY_PATH` | Where the Ed25519 signing key is kept. Put it on a volume, or give every replica the same file, or each restart signs everyone out. The key alone does not keep sessions through a restart: refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis. In production the file must be readable by its owner only. | `/var/lib/lyeve/jwt_key.json` |
 | `JWT_EXPIRY_SECS` | Session token lifetime in seconds. Production refuses a value above `3600`. | `900` (15 minutes) |
 | `REFRESH_TOKEN_TTL_SECS` | Refresh token lifetime in seconds. | `2592000` (30 days) |
-| `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, at least 16 characters. Unset, the engine prints a one-time token to its log while no account exists. Set it when more than one replica can answer setup, since each prints its own. | unset (a logged one-time token) |
+| `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, at least 16 characters. Unset, the engine writes a one-time token to its standard error, not to its log, while no account exists. Set it when more than one replica can answer setup, since each prints its own. | unset (a one-time token on standard error) |
 | `ADMIN_CONSOLE_KEY` | A secret of at least 32 characters, shared with the admin console. The console signs its calls with the browser's address, so sign-in limits count each person instead of the console server. | unset |
 | `PASSWORD_MIN_LENGTH` | Shortest password accepted. | `12` |
 

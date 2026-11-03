@@ -58,7 +58,8 @@ ways to run LyEve, see [Choose where to run LyEve](index.md).
    ```
 
    The Admin API answers `{"setup_required":true,"token_source":"log"}`. The setup token is the
-   one-time `setup_token` the engine printed to its log at startup.
+   one-time `setup_token` the engine wrote to its standard error at startup. Your host's logs
+   show standard error, so search them for `setup_token`.
 
 5. **Create the first administrator.** Follow the [quickstart](../getting-started/quickstart.md)
    from step 2, against your Admin API URL. On a host that publishes one API, publish port

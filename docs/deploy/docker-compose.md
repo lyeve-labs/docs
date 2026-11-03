@@ -240,6 +240,9 @@ account exists:
 docker compose logs engine | grep setup_token
 ```
 
+The engine writes the token to its standard error, not to its log. Its log carries a line that
+says where the token went, without the token.
+
 To choose the token yourself, set `LYEVE_SETUP_TOKEN` (16 characters or more) on the engine.
 
 <div class="paths">

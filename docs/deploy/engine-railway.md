@@ -80,7 +80,8 @@ curl https://<admin-api-domain>/api/admin/setup
 
 The JWKS document is on the domain for port 3002, and the setup route on the domain for port
 3001. A new install answers `{"setup_required":true,"token_source":"log"}`. The setup token is
-the one-time `setup_token` in the service's log, or `LYEVE_SETUP_TOKEN` when you set it. The
+the one-time `setup_token` the engine writes to its standard error, or `LYEVE_SETUP_TOKEN`
+when you set it. The service's logs show standard error, so search them for `setup_token`. The
 [quickstart](../getting-started/quickstart.md) continues from step 2.
 
 ## The admin console
