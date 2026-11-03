@@ -8,7 +8,7 @@ sidebar:
 LyEve Console is the browser app your team works in: write and publish content, manage users
 and roles, and configure the engine.
 
-It runs as its own image, `ghcr.io/lyeve-labs/lyeve-admin`, beside the engine. It signs you in
+It runs as its own image, `ghcr.io/lyeve-labs/lyeve-console`, beside the engine. It signs you in
 and calls the engine's Admin API for you, so nothing the console does is out of reach of a
 script. The pages under [Features](../features/index.md) and [How-to guides](../how-to/index.md)
 show each task twice, once in the console and once with the API, and you pick the tab you

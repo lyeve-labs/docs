@@ -177,7 +177,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.57.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.58.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -311,7 +311,7 @@ spec:
     spec:
       containers:
         - name: lyeve-console
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.23.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-console:0.25.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
