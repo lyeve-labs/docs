@@ -291,6 +291,10 @@ spec:
 
 ## Console Deployment and Service
 
+An install made from this page before the console's image moved to `lyeve-console` named the
+Deployment, its container, the Service and the route `lyeve-admin`. Those objects keep working
+under that name, and each upgrade command below names the object you created.
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -583,7 +587,7 @@ kubectl -n lyeve get pods -l app=lyeve-core   # repeat until it lists no pod
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.57.0
 kubectl -n lyeve scale deploy/lyeve-core --replicas=2
 kubectl -n lyeve rollout status deploy/lyeve-core
-kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-admin:0.23.0
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.23.0
 ```
 
 The engine answers nothing between the first command and the end of the rollout, so plan a short
