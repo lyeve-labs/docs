@@ -77,7 +77,7 @@ answering `source_missing`. Without the PostgreSQL extension or MySQL's
 `performance_schema`, a slow request is still recorded with its method, path
 and duration, but with no statement and no plan.
 
-## In LyEve Console
+## In the console
 
 Open **Insight > Observability > Slow queries**. Only a super admin can open
 it. **Sampled** counts the recorded entries, beside the slowest and the median
@@ -95,7 +95,7 @@ caller.
 
 ## Try it
 
-For the console steps, you are signed in to the console as a super
+For the console steps, you are signed in to LyEve Console as a super
 admin. For the API steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

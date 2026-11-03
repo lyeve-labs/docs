@@ -42,7 +42,7 @@ Every quota and key limit already stored is enforced on every install, even
 after a license lapses. Clearing a limit, lifting a block and handling increase
 requests are free too.
 
-## In LyEve Console
+## In the console
 
 Open **Operations > Quotas and usage** as a super admin. The **Quotas** table
 lists each tenant that has a quota, with its API calls, storage and bandwidth
@@ -56,7 +56,7 @@ through the API below. Setting a quota is on
 
 ## Try it
 
-For the console step, you are signed in to the console as a super admin. For the API
+For LyEve Console step, you are signed in to the console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

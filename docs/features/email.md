@@ -50,7 +50,7 @@ Every send checks the tenant's suppression list. A suppressed address is
 dropped, a send with nobody left is refused, and if the list cannot be read the
 send is refused too.
 
-## In LyEve Console
+## In the console
 
 Open **Settings > Email**. **Provider pool** lists the tenant's providers.
 **New provider** opens a form: pick **SMTP** or **Provider API** as the
@@ -81,7 +81,7 @@ deleted. **Triggers**, beside it, holds the
 ## Try it
 
 These steps create a template, translate it and preview it, which works on a
-free install. For the console steps, you are signed in to the console.
+free install. For the console steps, you are signed in to LyEve Console.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 

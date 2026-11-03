@@ -36,7 +36,7 @@ the other way: another service posts to LyEve and an entry is created.
 - The call needs logic, several steps or a response. [Flows](flows.md) do that.
 :::
 
-## In LyEve Console
+## In the console
 
 Open **Delivery > Webhooks**. The table lists each webhook with its **URL**,
 **Events**, **Schemas** and **Status**, and the **All**, **Enabled** and
@@ -79,7 +79,7 @@ delays or blocks a write. A tenant's webhooks see only that tenant's content.
 
 ## Try it
 
-For the console steps, you are signed in to the console. For the API
+For the console steps, you are signed in to LyEve Console. For the API
 steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 Creating a webhook needs the `super_admin` role. The example assumes a content

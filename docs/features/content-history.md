@@ -31,7 +31,7 @@ activity log records who changed which entry, when, from where and which fields.
   [content releases](content-releases.md).
 :::
 
-## In LyEve Console
+## In the console
 
 Open **Settings > Content history**. You need the `admin` or `super_admin` role.
 
@@ -63,7 +63,7 @@ History stays small:
   the entry's revision number.
 - **An edit stores only the fields that changed.** Every field you did not touch is shared
   with the version before it, so changing a title on a long article stores the title.
-- **A change of status alone stores no field values.** Publishing in the console, in a
+- **A change of status alone stores no field values.** Publishing in LyEve Console, in a
   release or on a schedule records a version that points at values already stored. A publish
   or unpublish made by another writer, such as the Content API, GraphQL, gRPC, a flow or an
   approval, records no version. The activity log records who made it.

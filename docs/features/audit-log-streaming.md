@@ -61,7 +61,7 @@ still change before it is marked stable.
   redirects are not followed. To reach a collector inside your network, put a
   public HTTPS endpoint in front of it.
 
-## In LyEve Console
+## In the console
 
 Open **Insight > Audit log** and choose the **Streaming** tab. Each stream
 shows its name, its kind, its URL, how far behind it is, such as **Up to
@@ -196,7 +196,7 @@ The answer is `204`.
 On the **Streaming** tab, choose **New destination**. Pick **Splunk HEC** or
 **Datadog logs** under **Destination** for those services. The form asks for
 the same fields as the API below, and **Send the existing log too** is
-`backfill`. The console's **URL** field is required for every kind, so for
+`backfill`. LyEve Console's **URL** field is required for every kind, so for
 Datadog enter the intake URL of your site, which the API lets you leave out.
 
 </div>

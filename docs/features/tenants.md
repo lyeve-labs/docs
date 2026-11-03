@@ -49,7 +49,7 @@ header naming another tenant answers `403`. From anyone else the header is
 ignored, so a client cannot reach another tenant by sending one. Every read
 and write is then limited to the resolved tenant.
 
-## In LyEve Console
+## In the console
 
 Open **Operations > Tenants**. A super admin sees every tenant with a record,
 with its slug, name, plan, status and creation date, and the buttons on a row
@@ -58,7 +58,7 @@ reads **Tenant provisioning** and **Not enabled on this instance**, and has no
 **New tenant** button. The tenant's name opens its page, with **Archive**,
 **Features**, and its **Members** with **New member**.
 
-The console has no tenant switcher. A super admin creates an account in any
+LyEve Console has no tenant switcher. A super admin creates an account in any
 tenant from **Access > Users** with **New user**, choosing the tenant under
 **Tenant**. Under **Roles**, untick **viewer**, which is ticked already, and tick the
 account's role. An account

@@ -65,9 +65,9 @@ channel and no license.
 Every surface takes the same channel fields, so a setting you write for one
 works on the others.
 
-## In LyEve Console
+## In the console
 
-Each watched feature has its own channel form in the console, with the same
+Each watched feature has its own channel form in LyEve Console, with the same
 five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 **HTTPS webhook URL** and **PagerDuty routing key**.
 

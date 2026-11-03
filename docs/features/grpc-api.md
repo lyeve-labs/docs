@@ -31,7 +31,7 @@ carries the same calls over HTTP/2.
   at once. Use the [GraphQL API](graphql-api.md).
 :::
 
-## In LyEve Console
+## In the console
 
 As a super admin, open **Delivery > gRPC**. A badge says whether the gRPC API
 is **Serving**. **Listeners** gives the **gRPC** address, with a button to copy
@@ -59,7 +59,7 @@ ports and Service entries.
 
 ## Try it
 
-For the console steps, you are signed in to the console as a super
+For the console steps, you are signed in to LyEve Console as a super
 admin. For the API steps, you need a signed-in user's token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

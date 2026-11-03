@@ -36,7 +36,7 @@ is recorded against it, refused ones included.
   [admin token](../how-to/admin-tokens.md).
 :::
 
-## In LyEve Console
+## In the console
 
 Open **Access > API keys**. A super admin sees every key in the tenant with its
 roles, scopes, status, expiry and **Usage (this month)**. **All**, **Active**
@@ -254,7 +254,7 @@ The answer holds `billing_period`, `requests`, `bytes_in` and `bytes_out`.
 </div>
 </div>
 
-Each request the key made is in its history, which the API serves. The console
+Each request the key made is in its history, which the API serves. LyEve Console
 has no view of it on this release. The call needs a super admin token in
 `TOKEN`.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
