@@ -189,6 +189,23 @@ which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETU
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
 
+## Upgrading to console 0.25.0
+
+Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so run that image from now
+on. Every 0.25 release is also published under `ghcr.io/lyeve-labs/lyeve-admin` with the same
+tags and digests, until 0.26.0, and the tags already published there stay.
+[Docker Compose](docker-compose.md#upgrading-to-console-0250) has the details.
+
+## Upgrading to 0.58.0 and console 0.24.0
+
+Upgrade the engine before the console, and back up the database first. A new install's setup
+token is on the engine's standard error, outside the log. With implicit TLS off, a send to a
+mail relay that does not offer STARTTLS fails, so fix the relay before you upgrade. A quota's
+grace period now delays its block. Console 0.24.0 asks for an organization at sign-in only with
+`SIGN_IN_ORGANIZATION=true`.
+[Docker Compose](docker-compose.md#upgrading-to-0580-and-console-0240) explains each step and
+the changes your API clients and your directory see.
+
 ## Upgrading to 0.57.0 and console 0.23.0
 
 Upgrade the engine before the console, and back up the database first. On MySQL or SQL Server,

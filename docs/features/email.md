@@ -273,8 +273,8 @@ range Tailscale hands out, needs no entry when the engine runs with
 `LYEVE_OUTBOUND_ALLOW_CGNAT=true`.
 
 `SMTP_TLS=true` uses implicit TLS, usually on port 465. Any other value
-connects in plain text and upgrades with STARTTLS when the relay offers it, so
-a relay that does not offer it gets the mail unencrypted. TLS is 1.2 or
+connects in plain text and upgrades with STARTTLS, and a send to a relay that
+does not offer STARTTLS fails. TLS is 1.2 or
 later. Line breaks are stripped from `From`,
 `To` and `Subject`, so a value cannot add headers. LyEve does not DKIM-sign
 mail: your relay or provider does, so publish the SPF, DKIM and DMARC records
@@ -582,7 +582,7 @@ the feature's form in the console. The environment variable wins.
 | `SMTP_PORT` | Relay port | `587` |
 | `SMTP_USER`, `SMTP_PASS` | Relay credentials. Leave them out to send unauthenticated. | none |
 | `SMTP_FROM` | Default `From` address, such as `noreply@example.com` or `Name <addr>` | none |
-| `SMTP_TLS` | Exactly `true` for implicit TLS, usually on port 465. Any other value uses STARTTLS when the relay offers it. | `false` |
+| `SMTP_TLS` | Exactly `true` for implicit TLS, usually on port 465. Any other value uses STARTTLS, and a relay that does not offer it is refused. | `false` |
 | `SMTP_ALLOWED_PRIVATE_NETWORKS` | Comma-separated CIDRs or addresses that the relay and provider hosts may resolve to although they are private. Every address a name resolves to must be listed. An entry that does not parse is dropped. | none |
 | `ENCRYPTION_KEY` | Encrypts provider passwords, API keys and webhook secrets at rest | none |
 | `JWT_SECRETS` | The first secret signs click links. Without it, a tracked link answers `500`. | none |

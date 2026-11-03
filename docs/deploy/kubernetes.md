@@ -564,6 +564,35 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
+## Upgrading to console 0.25.0
+
+Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`. Every 0.25 release is also
+published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests, until 0.26.0,
+and the tags already published there stay. Point the console's Deployment at the new name. An
+install made before the rename names its Deployment and container `lyeve-admin`, so use that
+name in the command:
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.25.0
+kubectl -n lyeve rollout status deploy/lyeve-console
+```
+
+## Upgrading to 0.58.0 and console 0.24.0
+
+Upgrade the engine first and the console once the engine is ready. Back up the database first.
+[Docker Compose](docker-compose.md#upgrading-to-0580-and-console-0240) lists the changes to
+read before the first start, among them the setup token on standard error, the mail relay
+check, the quota grace period and the API changes your clients see. From console 0.24.0, a
+console that serves several organizations on an address that names none needs
+`SIGN_IN_ORGANIZATION=true` in its environment.
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.58.0
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.25.0
+kubectl -n lyeve rollout status deploy/lyeve-console
+```
+
 ## Upgrading to 0.57.0 and console 0.23.0
 
 Upgrade the engine first and the console once the engine is ready. Back up the database first.
@@ -603,7 +632,7 @@ content history on for every content type.
 to read before the first start.
 
 Read these notes and the ones above for each newer release, then upgrade with the steps under
-[Upgrading to 0.57.0 and console 0.23.0](#upgrading-to-0570-and-console-0230), which start the
+[Upgrading to 0.58.0 and console 0.24.0](#upgrading-to-0580-and-console-0240), which start the
 newest release.
 
 ## Upgrading to 0.55.0 and console 0.21.0
@@ -633,7 +662,7 @@ does not allow. Read these before the first start of 0.55.0:
   lists the changes they see.
 
 Read these notes and the ones above for each newer release, then upgrade with the steps under
-[Upgrading to 0.57.0 and console 0.23.0](#upgrading-to-0570-and-console-0230), which start the
+[Upgrading to 0.58.0 and console 0.24.0](#upgrading-to-0580-and-console-0240), which start the
 newest release.
 
 ## Before you go live

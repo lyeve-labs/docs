@@ -288,6 +288,70 @@ Upgrade the engine before the console. A console release can call routes that on
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
 
+### Upgrading to console 0.25.0
+
+Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so change the console's
+`image:` line to that name. Every 0.25 release is also published under the old name,
+`ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and the same digests, so a file that still
+names it keeps updating until 0.26.0. The tags already published under the old name stay. The
+release changes the console's name and look, and adds no setting:
+
+```bash
+docker compose pull admin
+docker compose up -d admin
+```
+
+### Upgrading to 0.58.0 and console 0.24.0
+
+Upgrade the engine first, then the console. Read these before the first start of 0.58.0:
+
+- **Back up the database.** The first start adds a column to the accounts table and runs new
+  migrations for audit, media, storage, search, usage and access rules. On PostgreSQL, search
+  rebuilds the rows of each content type a public search rule restricts, in the background.
+- **Find the setup token on standard error.** A new install's one-time setup token is written
+  to the engine's standard error, outside the log. A script that read `setup_token` from the
+  log reads standard error instead, or sets `LYEVE_SETUP_TOKEN`.
+- **Check your mail relay.** With implicit TLS off, through `SMTP_TLS` or the **TLS** switch on
+  an SMTP provider, a send to a relay that does not offer STARTTLS fails. Before you upgrade,
+  turn on implicit TLS, usually on port 465, or use a relay that offers STARTTLS. See
+  [Email](../features/email.md).
+- **Choose how SQL Server deletes a tenant.** On SQL Server a tenant delete removes the tenant's
+  content rows in batches. Set `SCHEMA_MSSQL_PURGE_MODE=single` to keep the earlier behavior.
+  The first start builds a tenant index on every relation table made before.
+- **Decide how long slow query captures stay.** Captures older than 30 days are deleted every
+  hour. Set `query_monitor_retention_days` to zero or less to keep them all.
+- **Check your quota grace periods.** A tenant past a hard limit with blocking on is now blocked
+  only once its grace period has passed, and the API sets it to 24 hours by default. Set the
+  grace period to `0` for an immediate block. See
+  [Tenant quotas](../features/tenant-quotas.md).
+- **Update your directory and API clients.** A SCIM `PUT` keeps the attributes it leaves out,
+  so send an attribute as null or empty to clear it. Saving a draft on a content type without
+  draft and publish answers `422` with `VALIDATION_NO_DRAFTS`. Enabling or deleting an account
+  whose erasure has not completed answers `409` with `USER_ERASURE_PENDING` until the erasure
+  completes.
+- **Filter the audit log by the digests the engine gives you.** Entries written from 0.58.0
+  name the subject of an export, an erasure or a refused sign-in by a keyed digest. A tool that
+  filters by a SHA-256 it computes finds only the older entries, so ask
+  `POST /api/admin/gdpr/subject-digests` for every value to filter by.
+- **Keep content with bulk import.** Bulk import refuses to start without the content feature,
+  so an install that limits its features keeps both.
+- **Turn history off before a downgrade.** On a content type with history on, a list of objects
+  is stored one element at a time. An older release refuses such a version, and an edit of that
+  entry, while history is on for its type.
+- **Set `SIGN_IN_ORGANIZATION` where a console needs it.** From console 0.24.0 the sign-in,
+  password reset and email link pages ask for an organization only when the console runs with
+  `SIGN_IN_ORGANIZATION=true`. A console that serves several organizations on an address that
+  names none sets it, or its sign-in pages stop asking.
+
+Then upgrade the engine, wait until it reports healthy, and upgrade the console:
+
+```bash
+docker compose stop engine
+docker compose pull engine admin
+docker compose up -d --wait engine
+docker compose up -d admin
+```
+
 ### Upgrading to 0.57.0 and console 0.23.0
 
 Upgrade the engine first, then the console. Read these before the first start of 0.57.0:
