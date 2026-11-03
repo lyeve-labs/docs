@@ -65,5 +65,6 @@ the `admin` or `super_admin` role. The `editor` role writes through the Content 
 
 ## Related
 
+- [LyEve Console](../../console/index.md): signing in, the sidebar, and what each role sees.
 - [Features](../../features/index.md): every feature, and whether it is free.
 - [Getting started](../../getting-started/index.md): what LyEve is and how to install it.
