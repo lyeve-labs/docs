@@ -189,8 +189,8 @@ curl "http://localhost:3001/api/admin/synthetic-monitoring/alerts?acknowledged=f
 <div data-path="console">
 
 Choose the delete button on its row, labeled **Delete Public site**. The dialog asks
-"Delete Public site? Its results and its alert history go with it." Press **Delete**, and the
-page reports `Deleted Public site`.
+"Delete Public site? Its results and alert history are deleted. This cannot be undone."
+Press **Delete**, and the page reports **Probe deleted.**
 
 </div>
 <div data-path="api">

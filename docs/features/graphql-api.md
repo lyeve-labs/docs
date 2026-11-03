@@ -37,7 +37,7 @@ the fields it needs, and subscriptions tell it when content changes.
 
 ## In the admin console
 
-Open **Delivery > GraphQL**. **Where it answers** gives the address for
+Open **Delivery > GraphQL**. **Endpoints** gives the address for
 queries and mutations and the one for subscriptions, with **A first request**
 to copy. **Schema** lists every root field generated from your content types
 under **Queries**, **Mutations** and **Subscriptions**, with its arguments and
@@ -118,7 +118,7 @@ For the API steps, you need a token in `TOKEN`. The
 <div class="paths">
 <div data-path="console">
 
-Open **Delivery > GraphQL**. **Where it answers** gives the address for
+Open **Delivery > GraphQL**. **Endpoints** gives the address for
 queries and mutations and the one for subscriptions.
 
 </div>

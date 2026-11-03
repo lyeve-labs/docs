@@ -47,7 +47,7 @@ Open **Flows** and choose **Import**. Paste the YAML under
 **Definition file**. Keep **Create a new flow** and choose **Import**.
 
 The editor opens on the new draft. A definition with a problem keeps the
-dialog open under **The definition did not validate.**, with one line per
+dialog open under **Fix the problems in the definition.**, with one line per
 problem naming the node, the key and what is wrong. A type marked `Tier: pro`
 on an instance without `flow-pro` reads
 **One element uses what this instance does not enable**, followed by the node

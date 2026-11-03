@@ -102,7 +102,7 @@ curl http://localhost:3001/api/admin/cache/providers \
 <div data-path="console">
 
 The top row of the same page gives the **Hit rate**, **Entries**, **Evicted** and **Misses**.
-A fresh install reads **Nothing asked yet** under **Hit rate**.
+A fresh install reads **No requests yet** under **Hit rate**.
 
 </div>
 <div data-path="api">
@@ -167,7 +167,7 @@ minutes pass or a content change clears it. A `HEAD` request carries no `X-Cache
 <div data-path="console">
 
 Under **Stored**, choose **Flush the cache**, then **Flush** in the dialog that asks. The page
-confirms **Flushed the cache**, and **Stored** reads **Nothing is cached**.
+confirms **Cache flushed.**, and **Stored** reads **Nothing is cached**.
 
 </div>
 <div data-path="api">

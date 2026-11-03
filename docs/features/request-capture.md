@@ -286,7 +286,7 @@ in order with each replay compared against its original.
    **Replay settings smoke?**.
 
 The page says **Replayed settings smoke** and
-**1 of 1 answered as they did when captured.**, and lists each call with **Same** or what
+**1 of 1 returned the same response as when captured.**, and lists each call with **Same** or what
 changed, its status and its time then and now.
 
 </div>

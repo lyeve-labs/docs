@@ -184,7 +184,7 @@ every install:
 In the image's **Preview**, under **Focal point**, click the image where a crop
 should center, or move the point with the arrow keys. Choose
 **Save focal point**. The page confirms
-**Focal point saved. Crops cut around the old one are made again.** Once a file
+**Focal point saved. Existing crops are made again around the new point.** Once a file
 has a focal point, **Transform URL** shows
 **Center a crop on the focal point**, which builds the URL around it.
 

@@ -177,7 +177,7 @@ sign-up form, and the widget on its own pages.
 1. Open **Settings > Captcha**.
 2. Under **Tenant settings**, pick `hCaptcha` in **Provider**, and enter the
    keys from your hCaptcha account in **Site key** and **Secret key**.
-3. Choose **Save**. The page says **Saved the captcha settings**, and
+3. Choose **Save**. The page says **Captcha settings saved.**, and
    **What is checked now** reads
    **This tenant's flows check hCaptcha with its own keys.**
 

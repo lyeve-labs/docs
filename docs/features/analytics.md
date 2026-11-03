@@ -124,7 +124,7 @@ Without it the answer is `503` with the code `analytics.secrets_unavailable`.
 <div data-path="console">
 
 **Destinations** lists `main-ga4` with its type, **Off**, and **One attempt** under
-**Retries**. **Deliveries owed** reads **Nothing is owed**.
+**Retries**. **Deliveries owed** reads **No deliveries owed**.
 
 ![The Analytics destinations page with one Google Analytics 4 destination named main-ga4, switched off, with one attempt per event and nothing owed.](images/analytics.png)
 

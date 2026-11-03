@@ -56,7 +56,7 @@ admin console as a super admin.
    **Or paste the definitions**, and choose **Check**.
 
 **What importing does** shows `case_study` with **Creates**, the statements it runs, and
-**Renamed to fit the engine's names**.
+**Renamed to fit the naming rules**.
 
 </div>
 <div data-path="api">

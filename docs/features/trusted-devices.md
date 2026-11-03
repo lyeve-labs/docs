@@ -206,7 +206,7 @@ Forget the device again:
 
 On **Trusted devices**, choose the trash button on the **Work laptop** row.
 The dialog asks **Forget Work laptop?**. Choose **Forget**. The list reads
-**No device is remembered**.
+**No trusted devices yet**.
 
 </div>
 <div data-path="api">

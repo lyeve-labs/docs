@@ -316,7 +316,7 @@ answers the translated fields.
 Open the entry, change its fields and choose **Save**. Each save is a new revision, and the
 console goes back to the list. **Publish** and **Unpublish** at the top of the entry change
 its status. To delete an entry, choose the delete button on its row in the list and confirm
-with **Delete**. Its revisions and translations go with it.
+with **Delete**. Its revisions and translations are deleted too.
 
 </div>
 <div data-path="api">

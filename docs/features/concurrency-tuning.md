@@ -138,7 +138,7 @@ curl http://localhost:3001/api/admin/debug/goroutines/async-hooks \
 <div data-path="console">
 
 Under **Resize the pool**, enter `200` in **Pool size** and choose **Apply**. The form says
-**Applied.** and **The change holds until the engine restarts.**, and **Worker pool** shows
+**Applied.** and **The change lasts until the engine restarts.**, and **Worker pool** shows
 **Size** `200`. The **Parallel engine** form beside it takes **Max concurrent** and
 **Timeout**, and the **Async hooks** form takes **Workers**, **Queue size**, **Timeout** and
 **Run hooks asynchronously**, each with its own **Apply**.

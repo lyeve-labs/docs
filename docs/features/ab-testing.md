@@ -165,7 +165,7 @@ The answer is `201` with the conversion. Reporting it again records it once.
 <div class="paths">
 <div data-path="console">
 
-Open the experiment. **What the results support** lists each variant with how many users were
+Open the experiment. **Results** lists each variant with how many users were
 **Exposed** and **Converted**, its **Rate** and its **Confidence**.
 
 </div>

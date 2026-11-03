@@ -471,7 +471,7 @@ A delivery that runs out of attempts lands in the dead-letter queue.
 <div data-path="console">
 
 On **Delivery > Webhooks**, choose **Dead letters**. The **Dead letter queue**
-dialog lists the entries, or says **No dead letter entries**.
+dialog lists the entries, or says **No dead letters**.
 
 </div>
 <div data-path="api">
