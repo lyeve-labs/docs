@@ -50,7 +50,7 @@ Each save compares the new definition with the stored one and acts on the differ
 ## Try it
 
 This adds a field to a content type, removes another, and applies the removal. Applying it
-takes a `super_admin`. For the console steps, sign in to the admin console as one. For the
+takes a `super_admin`. For the console steps, sign in to LyEve Console as one. For the
 API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -313,8 +313,7 @@ answers `204`. Deleting a content type that does not exist also answers `204`.
 </div>
 </div>
 
-Keeping the entries is API only. Add `?content=soft` to the delete to keep the entries the
-admin console wrote (their title, slug and body) marked deleted instead, so a content type you
+Keeping the entries is API only. Add `?content=soft` to the delete to keep the entries the console wrote (their title, slug and body) marked deleted instead, so a content type you
 create again under the same name can take them back. The rows the Content API serves go either
 way.
 

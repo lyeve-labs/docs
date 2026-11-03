@@ -1,13 +1,13 @@
 ---
 title: SAML single sign-on
-description: Let your team sign in to the admin console through Okta, Azure AD, OneLogin or any SAML 2.0 provider, and rotate the signing certificate without downtime.
+description: Let your team sign in to LyEve Console through Okta, Azure AD, OneLogin or any SAML 2.0 provider, and rotate the signing certificate without downtime.
 sidebar:
   order: 61
 ---
 
 > **Requires** a license with the `saml` feature. See [pricing](https://lyeve.com/pricing/).
 
-SAML single sign-on lets your team sign in to the admin console through your
+SAML single sign-on lets your team sign in to LyEve Console through your
 company's identity provider. LyEve acts as the SAML service provider: it sends
 people to the provider, checks the signed answer that comes back, and starts a
 console session. Each tenant has its own providers.
@@ -34,7 +34,7 @@ console session. Each tenant has its own providers.
   Add [SCIM provisioning](scim-provisioning.md) next to SAML.
 :::
 
-## In the admin console
+## In the console
 
 Open **Access > SAML SSO**. The list shows each provider with the expiry of
 **Our certificate** and **Their certificate**, and links to its **Metadata**
@@ -91,7 +91,7 @@ What you can rely on:
 2. Set `LYEVE_BASE_URL` to the public address of the instance. In production,
    sign-in refuses to start without it.
 3. Set `SECURE_COOKIE=true` when the instance is served over HTTPS.
-4. Restart the instance and add a provider in the admin console or with the
+4. Restart the instance and add a provider in the console or with the
    API below.
 5. Give your provider the addresses in
    [Register LyEve with the provider](#register-lyeve-with-the-provider).
@@ -180,7 +180,7 @@ The answer is `201` with the provider, its `sp_cert_active`, and
 Give Okta the metadata at
 `http://localhost:3001/api/admin/auth/saml/okta/metadata`, which needs no
 sign-in, as [Register LyEve with the provider](#register-lyeve-with-the-provider)
-shows. Then open the admin console's login page. It offers **Sign in with
+shows. Then open the console's login page. It offers **Sign in with
 okta**, which sends you to Okta and back into the console as the account with
 your email.
 

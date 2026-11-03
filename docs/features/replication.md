@@ -9,7 +9,7 @@ sidebar:
 >
 > Beta. Keeping caches in step and the list of running replicas work. Known gaps:
 >
-> - The list of running replicas is read through the API only. The admin console has no screen
+> - The list of running replicas is read through the API only. LyEve Console has no screen
 >   for it.
 > - Replication carries cache flushes and control notices only. Sessions, sign-in lockouts, rate
 >   limits and realtime events are shared between replicas only through Redis. See
@@ -55,7 +55,7 @@ returns, as long as it is back within ten minutes. Older messages are deleted.
 
 ## Try it
 
-Admin console v0.23.0 has no screen for the list of replicas, so these steps use the engine API.
+Console v0.23.0 has no screen for the list of replicas, so these steps use the engine API.
 This needs a license with `cluster` on every replica, and a super admin token
 in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get
 one.

@@ -32,7 +32,7 @@ score.
 - You want a limit on request volume. Use [rate limiting](rate-limiting.md).
 :::
 
-## In the admin console
+## In LyEve Console
 
 Each person manages the browsers their own account trusts. Open the account
 menu in the header and choose **Trusted devices**.

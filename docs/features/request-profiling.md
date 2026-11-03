@@ -54,7 +54,7 @@ server, and you need no Go knowledge to read the result:
 `go tool pprof -http=:8080 cpu.pb.gz` opens it in a browser, flame graph
 included.
 
-In the admin console, profiling is under **Insight > Observability > Profiler**, and only a
+In LyEve Console, profiling is under **Insight > Observability > Profiler**, and only a
 super admin can open it.
 
 - **Memory** gives the heap in use, heap objects, the total allocated, garbage collection
@@ -69,7 +69,7 @@ super admin can open it.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. For the API
+For the console steps, you are signed in to the console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -342,8 +342,7 @@ instance sizes itself against, see [scale and tune](../scaling/index.md).
 
 ## Settings
 
-Each profiler setting can be an environment variable or saved in the admin
-console. A saved setting takes effect on the next request.
+Each profiler setting can be an environment variable or saved in the console. A saved setting takes effect on the next request.
 
 | Variable | What it does | Default |
 |---|---|---|

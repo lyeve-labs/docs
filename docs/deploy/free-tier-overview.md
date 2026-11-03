@@ -86,12 +86,12 @@ ways to run LyEve, see [Choose where to run LyEve](index.md).
 - **No disk for media.** Uploads stored on local disk, the default, are lost at a cold start or
   a redeploy. Store them in an S3-compatible bucket. See
   [Object storage](../features/object-storage.md).
-- **No admin console.** The console needs a host that runs a second container behind a proxy.
-  See [The admin console needs a server](index.md#the-admin-console-needs-a-server-not-vercel-or-cloudflare-pages).
+- **No LyEve Console.** The console needs a host that runs a second container behind a proxy.
+  See [The console needs a server](index.md#the-console-needs-a-server-not-vercel-or-cloudflare-pages).
 - **No SQLite.** SQLite, Turso and libSQL cannot replace the database. See
   [supported databases](index.md#supported-databases).
 
 ## Next
 
 - [Production checklist](production-checklist.md) before real data goes behind it.
-- [Docker Compose](docker-compose.md) to add the admin console on a server you control.
+- [Docker Compose](docker-compose.md) to add the console on a server you control.

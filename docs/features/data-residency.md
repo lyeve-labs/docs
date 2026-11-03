@@ -57,7 +57,7 @@ providers in its region, and an upload whose region cannot be read answers
 `503` rather than land elsewhere. See
 [object storage](object-storage.md#keep-a-tenants-files-in-its-region).
 
-## In the admin console
+## In LyEve Console
 
 Open **Settings > Data residency**. **Where tenants are** counts the regions,
 the tenants, the replicated tenants and the tenants not placed. Below the

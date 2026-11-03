@@ -168,7 +168,7 @@ across a piece at a time.
 ## Declaring content types in configuration
 
 Content types can live in `lyeve.yaml` beside your settings, so a whole project stands up from a
-repository with no clicks in the console:
+repository with no clicks in LyEve Console:
 
 ```yaml
 $include: schemas/*.yaml

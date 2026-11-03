@@ -15,7 +15,7 @@ credential to use, what each role may do, and how to manage accounts.
 
 | Who is calling | Use | Sent as | Home page |
 |---|---|---|---|
-| A person in the admin console, or code acting for them | A session from signing in | The console's cookie, or `Authorization: Bearer <token>` | [Quickstart](../../getting-started/quickstart.md) |
+| A person in LyEve Console, or code acting for them | A session from signing in | The console's cookie, or `Authorization: Bearer <token>` | [Quickstart](../../getting-started/quickstart.md) |
 | A site or app reading content | An API key with a role and scopes | `X-API-Key: ly_...` | [API keys](../../features/api-keys.md) |
 | A script or CI job on the Admin API | An admin token with grants | `Authorization: Bearer lyat_...` | [Admin tokens](../../how-to/admin-tokens.md) |
 | A service checking who a caller is | The public key, to verify a session token | `GET /.well-known/jwks.json` | [Validate tokens](../../integrations/validate-tokens-jwks.md) |
@@ -30,7 +30,7 @@ A role is a name on an account. Three names have built-in meaning:
 | Role | Reach | What it may do |
 |---|---|---|
 | `super_admin` | Every tenant | Everything: users and their roles, access rules, sign-in providers, the license, tenants and every setting. Never limited by an access rule. |
-| `admin` | Its own tenant | Run the tenant in the admin console: content types, content, media, flows, API keys and its own admin tokens. On the Content API it needs an access rule like any other role. |
+| `admin` | Its own tenant | Run the tenant in the console: content types, content, media, flows, API keys and its own admin tokens. On the Content API it needs an access rule like any other role. |
 | `editor` | Its own tenant | Create, change, publish and delete entries through the Content API, where an access rule allows it. A user created without a role gets this one. |
 
 Any other role name is yours to define. It opens no admin route on its own,

@@ -1,6 +1,6 @@
 ---
 title: Docker images
-description: "Run the engine and admin console images on your own hosts: tags, ports, volumes, settings, TLS and health checks."
+description: "Run the engine and LyEve Console images on your own hosts: tags, ports, volumes, settings, TLS and health checks."
 sidebar:
   order: 12
 ---
@@ -19,7 +19,7 @@ proxy, copy the files on [Docker Compose](docker-compose.md).
 | Image | What it runs | Platforms |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | The engine: the Admin API, the Content API and every feature | `linux/amd64`, `linux/arm64` |
-| `ghcr.io/lyeve-labs/lyeve-admin` | The admin console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
+| `ghcr.io/lyeve-labs/lyeve-admin` | LyEve Console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
 
 Each release publishes three tags per image:
 
@@ -34,7 +34,7 @@ production and upgrade on purpose.
 
 ### Release candidates
 
-Before a release, the engine and the admin console publish one or more release candidates,
+Before a release, the engine and the console publish one or more release candidates,
 tagged `X.Y.Z-rc.N`. A candidate is the build we intend to ship, published so you can try the
 upgrade on a copy of your own deployment before the release is final. An urgent fix can ship
 without one.
@@ -106,10 +106,10 @@ lists every check.
 
 | Variable | Purpose |
 |---|---|
-| `LYEVE_CONSOLE_URL` | The admin console's public URL, `https` in production. Password reset and magic-link emails link to it. Unset in production, those features refuse to start and device sign-in answers `503` |
+| `LYEVE_CONSOLE_URL` | The console's public URL, `https` in production. Password reset and magic-link emails link to it. Unset in production, those features refuse to start and device sign-in answers `503` |
 | `CORS_ORIGINS` | Browser origins allowed to call the APIs cross-origin, comma-separated |
 | `TRUSTED_PROXIES` | CIDRs of your reverse proxies, so the engine reads the client address from `X-Forwarded-For`. Without it every request counts as the proxy's, and the per-address limits apply to all users together |
-| `ADMIN_CONSOLE_KEY` | A secret of 32 characters or more, shared with the admin console, so sign-in limits count each browser |
+| `ADMIN_CONSOLE_KEY` | A secret of 32 characters or more, shared with the console, so sign-in limits count each browser |
 | `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, 16 characters or more |
 | `LYEVE_LICENSE_KEY` | Your license, for the paid features |
 
@@ -147,7 +147,7 @@ also calls the engine on the console's origin, so the console's public site rout
 |---|---|
 | `/api/admin/*` | engine `:3001` |
 | `/api/*` and `/.well-known/*` | engine `:3002` |
-| everything else | admin console `:3002` |
+| everything else | console `:3002` |
 
 A Content API host for your sites and apps sends everything to engine `:3002`. Give the Admin
 API no public host of its own unless a tool outside your network needs it.

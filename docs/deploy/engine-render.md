@@ -97,9 +97,9 @@ The first request after idle time is slow, and the next ones are fast until the 
 down again. Part of that wait is Render starting the container and part is the engine's own
 start, which the engine logs as `boot_ms` on its `serving` line.
 
-## The admin console
+## LyEve Console
 
-This page sets up the engine alone. The admin console runs as its own service, from the image
+This page sets up the engine alone. The console runs as its own service, from the image
 `ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
 settings and the routing it needs.
 [Run the engine and the console together](../getting-started/engine-and-console.md) shows the

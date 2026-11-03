@@ -134,7 +134,7 @@ CORS_ALLOWED_DOMAINS=example.com
 visitor's session.
 
 The default origin is `http://localhost:5173`, so replace it with your real
-console origin. A wildcard `*` in `CORS_ORIGINS` is refused on every install.
+LyEve Console origin. A wildcard `*` in `CORS_ORIGINS` is refused on every install.
 `CORS_ALLOWED_DOMAINS` limits the origins a feature may add while the instance
 runs, and empty refuses them all.
 

@@ -40,7 +40,7 @@ still change before it is marked stable.
   bandwidth.
 :::
 
-## In the admin console
+## In LyEve Console
 
 Open **Access > API keys**. The **Usage (this month)** column shows each key's
 requests, with a bar for a key that has a monthly limit and its other limits

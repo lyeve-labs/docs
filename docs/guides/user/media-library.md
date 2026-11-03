@@ -1,6 +1,6 @@
 ---
 title: Media library
-description: "Upload, organize, find and publish images and files in the admin console's media library, and use them in your content."
+description: "Upload, organize, find and publish images and files in LyEve Console's media library, and use them in your content."
 sidebar:
   order: 4
 ---
@@ -8,7 +8,7 @@ sidebar:
 > **Included free** on every install, local disk and S3 storage alike.
 
 The media library keeps your images, documents, video and audio in one place for your tenant.
-This page covers it in the admin console: uploading, finding, describing and publishing files,
+This page covers it in LyEve Console: uploading, finding, describing and publishing files,
 and putting them in content. Open **Media library** in the sidebar. You need the `admin` or
 `super_admin` role.
 

@@ -11,7 +11,7 @@ provide.
 | Image | What it is | Listens on |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | The engine: the Admin API and the Content API | `3001` (Admin API), `3002` (Content API) |
-| `ghcr.io/lyeve-labs/lyeve-admin` | The admin console, a Node server that calls the engine for the browser | `3002` |
+| `ghcr.io/lyeve-labs/lyeve-admin` | LyEve Console, a Node server that calls the engine for the browser | `3002` |
 
 The engine is a long-running server. It keeps a pool of database connections open, holds its
 signing key, and applies its migrations when it starts. A platform that starts a process per
@@ -23,18 +23,17 @@ request, such as Vercel Functions, Cloudflare Workers or Netlify Functions, cann
 | Host | Best for | What you give up | Guide |
 |---|---|---|---|
 | Docker | Trying LyEve, or one server you manage yourself | You wire the database, the proxy and TLS | [Docker images](docker.md) |
-| Docker Compose | The whole stack on one server: engine, admin console, Postgres and TLS | One machine, so no failover | [Docker Compose](docker-compose.md) |
+| Docker Compose | The whole stack on one server: engine, console, Postgres and TLS | One machine, so no failover | [Docker Compose](docker-compose.md) |
 | Kubernetes | Several replicas, rolling deploys and a cluster you already run | More than one replica needs Redis, an S3 bucket and a shared signing key | [Kubernetes](kubernetes.md) |
 | Google Cloud Run | An engine that scales to zero and bills per request | One API per service, cold starts, and a new signing key per instance | [Cloud Run](engine-cloud-run.md) |
 | Fly.io | Both APIs public from one small Machine | Usage is billed, the Admin API answers on port 8443, and each Machine start signs everyone out unless a volume keeps the signing key and `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis | [Fly.io](engine-fly.md) |
 | Railway | Both APIs from one service, with a volume for the signing key | No lasting free plan, usage is billed | [Railway](engine-railway.md) |
 | Render | A free engine for a demo or staging | One API per service, and a free service spins down and signs everyone out | [Render](engine-render.md) |
-| Free-tier stack | An engine and a database at $0 a month | Cold starts, tight connection limits, and no free host for the admin console | [Free-tier stack](free-tier-overview.md) |
-| Stateless mode | A webhook relay in one container, with no database | No admin console, one tenant, and nothing kept across a restart | [Stateless mode](stateless-mode.md) |
+| Free-tier stack | An engine and a database at $0 a month | Cold starts, tight connection limits, and no free host for the console | [Free-tier stack](free-tier-overview.md) |
+| Stateless mode | A webhook relay in one container, with no database | No console, one tenant, and nothing kept across a restart | [Stateless mode](stateless-mode.md) |
 
 :::tip[Not sure?]
-- **Evaluating on a laptop:** [Docker Compose](docker-compose.md) runs everything, the admin
-  console included.
+- **Evaluating on a laptop:** [Docker Compose](docker-compose.md) runs everything, the console included.
 - **Production on one server:** Docker Compose with your own Postgres backups.
 - **Production with failover:** [Kubernetes](kubernetes.md), and read
   [Scaling](../scaling/index.md) first.
@@ -73,9 +72,9 @@ with no server to run, use managed Postgres instead:
 Both are a `DATABASE_URL` value and nothing more. For an engine with no database at all, see
 [Stateless mode](stateless-mode.md).
 
-## The admin console needs a server, not Vercel or Cloudflare Pages
+## The console needs a server, not Vercel or Cloudflare Pages
 
-The admin console is a long-running Node server. It ships as the container image
+The console is a long-running Node server. It ships as the container image
 `ghcr.io/lyeve-labs/lyeve-admin`, and its source is public in
 [`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin). Vercel and Cloudflare Pages run
 neither a container image nor a long-running server, so neither runs the console as it ships.

@@ -32,7 +32,7 @@ content write.
   [Event replay](event-replay.md) publishes past changes again.
 :::
 
-## In the admin console
+## In LyEve Console
 
 As a super admin, open **Settings > Message broker**. The counters show what
 was **Published**, the **Attempts refused by the broker**, what had
@@ -72,7 +72,7 @@ producer that waits for every in-sync replica.
 
 ## Try it
 
-This uses NATS. For the console steps, you are signed in to the admin console
+This uses NATS. For the console steps, you are signed in to the console
 as a super admin. For the API steps, you need a super admin token in `TOKEN`.
 The [quickstart](../getting-started/quickstart.md) shows how to get one. You
 also need a NATS server with JetStream and the `nats` command line tool.

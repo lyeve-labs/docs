@@ -12,7 +12,7 @@ for the code in it:
   PostgreSQL, MySQL and SQL Server support. It answers the Admin API and the
   Content API. On its own it serves no content, because content types come
   from a feature.
-- **The admin console's public source.**
+- **LyEve Console's public source.**
 
 These parts are commercial, and their source is not public:
 
@@ -61,12 +61,12 @@ docker rm "$id" >/dev/null
 
 Fourteen repositories are public on
 [github.com/lyeve-labs](https://github.com/lyeve-labs), all MIT-licensed. The
-engine, the admin console and this documentation are three of them:
+engine, the console and this documentation are three of them:
 
 | Repository | What it is |
 |---|---|
 | [`lyeve-core`](https://github.com/lyeve-labs/lyeve-core) | The engine |
-| [`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin) | The admin console, without the visual editors |
+| [`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin) | The console, without the visual editors |
 | [`lyeve-examples`](https://github.com/lyeve-labs/lyeve-examples) | Runnable example applications |
 | [`benchmarks`](https://github.com/lyeve-labs/benchmarks) | The performance benchmarks, to rerun on your own hardware |
 | [`docs`](https://github.com/lyeve-labs/docs) | This documentation. Open an issue or a pull request to fix a page |

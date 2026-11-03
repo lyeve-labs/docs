@@ -1,6 +1,6 @@
 ---
 title: Sign-in options
-description: Compare every way people can sign in to the admin console, from passwords and magic links to OAuth, SAML, SCIM, MFA and trusted devices, and pick one.
+description: Compare every way people can sign in to LyEve Console, from passwords and magic links to OAuth, SAML, SCIM, MFA and trusted devices, and pick one.
 sidebar:
   order: 7
 ---
@@ -37,7 +37,7 @@ and its address. On an install with several tenants, the same address can be
 a different account in each tenant, and a sign-up, password reset or magic link
 answers the same whether another tenant holds the address or nobody does. An
 account that signs in with a password under its own address works as before.
-The console's user list marks these accounts **Signs in through your identity
+LyEve Console's user list marks these accounts **Signs in through your identity
 provider**.
 
 Because an address can repeat across tenants, a session's `email` claim does

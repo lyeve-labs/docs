@@ -42,11 +42,11 @@ a signed-in user download or erase their own data.
 | Part | What it gives you | Where |
 |---|---|---|
 | **Daily figures** | `dau`, `storage` and `new_users` for one tenant and one day, computed for every tenant after the day ends. | Admin API |
-| **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API and admin console |
+| **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API and LyEve Console |
 | **Tenant usage** | A super admin's view of usage and activity across tenants, and each tenant's own view. | Admin and Content API |
 | **Privacy requests** | A user's own export and erasure. | Content API |
 
-## In the admin console
+## In the console
 
 Open **Insight > Analytics destinations**. **Destinations** lists the services
 this tenant's events go to, with each one's type, whether it is on and how many
@@ -61,7 +61,7 @@ v0.23.0.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an admin. For the API
+For the console steps, you are signed in to the console as an admin. For the API
 steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

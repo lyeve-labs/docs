@@ -29,7 +29,7 @@ and a tenant admin reads only their own tenant's request metrics.
 :::note[Use something else when]
 - You want to know which endpoint is slow right now, and where the time goes.
   [Request profiling](request-profiling.md) ranks routes by latency.
-- You want traffic per endpoint, tenant and client in the console.
+- You want traffic per endpoint, tenant and client in LyEve Console.
   [API analytics](api-analytics.md) charts it.
 - You want to know why one request failed. [Logs](logs.md) find it by
   request id.
@@ -61,7 +61,7 @@ Every export carries the same metrics:
 Traces are not part of this feature. To send traces, see
 [tracing under load](../scaling/index.md#tracing-under-load).
 
-In the admin console, metrics export is under **Insight > Observability > Telemetry**.
+In the console, metrics export is under **Insight > Observability > Telemetry**.
 **Metrics** lists every metric family the instance serves, with its current samples. Type part
 of a name in **Filter families**, or pick a **Type**, to narrow the list. **Tenant destination**
 saves where the tenant's own series are pushed, by **OTLP** or **Pushgateway**, to a **URL**
@@ -72,7 +72,7 @@ until one is set. Configuring a backend is done with settings, as step 3 shows.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. For the API
+For the console steps, you are signed in to the console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
 shows how to get one.
 
@@ -249,13 +249,12 @@ counts of exports and failures. `DELETE` answers `204`.
 
 `last_failure` holds the time of the last failure, and reads the zero time
 until one happens. A backend that has failed also shows `last_error` and
-`last_error_class`. Addresses and URLs in the error text are redacted. In the
-admin console, **Exporters** on the Telemetry page shows the same state,
+`last_error_class`. Addresses and URLs in the error text are redacted. In the console, **Exporters** on the Telemetry page shows the same state,
 counts and last error.
 
 ## Settings
 
-Set these as environment variables or in the admin console. They are read when
+Set these as environment variables or in the console. They are read when
 the instance starts, so restart it after a change.
 
 | Variable | What it does | Default |

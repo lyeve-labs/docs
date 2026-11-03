@@ -50,7 +50,7 @@ Every send checks the tenant's suppression list. A suppressed address is
 dropped, a send with nobody left is refused, and if the list cannot be read the
 send is refused too.
 
-## In the admin console
+## In LyEve Console
 
 Open **Settings > Email**. **Provider pool** lists the tenant's providers.
 **New provider** opens a form: pick **SMTP** or **Provider API** as the
@@ -81,7 +81,7 @@ deleted. **Triggers**, beside it, holds the
 ## Try it
 
 These steps create a template, translate it and preview it, which works on a
-free install. For the console steps, you are signed in to the admin console.
+free install. For the console steps, you are signed in to the console.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 
@@ -574,7 +574,7 @@ Both run in the flow's tenant and refuse a `tenant_id` variable. Both need
 ## Settings
 
 Each setting is read from its environment variable, the configuration file, or
-the feature's form in the admin console. The environment variable wins.
+the feature's form in the console. The environment variable wins.
 
 | Variable | What it does | Default |
 |----------|---------|---------|

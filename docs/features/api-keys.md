@@ -36,7 +36,7 @@ is recorded against it, refused ones included.
   [admin token](../how-to/admin-tokens.md).
 :::
 
-## In the admin console
+## In LyEve Console
 
 Open **Access > API keys**. A super admin sees every key in the tenant with its
 roles, scopes, status, expiry and **Usage (this month)**. **All**, **Active**
@@ -368,7 +368,7 @@ it on every route that reads content.
 ## Manage keys
 
 Keys are managed from a signed-in session by an `admin` or `super_admin`, in
-the admin console or over the routes below. A request made with an API key or
+the console or over the routes below. A request made with an API key or
 an admin token cannot create, revoke or delete keys.
 
 Revoking turns a key off and keeps its history. Deleting removes the key and

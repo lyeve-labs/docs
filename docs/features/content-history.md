@@ -31,7 +31,7 @@ activity log records who changed which entry, when, from where and which fields.
   [content releases](content-releases.md).
 :::
 
-## In the admin console
+## In LyEve Console
 
 Open **Settings > Content history**. You need the `admin` or `super_admin` role.
 
@@ -117,7 +117,7 @@ the log, and the default applies.
 ## Try it
 
 This turns history on for one content type, edits an entry and reads what was kept. For the
-console steps, you are signed in to the admin console with the `admin` or `super_admin` role.
+console steps, you are signed in to the console with the `admin` or `super_admin` role.
 For the API steps, the settings routes need a signed-in session, so put the token from your
 login answer in `TOKEN`, as the [quickstart](../getting-started/quickstart.md) shows. An
 [admin token](../how-to/admin-tokens.md) cannot change these settings.
@@ -385,7 +385,7 @@ apart from history, so it can stay on while history is off. It is on by default.
 | Field | Values |
 |---|---|
 | `action` | `created`, `updated`, `published`, `unpublished`, `deleted`, `rollback`, `scheduled_publish`, `scheduled_unpublish`, and `history_settings` and `history_deleted` for the settings |
-| `source` | `console` for the admin console and the Admin API, `api` for the Content API and for a status change another feature makes through it, such as an approval, `graphql`, `grpc`, `bulk-import` for a bulk import's direct writes, `import` for an entry another feature saves through the content screens' writer, `flow`, `release`, `schedule`, and `backfill` for an entry the content screens picked up after another writer created it |
+| `source` | `console` for the console and the Admin API, `api` for the Content API and for a status change another feature makes through it, such as an approval, `graphql`, `grpc`, `bulk-import` for a bulk import's direct writes, `import` for an entry another feature saves through the content screens' writer, `flow`, `release`, `schedule`, and `backfill` for an entry the content screens picked up after another writer created it |
 | `actor_id`, `actor_email` | Who made the change, or `null` when no one is known |
 | `actor_kind` | How the writer signed in: `user` for a session, `admin_token` or `api_key`. `null` when the writer is unknown |
 | `fields` | The names of the fields that changed |

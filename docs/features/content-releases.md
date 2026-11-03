@@ -43,11 +43,11 @@ A release changes its entries in two stages:
 
 | Stage | What happens |
 |---|---|
-| In the admin | Every entry changes status in one transaction. Either all of them show the new status or none does. |
+| In the console and the Admin API | Every entry changes status in one transaction. Either all of them show the new status or none does. |
 | In what the Content API and GraphQL serve | The entries follow one at a time, usually within seconds. During that window a reader can see some entries of the release changed and others not yet. |
 
 - If an entry fails in the second stage, every entry is put back where it was,
-  in the admin and in what the APIs serve. The release is marked `failed` with
+  in the console and the Admin API and in what the APIs serve. The release is marked `failed` with
   the reason, and you can fix it and publish again.
 - An entry someone changed again after the release started is left as they left
   it.
@@ -72,7 +72,7 @@ A release moves through these states:
 ## Try it
 
 Run this on an install whose license carries `content-pro`. For the console steps, you are
-signed in to the admin console as an `admin` or `super_admin`. For the API steps, you need a
+signed in to LyEve Console as an `admin` or `super_admin`. For the API steps, you need a
 token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get one.
 Create two draft entries first, as in [Content lifecycle](content-lifecycle.md#try-it). For
 the API steps, copy their ids into `PAGE_A` and `PAGE_B`.
@@ -374,5 +374,5 @@ The 402 body in full:
   own schedule.
 - [Editorial comments](editorial-comments.md): the other part of `content-pro`.
 - [Drafts and publishing](../guides/user/drafts-and-publishing.md): releases in
-  the admin console.
+  the console.
 - [Webhooks](webhooks.md): hear about each entry a release changes.

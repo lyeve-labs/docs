@@ -54,7 +54,7 @@ source body. The id, content type, slug, status, timestamps and authors are neve
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an `admin` or
+For the console steps, you are signed in to LyEve Console as an `admin` or
 `super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

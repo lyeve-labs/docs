@@ -1,11 +1,11 @@
 ---
 title: User guide
-description: "Find the shortest path to working in the LyEve admin console, and the page that holds each job an editor or administrator does there."
+description: "Find the shortest path to working in LyEve Console, and the page that holds each job an editor or administrator does there."
 sidebar:
   order: 1
 ---
 
-This guide is for the people who work in the LyEve admin console: editors who write and publish
+This guide is for the people who work in LyEve Console: editors who write and publish
 content, and administrators who manage content types, users and roles. It needs no code. If you
 run the server, see the [Operator guide](../operator/index.md). If you call the APIs from your
 own code, see the [Developer guide](../developer/index.md).

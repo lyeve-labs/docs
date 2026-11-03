@@ -1,6 +1,6 @@
 ---
 title: Features
-description: "Find the feature for the job you are doing, see whether it is free or needs a license, and where it lives in the admin console."
+description: "Find the feature for the job you are doing, see whether it is free or needs a license, and where it lives in LyEve Console."
 sidebar:
   order: 1
 ---
@@ -10,7 +10,7 @@ tables below group them by the job you are doing. In **Free or license**, **Free
 install runs it with no license key, and a name such as `search` means your license has to
 carry that feature. Some free features have a paid part, named in the same cell.
 
-**Where in the console** is the path through the admin console's sidebar. An entry shows only
+**Where in LyEve Console** is the path through the console's sidebar. An entry shows only
 while its feature runs for your tenant, and many show only to a super admin. "None" means the
 feature works through the API and settings alone. A route of a feature that is not running
 answers `404`. To choose which features start, and to apply a license, see
@@ -111,7 +111,7 @@ answers `404`. To choose which features start, and to apply a license, see
 
 | Feature | Best for | Free or license | Where in the console |
 |---|---|---|---|
-| [Audit log](audit-log.md) | A record of who did what in the admin, with retention and legal holds | `audit`. Streaming to an outside sink also needs `audit-pro` | Insight > Audit log |
+| [Audit log](audit-log.md) | A record of who did what in the console and the Admin API, with retention and legal holds | `audit`. Streaming to an outside sink also needs `audit-pro` | Insight > Audit log |
 | [Audit log streaming](audit-log-streaming.md) | Sending the audit log to Splunk, Datadog or your own HTTPS endpoint as it is written | `audit-pro`, on a license that also carries `audit` | Insight > Audit log, Streaming |
 | [Data export](data-export.md) | Exporting content to files or S3, on demand or on a schedule | `data-export` | Insight > Data export |
 | [PII masking](pii-masking.md) | Hiding personal data in responses and logs, and seeing who read it unmasked | `pii-mask` | Settings > PII masking |

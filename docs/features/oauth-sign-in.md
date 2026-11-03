@@ -1,13 +1,13 @@
 ---
 title: OAuth sign-in
-description: Let your team sign in to the admin console with Google, Okta, Azure AD, Keycloak or any OpenID Connect provider instead of a password.
+description: Let your team sign in to LyEve Console with Google, Okta, Azure AD, Keycloak or any OpenID Connect provider instead of a password.
 sidebar:
   order: 49
 ---
 
 > **Included free** on every install, with one sign-in provider per install, added by hand or from the Google, GitHub and Apple templates. More providers, the Okta and Azure AD templates, role mapping and a backup provider need a license with the `oauth-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
-OAuth sign-in puts a **Sign in with** button on the admin console's login page
+OAuth sign-in puts a **Sign in with** button on LyEve Console's login page
 for each identity provider you configure. Your team signs in with the account
 they already use at work, and LyEve creates their console account the first
 time they arrive.
@@ -34,7 +34,7 @@ time they arrive.
   is free.
 :::
 
-## In the admin console
+## In the console
 
 Open **Access > OAuth providers**. Only a super admin sees it. The list shows
 each provider with its issuer, scopes and roles, and whether it is enabled.
@@ -85,7 +85,7 @@ What you can rely on:
    `https://lyeve.example.com`. Every callback address is built from it, never
    from the request's `Host` header.
 3. Set `SECURE_COOKIE=true` when the instance is served over HTTPS.
-4. Restart the instance, then add a provider in the admin console or with the
+4. Restart the instance, then add a provider in the console or with the
    API below.
 
 ## Try it
@@ -184,7 +184,7 @@ curl http://localhost:3001/api/admin/auth/oauth-providers
 [{ "name": "google" }]
 ```
 
-Open the admin console's login page. Under **or continue with** it shows
+Open the console's login page. Under **or continue with** it shows
 **Sign in with google**, which sends the browser to Google.
 
 ## Free and oauth-pro

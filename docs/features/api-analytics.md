@@ -53,7 +53,7 @@ The last rule also catches long readable words, so
 A tenant admin always sees their own tenant, and a `tenant_id` they pass is
 ignored. A super admin sees every tenant, or one when they pass `tenant_id`.
 
-## In the admin console
+## In LyEve Console
 
 Open **Insight > API analytics** for the last 24 hours. The top row gives the
 total requests, the server and client error rates, and the p50, p95 and p99
@@ -71,7 +71,7 @@ read and changed through the API.
 ## Try it
 
 This needs a license with `apianalytics`. For the console steps, you are
-signed in to the admin console as an admin. For the API steps, you need an
+signed in to the console as an admin. For the API steps, you need an
 admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
 shows how to get one.
 

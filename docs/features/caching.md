@@ -45,7 +45,7 @@ clears the affected entries, so readers do not see stale content after a write.
 A content write clears the cached reads it changes, in its own tenant. Flushing the
 cache never signs anyone out, because sessions are kept apart from it.
 
-In the admin console, caching is under **Insight > Observability > Cache**. The top row gives
+In LyEve Console, caching is under **Insight > Observability > Cache**. The top row gives
 the **Hit rate**, **Entries**, **Evicted** and **Misses**. **Entries** counts what the provider
 serving reads holds. **Providers** lists each cache provider with the state of its circuit and
 its **Priority**. **Response cache rules** lists each rule's **Route**, **Time to live**,
@@ -58,7 +58,7 @@ tenant's keys.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. For the API
+For the console steps, you are signed in to the console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -230,7 +230,7 @@ CACHE_PROVIDER_1_ENABLED=true
 | Variable | Meaning |
 |---|---|
 | `CACHE_PROVIDER_N_KIND` | `redis`, `valkey`, `keydb` or `inmemory`. The list ends at the first number with no kind. |
-| `CACHE_PROVIDER_N_NAME` | A name for the admin console and the API. Defaults to `<kind>-<N>`. |
+| `CACHE_PROVIDER_N_NAME` | A name for the console and the API. Defaults to `<kind>-<N>`. |
 | `CACHE_PROVIDER_N_URL` | The server address. |
 | `CACHE_PROVIDER_N_ENABLED` | Must be `true`, or the provider is skipped. |
 | `CACHE_PROVIDER_N_DEFAULT_TTL` | Entry lifetime for this provider, such as `5m`. |

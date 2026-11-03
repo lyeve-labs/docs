@@ -26,7 +26,7 @@ publish, as with a flow you drew by hand.
 - **An email sender** is configured, for the example's mail. See
   [email](../features/email.md).
 - **A `tickets` content type** with `subject` and `body` fields.
-- **For the console steps**, you are signed in to the admin console as an
+- **For the console steps**, you are signed in to LyEve Console as an
   admin. **For the API steps**, you need an admin token in `TOKEN` and `jq`.
   The [quickstart](../getting-started/quickstart.md) shows how to get a
   token.
@@ -36,7 +36,7 @@ publish, as with a flow you drew by hand.
 <div class="paths">
 <div data-path="console">
 
-Open **Flows** in the admin console and open a flow, new or existing. The
+Open **Flows** in the console and open a flow, new or existing. The
 drawer below the canvas has the tabs **Test**, **Runs**, **Assistant** and
 **Guide**. **Assistant** opens with a box headed "Describe the flow" and a
 note saying what is sent: the flow on the canvas, the node catalog and your

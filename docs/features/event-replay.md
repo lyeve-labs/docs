@@ -31,7 +31,7 @@ listeners that react to changes run as if the events had just happened.
   push them live.
 :::
 
-## In the admin console
+## In LyEve Console
 
 Open **Insight > Events**. **Recorded**, **With errors** and
 **Replays** count the log and the runs.
@@ -71,7 +71,7 @@ copies.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an admin.
+For the console steps, you are signed in to the console as an admin.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

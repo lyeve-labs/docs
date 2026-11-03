@@ -1,13 +1,13 @@
 ---
 title: Password reset
-description: Let admin console users reset a forgotten password through a single-use link sent by email, and sign the account out everywhere when they do.
+description: Let LyEve Console users reset a forgotten password through a single-use link sent by email, and sign the account out everywhere when they do.
 sidebar:
   order: 50
 ---
 
 > **Included free** on every install.
 
-Password reset is the "forgot password" flow for admin console accounts. A
+Password reset is the "forgot password" flow for LyEve Console accounts. A
 person asks for a reset with their email address, receives a link that works
 once for one hour, and sets a new password with it. Setting the new password
 signs the account out of every device.
@@ -36,7 +36,7 @@ it too, and then has a password it can sign in with, both within the tenant's
 [sign-in window](../integrations/oauth-sso.md#sign-in-without-the-provider).
 :::
 
-## In the admin console
+## In the console
 
 1. On the sign-in page, choose **Forgot password?**.
 2. Enter the account's address and choose **Email me a reset link**. If your

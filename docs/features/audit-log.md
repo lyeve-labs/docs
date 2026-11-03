@@ -1,6 +1,6 @@
 ---
 title: Audit log
-description: Record who did what in the admin, search and export the log, and set how long entries are kept with retention policies and legal holds.
+description: Record who did what in LyEve Console and the Admin API, search and export the log, and set how long entries are kept with retention policies and legal holds.
 sidebar:
   order: 6
 ---
@@ -53,7 +53,7 @@ every entry they remove, and an erasure seals each entry it anonymizes. The
 chain stays verifiable through all four, and a super admin checks it with
 [`GET /api/admin/audit-log/verify`](#verify-the-chain).
 
-## In the admin console
+## In LyEve Console
 
 Open **Insight > Audit log**. The **Entries** tab lists the log, newest first,
 with the time, action, resource, user and address of each entry. Type an

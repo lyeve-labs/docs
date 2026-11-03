@@ -65,7 +65,7 @@ channel and no license.
 Every surface takes the same channel fields, so a setting you write for one
 works on the others.
 
-## In the admin console
+## In LyEve Console
 
 Each watched feature has its own channel form in the console, with the same
 five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
@@ -82,7 +82,7 @@ five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin.
+For the console steps, you are signed in to the console as a super admin.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 Email needs a working [email](email.md) transport. Without one, the email

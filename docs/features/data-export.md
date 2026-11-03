@@ -39,7 +39,7 @@ find it in your S3 bucket, and a schedule runs the same export on a timetable.
 ## Try it
 
 You need a content type `post` with a few entries. For the console steps, you are signed in to
-the admin console as an `admin` or `super_admin`. For the API steps, you need a token in
+LyEve Console as an `admin` or `super_admin`. For the API steps, you need a token in
 `TOKEN` for one. The [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Start a CSV export of `post`.**

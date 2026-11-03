@@ -61,7 +61,7 @@ still change before it is marked stable.
   redirects are not followed. To reach a collector inside your network, put a
   public HTTPS endpoint in front of it.
 
-## In the admin console
+## In LyEve Console
 
 Open **Insight > Audit log** and choose the **Streaming** tab. Each stream
 shows its name, its kind, its URL, how far behind it is, such as **Up to

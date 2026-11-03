@@ -23,10 +23,10 @@ Read these in order. Each page starts where the one before it stops.
 | Step | Page | What it gives you |
 |---|---|---|
 | 1 | This page | What LyEve is. The [three pieces you run](../index.md#what-you-run) are on the front page |
-| 2 | [Installation](installation.md) | The engine running against your database, the admin console beside it, and the settings production requires |
+| 2 | [Installation](installation.md) | The engine running against your database, LyEve Console beside it, and the settings production requires |
 | 3 | [Quickstart](quickstart.md) | Your first administrator, a token, a content type and an entry, in about ten minutes |
 | 4 | [Your first content type](first-content-type.md) | A small blog: posts linked to authors, a change previewed and applied, a post published and read back with its author |
-| 5 | [Run the engine and the console together](engine-and-console.md) | The engine, the admin console and a database on your computer, a tour of the console's screens, and how to change a setting |
+| 5 | [Run the engine and the console together](engine-and-console.md) | The engine, the console and a database on your computer, a tour of the console's screens, and how to change a setting |
 
 :::tip[Only trying it out?]
 The Quickstart starts its own database and engine on Docker, so you can begin there and come

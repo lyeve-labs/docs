@@ -74,7 +74,6 @@ resuming.
 
 - [Database on Supabase](database-supabase.md): another free managed Postgres.
 - [Free-tier stack](free-tier-overview.md): the $0 recipe with an engine host.
-- [Run the engine and the console together](../getting-started/engine-and-console.md): the admin
-  console in front of the engine, on one address.
+- [Run the engine and LyEve Console together](../getting-started/engine-and-console.md): the console in front of the engine, on one address.
 - [Supported databases](index.md#supported-databases): why SQLite, Turso and libSQL are not an
   option.
