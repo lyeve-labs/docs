@@ -131,6 +131,7 @@ is on [Configuration](../reference/configuration.md).
 | `CORE_API_INTERNAL_URL` | Where the API reference page sends the calls it runs under `/api/v1`. Set it to the same base as `CORE_INTERNAL_URL`, or to the engine's port 3002. The console refuses to start when it is unset or points at the console itself |
 | `ADMIN_CONSOLE_KEY` | The same value the engine holds |
 | `ADDRESS_HEADER`, `XFF_DEPTH` | Behind a proxy, `X-Forwarded-For` and `1`, so the console sees the browser's address |
+| `SIGN_IN_ORGANIZATION` | `true` shows **Organization (optional)** on the sign-in, password reset and email link pages, for a console that serves more than one organization on an address that names none. Off by default |
 | `PORT` | Listen port. Default `3002` |
 
 A base URL such as `http://engine:3001` sends Content API calls to the wrong listener, and they

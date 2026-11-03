@@ -62,9 +62,10 @@ Both list the settings one of the three places sets. A setting that only has its
 not listed.
 
 The console has a few settings of its own, which only the console container reads: `ORIGIN`,
-`CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL`, `PORT`, `ADMIN_CONSOLE_KEY`, `ADDRESS_HEADER` and
-`XFF_DEPTH`. They live in the console's environment, and a change restarts the console, not the
-engine. [Docker images](../deploy/docker.md#the-admin-image) explains each one.
+`CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL`, `PORT`, `ADMIN_CONSOLE_KEY`, `ADDRESS_HEADER`,
+`XFF_DEPTH` and `SIGN_IN_ORGANIZATION`. They live in the console's environment, and a change
+restarts the console, not the engine. [Docker images](../deploy/docker.md#the-admin-image)
+explains each one.
 
 ## 2. Make the change
 

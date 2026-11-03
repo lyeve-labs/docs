@@ -41,7 +41,8 @@ the log: without a mail relay the logged link has its token replaced by
 2. Enter the account's address and choose **Email me a link**. If your
    organization's identity provider created the account and the console's
    address does not already name your organization, enter its short name in
-   **Organization (optional)**.
+   **Organization (optional)**. The console shows that field when it runs
+   with `SIGN_IN_ORGANIZATION=true`.
 3. Open the link from the email. On **Sign in with your link**, choose
    **Continue** to finish signing in on that device.
 

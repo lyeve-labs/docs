@@ -50,8 +50,10 @@ Password sign-in, password reset and magic link take an optional `tenant`
 field in the request body. The tenant the request's hostname resolves always
 wins over it, so the field counts only where the hostname names no tenant. The
 console's sign-in, forgot password and email link pages show it as
-**Organization (optional)**. A reset link carries the account's tenant, and
-the sign-in page it leads to fills the field in.
+**Organization (optional)** when the console runs with
+`SIGN_IN_ORGANIZATION=true`. A reset link carries the account's tenant. With
+the switch on, the sign-in page it leads to fills the field in. With it off,
+the console sends no tenant, so only the hostname can name one.
 
 ### Sign-in without the provider
 
