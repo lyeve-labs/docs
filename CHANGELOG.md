@@ -4,6 +4,12 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.10.3] - 2026-11-04
+
+### Changed
+
+- The eight diagrams drawn for the dark theme fill their background and their boxes with the softer navy the site's cards and panels now use, navy with 2% of a dark blue mixed in instead of 5%. The light theme is unchanged.
+
 ## [0.10.2] - 2026-11-04
 
 ### Changed
