@@ -16,7 +16,7 @@ features, and the same images serve both.
 | Product | What it is | Where it comes from |
 |---|---|---|
 | [LyEve Core](concepts/index.md) | The engine. It stores your content, accounts and tenants on PostgreSQL, MySQL or SQL Server and serves them over an API. MIT licensed. | The image `ghcr.io/lyeve-labs/lyeve-core` |
-| [LyEve Console](console/index.md) | The browser app your team works in: write and publish content, manage users and roles, and configure the engine. | The image `ghcr.io/lyeve-labs/lyeve-admin` |
+| [LyEve Console](console/index.md) | The browser app your team works in: write and publish content, manage users and roles, and configure the engine. | The image `ghcr.io/lyeve-labs/lyeve-console` |
 
 The engine has no screens of its own. It answers two HTTP APIs: the Admin API manages the
 instance, and the Content API reads and writes content. The console calls the Admin API for

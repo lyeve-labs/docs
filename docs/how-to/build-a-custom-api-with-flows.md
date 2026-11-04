@@ -46,7 +46,7 @@ An order belongs to a customer, and a shipment belongs to an order.
    relation named `order` that belongs to one **Order**, with **Req** ticked,
    then two `text` fields, `carrier` and `tracking_number`. Choose **Save**.
 
-The schema builder in console v0.23.0 has no switch for a unique field, so
+The schema builder in console v0.25.0 has no switch for a unique field, so
 `email` is not unique on this path. Nothing below depends on it.
 
 </div>

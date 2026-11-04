@@ -66,7 +66,7 @@ with a membership in another tenant works in it by entering its slug in
 **Organization (optional)** on the sign-in page, which the console shows when
 it runs with `SIGN_IN_ORGANIZATION=true`. A super admin's own session
 stays in its home tenant, so steps 3 to 5 below, which act
-inside `acme` from that session, are API only on v0.23.0.
+inside `acme` from that session, are API only on v0.25.0.
 
 **Operations > Tenant costs**, which admins open too, shows what the tenant's
 usage costs this month in total and by resource, then its budgets and prices.
@@ -148,7 +148,7 @@ The answer is `201` with the tenant.
 
 `plan` defaults to `free`.
 
-**3. Define a content type inside `acme`.** This is API only on v0.23.0 for a super admin's
+**3. Define a content type inside `acme`.** This is API only on v0.25.0 for a super admin's
 own session, because the console has no tenant switcher. As a super admin, `X-Tenant-ID` picks
 the tenant:
 
@@ -162,7 +162,7 @@ curl -X POST http://localhost:3001/api/admin/schemas \
 
 The answer is `200` with the stored definition.
 
-**4. Write an entry into `acme`.** This is API only on v0.23.0.
+**4. Write an entry into `acme`.** This is API only on v0.25.0.
 
 ```bash
 curl -X POST http://localhost:3002/api/v1/content/ticket \
@@ -174,7 +174,7 @@ curl -X POST http://localhost:3002/api/v1/content/ticket \
 
 The answer is `201` with the entry.
 
-**5. Read `ticket` from each tenant.** This is API only on v0.23.0.
+**5. Read `ticket` from each tenant.** This is API only on v0.25.0.
 
 ```bash
 curl http://localhost:3002/api/v1/content/ticket \
@@ -311,7 +311,7 @@ without any credential naming it. This is how a public site reaches its own
 content on an install with several tenants. A mapping resolves only once it is
 verified: send `"verified": true` when you have already proved control of the
 domain, or set it later with `PUT`. These routes need a super admin, and they
-are API only on v0.23.0.
+are API only on v0.25.0.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/tenant-domains \

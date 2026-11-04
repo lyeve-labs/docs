@@ -45,7 +45,7 @@ docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.licen
 | Image | Label | Why |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | `LicenseRef-LyEve-Commercial` | The server in it also contains license verification and the features. |
-| `ghcr.io/lyeve-labs/lyeve-admin` | `MIT AND LicenseRef-LyEve-Commercial` | The console is MIT, and the visual editors are commercial. |
+| `ghcr.io/lyeve-labs/lyeve-console` | `MIT AND LicenseRef-LyEve-Commercial` | The console is MIT, and the visual editors are commercial. |
 
 The engine image keeps its `LICENSE` and `THIRD_PARTY_NOTICES.md` in
 `/usr/share/doc/lyeve/`. Copy them out without starting the image:
@@ -66,7 +66,7 @@ engine, the console and this documentation are three of them:
 | Repository | What it is |
 |---|---|
 | [`lyeve-core`](https://github.com/lyeve-labs/lyeve-core) | The engine |
-| [`lyeve-admin`](https://github.com/lyeve-labs/lyeve-admin) | The console, without the visual editors |
+| [`lyeve-console`](https://github.com/lyeve-labs/lyeve-console) | The console, without the visual editors |
 | [`lyeve-examples`](https://github.com/lyeve-labs/lyeve-examples) | Runnable example applications |
 | [`benchmarks`](https://github.com/lyeve-labs/benchmarks) | The performance benchmarks, to rerun on your own hardware |
 | [`docs`](https://github.com/lyeve-labs/docs) | This documentation. Open an issue or a pull request to fix a page |
@@ -95,7 +95,7 @@ The other nine are the client libraries and the UI kit, each published on npm:
 - **The MIT license covers the engine and admin code**, including the right to
   modify and redistribute it. Read it, fork it and file bugs in
   [lyeve-core](https://github.com/lyeve-labs/lyeve-core/issues) and
-  [lyeve-admin](https://github.com/lyeve-labs/lyeve-admin/issues). Support
+  [lyeve-console](https://github.com/lyeve-labs/lyeve-console/issues). Support
   requests go through [lyeve.com/contact](https://lyeve.com/contact/).
 - **The client libraries are fully open.** You can read, fork and build every
   library your application links against.

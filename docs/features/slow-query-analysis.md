@@ -45,10 +45,8 @@ endpoint got slow, and what to index.
   SQL Server takes the statement it ran most recently.
 - A plan is read with `EXPLAIN`, without the statement's values. On
   PostgreSQL, `pg_stat_statements` replaces every value with a placeholder
-  such as `$1`, and PostgreSQL refuses to plan a statement that still holds
-  one, so such a statement is skipped. On engine v0.57.0 that covers the
-  statements LyEve runs for content, so on PostgreSQL the plans you see come
-  from statements written without values.
+  such as `$1`. On engine v0.58.0 such a statement is planned as a generic
+  plan in a read-only transaction, so nothing runs it.
 - A server-sent event stream or a WebSocket is never captured, because it
   stays open as long as its client does, so its time measures the client.
   [Request profiling](request-profiling.md) leaves streams out of its timings
@@ -225,9 +223,9 @@ The plan is PostgreSQL's JSON plan, shortened here:
 table, the columns and why, and `ddl` is the statement that would create the
 index. Here the first suggestion is the one to act on: the statement filters
 `_post` on `updated_at`, and an index on that column lets the database read
-only the recent rows. On engine v0.57.0 a suggestion for a sort names no
-table, and its `ddl` does not run, so skip a suggestion whose `table` is
-empty.
+only the recent rows. On engine v0.58.0 a suggestion for a sort names the table
+read below the sort, and its `ddl` runs. A sort over a join, a subquery or an
+expression gets no suggestion.
 
 `duration_ms` is the time of the request the statement was stored beside, not
 the statement's own time. The request entry carries the plan of the first

@@ -19,17 +19,17 @@ proxy, copy the files on [Docker Compose](docker-compose.md).
 | Image | What it runs | Platforms |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | The engine: the Admin API, the Content API and every feature | `linux/amd64`, `linux/arm64` |
-| `ghcr.io/lyeve-labs/lyeve-admin` | LyEve Console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
+| `ghcr.io/lyeve-labs/lyeve-console` | LyEve Console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
 
 Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.57.0` | Never. One release, exactly |
-| `0.57` | To the latest patch of that minor release |
+| `0.58.0` | Never. One release, exactly |
+| `0.58` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.57.0` is the image tag `0.57.0`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.58.0` is the image tag `0.58.0`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates
@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.57.0
+  ghcr.io/lyeve-labs/lyeve-core:0.58.0
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -188,6 +188,23 @@ with `{"setup_required":true,"token_source":"log"}`: the token is the one the en
 which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETUP_TOKEN` set,
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
+
+## Upgrading to console 0.25.0
+
+Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so run that image from now
+on. Every 0.25 release is also published under `ghcr.io/lyeve-labs/lyeve-admin` with the same
+tags and digests, until 0.26.0, and the tags already published there stay.
+[Docker Compose](docker-compose.md#upgrading-to-console-0250) has the details.
+
+## Upgrading to 0.58.0 and console 0.24.0
+
+Upgrade the engine before the console, and back up the database first. A new install's setup
+token is on the engine's standard error, outside the log. With implicit TLS off, a send to a
+mail relay that does not offer STARTTLS fails, so fix the relay before you upgrade. A quota's
+grace period now delays its block. Console 0.24.0 asks for an organization at sign-in only with
+`SIGN_IN_ORGANIZATION=true`.
+[Docker Compose](docker-compose.md#upgrading-to-0580-and-console-0240) explains each step and
+the changes your API clients and your directory see.
 
 ## Upgrading to 0.57.0 and console 0.23.0
 
