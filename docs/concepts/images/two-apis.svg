@@ -14,13 +14,13 @@
     .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
     .head { fill: #616774; }
     @media (prefers-color-scheme: dark) {
-      .canvas { fill: #101a2b; }
+      .canvas { fill: #11171d; }
       text, .path { fill: #e6e8ee; }
       .sub, .label, .note { fill: #9aa1ad; }
-      .node { fill: #162233; stroke: #616d80; }
+      .node { fill: #191e25; stroke: #616d80; }
       .node-you { fill: #202843; stroke: #9587f2; }
       .node-brand { fill: #173045; stroke: #00d4ff; }
-      .node-inner { fill: #101a2b; stroke: #00d4ff; }
+      .node-inner { fill: #11171d; stroke: #00d4ff; }
       .edge { stroke: #8b94a7; }
       .head { fill: #8b94a7; }
     }
