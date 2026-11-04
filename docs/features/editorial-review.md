@@ -38,7 +38,7 @@ Editorial review is in beta. Three limits apply:
   minutes after its due time.
 :::
 
-In the admin console, **Reviews** holds the definitions and every entry under review, and
+In LyEve Console, **Reviews** holds the definitions and every entry under review, and
 the **Review** card on each entry's page moves that entry through its stages.
 
 ## How it works
@@ -72,7 +72,7 @@ approval answers `400` `failed to transition assignment` and the assignment stay
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an `admin` or
+For the console steps, you are signed in to the console as an `admin` or
 `super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

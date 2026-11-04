@@ -62,7 +62,7 @@ tenant admin who tries gets `403` even for their own tenant.
 ## Try it
 
 Run this on an install whose license carries `usage-pro` and `multitenant-provisioning`. For
-the console steps, you are signed in to the admin console as a super admin. The API steps
+the console steps, you are signed in to LyEve Console as a super admin. The API steps
 need the super admin's token in `TOKEN`, and steps 3 to 5 use it in both paths. The
 [quickstart](../getting-started/quickstart.md) shows how to get one. A test tenant keeps the
 block away from your real traffic.

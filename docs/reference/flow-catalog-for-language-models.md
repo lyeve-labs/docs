@@ -22,7 +22,7 @@ This page is the current copy. The instance also serves a copy of its own, but
 on engine v0.57.0 that copy lags this page: it leaves out the node types other
 features add, and it describes a few behaviors the engine no longer has, such
 as the output of `data.aggregate` without `group_by`. Use this page. Only the
-API serves the instance's copy, because console v0.23.0 has no download for
+API serves the instance's copy, because LyEve Console v0.23.0 has no download for
 it.
 
 ```bash

@@ -49,7 +49,7 @@ with no signed-in caller, pass through unchanged.
 Credential headers such as `Authorization`, `Cookie` and `Set-Cookie` are never
 stored or replayed.
 
-In the admin console, the keys are under **Insight > Observability > Idempotency**. The page
+In LyEve Console, the keys are under **Insight > Observability > Idempotency**. The page
 counts the **Keys held**, the keys **With a stored response** and the requests **In flight**.
 **Keys** lists each key with the request it was sent on, its state, how many times it was
 replayed and its age, and narrows to **All**, **Not finished** or **Stored**. A key whose
@@ -61,7 +61,7 @@ keys, are done with the API.
 
 You need the `post` content type from the [quickstart](../getting-started/quickstart.md) and a
 token in `TOKEN`, because a key is honored only for a signed-in caller. Steps 1 to 3 are
-requests your client sends. For the console step, you are signed in to the admin console.
+requests your client sends. For the console step, you are signed in to the console.
 
 **1. Create an entry with a key of your choice.** Pick a new unique value, such as a UUID,
 for each operation:

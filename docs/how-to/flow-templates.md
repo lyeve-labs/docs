@@ -44,7 +44,7 @@ answers `402` naming each node that needs the license. See
 
 ## Before you start
 
-- For the console steps, the admin console, signed in. For the API steps, an
+- For the console steps, LyEve Console, signed in. For the API steps, an
   admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md#3-sign-in)
   shows how to get one.
 - What the template needs, from the last column above. Variables, datasources

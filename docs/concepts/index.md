@@ -25,7 +25,7 @@ LyEve ships with no fixed content types. You define your own.
 A **content type** describes one kind of content: an article, a product, a page. It has a
 name and a list of fields, and each field has a type, such as text, number, date or a
 relation to another content type, plus flags such as required or unique. You create content
-types in the admin console's **Schema builder** or over the Admin API, while the engine runs.
+types in LyEve Console's **Schema builder** or over the Admin API, while the engine runs.
 A change needs no code change and no deploy.
 
 An **entry** is one item of a content type. If you define a `post` content type with `title`
@@ -38,7 +38,7 @@ detail, and [Your first content type](../getting-started/first-content-type.md) 
 
 A content type can turn on draft and publish. Its entries then carry a status: `draft`,
 `published` or `archived`, and a list on the Content API holds published entries unless the
-request filters on the status. A new entry in the admin console starts as a draft, and
+request filters on the status. A new entry in the console starts as a draft, and
 publishing is a separate step that can also be scheduled. An entry created on the Content API
 takes the status its body names, and is published when it names none. Only a caller who may
 both read and update the content type sees its drafts. Everyone else, such as a site reading
@@ -103,27 +103,27 @@ nothing extra to install. Whether a feature runs depends on two things:
   feature your license covers starts.
 
 You apply a license by setting `LYEVE_LICENSE_KEY`, or a super admin pastes it into
-**Settings > License** in the admin console. An expired license never takes a free feature
+**Settings > License** in the console. An expired license never takes a free feature
 away. [Licensing and tiers](licensing-and-tiers.md) lists what is free, what a license adds
 and what happens when one expires, and [Features](../features/index.md) lists every feature
 with its tier. Prices are at [lyeve.com/pricing](https://lyeve.com/pricing/).
 
 ## The two APIs
 
-![The admin console and your scripts call the Admin API on port 3001, and your sites and apps call the Content API on port 3002. Both run in one engine over one database.](images/two-apis.svg)
+![The console and your scripts call the Admin API on port 3001, and your sites and apps call the Content API on port 3002. Both run in one engine over one database.](images/two-apis.svg)
 
 The engine serves two HTTP APIs, each on its own port:
 
 | API | Default port | Base path | Used for | Credential |
 |---|---|---|---|---|
-| Admin API | 3001 | `/api/admin/` | Sign-in, content types, users, permissions, media, settings and most admin console screens | A session token or an [admin token](../how-to/admin-tokens.md) |
+| Admin API | 3001 | `/api/admin/` | Sign-in, content types, users, permissions, media, settings and most console screens | A session token or an [admin token](../how-to/admin-tokens.md) |
 | Content API | 3002 | `/api/v1/` | Reading and writing entries from your own sites, apps and services, and the console's **Delivery > API access**, **API labs** and **GraphQL** pages | A session token or an [API key](../features/api-keys.md) in `X-API-Key` |
 
 `ADMIN_LISTEN_ADDR` and `API_LISTEN_ADDR` move them. The token from
 `POST /api/admin/auth/login` works on both, and the
 [Quickstart](../getting-started/quickstart.md#3-sign-in) gets one.
 
-The running engine documents its own routes. In the admin console, **Delivery > API
+The running engine documents its own routes. In the console, **Delivery > API
 reference** lists them and **API labs** sends a real request. An admin can download the
 OpenAPI document at `GET /api/admin/openapi/public.json`, and a super admin the full one at
 `GET /api/admin/openapi/admin.json`. A route of a feature that is not running answers `404`
@@ -140,5 +140,5 @@ The TypeScript packages on npm wrap both HTTP APIs: see the [SDK overview](../sd
 - [Licensing and tiers](licensing-and-tiers.md): what is free, what a license adds, and how
   to apply one.
 - [Features](../features/index.md): every feature, what it is best for and where it lives in
-  the admin console.
+  the console.
 - [Glossary](../reference/glossary.md): short definitions of the terms these pages use.

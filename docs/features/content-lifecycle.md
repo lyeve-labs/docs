@@ -1,13 +1,13 @@
 ---
 title: Content lifecycle
-description: Move entries through draft, published and archived, compare and roll back revisions, schedule publishing and link entries, in the admin console or Admin API.
+description: Move entries through draft, published and archived, compare and roll back revisions, schedule publishing and link entries, in LyEve Console or Admin API.
 sidebar:
   order: 16
 ---
 
 > **Included free** on every install, with revisions kept for the content types you choose and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
-The admin console's **Content** screens and the Admin API work on the same entries. Both
+LyEve Console's **Content** screens and the Admin API work on the same entries. Both
 create and edit entries and move them between draft and published. When
 [content history](content-history.md) is on for the content type, they keep a numbered
 revision of every change so you can roll back. Over the API an entry can also be archived, compared
@@ -62,7 +62,7 @@ grant and the write routes with `content:write`.
 ## Try it
 
 This creates a draft, publishes it, rolls it back and schedules it. For the console steps,
-you are signed in to the admin console. For the API steps, you need a token in `TOKEN`. The
+you are signed in to the console. For the API steps, you need a token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Create a `story` content type with draft and publish.** Only the API turns on drafts and
@@ -546,8 +546,7 @@ The release and comment errors are on [Content releases](content-releases.md#err
 
 ## Related
 
-- [Drafts and publishing](../guides/user/drafts-and-publishing.md): the same lifecycle in the
-  admin console.
+- [Drafts and publishing](../guides/user/drafts-and-publishing.md): the same lifecycle in the console.
 - [Content history](content-history.md): which content types keep revisions, retention and
   the activity log.
 - [Data model](../concepts/data-model.md): statuses, revisions and the Content API.

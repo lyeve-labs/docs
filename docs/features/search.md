@@ -44,7 +44,7 @@ site may search, and you can see what readers look for.
 
 This needs at least one published entry, such as the one the
 [content lifecycle](content-lifecycle.md#try-it) steps create, published again after its
-rollback. For the console steps, you are signed in to the admin console as an `admin` or
+rollback. For the console steps, you are signed in to LyEve Console as an `admin` or
 `super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -462,6 +462,6 @@ the instance runs makes them answer `402` `payment_required`.
 ## Related
 
 - [Search and organization](../guides/user/search-and-organization.md): finding entries in
-  the admin console.
+  the console.
 - [Content lifecycle](content-lifecycle.md): statuses and the entries search reads.
 - [Localization](localization.md): translated entries.

@@ -43,7 +43,7 @@ total below 100 does not hold anyone out: the remainder goes to the variant crea
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an `admin` or `super_admin`.
+For the console steps, you are signed in to LyEve Console as an `admin` or `super_admin`.
 For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one. The same token stands in
 for the end user in steps 4 and 5.

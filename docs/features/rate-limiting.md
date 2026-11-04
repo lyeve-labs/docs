@@ -57,7 +57,7 @@ custom rules, the tenant limit and the address entries. You can still list
 and delete them, but not create or edit one. Refusals keep being counted, and
 reading them needs the license again.
 
-## In the admin console
+## In the console
 
 Open **Settings > Rate limits**. The page counts the custom rules, the
 enforced rules and the callers at their limit. Below the counts are the
@@ -73,7 +73,7 @@ in the **Last hour**, **Last day** or **Last week**.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. For the API
+For the console steps, you are signed in to LyEve Console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

@@ -57,7 +57,7 @@ providers in its region, and an upload whose region cannot be read answers
 `503` rather than land elsewhere. See
 [object storage](object-storage.md#keep-a-tenants-files-in-its-region).
 
-## In the admin console
+## In the console
 
 Open **Settings > Data residency**. **Where tenants are** counts the regions,
 the tenants, the replicated tenants and the tenants not placed. Below the
@@ -69,7 +69,7 @@ and **Default for new tenants**.
 
 ![The Data residency page with two regions. Northwind Traders is placed in eu-west-1, and the regions EU West (Ireland) and US East (Virginia) both accept tenants.](images/data-residency.png)
 
-The console does not assign a tenant to a region on this release. Do that
+LyEve Console does not assign a tenant to a region on this release. Do that
 over the API, as [Try it](#try-it) shows.
 
 ## Try it

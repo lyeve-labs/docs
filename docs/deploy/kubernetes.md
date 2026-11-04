@@ -1,6 +1,6 @@
 ---
 title: Kubernetes
-description: "Deploy the engine and the admin console on Kubernetes with replicas, a shared signing key, probes and a Gateway API route."
+description: "Deploy the engine and LyEve Console on Kubernetes with replicas, a shared signing key, probes and a Gateway API route."
 sidebar:
   order: 15
 ---
@@ -9,7 +9,7 @@ LyEve runs on Kubernetes as two Deployments, one per image:
 
 - `ghcr.io/lyeve-labs/lyeve-core`, the engine: the Admin API on **3001**, and the Content API and
   `/.well-known/jwks.json` on **3002**.
-- `ghcr.io/lyeve-labs/lyeve-admin`, the admin console: a Node server on **3002** that calls the
+- `ghcr.io/lyeve-labs/lyeve-admin`, LyEve Console: a Node server on **3002** that calls the
   engine for the browser. It holds no database connection.
 
 :::tip[Best for]
@@ -32,8 +32,7 @@ Every value marked `# cluster-specific` must be replaced before you apply the ma
 | `lyeve-admin` | `ghcr.io/lyeve-labs/lyeve-admin` | 3002 | The Gateway: the admin host |
 
 Both Services are `ClusterIP`. Only the Gateway faces the internet. Give port 3001 no public
-host or `LoadBalancer` of its own: the admin host routes `/api/admin` to it, which is all the
-admin console needs.
+host or `LoadBalancer` of its own: the admin host routes `/api/admin` to it, which is all the console needs.
 
 ## What more than one replica needs
 
@@ -108,7 +107,7 @@ the per-IP limits apply to all users together. Once it is set, the engine ignore
 `X-Forwarded-Proto` from anything else, so a range that misses the proxy pods redirects every
 request.
 
-`ADMIN_CONSOLE_KEY` is shared with the admin console Deployment below. The console signs each call with
+`ADMIN_CONSOLE_KEY` is shared with the console Deployment below. The console signs each call with
 the browser's address, so sign-in limits count each user rather than the console pods.
 
 Do not commit a real Secret. Render it from a secret manager the cluster trusts, such as
@@ -290,7 +289,7 @@ spec:
     - backendRefs: [{ name: lyeve-core, port: 3003 }]
 ```
 
-## Admin console Deployment and Service
+## Console Deployment and Service
 
 ```yaml
 apiVersion: apps/v1
@@ -467,7 +466,7 @@ them with `413`:
 Raise the limit to the largest body you send through this Gateway, or keep each part under
 68 MiB.
 
-**One console replica, unless the Gateway pins a session to one replica.** The Admin console
+**One console replica, unless the Gateway pins a session to one replica.** The console
 section above explains how two replicas can sign users out. The Gateway API's own field for cookie
 session persistence is in its experimental channel only, so it needs the experimental CRDs, and
 it may change. Keep `replicas: 1` on the console unless your implementation pins each browser to

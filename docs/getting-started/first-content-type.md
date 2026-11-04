@@ -20,7 +20,7 @@ PostgreSQL, MySQL and SQL Server.
   below creates `post` when it does not exist yet.
 - Changing content types takes the `admin` or `super_admin` role. Writing entries also works
   as an `editor`.
-- For the console steps, you are signed in to the admin console. Its **Schema builder** edits
+- For the console steps, you are signed in to LyEve Console. Its **Schema builder** edits
   each content type in a list. With Schema Pro the same editor also opens from a visual canvas
   of every content type.
 - For the API steps, `TOKEN` holds a token for an `admin` or `super_admin` account. Steps 2
@@ -60,7 +60,7 @@ The answer is `200` with the stored definition.
 </div>
 </div>
 
-The display name is the label the admin console shows. A required `name` refuses an author
+The display name is the label the console shows. A required `name` refuses an author
 with no name.
 
 ## 2. Describe the new Post
@@ -366,7 +366,7 @@ describes each kind of relation and what deleting an entry does to it.
 ## Next
 
 - [Drafts and publishing](../guides/user/drafts-and-publishing.md): how editors work with
-  drafts, revisions and scheduled publishing in the admin console.
+  drafts, revisions and scheduled publishing in the console.
 - [Content history](../features/content-history.md): turn on revisions for the content types
   that need them.
 - [Schema changes](../features/schema-changes.md): presets, renames and the history of every

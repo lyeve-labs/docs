@@ -42,8 +42,7 @@ backup and the database migrator need a license, as their pages say.
 This brings a Strapi case study type and its entries across. The same steps work for any
 source in the first two rows of the table. The type's Strapi definition is its
 `schema.json`, saved here as `strapi-case-study.json`, with the singular name `case-study`
-and the fields `title`, `views` and `body`. For the console steps, you are signed in to the
-admin console as a super admin.
+and the fields `title`, `views` and `body`. For the console steps, you are signed in to LyEve Console as a super admin.
 
 **1. Convert the content model and read the plan.** Nothing is written.
 

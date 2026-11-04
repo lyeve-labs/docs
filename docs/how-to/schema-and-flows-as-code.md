@@ -13,7 +13,7 @@ repository instead: the model as one bundle file, each flow as its own file.
 A change becomes a pull request, CI shows what it would do to the database,
 and on release you bring the instance up to date from the files. Each step
 works with the Admin API from a terminal or a CI job, and every step but the CI
-gate also works in the admin console.
+gate also works in LyEve Console.
 
 ## Before you start
 
@@ -30,7 +30,7 @@ gate also works in the admin console.
 <div class="paths">
 <div data-path="console">
 
-Sign in to the admin console as a super admin.
+Sign in to the console as a super admin.
 
 </div>
 <div data-path="api">

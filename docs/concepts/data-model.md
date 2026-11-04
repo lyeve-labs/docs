@@ -21,7 +21,7 @@ shape, such as one blog post. This page builds a small blog, a `post` that belon
 
 ## Content types
 
-Build a content type in the admin console's **Schema builder**, or send its definition to
+Build a content type in LyEve Console's **Schema builder**, or send its definition to
 `POST /api/admin/schemas`. The blog needs two. The author comes first, because the post
 points at it:
 
@@ -54,11 +54,11 @@ points at it:
 | Key | Meaning |
 |---|---|
 | `name` | Letters, digits and `_`, starting with a letter or `_`, at most 63 characters. Any other name answers `422` and changes nothing. |
-| `display_name` | The label the admin console shows. |
+| `display_name` | The label the console shows. |
 | `fields` | The fields, described in the next section. |
 | `with_draft_publish` | Each entry carries a status. See [Statuses](#statuses). |
 | `with_soft_delete` | A delete hides the entry instead of removing it. See [Soft delete](#soft-delete). |
-| `with_created_at`, `with_updated_at` | Lists that timestamp among the fields. The admin console shows an entry's **Updated** time only when `with_updated_at` is set. |
+| `with_created_at`, `with_updated_at` | Lists that timestamp among the fields. The console shows an entry's **Updated** time only when `with_updated_at` is set. |
 
 Every entry gets an `id`, a `created_at` and an `updated_at` whether or not you list them.
 Leave out `with_localization`: a content type that sets it reads back with a `deprecations`
@@ -84,7 +84,7 @@ Creating, changing and deleting them takes `admin` or `super_admin`.
 | `field_type` | What it holds | What you send |
 |---|---|---|
 | `text` | Plain text | A string |
-| `rich_text` | Formatted text | A string of HTML. The admin console removes unsafe markup when it saves. The Content API stores the string as sent, so sanitize it where you render it. |
+| `rich_text` | Formatted text | A string of HTML. The console removes unsafe markup when it saves. The Content API stores the string as sent, so sanitize it where you render it. |
 | `email` | An email address | A string. One that is not an address answers `422`. |
 | `url` | A link | A string. Add the `url` rule below to refuse one that is not a URL. |
 | `number` | A number | A JSON number |
@@ -92,7 +92,7 @@ Creating, changing and deleting them takes `admin` or `super_admin`.
 | `date` | A calendar date | `"2026-10-01"` |
 | `datetime` | A moment in time | An RFC 3339 timestamp, such as `"2026-10-01T09:00:00Z"` |
 | `json` | Structured data | Any JSON value |
-| `media` | A file | A string that locates the file. The admin console stores the file's public link from the [media library](../features/media.md). |
+| `media` | A file | A string that locates the file. The console stores the file's public link from the [media library](../features/media.md). |
 | `relation` | A link to another entry | See [Relations](#relations). |
 | `uid` | A unique identifier | A UUID string |
 
@@ -213,14 +213,14 @@ A list is `GET /api/v1/content/{type}`, newest first, 25 entries at a time by de
 most 200, with `limit` and `offset`. `?filters[<field>]=<value>` keeps the entries whose field
 equals the value.
 
-The admin console writes entries through the Admin API instead, at `/api/admin/content`.
+The console writes entries through the Admin API instead, at `/api/admin/content`.
 There an entry also carries a **title**, a **slug** and a **status**, and its field values
 travel under `body`. Both write the same entries, and an entry written through the Admin API
 is served by the Content API under the same `id`.
 
 | | Content API, `/api/v1/content/{type}` | Admin API, `/api/admin/content` |
 |---|---|---|
-| Used by | Your site, your app, your scripts | The admin console, admin scripts |
+| Used by | Your site, your app, your scripts | The console, admin scripts |
 | Field values | Under `data` | Under `body`, beside `title`, `slug` and `status` |
 | Who may write | `editor`, `admin`, `super_admin` | `admin`, `super_admin` |
 | Unsafe HTML | Stored as sent | Removed on save |
@@ -240,8 +240,8 @@ one. The `author` does not, so every author is live.
 
 | Status | Meaning |
 |---|---|
-| `draft` | Work in progress. A new entry in the admin console starts here. |
-| `published` | Live. `published_at` holds the time of a publish. A publish in the admin console or with the Admin API sets it each time. A publish with the Content API or in a release sets it only when the entry has none, and a rollback leaves it as it was. |
+| `draft` | Work in progress. A new entry in the console starts here. |
+| `published` | Live. `published_at` holds the time of a publish. A publish in the console or with the Admin API sets it each time. A publish with the Content API or in a release sets it only when the entry has none, and a rollback leaves it as it was. |
 | `archived` | Retired, but kept. |
 
 On the Content API:
@@ -261,9 +261,9 @@ On the Content API:
 - A response that can carry drafts is served with `Cache-Control: private, no-store`, so no
   shared cache keeps it.
 
-A status set in the admin console or through `/api/admin/content` holds on the Content API too.
+A status set in the console or through `/api/admin/content` holds on the Content API too.
 
-The admin console and the Admin API set the status directly and can schedule a publish. See
+The console and the Admin API set the status directly and can schedule a publish. See
 [Drafts and publishing](../guides/user/drafts-and-publishing.md) for the console and
 [Content lifecycle](../features/content-lifecycle.md) for the API.
 
@@ -280,7 +280,7 @@ LyEve keeps earlier versions of an entry when [content history](../features/cont
 is on for its content type. History is off on a new install. An administrator turns it on for
 every content type, for the ones they choose, or for one. Each API keeps versions its own way.
 
-- **Admin API and admin console.** Every write that changes something keeps a numbered
+- **Admin API and console.** Every write that changes something keeps a numbered
   revision: the title, the body, the metadata, the status and a change note. A save that
   changes nothing keeps none. Revisions start at `1`, never change once written, and can be
   compared two at a time. Restoring one writes a new revision with the old content.

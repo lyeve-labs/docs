@@ -41,7 +41,7 @@ can still change before it is marked stable.
   original, and it does the work instead.
 :::
 
-In the admin console, an image's **Preview** in **Media library** holds a
+In LyEve Console, an image's **Preview** in **Media library** holds a
 **Focal point** section and a **Transform URL** section. The sections below show
 each task there and over the Admin API, and list every parameter.
 
@@ -64,8 +64,7 @@ URL always expires, after an hour by default and a week at most. Responses carry
 
 ## Try it
 
-This works on a free install. For the console steps, you are signed in to the
-admin console. For the API steps, you need an admin token in `TOKEN`. The
+This works on a free install. For the console steps, you are signed in to the console. For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Upload an image.**

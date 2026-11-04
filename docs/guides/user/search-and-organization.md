@@ -1,11 +1,11 @@
 ---
 title: Search and organization
-description: "Find entries in the admin console by browsing collections and paging their lists, and with full-text search, synonyms and ranking where search is licensed."
+description: "Find entries in LyEve Console by browsing collections and paging their lists, and with full-text search, synonyms and ranking where search is licensed."
 sidebar:
   order: 6
 ---
 
-There are two ways to find content in the admin console. Browsing works on every install:
+There are two ways to find content in LyEve Console. Browsing works on every install:
 narrow the list of collections, open one, and page through its entries. Full-text search
 finds entries by the words in them, and needs a license with the [Search](../../features/search.md)
 feature. This page covers both in the console. You need the `admin` or `super_admin` role.

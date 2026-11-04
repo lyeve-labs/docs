@@ -32,7 +32,7 @@ score.
 - You want a limit on request volume. Use [rate limiting](rate-limiting.md).
 :::
 
-## In the admin console
+## In the console
 
 Each person manages the browsers their own account trusts. Open the account
 menu in the header and choose **Trusted devices**.
@@ -46,7 +46,7 @@ menu in the header and choose **Trusted devices**.
   seen and added. **Looks like this one** marks the browser you are using. The
   trash button on a row forgets it.
 
-The console has no screen for login history or blocks on this release. The
+LyEve Console has no screen for login history or blocks on this release. The
 API serves them, as below.
 
 ![The Trusted devices page of an editor's account, with the Trust this browser form and two remembered devices: Phone, which is Safari on iOS, and Work laptop, which is Chrome on macOS.](images/trusted-devices.png)

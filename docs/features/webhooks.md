@@ -36,7 +36,7 @@ the other way: another service posts to LyEve and an entry is created.
 - The call needs logic, several steps or a response. [Flows](flows.md) do that.
 :::
 
-## In the admin console
+## In the console
 
 Open **Delivery > Webhooks**. The table lists each webhook with its **URL**,
 **Events**, **Schemas** and **Status**, and the **All**, **Enabled** and
@@ -79,7 +79,7 @@ delays or blocks a write. A tenant's webhooks see only that tenant's content.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console. For the API
+For the console steps, you are signed in to LyEve Console. For the API
 steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 Creating a webhook needs the `super_admin` role. The example assumes a content
@@ -228,7 +228,7 @@ Without a payload template, the body is this envelope:
 `data` is the entry as its content type's table holds it: its `id`, each
 field under its own name, and `_status` when the content type has drafts. A
 relation to one entry arrives under its key column, such as `author_id`. An
-entry saved in the admin console arrives in the same shape as one saved with
+entry saved in the console arrives in the same shape as one saved with
 the API, and a field saved there with no value arrives as its default, or as
 `null` when it has none. This is a `post` created in the console with `Hello` as its body:
 
@@ -248,7 +248,7 @@ the API, and a field saved there with no value arrives as its default, or as
 }
 ```
 
-On engine v0.56.1 and earlier, an entry saved in the admin console arrived in
+On engine v0.56.1 and earlier, an entry saved in the console arrived in
 another shape. Its fields sat in an object under `data.body`, and `data` also
 carried the entry's `slug`, `status`, `title`, its timestamps and the accounts
 that wrote it. A receiver written for that shape now reads `data.title` where

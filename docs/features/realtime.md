@@ -34,7 +34,7 @@ events. A client that reconnects picks up the events it missed.
   `contentChanged` subscription.
 :::
 
-## In the admin console
+## In the console
 
 Open **Insight > Realtime** to see who is connected right now.
 **Server-sent events** counts the streams **Open now** and those accepted
@@ -160,7 +160,7 @@ shows how to get one.
    ```
 
    You are on the list, with `connection_count: 1`. The list counts SSE
-   streams, and the console has no screen for it.
+   streams, and LyEve Console has no screen for it.
 
 </div>
 </div>

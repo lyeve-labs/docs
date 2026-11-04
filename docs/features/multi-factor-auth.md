@@ -18,7 +18,7 @@ turns it on for their own account.
 - **Authenticator apps.** A six-digit code from 1Password, Authy or Google
   Authenticator, with eight single-use backup codes for a lost phone.
 - **Passwordless sign-in on a page you build.** With `mfa-pro`, a passkey or
-  security key returns a session token with no password. The admin console
+  security key returns a session token with no password. LyEve Console
   has no passkey screens, so you build this against the API.
 - **Signing in on a shared screen.** Your page shows a QR code, and the person
   approves the sign-in with a passkey on their phone.
@@ -30,7 +30,7 @@ turns it on for their own account.
   the provider.
 :::
 
-## In the admin console
+## In the console
 
 Each person turns it on for their own account:
 
@@ -88,13 +88,13 @@ instance's `ENCRYPTION_KEY`.
 1. TOTP and backup codes need nothing more. For passkeys, run with a license
    that carries `mfa-pro`. See
    [licensing and tiers](../concepts/licensing-and-tiers.md).
-2. For passkeys, set `WEBAUTHN_RPID` to the domain the admin console is served
+2. For passkeys, set `WEBAUTHN_RPID` to the domain the console is served
    from, and `WEBAUTHN_RP_ORIGINS` to its origin. Set them before anyone
    registers a passkey.
 3. Restart the instance.
 
-Each person then turns on an authenticator app in the admin console, as
-[In the admin console](#in-the-admin-console) shows. Passkeys are registered
+Each person then turns on an authenticator app in the console, as
+[In the console](#in-the-console) shows. Passkeys are registered
 over the API, as [Use passkeys](#use-passkeys) shows.
 
 ## Try it
@@ -299,10 +299,9 @@ register routes answer
 `402` with `{"error": "payment_required", "plugin": "mfa", "feature": "feature:mfa-pro", "upgrade_url": ""}`.
 
 :::caution[Turn on an authenticator app before the first passkey]
-A password sign-in challenges an account that holds a passkey, and the admin
-console finishes the challenge only with a code from an authenticator app or a
+A password sign-in challenges an account that holds a passkey, and the console finishes the challenge only with a code from an authenticator app or a
 backup code. An account whose only factor is a passkey has neither, so it
-signs in only over the API, which the admin console does not use. Turn on the
+signs in only over the API, which the console does not use. Turn on the
 authenticator app first, which also gives the account its backup codes, and
 register the passkey after it.
 

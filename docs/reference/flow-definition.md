@@ -302,7 +302,7 @@ have done. A test request with `live: true` runs it for real.
 
 ### Editor hints
 
-Some config keys carry hints for the admin console, all prefixed `x-`. They
+Some config keys carry hints for LyEve Console, all prefixed `x-`. They
 change nothing about how a node runs, and a client that ignores them sends the
 same config.
 

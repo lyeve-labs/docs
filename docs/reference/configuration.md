@@ -1,6 +1,6 @@
 ---
 title: Configuration reference
-description: "Look up every engine setting with its default, and set it through an environment variable, a YAML file or the admin console."
+description: "Look up every engine setting with its default, and set it through an environment variable, a YAML file or LyEve Console."
 sidebar:
   order: 1
 ---
@@ -77,9 +77,9 @@ The engine reads each setting from four places. The highest one that has it wins
 
 1. **An environment variable.** A variable set to an empty value turns the setting off, and no
    lower layer fills it back in.
-2. **The YAML file**, `lyeve.yaml`. It wins over the admin console unless the value is tagged
+2. **The YAML file**, `lyeve.yaml`. It wins over LyEve Console unless the value is tagged
    `!overridable`.
-3. **The admin console**, which holds what a feature's configuration form saved.
+3. **The console**, which holds what a feature's configuration form saved.
 4. **The built-in default.**
 
 The engine reads the variables in the engine tables on this page once, at startup, before it
@@ -94,7 +94,7 @@ changing them under a running server breaks something that cannot be undone:
 - the idempotency keyspace and backend (a retry stops finding its record, so the request runs
   twice)
 
-**Settings > Configuration** in the admin console shows every setting with its value and the
+**Settings > Configuration** in the console shows every setting with its value and the
 layer it came from, and saves into the console layer:
 
 ![The Configuration page: counts of settings from the environment, the files and the console, and each setting with its value and source.](../how-to/images/configuration.png)
@@ -153,7 +153,7 @@ plugins:
     ttl: "60s"
 ```
 
-`!overridable` lets the admin console take a key over. Without it the file value is final, and
+`!overridable` lets the console take a key over. Without it the file value is final, and
 the console shows the field read-only, naming the file and line it came from.
 `LYEVE_OVERRIDABLE` does the same for environment variables: a comma-separated list of keys the
 console may take over. A listed key keeps its variable's value until something is saved against
@@ -219,9 +219,9 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 
 | Variable | What it does | Default |
 |---|---|---|
-| `LYEVE_CONSOLE_URL` | The admin console's public URL, such as `https://admin.example.com`. Password reset and magic-link emails link to pages the console serves, and device sign-in shows its approval page there. It must be an absolute URL with no query or fragment. In production it must be `https`, and while it is unset password reset and magic-link sign-in refuse to start and device sign-in answers `503`. | `http://localhost:5173` outside production |
+| `LYEVE_CONSOLE_URL` | The console's public URL, such as `https://admin.example.com`. Password reset and magic-link emails link to pages the console serves, and device sign-in shows its approval page there. It must be an absolute URL with no query or fragment. In production it must be `https`, and while it is unset password reset and magic-link sign-in refuse to start and device sign-in answers `503`. | `http://localhost:5173` outside production |
 | `LYEVE_BASE_URL` | The public base URL of the engine. Features that build an absolute link to it use this value instead of the request's `Host` header: OAuth and SAML callback URLs, data export downloads and file links. Set it in production. | unset |
-| `LYEVE_OUTBOUND_ALLOW_CGNAT` | `true` lets webhooks, flows, identity providers, JWKS fetches and alert channels reach the shared address space `100.64.0.0/10`, which Tailscale hands out, and the NAT64 or 6to4 form of an address in it. It opens the range to every tenant's outbound targets, cloud metadata services in that range included. Email honors it too: an SMTP relay or API provider host in that range needs no `SMTP_ALLOWED_PRIVATE_NETWORKS` entry. Read once at boot, and the admin console cannot set it. See [where outbound requests may go](../trust/security-controls.md#where-outbound-requests-may-go). | `false` |
+| `LYEVE_OUTBOUND_ALLOW_CGNAT` | `true` lets webhooks, flows, identity providers, JWKS fetches and alert channels reach the shared address space `100.64.0.0/10`, which Tailscale hands out, and the NAT64 or 6to4 form of an address in it. It opens the range to every tenant's outbound targets, cloud metadata services in that range included. Email honors it too: an SMTP relay or API provider host in that range needs no `SMTP_ALLOWED_PRIVATE_NETWORKS` entry. Read once at boot, and the console cannot set it. See [where outbound requests may go](../trust/security-controls.md#where-outbound-requests-may-go). | `false` |
 | `TRUSTED_PROXIES` | Comma-separated CIDRs of the reverse proxies in front. `X-Forwarded-For` is honored only from these, so rate limits and audit entries see the real client address. Unset, every request counts as the proxy's. | unset |
 | `CORS_ORIGINS` | Comma-separated origins of the browser apps that call the APIs cross-origin. `*` is refused. | `http://localhost:5173` |
 | `ADMIN_LISTEN_ADDR` | Bind address of the Admin API. | `0.0.0.0:3001` |
@@ -251,7 +251,7 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 | `JWT_EXPIRY_SECS` | Session token lifetime in seconds. Production refuses a value above `3600`. | `900` (15 minutes) |
 | `REFRESH_TOKEN_TTL_SECS` | Refresh token lifetime in seconds. | `2592000` (30 days) |
 | `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, at least 16 characters. Unset, the engine writes a one-time token to its standard error, not to its log, while no account exists. Set it when more than one replica can answer setup, since each prints its own. | unset (a one-time token on standard error) |
-| `ADMIN_CONSOLE_KEY` | A secret of at least 32 characters, shared with the admin console. The console signs its calls with the browser's address, so sign-in limits count each person instead of the console server. | unset |
+| `ADMIN_CONSOLE_KEY` | A secret of at least 32 characters, shared with the console. The console signs its calls with the browser's address, so sign-in limits count each person instead of the console server. | unset |
 | `PASSWORD_MIN_LENGTH` | Shortest password accepted. | `12` |
 
 <details>
@@ -269,7 +269,7 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 | `TRUSTED_ISSUER_POLICIES` | A JSON array giving each trusted issuer its tenant and the roles its users map to. An issuer with no policy has its tokens ignored, and a policy for an unlisted issuer stops the boot. | unset |
 | `API_KEY_PEPPER` | A server secret mixed into every stored API key hash. See [API keys](../features/api-keys.md). | unset |
 | `ENFORCE_API_KEY_PEPPER` | `true` stops the boot when no `API_KEY_PEPPER` is found. | `false` |
-| `LYEVE_SETUP_MODE` | `true` lets the engine start without `DATABASE_URL`, `JWT_SECRET` or `ENCRYPTION_KEY`. It then serves only the probes and the setup routes, and the admin console shows what to set. See [Installation](../getting-started/installation.md). | unset |
+| `LYEVE_SETUP_MODE` | `true` lets the engine start without `DATABASE_URL`, `JWT_SECRET` or `ENCRYPTION_KEY`. It then serves only the probes and the setup routes, and the console shows what to set. See [Installation](../getting-started/installation.md). | unset |
 
 </details>
 
@@ -385,7 +385,7 @@ See [Idempotent requests](../features/idempotent-requests.md).
 | `MULTI_TENANT` | `true` serves more than one tenant from one install. See [Tenants](../features/tenants.md). | `false` |
 | `LYEVE_MODE` | `stateless` runs the engine with no database. Any other value stops the boot. See [Stateless mode](../deploy/stateless-mode.md). | unset |
 | `LYEVE_CONFIG` | Path of the YAML file or directory to read. Environment only. | unset (the search above) |
-| `LYEVE_OVERRIDABLE` | Comma-separated variables the admin console may take over. Environment only. | unset |
+| `LYEVE_OVERRIDABLE` | Comma-separated variables the console may take over. Environment only. | unset |
 
 ## Health checks and shutdown
 

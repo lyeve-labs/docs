@@ -55,7 +55,7 @@ still change before it is marked stable.
 This exports an instance, compares the file with the same instance, and dry runs it, so no
 bundle is applied. Step 3 creates a webhook and step 5 deletes it, so the instance ends as it
 started. Run it on an install whose license carries `config-sync`. For the console
-steps, you are signed in to the admin console as a super admin. For the API steps, you need
+steps, you are signed in to LyEve Console as a super admin. For the API steps, you need
 the super admin's token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows
 how to get one. The API steps use `jq` to build the request bodies.
 
@@ -241,7 +241,7 @@ The answer has `"applied": true`, the plan, and the sections it wrote.
 | Flows | Each flow's definition. It arrives as a draft, and the version already published on the target keeps running until you publish the new one. | the flow's slug |
 | Access rules | Each rule a role holds on a resource. | `editor on articles` |
 | Webhooks | Outbound webhooks with their options, and incoming webhooks. Signing secrets and header values travel sealed. | `outbound:<name>`, `incoming:<name>` |
-| Settings | The settings below, when they were saved in the admin console. | the setting's name |
+| Settings | The settings below, when they were saved in the console. | the setting's name |
 
 The settings a bundle carries are the ones that should be the same on every
 instance of a project:
@@ -255,7 +255,7 @@ instance of a project:
 
 A setting the target takes from its environment or its configuration file
 belongs to that deployment. The bundle cannot change it, and the plan lists it
-as a problem. Leave it out of the admin console on one side or the other.
+as a problem. Leave it out of the console on one side or the other.
 
 ## What it leaves out
 
@@ -449,7 +449,7 @@ If step 2 or 3 fails, the answer says where it stopped and what it kept:
 ```
 
 `schemas_applied` lists the content types that were written and stay.
-`not_applied` lists the sections left as they were. The admin console and
+`not_applied` lists the sections left as they were. The console and
 `lyevectl config push` show the same. Fix the cause and apply the same bundle
 again: what already matches is left alone.
 

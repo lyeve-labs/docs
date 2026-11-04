@@ -25,7 +25,7 @@ Branch on the code, not the message. Each feature page lists its codes.
 `GET /api/admin/openapi/public.json` answers an OpenAPI document of the Content API and every
 route outside `/api/admin`, including the URLs your flows answer on. It takes the `admin` or
 `super_admin` role. `GET /api/admin/openapi/admin.json` holds the `/api/admin` routes and takes
-`super_admin`. Both describe what this instance runs right now, and the admin console shows
+`super_admin`. Both describe what this instance runs right now, and LyEve Console shows
 them under **API reference**.
 :::
 
@@ -34,7 +34,7 @@ them under **API reference**.
 | Credential | Send it as | Use it for |
 |---|---|---|
 | Session token | `Authorization: Bearer <token>` | A person, or code acting as one. It works on both APIs. The [quickstart](../getting-started/quickstart.md) shows how to get one |
-| Session cookie | `__Host-sys_session` when `SECURE_COOKIE=true`, `sys_session` over plain HTTP | A browser, such as the admin console. A request that changes data also sends `X-CSRF-Token` with the `csrf_token` from sign-in |
+| Session cookie | `__Host-sys_session` when `SECURE_COOKIE=true`, `sys_session` over plain HTTP | A browser, such as the console. A request that changes data also sends `X-CSRF-Token` with the `csrf_token` from sign-in |
 | API key | `X-API-Key: ly_...` | A site, app or service calling the Content API. The Admin API answers a key that holds the `admin` or `super_admin` role with `401`. See [API keys](../features/api-keys.md) |
 | Admin token | `Authorization: Bearer lyat_...` | A script or CI job calling the Admin API. Every other listener answers it with `401`. See [admin tokens](../how-to/admin-tokens.md) |
 
@@ -272,7 +272,7 @@ and memberships.
 <summary>Sign in a command-line tool</summary>
 
 A tool on a machine without a browser starts a sign-in, shows the person a code, and polls
-until the person approves the code in the admin console.
+until the person approves the code in the console.
 
 | Method | Path | Who | Does |
 |---|---|---|---|

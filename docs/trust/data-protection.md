@@ -8,7 +8,7 @@ sidebar:
 This page answers the data-protection section of a vendor questionnaire. Every
 claim on it is a route or a setting, so a reviewer with a `super_admin` token
 can check each one against a running install. Where a control does not exist,
-the page says so. Where the admin console does the same as a route, the page
+the page says so. Where LyEve Console does the same as a route, the page
 gives both paths, and the console steps assume you are signed in as a super
 admin. Each feature page carries the configuration and the full request and
 response shapes.
@@ -300,7 +300,7 @@ The answer names neither the address nor the other account, because either
 would tell you about that account. A repeated request does not reach the kept
 rows. Do not erase by that address to reach them: an erasure by address
 reaches every account that holds it, so it anonymizes the other account too. When no
-part failed, the admin console shows this answer as **Erasure kept some
+part failed, the console shows this answer as **Erasure kept some
 records**.
 
 A form has no field that says whose submission it is, so a submission

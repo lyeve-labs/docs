@@ -1,11 +1,11 @@
 ---
 title: Creating and editing content
-description: "Create and edit entries in the admin console: pick a collection, fill in each kind of field, fix what a save refuses, and delete what you no longer need."
+description: "Create and edit entries in LyEve Console: pick a collection, fill in each kind of field, fix what a save refuses, and delete what you no longer need."
 sidebar:
   order: 2
 ---
 
-This guide is for people who write content in the LyEve admin console. It covers finding a
+This guide is for people who write content in LyEve Console. It covers finding a
 collection, creating an entry, filling in each kind of field and fixing what a save refuses.
 You need no code. You do need the `admin` or `super_admin` role, because the content screens
 are open to those roles only. See [Roles and permissions](roles-and-permissions.md).

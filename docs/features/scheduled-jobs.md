@@ -49,7 +49,7 @@ Pick a scheduled job when your own service does the work and only needs to be
 told when. Pick a flow when the work is in LyEve's content or needs several
 steps. See [flows](flows.md#how-a-flow-works).
 
-## In the admin console
+## In the console
 
 As a super admin, open **Operations > Scheduled jobs**. Each job is listed with
 its schedule, endpoint, status and last run, and **Enabled** and **Disabled**
@@ -63,7 +63,7 @@ row**.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin.
+For the console steps, you are signed in to LyEve Console as a super admin.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 Replace the endpoint with a URL of yours that accepts a `POST`, such as a

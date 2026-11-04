@@ -9,7 +9,7 @@ sidebar:
 
 An access rule says what one role may do with one resource. It names the role,
 the resource, the actions allowed, and the fields removed from what that role
-reads. Rules apply to people who sign in, in the admin console or with a
+reads. Rules apply to people who sign in, in LyEve Console or with a
 session token, and to API keys through the roles each key carries.
 
 :::tip[Best for]
@@ -30,7 +30,7 @@ session token, and to API keys through the roles each key carries.
   [roles and permissions](../guides/user/roles-and-permissions.md).
 :::
 
-## In the admin console
+## In the console
 
 Open **Access > Permissions**. Only a super admin sees the page. Each role is a
 row, and expanding it lists its rules: **Every schema** for the `*` rule, then

@@ -1,17 +1,17 @@
 ---
 title: Docker Compose
-description: "Run the engine, the admin console, Postgres and a TLS proxy on one host with one Compose file."
+description: "Run the engine, LyEve Console, Postgres and a TLS proxy on one host with one Compose file."
 sidebar:
   order: 14
 ---
 
 This page gives you the whole stack in two files: the engine
-(`ghcr.io/lyeve-labs/lyeve-core`), the admin console (`ghcr.io/lyeve-labs/lyeve-admin`), a
+(`ghcr.io/lyeve-labs/lyeve-core`), LyEve Console (`ghcr.io/lyeve-labs/lyeve-admin`), a
 Postgres database and a Caddy proxy that obtains TLS certificates. Copy both files, write the
 `.env`, and run `docker compose up -d`.
 
 :::tip[Best for]
-- **Production on one server**, with the admin console and TLS included.
+- **Production on one server**, with the console and TLS included.
 - **Evaluating everything** on a machine you control, the console's screens included.
 :::
 
@@ -138,7 +138,7 @@ http://proxy:8080 {
   }
 }
 
-# The admin console. The browser also calls the engine's APIs on this origin.
+# The console. The browser also calls the engine's APIs on this origin.
 admin.yourdomain.com {
   handle /api/admin/* {
     reverse_proxy engine:3001

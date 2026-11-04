@@ -14,7 +14,7 @@ items marked "refused" itself and will not start until they pass.
 - [ ] `JWT_SECRET` is a random value of at least 16 characters (refused). [Configuration](../reference/configuration.md#start-here)
 - [ ] `ENCRYPTION_KEY` is a different random value of at least 32 characters, stored durably (refused). [Configuration](../reference/configuration.md#start-here)
 - [ ] `LYEVE_AUDIT_HMAC_KEY` is exactly 64 hex characters (refused). [Configuration](../reference/configuration.md#start-here)
-- [ ] `ADMIN_CONSOLE_KEY` holds the same value on the engine and the admin console. [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords)
+- [ ] `ADMIN_CONSOLE_KEY` holds the same value on the engine and LyEve Console. [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords)
 - [ ] `LYEVE_SETUP_TOKEN` is set when more than one replica can answer first-run setup. [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords)
 - [ ] Secrets live in a secret store or an uncommitted `.env` file. [Secure your instance](../how-to/secure-your-instance.md)
 
@@ -28,9 +28,9 @@ items marked "refused" itself and will not start until they pass.
 
 ## Network and proxies
 
-- [ ] `LYEVE_CONSOLE_URL` is the admin console's public `https` URL. [Configuration](../reference/configuration.md#network-and-proxies)
+- [ ] `LYEVE_CONSOLE_URL` is the console's public `https` URL. [Configuration](../reference/configuration.md#network-and-proxies)
 - [ ] `LYEVE_BASE_URL` is the engine's public URL. [Configuration](../reference/configuration.md#network-and-proxies)
-- [ ] `CORE_INTERNAL_URL` and `CORE_API_INTERNAL_URL` are set on the admin console. [Docker images](docker.md#the-admin-image)
+- [ ] `CORE_INTERNAL_URL` and `CORE_API_INTERNAL_URL` are set on the console. [Docker images](docker.md#the-admin-image)
 - [ ] `CORS_ORIGINS` lists the exact origins of your browser apps (`*` refused). [Secure your instance](../how-to/secure-your-instance.md)
 - [ ] `TRUSTED_PROXIES` names your proxy or load balancer CIDRs. [Secure your instance](../how-to/secure-your-instance.md)
 - [ ] `RATE_LIMIT_RPS` is set (refused unset). [Secure your instance](../how-to/secure-your-instance.md)
@@ -61,7 +61,7 @@ items marked "refused" itself and will not start until they pass.
 
 - [ ] `LYEVE_LICENSE_KEY` is set if you use paid features. [Licensing and tiers](../concepts/licensing-and-tiers.md)
 - [ ] `LYEVE_PLUGINS` is empty or names exactly the features you run. [Licensing and tiers](../concepts/licensing-and-tiers.md)
-- [ ] **Plugins** in the admin console, or `GET /api/admin/plugins/status`, shows the features you expect. [Licensing and tiers](../concepts/licensing-and-tiers.md)
+- [ ] **Plugins** in the console, or `GET /api/admin/plugins/status`, shows the features you expect. [Licensing and tiers](../concepts/licensing-and-tiers.md)
 
 ## Monitoring
 

@@ -29,7 +29,7 @@ straight to the bucket.
   [media library](media.md) does that, and stores its files here.
 :::
 
-## In the admin console
+## In the console
 
 Open **Settings > Storage**. **How storage works** explains where uploads go,
 and with no provider the page reads **No providers yet**: uploads are
@@ -50,7 +50,7 @@ have no console screen, so they are API only on v0.23.0.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. For the API
+For the console steps, you are signed in to LyEve Console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

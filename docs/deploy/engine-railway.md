@@ -84,9 +84,9 @@ the one-time `setup_token` the engine writes to its standard error, or `LYEVE_SE
 when you set it. The service's logs show standard error, so search them for `setup_token`. The
 [quickstart](../getting-started/quickstart.md) continues from step 2.
 
-## The admin console
+## LyEve Console
 
-This page sets up the engine alone. The admin console runs as its own service, from the image
+This page sets up the engine alone. The console runs as its own service, from the image
 `ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
 settings and the routing it needs.
 [Run the engine and the console together](../getting-started/engine-and-console.md) shows the

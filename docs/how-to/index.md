@@ -18,7 +18,7 @@ Each recipe stands on its own. Do them in any order.
 | Recipe | What you end up with | Needs |
 |---|---|---|
 | [Send webhooks on events](add-a-webhook.md) | An endpoint of yours called when content changes, with the signature checked and failed deliveries recovered | Free. Retry policies and resending need `webhook-pro`, and replaying a window needs `events` |
-| [Change a setting](change-a-setting.md) | A setting changed where your deployment keeps it, applied with the right restart, and confirmed in the console | Free |
+| [Change a setting](change-a-setting.md) | A setting changed where your deployment keeps it, applied with the right restart, and confirmed in LyEve Console | Free |
 | [Automate the Admin API with admin tokens](admin-tokens.md) | A credential for a CI job or script: chosen grants, one tenant, an expiry of at most 90 days, rotation and a request log | Free |
 | [Back up and restore tenants](backup-and-restore.md) | One tenant exported, validated and restored, backup jobs writing encrypted archives to S3, and a tenant cloned | `tenant-backup` |
 | [Build a custom API with flows](build-a-custom-api-with-flows.md) | One `GET` endpoint joining three content types, tested, cached, rate limited, published and moved to another tenant | Free. Custom paths and outbound nodes need `flow-pro` |

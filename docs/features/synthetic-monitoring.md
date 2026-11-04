@@ -47,7 +47,7 @@ region is a label on the result, also sent to the target as the
 `X-Synthetic-Region` header. A due probe runs once even when several replicas
 are running.
 
-In the admin console, synthetic monitoring is under **Insight > Observability > Synthetic
+In LyEve Console, synthetic monitoring is under **Insight > Observability > Synthetic
 monitoring**. The top row counts the **Probes**, how many are **Failing** and how many are
 **Paused**. Each row under **Probes** gives the probe's type and target, its state, how often
 it runs and its last run, and **All**, **Failing** and **Paused** narrow the list. The row
@@ -64,7 +64,7 @@ are read with the API on v0.23.0.
 
 ## Try it
 
-This works on a free install. For the console steps, you are signed in to the admin console as
+This works on a free install. For the console steps, you are signed in to the console as
 an admin. For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -223,7 +223,7 @@ body.
 | `alert_threshold` | Failed runs in a row before an alert. A run fails when any of its regions fails. | `3` |
 
 Set one region unless you want the same check repeated under several labels.
-A probe created in the admin console has no regions set, so it runs under all
+A probe created in the console has no regions set, so it runs under all
 four.
 
 | Type | `config` fields |
@@ -337,7 +337,7 @@ Email works on every install. Slack, Discord, PagerDuty and a signed webhook
 need `alerts-pro`, and a PagerDuty incident opened by the outage is resolved
 by the recovery. Send `null` to clear the channels. `GET` on the same path
 answers the channels and `licensed`, whether this install may add a paid one.
-In the admin console, the **Notice channels** button on a probe's row opens the
+In the console, the **Notice channels** button on a probe's row opens the
 same channels, where **Email** takes the addresses and **Save** stores them.
 [Alerts](alerts.md#alert-when-a-probe-goes-down) covers every channel.
 

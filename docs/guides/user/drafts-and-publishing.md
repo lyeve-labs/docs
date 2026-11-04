@@ -1,6 +1,6 @@
 ---
 title: Drafts, publishing and revisions
-description: "Publish and unpublish entries in the admin console, look back through an entry's revisions, and restore an earlier version."
+description: "Publish and unpublish entries in LyEve Console, look back through an entry's revisions, and restore an earlier version."
 sidebar:
   order: 3
 ---
@@ -8,7 +8,7 @@ sidebar:
 In a collection that uses draft and publish, every entry is either a **draft**, **published**
 or **archived**. You save work as a draft and publish it when it is ready. When history is on
 for the collection, every change is kept, so you can look back through an entry's history and
-bring an earlier version back. This page covers those steps in the admin console. You need the
+bring an earlier version back. This page covers those steps in LyEve Console. You need the
 `admin` or `super_admin` role.
 
 What each status means, and how revisions are kept, is explained on

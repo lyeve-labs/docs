@@ -110,6 +110,5 @@ With `--port=3002`, fetch `/.well-known/jwks.json` instead. Only the Content API
 ## Next
 
 - [Free-tier stack](free-tier-overview.md): the $0 recipe and its limits.
-- [Run the engine and the console together](../getting-started/engine-and-console.md): the admin
-  console in front of the engine, on one address.
+- [Run the engine and LyEve Console together](../getting-started/engine-and-console.md): the console in front of the engine, on one address.
 - [Production checklist](production-checklist.md): what to confirm before real traffic.

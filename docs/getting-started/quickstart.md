@@ -6,7 +6,7 @@ sidebar:
 ---
 
 This is the shortest path from nothing to your first entry. You start a database and the
-engine on Docker, then take each step in the admin console or with `curl`. You need Docker,
+engine on Docker, then take each step in LyEve Console or with `curl`. You need Docker,
 `curl` and `openssl`.
 
 The API steps call the two APIs the engine serves: the Admin API on port 3001 and the Content
@@ -260,10 +260,9 @@ The answer is a JSON array of the entries of `post`.
 
 - [Your first content type](first-content-type.md): grow `post` into a blog with authors,
   drafts and publishing.
-- [Installation](installation.md#run-the-admin-console): run the admin console beside the
+- [Installation](installation.md#run-the-console): run the console beside the
   engine.
-- [Run the engine and the console together](engine-and-console.md): the same steps in the
-  admin console, with a Compose file that starts everything.
+- [Run the engine and the console together](engine-and-console.md): the same steps in the console, with a Compose file that starts everything.
 - [Developer guide](../guides/developer/index.md): API keys, the client libraries and
   webhooks.
 - [API endpoints](../reference/api-endpoints.md): every route on both APIs.

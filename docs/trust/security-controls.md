@@ -8,7 +8,7 @@ sidebar:
 This page answers the security section of a vendor questionnaire. Each control
 is stated as the route, header or setting a reviewer can check against a running
 install with a `super_admin` token, and each section ends with how to check it.
-Where the admin console shows the same, the page gives both paths, and the
+Where LyEve Console shows the same, the page gives both paths, and the
 console steps assume you are signed in as a super admin. Where a control does
 not exist, the page says so, and the last section lists what is not built.
 Configuration lives on each feature's page.

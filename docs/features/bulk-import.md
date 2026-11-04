@@ -9,7 +9,7 @@ sidebar:
 
 Bulk import turns a file into entries. You map the file's columns onto the fields of one
 content type, check every row with a dry run, then import. Each row becomes an entry exactly
-as if it had been created in the admin console, with a revision when
+as if it had been created in LyEve Console, with a revision when
 [content history](content-history.md) is on for the type. Every row's outcome is kept,
 rejected rows download as CSV, and a finished import can be rolled back.
 
@@ -34,7 +34,7 @@ rejected rows download as CSV, and a finished import can be rolled back.
   [Migrate existing content](../how-to/migrate-existing-content.md).
 :::
 
-In the admin console, imports are under **Insight > Imports**. **New import** opens a wizard
+In the console, imports are under **Insight > Imports**. **New import** opens a wizard
 in three steps, **Source**, **Map** and **Check**, and **History** lists every import with
 what it created, updated, skipped and rejected.
 
@@ -54,7 +54,7 @@ You need a content type `post` with a `title` text field and a `body` rich text 
 [Your first content type](../getting-started/first-content-type.md) builds one. The file is
 one row, `title,body` then `Hello,First post`.
 
-For the console steps, you are signed in to the admin console as an `admin` or
+For the console steps, you are signed in to the console as an `admin` or
 `super_admin`, and the file is saved as `posts.csv`:
 
 ```text

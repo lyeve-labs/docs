@@ -49,7 +49,7 @@ header naming another tenant answers `403`. From anyone else the header is
 ignored, so a client cannot reach another tenant by sending one. Every read
 and write is then limited to the resolved tenant.
 
-## In the admin console
+## In the console
 
 Open **Operations > Tenants**. A super admin sees every tenant with a record,
 with its slug, name, plan, status and creation date, and the buttons on a row
@@ -58,7 +58,7 @@ reads **Tenant provisioning** and **Not enabled on this instance**, and has no
 **New tenant** button. The tenant's name opens its page, with **Archive**,
 **Features**, and its **Members** with **New member**.
 
-The console has no tenant switcher. A super admin creates an account in any
+LyEve Console has no tenant switcher. A super admin creates an account in any
 tenant from **Access > Users** with **New user**, choosing the tenant under
 **Tenant**. Under **Roles**, untick **viewer**, which is ticked already, and tick the
 account's role. An account
@@ -77,7 +77,7 @@ usage costs this month in total and by resource, then its budgets and prices.
 This creates a second tenant, writes an entry into it and shows that the
 `default` tenant cannot see it. Creating a tenant needs a license with
 `multitenant-provisioning`. On a free install, step 2 answers `402`. For the
-console steps, you are signed in to the admin console as a super admin. For the
+console steps, you are signed in to the console as a super admin. For the
 API steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -187,7 +187,7 @@ curl http://localhost:3002/api/v1/content/ticket \
 The first lists the entry. The second answers `404`, because the `ticket` content type exists
 only in `acme`.
 
-**6. Open the tenant in the admin console.** In **Operations > Tenants**, `acme` is in the
+**6. Open the tenant in the console.** In **Operations > Tenants**, `acme` is in the
 list, and its page shows its members and the features it may use.
 
 ## Run more than one tenant
@@ -505,11 +505,11 @@ The answer is `201` with the budget and its `current_spend`.
 </div>
 </div>
 
-## Brand the admin per tenant
+## Brand the console per tenant
 
 > **Requires** a license with the `multitenant-customization` feature. See [pricing](https://lyeve.com/pricing/).
 
-A tenant's admin can make the admin console their own, under
+A tenant's admin can make the console their own, under
 **Settings > Customization**. Everything is kept per tenant. The same license
 also gives each tenant its own [captcha provider](captcha.md#give-a-tenant-its-own-captcha)
 and its own [metrics destination](metrics-export.md#send-a-tenant-its-own-metrics).
@@ -537,7 +537,7 @@ for the API steps you need that admin's token in `TOKEN`.
 2. Under **Brand**, enter `Acme Studio` in **Name**, `#0F766E` in **Accent color** and a
    line in **Welcome line**.
 3. Choose **Save** under those fields. The page confirms that every page of this tenant's
-   admin now carries it, and the sidebar and tab title read **Acme Studio**.
+   console now carries it, and the sidebar and tab title read **Acme Studio**.
 
 **Logo** and **Tab icon** below each take a file, a library image or an address, with a
 **Save** of their own.

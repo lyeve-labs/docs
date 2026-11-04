@@ -6,8 +6,7 @@ sidebar:
 ---
 
 The engine image carries one binary, `lyeve`, at `/app/lyeve`, and runs it as its entrypoint.
-There is no separate command-line client to install. Everything else is done in the admin
-console or over the HTTP APIs, which [API endpoints](api-endpoints.md) lists.
+There is no separate command-line client to install. Everything else is done in LyEve Console or over the HTTP APIs, which [API endpoints](api-endpoints.md) lists.
 
 ## Run the server
 

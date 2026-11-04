@@ -16,7 +16,7 @@ history and recover what failed. Every field, header and route is described on
 ## Before you start
 
 - An account with the `super_admin` role, such as the first administrator.
-  For the console steps, sign in to the admin console with it. For the API
+  For the console steps, sign in to LyEve Console with it. For the API
   steps, keep its token in `TOKEN`.
   [Sign in](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 - A content type to watch. The steps use `post` from

@@ -60,7 +60,7 @@ captures.
 Deleting a tenant deletes its captures. A privacy erasure request for a person
 deletes the captures that name them.
 
-In the admin console, request capture is under **Insight > Observability > Request capture**.
+In LyEve Console, request capture is under **Insight > Observability > Request capture**.
 
 - **Captures from every tenant** lists the newest requests with their **Tenant**, **Status**,
   how long each **Took** and when it was **Captured**. The list and its total cover every
@@ -76,7 +76,7 @@ two captures are done with the API on v0.23.0.
 
 ## Try it
 
-For the console step, you are signed in to the admin console as a super admin. Every other
+For the console step, you are signed in to the console as a super admin. Every other
 step is an API call, so you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 

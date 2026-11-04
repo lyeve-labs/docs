@@ -1,6 +1,6 @@
 ---
 title: Change a setting
-description: "Change an engine or console setting where your deployment keeps it, apply it with the right restart, and confirm the value the engine is using."
+description: "Change an engine or LyEve Console setting where your deployment keeps it, apply it with the right restart, and confirm the value the engine is using."
 sidebar:
   order: 3
 ---
@@ -14,7 +14,7 @@ Docker Compose, plain Docker and Kubernetes, and lists the settings that need ca
 
 ## Before you start
 
-- A running instance. [Run the engine and the console together](../getting-started/engine-and-console.md)
+- A running instance. [Run the engine and LyEve Console together](../getting-started/engine-and-console.md)
   starts one on your computer.
 - A `super_admin` account, to read **Settings > Configuration** or
   `GET /api/admin/config`.
@@ -27,7 +27,7 @@ The engine reads each setting from up to three places. The first one that has it
 |---|---|---|
 | An environment variable | Whoever deploys the engine | At the next restart |
 | The YAML file, `lyeve.yaml` | Whoever deploys the engine | At the next restart |
-| The admin console | A `super_admin`, on **Settings > Configuration** or a feature's own settings page | At once for most settings, otherwise at the next restart |
+| The console | A `super_admin`, on **Settings > Configuration** or a feature's own settings page | At once for most settings, otherwise at the next restart |
 
 A setting none of them sets takes the engine's default. To see which place each value came
 from:
