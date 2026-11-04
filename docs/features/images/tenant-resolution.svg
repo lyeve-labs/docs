@@ -12,7 +12,7 @@
     .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
     .head { fill: #616774; }
     @media (prefers-color-scheme: dark) {
-      .canvas { fill: #101a2b; }
+      .canvas { fill: #11171d; }
       text { fill: #e6e8ee; }
       .sub, .label, .note, .frame-label { fill: #9aa1ad; }
       .node-you { fill: #202843; stroke: #9587f2; }
