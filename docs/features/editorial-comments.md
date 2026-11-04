@@ -48,14 +48,14 @@ erased, their comments keep the text and lose the author.
 A mention must name an account whose own tenant is the one you are working in.
 The first super admin of an install started without `MULTI_TENANT=true`
 belongs to no tenant, so mentioning that account answers `400` with
-`a mentioned person has no account here`. The console's **Mention** list offers that account
+`a mentioned person has no account here`. LyEve Console's **Mention** list offers that account
 too, and the console shows the same refusal.
 :::
 
 ## Try it
 
 Run this on an install whose license carries `content-pro`. For the console steps, you are
-signed in to the admin console as an `admin` or `super_admin`. For the API steps, you need a
+signed in to the console as an `admin` or `super_admin`. For the API steps, you need a
 token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get one.
 Use an entry from [Content lifecycle](content-lifecycle.md#try-it). For the API steps, copy
 its id into `ENTRY_ID`.
@@ -238,5 +238,4 @@ and write with `content:write`.
 - [Content releases](content-releases.md): the other part of `content-pro`.
 - [Editorial review](editorial-review.md): approvals in stages, with a comment
   at each decision.
-- [Content editing](../guides/user/content-editing.md): the entry page in the
-  admin console.
+- [Content editing](../guides/user/content-editing.md): the entry page in the console.

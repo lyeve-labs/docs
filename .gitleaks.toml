@@ -1,10 +1,12 @@
 # Gitleaks configuration for docs.
 #
-#   gitleaks detect --config=.gitleaks.toml --verbose
+#   gitleaks git --config=.gitleaks.toml --verbose
 #
-# Every path below holds placeholder or fixture material only. Real
-# credentials never enter this repo. If a scan flags something outside these
-# paths, treat it as a genuine finding.
+# Every page is scanned. A page that shows a key uses a value a reader can
+# tell is not one: elided, counting, or a phrase. The allowlist matches those
+# shapes in the value itself, so a real key pasted into any page is still
+# found. A one-off sample value that no shape covers is listed by fingerprint
+# in .gitleaksignore.
 
 title = "docs gitleaks config"
 
@@ -14,22 +16,17 @@ title = "docs gitleaks config"
 [extend]
   useDefault = true
 
-
 [allowlist]
-  description = "Documentation placeholders: every key shown is illustrative"
-
-  paths = [
-    # This file quotes the patterns it allowlists, so it matches itself.
-    '''\.gitleaks\.toml$''',
-    '''\.mdx?$''',
-  ]
-
-  stopwords = [
-    "example",
-    "placeholder",
-    "changeme",
-    "your-",
-    "a-32-byte-key",
-    "sk-live-abc",
-    "s3cr3t",
+  description = "Sample values whose shape says they are not keys"
+  regexTarget = "secret"
+  regexes = [
+    # Elided with three dots, as in a token shown by its prefix.
+    '''\.\.\.$''',
+    # Counting digits, as in a routing key of 0123456789.
+    '''0123456789''',
+    # Counting digits between letters, as in 1a2b3c4d5e.
+    '''1[a-z]2[a-z]3[a-z]4[a-z]5''',
+    # A phrase of five or more short words joined by hyphens or underscores,
+    # as in a key that describes what to put there.
+    '''^[A-Za-z0-9]{1,7}(?:[-_][A-Za-z0-9]{1,7}){4,}$''',
   ]

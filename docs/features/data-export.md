@@ -39,7 +39,7 @@ find it in your S3 bucket, and a schedule runs the same export on a timetable.
 ## Try it
 
 You need a content type `post` with a few entries. For the console steps, you are signed in to
-the admin console as an `admin` or `super_admin`. For the API steps, you need a token in
+LyEve Console as an `admin` or `super_admin`. For the API steps, you need a token in
 `TOKEN` for one. The [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Start a CSV export of `post`.**
@@ -171,7 +171,7 @@ The pause answers `200` without a `next_run_at`, and the delete answers `204`.
 The console's **New export** and **New schedule** also take the **Statuses**, **Include the
 schema definitions** and **Bundle referenced media**. **When** offers **Every hour**, **Every
 day at 02:00 UTC**, **Every Monday at 02:00 UTC**, **On the first of each month at 02:00 UTC**
-and **A cron expression of my own**. Sending an export to S3, and the options below that the
+and **Custom cron expression**. Sending an export to S3, and the options below that the
 console does not list, are API only.
 
 ## Formats

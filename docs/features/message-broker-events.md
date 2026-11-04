@@ -32,7 +32,7 @@ content write.
   [Event replay](event-replay.md) publishes past changes again.
 :::
 
-## In the admin console
+## In the console
 
 As a super admin, open **Settings > Message broker**. The counters show what
 was **Published**, the **Attempts refused by the broker**, what had
@@ -72,7 +72,7 @@ producer that waits for every in-sync replica.
 
 ## Try it
 
-This uses NATS. For the console steps, you are signed in to the admin console
+This uses NATS. For the console steps, you are signed in to LyEve Console
 as a super admin. For the API steps, you need a super admin token in `TOKEN`.
 The [quickstart](../getting-started/quickstart.md) shows how to get one. You
 also need a NATS server with JetStream and the `nats` command line tool.
@@ -123,7 +123,7 @@ curl -X PUT http://localhost:3001/api/admin/config \
 ```
 
 The answer lists the keys it took under `saved`. Once saved, each key shows in
-**Settings > Configuration** with **Save** beside it. On console v0.23.0 that
+**Settings > Configuration** with **Save** beside it. On console v0.25.0 that
 page lists only settings that already have a value, so it changes a saved
 broker setting but cannot add the first one. The web application firewall
 refuses a URL that names a private IP address, so name the broker by its host

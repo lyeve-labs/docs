@@ -48,8 +48,7 @@ Emails are compared without case or surrounding spaces. Once a count passes
 { "error": "Invalid email or password.", "code": "AUTH_INVALID_CREDENTIALS", "captcha_required": true, "captcha_site_key": "0x4AAAAAAA...", "captcha_provider": "turnstile", "request_id": "..." }
 ```
 
-`captcha_provider` names the widget that `captcha_site_key` belongs to. The
-admin console's sign-in page shows that widget, keeps the email address you
+`captcha_provider` names the widget that `captcha_site_key` belongs to. LyEve Console's sign-in page shows that widget, keeps the email address you
 typed, holds **Sign in** until the widget has issued a token, and shows a
 fresh widget after each refused attempt.
 
@@ -64,7 +63,7 @@ count for the caller on the tenant's own count and answers `required` and
 from 1 to 1000, with its captcha settings. Without one, the tenant's count is
 read against `CAPTCHA_THRESHOLD`.
 
-## In the admin console
+## In the console
 
 Open **Settings > Captcha**. The page holds the tenant's own captcha, which
 its flows and pages check. A note at the top says the admin sign-in always uses
@@ -74,7 +73,7 @@ whether the instance has one set. Under **Tenant settings**, pick a
 **Provider**, enter the **Site key** and **Secret key**, and choose **Save**.
 **Clear tenant settings** puts the tenant back on the instance captcha.
 
-![The Captcha settings page on an install licensed for multitenant-customization. A note says the admin login always uses the instance captcha, a summary says this tenant's flows check Turnstile with its own keys, and the tenant settings form shows Turnstile selected with a site key filled in.](images/captcha.png)
+![The Captcha settings page on an install licensed for multitenant-customization. A note says signing in to the console always uses the instance captcha, a summary says this tenant's flows check Turnstile with its own keys, and the tenant settings form shows Turnstile selected with a site key filled in.](images/captcha.png)
 
 Saving tenant settings needs `multitenant-customization`. The instance captcha
 comes from the settings in [Turn it on](#turn-it-on).
@@ -177,7 +176,7 @@ sign-up form, and the widget on its own pages.
 1. Open **Settings > Captcha**.
 2. Under **Tenant settings**, pick `hCaptcha` in **Provider**, and enter the
    keys from your hCaptcha account in **Site key** and **Secret key**.
-3. Choose **Save**. The page says **Saved the captcha settings**, and
+3. Choose **Save**. The page says **Captcha settings saved.**, and
    **What is checked now** reads
    **This tenant's flows check hCaptcha with its own keys.**
 

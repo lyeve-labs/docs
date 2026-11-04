@@ -42,8 +42,7 @@ backup and the database migrator need a license, as their pages say.
 This brings a Strapi case study type and its entries across. The same steps work for any
 source in the first two rows of the table. The type's Strapi definition is its
 `schema.json`, saved here as `strapi-case-study.json`, with the singular name `case-study`
-and the fields `title`, `views` and `body`. For the console steps, you are signed in to the
-admin console as a super admin.
+and the fields `title`, `views` and `body`. For the console steps, you are signed in to LyEve Console as a super admin.
 
 **1. Convert the content model and read the plan.** Nothing is written.
 
@@ -56,7 +55,7 @@ admin console as a super admin.
    **Or paste the definitions**, and choose **Check**.
 
 **What importing does** shows `case_study` with **Creates**, the statements it runs, and
-**Renamed to fit the engine's names**.
+**Renamed to fit the naming rules**.
 
 </div>
 <div data-path="api">
@@ -195,7 +194,7 @@ when it is a full `http` or `https` address the target can reach.
 When both sides are LyEve tenants, the migrate routes export a tenant's content as a portable
 payload and import it into the same or another tenant, renaming fields on the way. An admin
 works on their own tenant. Naming another tenant in `tenant_id` takes `super_admin`. These
-routes are API only on v0.23.0.
+routes are API only on v0.25.0.
 
 The content types have to exist in the target tenant first. The import maps records onto
 them and never creates one, and a missing type answers `404` with `import failed`.
@@ -260,7 +259,7 @@ characters, so the dump suits a small tenant.
 The database migrator copies the database under an install from one connection string to
 another, in any pairing of PostgreSQL, MySQL and SQL Server. It copies tables and rows, not
 constraints, keys or indexes. `db` is the only job `type`, and the feature is in beta. It is
-API only on v0.23.0.
+API only on v0.25.0.
 
 1. Read the compatibility report. Nothing is touched:
 

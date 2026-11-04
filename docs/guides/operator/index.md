@@ -7,17 +7,16 @@ sidebar:
 
 This guide is for whoever deploys LyEve and keeps it running, from a trial on a laptop to a
 production install with paying tenants. LyEve ships as two container images, the engine
-(`ghcr.io/lyeve-labs/lyeve-core`) and the admin console (`ghcr.io/lyeve-labs/lyeve-admin`),
+(`ghcr.io/lyeve-labs/lyeve-core`) and LyEve Console (`ghcr.io/lyeve-labs/lyeve-console`),
 on PostgreSQL, MySQL 8.0 or 8.4, or SQL Server. The pages below hold the detail.
 
-In the admin console, **Settings** groups every settings screen by what you came to change:
+In the console, **Settings** groups every settings screen by what you came to change:
 
 ![The Settings page: your account, workspace, sign-in and access, and APIs and delivery, each with its settings screens.](../../how-to/images/settings.png)
 
 ## Your first hour
 
-1. [Installation](../../getting-started/installation.md): run the engine and the admin
-   console, and the settings a production engine refuses to start without.
+1. [Installation](../../getting-started/installation.md): run the engine and the console, and the settings a production engine refuses to start without.
 2. [Quickstart](../../getting-started/quickstart.md): create the first administrator with the
    setup token and check the engine answers.
 3. [Docker Compose](../../deploy/docker-compose.md): both images and the proxy in front of

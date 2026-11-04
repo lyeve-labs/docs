@@ -9,7 +9,7 @@ sidebar:
 
 An access rule says what one role may do with one resource. It names the role,
 the resource, the actions allowed, and the fields removed from what that role
-reads. Rules apply to people who sign in, in the admin console or with a
+reads. Rules apply to people who sign in, in LyEve Console or with a
 session token, and to API keys through the roles each key carries.
 
 :::tip[Best for]
@@ -30,7 +30,7 @@ session token, and to API keys through the roles each key carries.
   [roles and permissions](../guides/user/roles-and-permissions.md).
 :::
 
-## In the admin console
+## In the console
 
 Open **Access > Permissions**. Only a super admin sees the page. Each role is a
 row, and expanding it lists its rules: **Every schema** for the `*` rule, then
@@ -208,8 +208,8 @@ for the same role.
 
 On **Access > Permissions**, choose the plus button on the role's row and pick
 the content type in **Resource**. Leave every action clear and choose
-**Create**. Before you create it, the form says **This rule shuts** the role
-**out**, and that the role is denied every action on that content type.
+**Create**. Before you create it, the form says **This rule blocks** the role,
+and that the role is denied every action on that content type.
 
 </div>
 <div data-path="api">

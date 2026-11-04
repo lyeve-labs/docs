@@ -42,11 +42,11 @@ a signed-in user download or erase their own data.
 | Part | What it gives you | Where |
 |---|---|---|
 | **Daily figures** | `dau`, `storage` and `new_users` for one tenant and one day, computed for every tenant after the day ends. | Admin API |
-| **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API and admin console |
+| **Event forwarding** | Content events and your own events, saved and sent to each enabled service, with the outcome kept on each event. | Admin API and LyEve Console |
 | **Tenant usage** | A super admin's view of usage and activity across tenants, and each tenant's own view. | Admin and Content API |
 | **Privacy requests** | A user's own export and erasure. | Content API |
 
-## In the admin console
+## In the console
 
 Open **Insight > Analytics destinations**. **Destinations** lists the services
 this tenant's events go to, with each one's type, whether it is on and how many
@@ -57,15 +57,15 @@ by **All**, **Retrying** or **Failed**.
 
 The daily figures, sending and listing events, the usage across tenants and
 a person's own export and erasure have no page in the console, so they are API only on
-v0.23.0.
+v0.25.0.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an admin. For the API
+For the console steps, you are signed in to the console as an admin. For the API
 steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
-**1. Send an event of your own.** This is API only on v0.23.0.
+**1. Send an event of your own.** This is API only on v0.25.0.
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/analytics/events \
@@ -80,7 +80,7 @@ The answer is `201`:
 { "id": "7c9fbec4-d3b2-4d06-aa63-2ee70f026940", "tenant_id": "default", "event_name": "checkout_started", "event_category": "store", "properties": { "cart_value": 49 }, "provider_types": null, "processed": false, "created_at": "2026-10-01T09:08:51Z" }
 ```
 
-**2. List the events in that category.** This is API only on v0.23.0.
+**2. List the events in that category.** This is API only on v0.25.0.
 
 ```bash
 curl "http://localhost:3001/api/admin/analytics/events?category=store&limit=10" \
@@ -124,7 +124,7 @@ Without it the answer is `503` with the code `analytics.secrets_unavailable`.
 <div data-path="console">
 
 **Destinations** lists `main-ga4` with its type, **Off**, and **One attempt** under
-**Retries**. **Deliveries owed** reads **Nothing is owed**.
+**Retries**. **Deliveries owed** reads **No deliveries owed**.
 
 ![The Analytics destinations page with one Google Analytics 4 destination named main-ga4, switched off, with one attempt per event and nothing owed.](images/analytics.png)
 

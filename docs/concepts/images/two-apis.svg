@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="298" viewBox="0 0 720 298">
   <title>The two APIs</title>
-  <desc>One engine serves two HTTP APIs over one database. The admin console and your scripts call the Admin API at /api/admin/ on port 3001 with a session token or an admin token. Your sites and apps call the Content API at /api/v1/ on port 3002 with an API key or a session token. A token from POST /api/admin/auth/login works on both. GraphQL and gRPC reach the same content, each with a license feature of its own.</desc>
+  <desc>One engine serves two HTTP APIs over one database. LyEve Console and your scripts call the Admin API at /api/admin/ on port 3001 with a session token or an admin token. Your sites and apps call the Content API at /api/v1/ on port 3002 with an API key or a session token. A token from POST /api/admin/auth/login works on both. GraphQL and gRPC reach the same content, each with a license feature of its own.</desc>
   <style>
     .canvas { fill: #ffffff; }
     text { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #111827; }
@@ -31,7 +31,7 @@
   <rect class="canvas" width="720" height="298"/>
 
   <rect class="node" x="14" y="62" width="156" height="56" rx="8"/>
-  <text class="title" x="92" y="85" text-anchor="middle">Admin console</text>
+  <text class="title" x="92" y="85" text-anchor="middle">LyEve Console</text>
   <text class="sub" x="92" y="104" text-anchor="middle">and your scripts</text>
 
   <rect class="node-you" x="14" y="150" width="156" height="56" rx="8"/>

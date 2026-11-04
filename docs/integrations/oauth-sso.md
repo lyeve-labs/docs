@@ -1,6 +1,6 @@
 ---
 title: Sign-in options
-description: Compare every way people can sign in to the admin console, from passwords and magic links to OAuth, SAML, SCIM, MFA and trusted devices, and pick one.
+description: Compare every way people can sign in to LyEve Console, from passwords and magic links to OAuth, SAML, SCIM, MFA and trusted devices, and pick one.
 sidebar:
   order: 7
 ---
@@ -37,7 +37,7 @@ and its address. On an install with several tenants, the same address can be
 a different account in each tenant, and a sign-up, password reset or magic link
 answers the same whether another tenant holds the address or nobody does. An
 account that signs in with a password under its own address works as before.
-The console's user list marks these accounts **Signs in through your identity
+LyEve Console's user list marks these accounts **Signs in through your identity
 provider**.
 
 Because an address can repeat across tenants, a session's `email` claim does
@@ -50,8 +50,10 @@ Password sign-in, password reset and magic link take an optional `tenant`
 field in the request body. The tenant the request's hostname resolves always
 wins over it, so the field counts only where the hostname names no tenant. The
 console's sign-in, forgot password and email link pages show it as
-**Organization (optional)**. A reset link carries the account's tenant, and
-the sign-in page it leads to fills the field in.
+**Organization (optional)** when the console runs with
+`SIGN_IN_ORGANIZATION=true`. A reset link carries the account's tenant. With
+the switch on, the sign-in page it leads to fills the field in. With it off,
+the console sends no tenant, so only the hostname can name one.
 
 ### Sign-in without the provider
 

@@ -168,7 +168,7 @@ across a piece at a time.
 ## Declaring content types in configuration
 
 Content types can live in `lyeve.yaml` beside your settings, so a whole project stands up from a
-repository with no clicks in the console:
+repository with no clicks in LyEve Console:
 
 ```yaml
 $include: schemas/*.yaml
@@ -205,7 +205,7 @@ The dry run still comes first, so you see the result before anything is written.
 In the **Import** drawer, pick the system in **Where the definitions come from**:
 **JSON Schema**, **OpenAPI or Swagger components**, **Strapi content types**,
 **Contentful content model** or **WordPress (an ACF field-group export)**. Add or paste that
-system's file and choose **Check**. Under the plan, **Renamed to fit the engine's names** and
+system's file and choose **Check**. Under the plan, **Renamed to fit the naming rules** and
 **Read before importing** list what conversion changed.
 
 </div>

@@ -161,7 +161,7 @@ license opens the part:
 | `multitenant-provisioning` | Tenants | Creating tenants. |
 | `tenant-backup` | Tenants | Backing up, restoring and cloning a tenant. |
 | `migration-toolkit` | Tenants | Jobs that copy a database to another one, across database types, with cancel and rollback. |
-| `multitenant-customization` | Tenants, captcha, metrics export | The admin console branded per tenant, a [captcha provider](../features/captcha.md#give-a-tenant-its-own-captcha) per tenant, and a [metrics destination](../features/metrics-export.md#send-a-tenant-its-own-metrics) per tenant. |
+| `multitenant-customization` | Tenants, captcha, metrics export | LyEve Console branded per tenant, a [captcha provider](../features/captcha.md#give-a-tenant-its-own-captcha) per tenant, and a [metrics destination](../features/metrics-export.md#send-a-tenant-its-own-metrics) per tenant. |
 | `audit-retention` | Audit log | Retention policies and legal holds. A license with `audit` includes it. |
 | `audit-pro` | Audit log | [Streaming the log](../features/audit-log-streaming.md) to Splunk, Datadog or HTTPS. It needs `audit` on the same license, and a license with `audit` does not include it. |
 | `support` | AI | The support desk. It needs `ai` on the same license. |
@@ -388,7 +388,7 @@ The other two, `GET /api/admin/plugins/status` and
 
 | Field | Meaning |
 |---|---|
-| `plan`, `plan_label` | The plan, and the label the admin console shows. |
+| `plan`, `plan_label` | The plan, and the label the console shows. |
 | `state` | `free`, `active` or `grace`. |
 | `features` | Every name the install may run, sorted: the license's names, the free features and the free capabilities. |
 | `tenant_quota` | How many tenants the install may hold. `0` means unlimited. |

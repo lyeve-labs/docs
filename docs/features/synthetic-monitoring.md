@@ -47,7 +47,7 @@ region is a label on the result, also sent to the target as the
 `X-Synthetic-Region` header. A due probe runs once even when several replicas
 are running.
 
-In the admin console, synthetic monitoring is under **Insight > Observability > Synthetic
+In LyEve Console, synthetic monitoring is under **Insight > Observability > Synthetic
 monitoring**. The top row counts the **Probes**, how many are **Failing** and how many are
 **Paused**. Each row under **Probes** gives the probe's type and target, its state, how often
 it runs and its last run, and **All**, **Failing** and **Paused** narrow the list. The row
@@ -58,13 +58,13 @@ has an open alert, an **Unacknowledged alerts** card lists it with an **Acknowle
 a **Timeout, in seconds**, the **Failures before an alert** and whether to **Run on the
 schedule**. The form has no region field, so a probe created there runs under all four region
 labels, and its timeout starts at `10` where the API's default is `30`. Response time trends
-are read with the API on v0.23.0.
+are read with the API on v0.25.0.
 
 ![The Synthetic monitoring page with two probes: Checkout API, a health check that is failing, and Partner feed webhook, a webhook delivery that is paused.](images/synthetic-monitoring.png)
 
 ## Try it
 
-This works on a free install. For the console steps, you are signed in to the admin console as
+This works on a free install. For the console steps, you are signed in to the console as
 an admin. For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -118,8 +118,8 @@ Copy the `id` into `PROBE_ID`.
 Choose the run button on its row, labeled **Run Public site now**. The page reports
 `Public site passed in` with the response time, and **Last run** updates.
 
-On v0.23.0, **Run now** on a failing probe can stop before it records its results, so wait
-for the schedule or use the API.
+A run on a failing probe can outlast the page's wait. The page then says **Public site is still
+running. Its results appear in the list when it finishes.**, and **Last run** updates when it does.
 
 </div>
 <div data-path="api">
@@ -141,7 +141,7 @@ an `error_message`. The run counts toward the alert threshold the same as a sche
 </div>
 </div>
 
-**3. Read the response time trend for the last hour.** This is API only on v0.23.0. If you
+**3. Read the response time trend for the last hour.** This is API only on v0.25.0. If you
 created the probe in the console, list the probes and copy its `id` into `PROBE_ID`:
 
 ```bash
@@ -189,8 +189,8 @@ curl "http://localhost:3001/api/admin/synthetic-monitoring/alerts?acknowledged=f
 <div data-path="console">
 
 Choose the delete button on its row, labeled **Delete Public site**. The dialog asks
-"Delete Public site? Its results and its alert history go with it." Press **Delete**, and the
-page reports `Deleted Public site`.
+"Delete Public site? Its results and alert history are deleted. This cannot be undone."
+Press **Delete**, and the page reports **Probe deleted.**
 
 </div>
 <div data-path="api">
@@ -223,7 +223,7 @@ body.
 | `alert_threshold` | Failed runs in a row before an alert. A run fails when any of its regions fails. | `3` |
 
 Set one region unless you want the same check repeated under several labels.
-A probe created in the admin console has no regions set, so it runs under all
+A probe created in the console has no regions set, so it runs under all
 four.
 
 | Type | `config` fields |
@@ -337,7 +337,7 @@ Email works on every install. Slack, Discord, PagerDuty and a signed webhook
 need `alerts-pro`, and a PagerDuty incident opened by the outage is resolved
 by the recovery. Send `null` to clear the channels. `GET` on the same path
 answers the channels and `licensed`, whether this install may add a paid one.
-In the admin console, the **Notice channels** button on a probe's row opens the
+In the console, the **Notice channels** button on a probe's row opens the
 same channels, where **Email** takes the addresses and **Save** stores them.
 [Alerts](alerts.md#alert-when-a-probe-goes-down) covers every channel.
 

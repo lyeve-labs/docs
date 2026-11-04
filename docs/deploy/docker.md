@@ -1,6 +1,6 @@
 ---
 title: Docker images
-description: "Run the engine and admin console images on your own hosts: tags, ports, volumes, settings, TLS and health checks."
+description: "Run the engine and LyEve Console images on your own hosts: tags, ports, volumes, settings, TLS and health checks."
 sidebar:
   order: 12
 ---
@@ -19,22 +19,22 @@ proxy, copy the files on [Docker Compose](docker-compose.md).
 | Image | What it runs | Platforms |
 |---|---|---|
 | `ghcr.io/lyeve-labs/lyeve-core` | The engine: the Admin API, the Content API and every feature | `linux/amd64`, `linux/arm64` |
-| `ghcr.io/lyeve-labs/lyeve-admin` | The admin console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
+| `ghcr.io/lyeve-labs/lyeve-console` | LyEve Console, a Node server that calls the engine for the browser | `linux/amd64`, `linux/arm64` |
 
 Each release publishes three tags per image:
 
 | Tag | Moves? |
 |---|---|
-| `0.57.0` | Never. One release, exactly |
-| `0.57` | To the latest patch of that minor release |
+| `0.58.0` | Never. One release, exactly |
+| `0.58` | To the latest patch of that minor release |
 | `latest` | To every new release |
 
-Tags carry no `v` prefix: release `v0.57.0` is the image tag `0.57.0`. Pin an exact version in
+Tags carry no `v` prefix: release `v0.58.0` is the image tag `0.58.0`. Pin an exact version in
 production and upgrade on purpose.
 
 ### Release candidates
 
-Before a release, the engine and the admin console publish one or more release candidates,
+Before a release, the engine and the console publish one or more release candidates,
 tagged `X.Y.Z-rc.N`. A candidate is the build we intend to ship, published so you can try the
 upgrade on a copy of your own deployment before the release is final. An urgent fix can ship
 without one.
@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.57.0
+  ghcr.io/lyeve-labs/lyeve-core:0.58.0
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -106,10 +106,10 @@ lists every check.
 
 | Variable | Purpose |
 |---|---|
-| `LYEVE_CONSOLE_URL` | The admin console's public URL, `https` in production. Password reset and magic-link emails link to it. Unset in production, those features refuse to start and device sign-in answers `503` |
+| `LYEVE_CONSOLE_URL` | The console's public URL, `https` in production. Password reset and magic-link emails link to it. Unset in production, those features refuse to start and device sign-in answers `503` |
 | `CORS_ORIGINS` | Browser origins allowed to call the APIs cross-origin, comma-separated |
 | `TRUSTED_PROXIES` | CIDRs of your reverse proxies, so the engine reads the client address from `X-Forwarded-For`. Without it every request counts as the proxy's, and the per-address limits apply to all users together |
-| `ADMIN_CONSOLE_KEY` | A secret of 32 characters or more, shared with the admin console, so sign-in limits count each browser |
+| `ADMIN_CONSOLE_KEY` | A secret of 32 characters or more, shared with the console, so sign-in limits count each browser |
 | `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, 16 characters or more |
 | `LYEVE_LICENSE_KEY` | Your license, for the paid features |
 
@@ -131,6 +131,7 @@ is on [Configuration](../reference/configuration.md).
 | `CORE_API_INTERNAL_URL` | Where the API reference page sends the calls it runs under `/api/v1`. Set it to the same base as `CORE_INTERNAL_URL`, or to the engine's port 3002. The console refuses to start when it is unset or points at the console itself |
 | `ADMIN_CONSOLE_KEY` | The same value the engine holds |
 | `ADDRESS_HEADER`, `XFF_DEPTH` | Behind a proxy, `X-Forwarded-For` and `1`, so the console sees the browser's address |
+| `SIGN_IN_ORGANIZATION` | `true` shows **Organization (optional)** on the sign-in, password reset and email link pages, for a console that serves more than one organization on an address that names none. Off by default |
 | `PORT` | Listen port. Default `3002` |
 
 A base URL such as `http://engine:3001` sends Content API calls to the wrong listener, and they
@@ -146,7 +147,7 @@ also calls the engine on the console's origin, so the console's public site rout
 |---|---|
 | `/api/admin/*` | engine `:3001` |
 | `/api/*` and `/.well-known/*` | engine `:3002` |
-| everything else | admin console `:3002` |
+| everything else | console `:3002` |
 
 A Content API host for your sites and apps sends everything to engine `:3002`. Give the Admin
 API no public host of its own unless a tool outside your network needs it.
@@ -183,10 +184,27 @@ curl -s -H 'X-Forwarded-Proto: https' http://localhost:3001/api/admin/setup
 The probe answers `{"status":"ok", ...}` with its checks. The other two paths redirect to
 HTTPS under `SECURE_COOKIE=true`, so these local checks send the header your proxy would. The
 JWKS response lists the engine's public signing key. A new install answers the setup request
-with `{"setup_required":true,"token_source":"log"}`: the token is the one the engine printed,
+with `{"setup_required":true,"token_source":"log"}`: the token is the one the engine wrote to its standard error,
 which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETUP_TOKEN` set,
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
+
+## Upgrading to console 0.25.0
+
+Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so run that image from now
+on. Every 0.25 release is also published under `ghcr.io/lyeve-labs/lyeve-admin` with the same
+tags and digests, until 0.26.0, and the tags already published there stay.
+[Docker Compose](docker-compose.md#upgrading-to-console-0250) has the details.
+
+## Upgrading to 0.58.0 and console 0.24.0
+
+Upgrade the engine before the console, and back up the database first. A new install's setup
+token is on the engine's standard error, outside the log. With implicit TLS off, a send to a
+mail relay that does not offer STARTTLS fails, so fix the relay before you upgrade. A quota's
+grace period now delays its block. Console 0.24.0 asks for an organization at sign-in only with
+`SIGN_IN_ORGANIZATION=true`.
+[Docker Compose](docker-compose.md#upgrading-to-0580-and-console-0240) explains each step and
+the changes your API clients and your directory see.
 
 ## Upgrading to 0.57.0 and console 0.23.0
 

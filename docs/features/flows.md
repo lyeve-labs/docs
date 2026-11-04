@@ -7,8 +7,7 @@ sidebar:
 
 > **Included free** on every install, up to twenty flows per tenant on the free triggers and nodes. More flows, custom endpoint paths, webhooks, other protocols, outbound nodes and datasources need a license with the `flow-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
-A flow does a job for you when something happens. You draw it in the admin
-console as a few connected boxes: one thing starts it, the next boxes do the
+A flow does a job for you when something happens. You draw it in LyEve Console as a few connected boxes: one thing starts it, the next boxes do the
 work, and the last one answers the caller or finishes. There is no code
 to write and no server to deploy, and you can run every step against a real
 payload before anything goes live.
@@ -32,7 +31,7 @@ payload before anything goes live.
   [Scheduled jobs](scheduled-jobs.md) do that and keep a run history.
 :::
 
-## In the admin console
+## In the console
 
 Open **Flows**. The list shows each flow's **Slug**, **Status**, **Trigger**,
 **Version** and **Last run**, with **New flow**, **Import**, **Datasources** and
@@ -68,7 +67,7 @@ returned.
 
 This builds a small endpoint that greets whoever calls it. It uses only free
 nodes, so it runs on any install. For the console steps, you are signed in to
-the admin console. For the API steps, you need an admin token in `TOKEN`. The
+the console. For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 
 **1. Create the flow as a draft.**
@@ -209,7 +208,7 @@ step with its input, output, timing and error.
 - Add `"until_node": "<id>"` to stop after one node while you work on the
   steps before it.
 
-On the editor's **Test** tab, **Live side effects** and **Until node** do the
+On the editor's **Test** tab, **Allow side effects** and **Stop after node** do the
 same.
 
 A flow's status tells you whether it runs:

@@ -1,6 +1,6 @@
 ---
 title: Glossary
-description: "Look up what a LyEve term means where you meet it in the admin console, the APIs and these docs."
+description: "Look up what a LyEve term means where you meet it in LyEve Console, the APIs and these docs."
 sidebar:
   order: 4
 ---
@@ -12,10 +12,6 @@ fields a read hides from it. See [Access rules](../features/access-rules.md).
 **Admin API**
 The HTTP API on port `3001`, under `/api/admin/`, that manages the instance: sign-in, content
 types, users, settings. See [the two APIs](../concepts/index.md#the-two-apis).
-
-**Admin console**
-The web interface for editors and administrators. It signs you in and calls the Admin API for
-you, so nothing it does is out of reach of a script. See the [User guide](../guides/user/index.md).
 
 **Admin token**
 A credential for scripts that call the Admin API, of the form `lyat_...`. It acts in one
@@ -85,6 +81,15 @@ token without a shared secret.
 The value of `LYEVE_LICENSE_KEY`. Either a signed token, checked on the instance with no
 network call, or a key starting `lyeve_live_` that the engine exchanges for a token. See
 [Licensing and tiers](../concepts/licensing-and-tiers.md).
+
+**LyEve Console**
+The browser app your team works in: write and publish content, manage users and roles, and
+configure the engine. It signs you in and calls the Admin API for you, so nothing it does is
+out of reach of a script. See [LyEve Console](../console/index.md).
+
+**LyEve Core**
+The engine. It stores your content, accounts and tenants on PostgreSQL, MySQL or SQL Server and
+serves them over an API. MIT licensed. See [Concepts](../concepts/index.md).
 
 **Preset**
 A ready-made set of content types created in one call. Once created, the content types are

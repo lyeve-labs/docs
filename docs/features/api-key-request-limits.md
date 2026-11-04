@@ -40,7 +40,7 @@ still change before it is marked stable.
   bandwidth.
 :::
 
-## In the admin console
+## In the console
 
 Open **Access > API keys**. The **Usage (this month)** column shows each key's
 requests, with a bar for a key that has a monthly limit and its other limits
@@ -193,7 +193,7 @@ alone.
 </div>
 </div>
 
-Both routes, and the console's forms, take an `admin` or `super_admin` with a
+Both routes, and LyEve Console's forms, take an `admin` or `super_admin` with a
 signed-in session. An [admin token](../how-to/admin-tokens.md) or another API
 key is refused.
 

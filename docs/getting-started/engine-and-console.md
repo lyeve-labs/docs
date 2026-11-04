@@ -1,11 +1,11 @@
 ---
-title: Run the engine and the console together
-description: "Start the engine, the console and a database with one Compose file, then sign in, tour the console and change a setting."
+title: Run the engine and LyEve Console together
+description: "Start the engine, LyEve Console and a database with one Compose file, then sign in, tour the console and change a setting."
 sidebar:
   order: 6
 ---
 
-This page starts the whole product on your computer: the engine, the admin console, a
+This page starts the whole product on your computer: the engine, the console, a
 PostgreSQL database and a small proxy that puts all of them on one address. After the files are
 written, everything happens in the browser. It takes about fifteen minutes.
 
@@ -15,7 +15,7 @@ You need Docker with Compose (Docker Desktop, or Docker Engine with the Compose 
 
 ## How the pieces fit
 
-![The browser reaches the proxy on port 8080, which sends each path to the engine's Admin API, its Content API or the admin console. The engine keeps content and settings in Postgres.](images/stack.svg)
+![The browser reaches the proxy on port 8080, which sends each path to the engine's Admin API, its Content API or the console. The engine keeps content and settings in Postgres.](images/stack.svg)
 
 Your browser talks to one address, `http://localhost:8080`. The proxy sends each request to the
 piece that answers it:
@@ -24,7 +24,7 @@ piece that answers it:
 |---|---|
 | `/api/admin/...` | The engine's Admin API |
 | `/api/...` and `/.well-known/...` | The engine's Content API |
-| Everything else | The admin console |
+| Everything else | The console |
 
 The console's own server calls the engine through the same proxy. Because the browser sees a
 single address, sign-in cookies work with no extra settings.
@@ -77,7 +77,7 @@ services:
         condition: service_healthy
 
   admin:
-    image: ghcr.io/lyeve-labs/lyeve-admin:latest
+    image: ghcr.io/lyeve-labs/lyeve-console:latest
     restart: unless-stopped
     environment:
       ORIGIN: http://localhost:8080
@@ -136,7 +136,7 @@ What the less obvious lines do:
 |---|---|
 | `APP_ENV: development` | Relaxes the checks a production engine makes, such as HTTPS-only cookies, so the stack runs on plain `http` |
 | `sslmode=disable` | The database is reachable only inside the Compose network, so the connection needs no TLS here |
-| `LYEVE_SETUP_TOKEN` | You choose the token that guards the first administrator, so you do not have to find it in the engine's log |
+| `LYEVE_SETUP_TOKEN` | You choose the token that guards the first administrator, so you do not have to find it in the engine's standard error |
 | `ORIGIN` | The address you open in the browser. It has to match exactly, port included, or sign-in fails |
 | `LYEVE_CONSOLE_URL` | The same address, for the engine. Password reset and sign-in link emails point there |
 | `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL` | Where the console's server reaches the engine: through the proxy, by its name inside the network |

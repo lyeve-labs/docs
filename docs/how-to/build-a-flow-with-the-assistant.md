@@ -26,7 +26,7 @@ publish, as with a flow you drew by hand.
 - **An email sender** is configured, for the example's mail. See
   [email](../features/email.md).
 - **A `tickets` content type** with `subject` and `body` fields.
-- **For the console steps**, you are signed in to the admin console as an
+- **For the console steps**, you are signed in to LyEve Console as an
   admin. **For the API steps**, you need an admin token in `TOKEN` and `jq`.
   The [quickstart](../getting-started/quickstart.md) shows how to get a
   token.
@@ -36,7 +36,7 @@ publish, as with a flow you drew by hand.
 <div class="paths">
 <div data-path="console">
 
-Open **Flows** in the admin console and open a flow, new or existing. The
+Open **Flows** in the console and open a flow, new or existing. The
 drawer below the canvas has the tabs **Test**, **Runs**, **Assistant** and
 **Guide**. **Assistant** opens with a box headed "Describe the flow" and a
 note saying what is sent: the flow on the canvas, the node catalog and your
@@ -47,7 +47,7 @@ What the tab says after you press **Send** tells you what is missing:
 | The tab says | What to fix |
 |---|---|
 | "The assistant is switched off" | The tenant's AI switch is off on the **Settings** tab of **Operations > AI**, or the license does not carry `ai`. |
-| "The assistant is not available on this engine" | Read the message under it. `no enabled AI provider configured` means the tenant needs an enabled provider. |
+| "The assistant is not available" | Read the message under it. `no enabled AI provider configured` means the tenant needs an enabled provider. |
 
 </div>
 <div data-path="api">
@@ -167,7 +167,7 @@ edges:
 <div data-path="console">
 
 The draft is shown read-only under **Draft**, beside your prompt. Under it,
-the panel either says "The validator accepts this draft." or lists what is
+the panel either says "This draft has no problems." or lists what is
 still wrong. Each line names the node, or `flow`, with the path to the
 setting, then the problem:
 

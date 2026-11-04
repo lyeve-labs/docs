@@ -286,8 +286,8 @@ Each grant opens routes of one feature, so it opens nothing where that feature
 is not running: `webhooks:read` does nothing without
 [webhooks](../features/webhooks.md), and `audit:read` does nothing without a
 license that carries the [audit log](../features/audit-log.md). In the
-console, a group that opens nothing says **No route on this instance declares
-these grants yet.** `GET /api/admin/admin-tokens/grants`
+console, a group that opens nothing says **No routes use these grants
+yet.** `GET /api/admin/admin-tokens/grants`
 lists the routes each grant opens on your instance, and the admin OpenAPI
 document marks each one with an `x-admin-grant` extension.
 

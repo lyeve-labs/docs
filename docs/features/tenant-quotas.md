@@ -47,7 +47,7 @@ still change before it is marked stable.
 | None, or every limit `0` | Nothing. The tenant is unlimited. |
 | Soft (`is_hard_limit` off) | Responses carry warning headers. Nothing is refused. |
 | Hard, without `block_on_exceeded` | Responses carry `X-Quota-Exceeded: true`. Nothing is refused. |
-| Hard, with `block_on_exceeded` | The first request over a limit blocks the tenant. Every request then answers `429` until the block lifts. |
+| Hard, with `block_on_exceeded` | Responses carry `X-Quota-Exceeded: true` for the grace period after the first request over a limit, then the tenant is blocked. Every request then answers `429` until the block lifts. |
 
 A block lasts only as long as its cause. Raising or removing the limit lifts
 it, and so does usage falling back under the limit, such as the request count
@@ -62,7 +62,7 @@ tenant admin who tries gets `403` even for their own tenant.
 ## Try it
 
 Run this on an install whose license carries `usage-pro` and `multitenant-provisioning`. For
-the console steps, you are signed in to the admin console as a super admin. The API steps
+the console steps, you are signed in to LyEve Console as a super admin. The API steps
 need the super admin's token in `TOKEN`, and steps 3 to 5 use it in both paths. The
 [quickstart](../getting-started/quickstart.md) shows how to get one. A test tenant keeps the
 block away from your real traffic.
@@ -137,7 +137,7 @@ You see five `200` answers, then `429` twice. A blocked answer carries
 ```
 
 **4. Lift the block and the limit together.** Lifting a block is API only. The console's quota
-form in v0.23.0 has no control for it:
+form in v0.25.0 has no control for it:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/quotas/quotatest \
@@ -240,7 +240,7 @@ timestamps. `DELETE /api/admin/quotas/{tenantID}` removes it.
 | `is_hard_limit` | Whether the quota can block. | `false` |
 | `block_on_exceeded` | Block the tenant once a limit is passed. Takes effect only with `is_hard_limit`. | `false` |
 | `warn_at_pct_80`, `warn_at_pct_90` | Send the warning headers at 80% and 90%. | `true` |
-| `grace_period_hours` | Reported with the status. It does not delay a block. | `24` over the API |
+| `grace_period_hours` | How long a tenant past a hard limit is served, with `X-Quota-Exceeded`, before it is blocked. | `24` over the API |
 | `unblock` | Send `true` to clear a block. | |
 
 | Write | Needs `usage-pro` |

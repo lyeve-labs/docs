@@ -34,7 +34,7 @@ events. A client that reconnects picks up the events it missed.
   `contentChanged` subscription.
 :::
 
-## In the admin console
+## In the console
 
 Open **Insight > Realtime** to see who is connected right now.
 **Server-sent events** counts the streams **Open now** and those accepted
@@ -47,7 +47,7 @@ reads the counts again.
 ![The Realtime page with two server-sent event streams and two WebSocket connections open, all held by the default tenant, and the events pushed and broadcasts sent so far.](images/realtime.png)
 
 **Delivery > API labs** opens a socket and shows what arrives, as [Try it](#try-it)
-shows. Console v0.23.0 has no screen to broadcast or to list who is online, so
+shows. Console v0.25.0 has no screen to broadcast or to list who is online, so
 those sections use the engine API.
 
 ## How it works
@@ -92,8 +92,10 @@ An API key that holds `ws:read` receives every content notice of its tenant on
 Every connection must come from an allowed origin: its `Origin` header must be
 in `CORS_ORIGINS` or match the instance's own host. Browsers send it on every
 WebSocket and on a stream opened from another origin. An SSE stream opened
-from a page on the instance's own origin carries none, and engine v0.57.0
-refuses it. A server-side client sets it, or it is refused with
+from a page on the instance's own origin carries none. Engine v0.58.0 serves a
+stream with no `Origin` unless the browser's `Sec-Fetch-Site` header says it
+came from another site, so the instance's own pages and a server-side client
+need not set one. A stream from another site with no `Origin` is refused with
 `403 origin not allowed`.
 
 ## Try it
@@ -160,7 +162,7 @@ shows how to get one.
    ```
 
    You are on the list, with `connection_count: 1`. The list counts SSE
-   streams, and the console has no screen for it.
+   streams, and LyEve Console has no screen for it.
 
 </div>
 </div>
@@ -173,10 +175,10 @@ sends back as `Last-Event-ID`. A comment line keeps the stream open every 10
 seconds, which is inside the usual idle timeout of a proxy in front of the
 instance.
 
-A browser page cannot hold such a stream with its session on engine v0.57.0.
-From the instance's own origin it sends no `Origin`, and from another origin the
-Content API does not allow credentials. Use a WebSocket in the browser, and SSE
-from a server or a client that sets its own headers.
+On engine v0.58.0 a page served from the instance's own origin can hold such a
+stream with its session. From another origin the Content API does not allow
+credentials, so a page there uses a WebSocket. A server, or a client that sets
+its own headers, can use SSE from anywhere.
 
 ## WebSocket
 
@@ -363,7 +365,7 @@ and pongs.
 
 | Status | Message | Cause |
 |---|---|---|
-| `403` | `origin not allowed` | The `Origin` header is missing, or not in `CORS_ORIGINS` and not the instance's host |
+| `403` | `origin not allowed` | The `Origin` header is not in `CORS_ORIGINS` and not the instance's host. It is missing on a WebSocket, or on an SSE stream the browser marks as coming from another site |
 | `403` | `insufficient scope for requested topics` | The token's scopes cover none of the requested SSE topics |
 | `403` | `insufficient scope` | An API key with scopes lacks `realtime:read` or `ws:read` |
 | `400` | `invalid topic parameter: ...` | A topic is empty, too long or holds a line break |

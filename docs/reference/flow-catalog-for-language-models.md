@@ -19,10 +19,10 @@ any other flow.
 **1. Give the model the catalog.** Copy everything from the heading
 "LyEve flow definitions" to the end of this page into the model's context.
 This page is the current copy. The instance also serves a copy of its own, but
-on engine v0.57.0 that copy lags this page: it leaves out the node types other
+on engine v0.58.0 that copy lags this page: it leaves out the node types other
 features add, and it describes a few behaviors the engine no longer has, such
 as the output of `data.aggregate` without `group_by`. Use this page. Only the
-API serves the instance's copy, because console v0.23.0 has no download for
+API serves the instance's copy, because LyEve Console v0.25.0 has no download for
 it.
 
 ```bash
@@ -47,7 +47,7 @@ Open **Flows** and choose **Import**. Paste the YAML under
 **Definition file**. Keep **Create a new flow** and choose **Import**.
 
 The editor opens on the new draft. A definition with a problem keeps the
-dialog open under **The definition did not validate.**, with one line per
+dialog open under **Fix the problems in the definition.**, with one line per
 problem naming the node, the key and what is wrong. A type marked `Tier: pro`
 on an instance without `flow-pro` reads
 **One element uses what this instance does not enable**, followed by the node

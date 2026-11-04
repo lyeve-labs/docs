@@ -1,6 +1,6 @@
 ---
 title: Audit log
-description: Record who did what in the admin, search and export the log, and set how long entries are kept with retention policies and legal holds.
+description: Record who did what in LyEve Console and the Admin API, search and export the log, and set how long entries are kept with retention policies and legal holds.
 sidebar:
   order: 6
 ---
@@ -53,7 +53,7 @@ every entry they remove, and an erasure seals each entry it anonymizes. The
 chain stays verifiable through all four, and a super admin checks it with
 [`GET /api/admin/audit-log/verify`](#verify-the-chain).
 
-## In the admin console
+## In the console
 
 Open **Insight > Audit log**. The **Entries** tab lists the log, newest first,
 with the time, action, resource, user and address of each entry. Type an
@@ -74,7 +74,7 @@ on a hold removes it, and **Enforce now** runs enforcement at once. The
 ![The Retention and holds tab with a policy that keeps every event on user for six months and archives it to default, and a legal hold named Case 2026-114 that protects entries on user.](images/audit-log-retention.png)
 
 Checking the chain, rehashing it, sending an export to S3 and the compliance
-export of a hold are done with the API. The console has no control for them on
+export of a hold are done with the API. LyEve Console has no control for them on
 this release.
 
 ## Turn it on
@@ -192,7 +192,7 @@ List the retention policies. A new install has none:
 <div data-path="console">
 
 Open the **Retention and holds** tab. **Policies** reads **No retention
-policy** and **Legal holds** reads **Nothing is held**.
+policies yet** and **Legal holds** reads **No legal holds yet**.
 
 </div>
 <div data-path="api">

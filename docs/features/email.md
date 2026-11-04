@@ -50,7 +50,7 @@ Every send checks the tenant's suppression list. A suppressed address is
 dropped, a send with nobody left is refused, and if the list cannot be read the
 send is refused too.
 
-## In the admin console
+## In the console
 
 Open **Settings > Email**. **Provider pool** lists the tenant's providers.
 **New provider** opens a form: pick **SMTP** or **Provider API** as the
@@ -81,7 +81,7 @@ deleted. **Triggers**, beside it, holds the
 ## Try it
 
 These steps create a template, translate it and preview it, which works on a
-free install. For the console steps, you are signed in to the admin console.
+free install. For the console steps, you are signed in to LyEve Console.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 
@@ -142,7 +142,7 @@ that one with `GET /api/admin/email-templates/key/welcome` and use its `id`.
 </div>
 
 **3. Add a French translation.** Only the API holds translations: the
-template form in console v0.23.0 has no locale. From the console path, get a
+template form in console v0.25.0 has no locale. From the console path, get a
 token for your console account as
 [Sign in](../getting-started/quickstart.md#3-sign-in) shows, and read the
 template's id first:
@@ -273,8 +273,8 @@ range Tailscale hands out, needs no entry when the engine runs with
 `LYEVE_OUTBOUND_ALLOW_CGNAT=true`.
 
 `SMTP_TLS=true` uses implicit TLS, usually on port 465. Any other value
-connects in plain text and upgrades with STARTTLS when the relay offers it, so
-a relay that does not offer it gets the mail unencrypted. TLS is 1.2 or
+connects in plain text and upgrades with STARTTLS, and a send to a relay that
+does not offer STARTTLS fails. TLS is 1.2 or
 later. Line breaks are stripped from `From`,
 `To` and `Subject`, so a value cannot add headers. LyEve does not DKIM-sign
 mail: your relay or provider does, so publish the SPF, DKIM and DMARC records
@@ -301,7 +301,7 @@ The first SMTP provider is free. To add one:
 4. Keep **Priority** at `0`, enter `1000` in **Max per hour**, and choose
    **Create**.
 
-The SMTP form in console v0.23.0 has no field for `webhook_secret`, which the
+The SMTP form in console v0.25.0 has no field for `webhook_secret`, which the
 [delivery webhook](#record-bounces-opens-and-clicks) checks, so set that one
 over the API.
 
@@ -529,7 +529,7 @@ answered, and a failed send is logged without failing the write.
 ## Bounces and suppressions
 
 Bounce classification, the bounce list and its stats need `email-pro`. The
-suppression list is free. Only the API manages it: console v0.23.0 has no page
+suppression list is free. Only the API manages it: console v0.25.0 has no page
 for the suppression list or for bounces. A bounce is classified as `hard` or `soft`, with a category such as invalid
 mailbox, mailbox full, spam blocked, rate limited, DNS failure or TLS failure,
 from an enhanced status code such as `5.1.1`, a plain SMTP code or the
@@ -574,7 +574,7 @@ Both run in the flow's tenant and refuse a `tenant_id` variable. Both need
 ## Settings
 
 Each setting is read from its environment variable, the configuration file, or
-the feature's form in the admin console. The environment variable wins.
+the feature's form in the console. The environment variable wins.
 
 | Variable | What it does | Default |
 |----------|---------|---------|
@@ -582,7 +582,7 @@ the feature's form in the admin console. The environment variable wins.
 | `SMTP_PORT` | Relay port | `587` |
 | `SMTP_USER`, `SMTP_PASS` | Relay credentials. Leave them out to send unauthenticated. | none |
 | `SMTP_FROM` | Default `From` address, such as `noreply@example.com` or `Name <addr>` | none |
-| `SMTP_TLS` | Exactly `true` for implicit TLS, usually on port 465. Any other value uses STARTTLS when the relay offers it. | `false` |
+| `SMTP_TLS` | Exactly `true` for implicit TLS, usually on port 465. Any other value uses STARTTLS, and a relay that does not offer it is refused. | `false` |
 | `SMTP_ALLOWED_PRIVATE_NETWORKS` | Comma-separated CIDRs or addresses that the relay and provider hosts may resolve to although they are private. Every address a name resolves to must be listed. An entry that does not parse is dropped. | none |
 | `ENCRYPTION_KEY` | Encrypts provider passwords, API keys and webhook secrets at rest | none |
 | `JWT_SECRETS` | The first secret signs click links. Without it, a tracked link answers `500`. | none |

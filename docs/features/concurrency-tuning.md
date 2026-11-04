@@ -48,7 +48,7 @@ without a restart.
 Each replica has its own set, and a change made over the API applies to the
 replica that received it until it restarts. There are no per-tenant limits.
 
-In the admin console, these live under **Insight > Observability**, in the **Goroutine engine**
+In LyEve Console, these live under **Insight > Observability**, in the **Goroutine engine**
 section. **Tracker**, **Worker pool**, **Parallel engine** and **Async hooks** give the same
 numbers as the reads below, and **Goroutines by owner** lists the live tasks of each feature
 with the age of the oldest. Below them, **Resize the pool**, **Parallel engine** and **Async
@@ -57,7 +57,7 @@ engine restarts.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console. For the API steps, you need
+For the console steps, you are signed in to the console. For the API steps, you need
 an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get
 one.
 
@@ -138,7 +138,7 @@ curl http://localhost:3001/api/admin/debug/goroutines/async-hooks \
 <div data-path="console">
 
 Under **Resize the pool**, enter `200` in **Pool size** and choose **Apply**. The form says
-**Applied.** and **The change holds until the engine restarts.**, and **Worker pool** shows
+**Applied.** and **The change lasts until the engine restarts.**, and **Worker pool** shows
 **Size** `200`. The **Parallel engine** form beside it takes **Max concurrent** and
 **Timeout**, and the **Async hooks** form takes **Workers**, **Queue size**, **Timeout** and
 **Run hooks asynchronously**, each with its own **Apply**.

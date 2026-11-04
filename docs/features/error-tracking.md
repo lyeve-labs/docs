@@ -60,7 +60,7 @@ resolve for a fix you want to confirm, and ignore for an error you have
 decided to live with.
 :::
 
-In the admin console, error tracking is under **Insight > Observability > Errors**. The top row
+In LyEve Console, error tracking is under **Insight > Observability > Errors**. The top row
 counts the **Unacknowledged failures**, the ones **New in the last day** and the **Distinct
 failures tracked**. **Failures** lists each alert with its code's title, its message and top
 frame, its status, severity and how often it was seen, narrowed to **All**, **Open**,
@@ -74,8 +74,8 @@ sending events are done with the API.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. Steps 1 and 2
-are API calls, because the console has no control for them on v0.23.0, so every reader needs a
+For the console steps, you are signed in to the console as a super admin. Steps 1 and 2
+are API calls, because the console has no control for them on v0.25.0, so every reader needs a
 super admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to
 get one.
 
@@ -164,7 +164,7 @@ Send the event from step 2 again, and the alert is open once more.
 ## Triage alerts
 
 Every install resolves, ignores, reopens and assigns alerts. Each answers with
-the new state. In the admin console, the buttons on a row of **Failures** do the same:
+the new state. In the console, the buttons on a row of **Failures** do the same:
 **Assign** asks for an **Assignee** and saves it with **Save**.
 
 | Request | What it does |

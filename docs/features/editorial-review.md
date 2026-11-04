@@ -38,7 +38,7 @@ Editorial review is in beta. Three limits apply:
   minutes after its due time.
 :::
 
-In the admin console, **Reviews** holds the definitions and every entry under review, and
+In LyEve Console, **Reviews** holds the definitions and every entry under review, and
 the **Review** card on each entry's page moves that entry through its stages.
 
 ## How it works
@@ -72,12 +72,12 @@ approval answers `400` `failed to transition assignment` and the assignment stay
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as an `admin` or
+For the console steps, you are signed in to the console as an `admin` or
 `super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Create a `blog_post` content type with draft and publish.** Only the API turns on drafts and
-publishing. The Schema builder in console v0.23.0 has no switch for them, so run this call
+publishing. The Schema builder in console v0.25.0 has no switch for them, so run this call
 even when you follow the console steps after it.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows how to get a token with your console account:
@@ -248,7 +248,7 @@ Send the same request again. The second stage is the last, so the answer has
 
 The entry is published.
 
-**7. Read the log.** The log is API only. The console in v0.23.0 shows the current stage and
+**7. Read the log.** The log is API only. The console in v0.25.0 shows the current stage and
 status, not the transitions before them:
 
 ```bash
@@ -312,7 +312,7 @@ there is no ceiling.
 
 With `review-pro`, a tenant holds any number of definitions, and each stage can take three
 more settings. The console's **New definition** form shows them on each stage as
-**On an SLA breach, hand it to**, **Approvals needed** and **Only when the field**.
+**Escalate to**, **Approvals needed** and **Condition field**.
 
 | Stage setting | What it does |
 |---|---|
@@ -367,7 +367,7 @@ may approve. Anyone else gets `403` `only an assignee may approve a quorum stage
 4. Choose **Approve**. The card says **1 of 2 approvals on this stage, from You.**, and the
    entry stays in review.
 5. The second admin opens the entry and chooses **Approve**. The quorum is reached, the
-   status turns **Published**, and **Unpublish** appears. On v0.57.0, when the first
+   status turns **Published**, and **Unpublish** appears. On console v0.25.0, when the first
    approval came from a super admin, who belongs to no tenant, the second admin's card names
    that reviewer by the first characters of their id.
 

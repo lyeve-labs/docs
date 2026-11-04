@@ -66,7 +66,7 @@ are masked the same way.
 Bodies of type JSON, XML, form data, JavaScript and any `text/*` type are
 scanned. Server-sent event streams and binary bodies pass through.
 
-Some Admin API paths return real values, because the console needs them to do
+Some Admin API paths return real values, because LyEve Console needs them to do
 its job: `/api/admin/auth`, `/api/admin/users`, `/api/admin/invitations`,
 `/api/admin/gdpr`, `/api/admin/api-keys` and `/api/admin/admin-tokens`. Reads on
 those paths are still recorded in the access log.
@@ -104,7 +104,7 @@ On every other masked path, no role sees unmasked output.
 Matching is by pattern and cannot catch every form of personal data. Keep
 personal data out of fields that do not need it.
 
-## In the admin console
+## In the console
 
 Open **Settings > PII masking**. **Your own rules** lists the tenant's
 patterns with their order, replacement and state, and each row has buttons to

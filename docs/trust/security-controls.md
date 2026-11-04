@@ -8,7 +8,7 @@ sidebar:
 This page answers the security section of a vendor questionnaire. Each control
 is stated as the route, header or setting a reviewer can check against a running
 install with a `super_admin` token, and each section ends with how to check it.
-Where the admin console shows the same, the page gives both paths, and the
+Where LyEve Console shows the same, the page gives both paths, and the
 console steps assume you are signed in as a super admin. Where a control does
 not exist, the page says so, and the last section lists what is not built.
 Configuration lives on each feature's page.
@@ -159,7 +159,7 @@ show:
 </details>
 
 In the console, **Insight > Audit log** lists the entries, filters them and
-exports them as JSON. Checking the chain is API only on v0.23.0.
+exports them as JSON. Checking the chain is API only on v0.25.0.
 
 **Check it:** call `GET /api/admin/audit-log/verify` as a super admin and expect
 `"valid": true`, with `"broken": 0` and an empty `broken_sequences`. The list route returns `chain_hash` per entry, but not the
@@ -207,7 +207,7 @@ the old key. SCIM provisioning tokens do rotate in place
 
 **Check it:** create a key on **Access > API keys** or with `POST /api/admin/api-keys`, use
 it once, and read `GET /api/admin/api-keys/{id}/audit`. Each use is a row with its method,
-path, status and address. A key's history is API only on v0.23.0.
+path, status and address. A key's history is API only on v0.25.0.
 
 ## Rate limits
 

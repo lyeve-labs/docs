@@ -42,7 +42,7 @@ Every quota and key limit already stored is enforced on every install, even
 after a license lapses. Clearing a limit, lifting a block and handling increase
 requests are free too.
 
-## In the admin console
+## In the console
 
 Open **Operations > Quotas and usage** as a super admin. The **Quotas** table
 lists each tenant that has a quota, with its API calls, storage and bandwidth
@@ -50,13 +50,13 @@ used and the share of each limit. API calls and bandwidth count requests made
 with an API key only, and requests from a signed-in session are not counted.
 **Requests for more** lists the increases tenants have asked for. The page has no snapshot or export, so take those
 through the API below. Setting a quota is on
-[Tenant quotas](tenant-quotas.md#in-the-admin-console).
+[Tenant quotas](tenant-quotas.md#set-a-quota).
 
 ![The Quotas and usage page with a quota for the default tenant, its API calls, storage and bandwidth used against each limit, a note that the quota is reported and never enforced, and one request for 100,000 API calls waiting.](images/usage-and-quotas.png)
 
 ## Try it
 
-For the console step, you are signed in to the admin console as a super admin. For the API
+For LyEve Console step, you are signed in to the console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -89,7 +89,7 @@ none answers `[]`.
 
 `api_calls` and `bandwidth_bytes` count requests made with API keys.
 
-**2. Write this month's snapshot for every active tenant.** This is API only on v0.23.0.
+**2. Write this month's snapshot for every active tenant.** This is API only on v0.25.0.
 
 ```bash
 curl -X POST "http://localhost:3001/api/admin/usage/snapshot?period=2026-10" \
@@ -102,7 +102,7 @@ curl -X POST "http://localhost:3001/api/admin/usage/snapshot?period=2026-10" \
 
 Running it again for the same month replaces that month's snapshot.
 
-**3. Export every tenant's usage as CSV.** This is API only on v0.23.0.
+**3. Export every tenant's usage as CSV.** This is API only on v0.25.0.
 
 ```bash
 curl "http://localhost:3001/api/admin/usage/export?from=2026-10&to=2026-10&format=csv" \

@@ -8,7 +8,7 @@ sidebar:
 This page answers the data-protection section of a vendor questionnaire. Every
 claim on it is a route or a setting, so a reviewer with a `super_admin` token
 can check each one against a running install. Where a control does not exist,
-the page says so. Where the admin console does the same as a route, the page
+the page says so. Where LyEve Console does the same as a route, the page
 gives both paths, and the console steps assume you are signed in as a super
 admin. Each feature page carries the configuration and the full request and
 response shapes.
@@ -90,7 +90,7 @@ every tenant. The result comes back keyed per tenant under `tenants` and lists
 `matched_tenants`. It is never merged flat, because the same address can name two
 different people in two tenants. On a single-tenant install the sweep reaches the
 `default` tenant alone, and `scope` says `tenants_covered: 1`. The sweep is API
-only on v0.23.0: the console asks of your own tenant.
+only on v0.25.0: the console asks of your own tenant.
 
 The export looks for the person under the addresses an erasure reaches (see
 [Right to erasure](#right-to-erasure)), with the same rule for tenants: an
@@ -300,7 +300,7 @@ The answer names neither the address nor the other account, because either
 would tell you about that account. A repeated request does not reach the kept
 rows. Do not erase by that address to reach them: an erasure by address
 reaches every account that holds it, so it anonymizes the other account too. When no
-part failed, the admin console shows this answer as **Erasure kept some
+part failed, the console shows this answer as **Erasure kept some
 records**.
 
 A form has no field that says whose submission it is, so a submission
@@ -412,7 +412,7 @@ admin reading every tenant's log sees it, never a tenant's admins. The entry nam
 the identifier, so the log proves the request happened without keeping who it
 was about: `sha256:` followed by the hex SHA-256 of the identifier exactly as
 the request sent it. To find the entry for a subject later, compute the digest
-and filter the audit log by it. This lookup is API only on v0.23.0, because the
+and filter the audit log by it. This lookup is API only on v0.25.0, because the
 console's audit log search reads a resource id only when it is a UUID:
 
 ```bash
@@ -492,7 +492,7 @@ skips every entry a hold covers.
 `POST /api/admin/retention/compliance-export` (super_admin) with
 `{"legal_hold_id": "...", "format": "json"}` (or `csv`) returns the entries a
 hold preserves, for disclosure to a court or a regulator. It is API only on
-v0.23.0.
+v0.25.0.
 
 ## Retention
 
@@ -587,7 +587,7 @@ tenant's writes may land. It does not look at where a client connects from.
 Open **Settings > Data residency** and choose **New region**. Fill in **Slug**, such as
 `eu-central`, **Name** and **Runs on**, such as `aws`, then choose **Create**. The report at
 the top counts **Regions**, **Tenants**, **Replicated** and **Not placed**, and lists each
-tenant with its region. Placing a tenant in a region is API only on v0.23.0.
+tenant with its region. Placing a tenant in a region is API only on v0.25.0.
 
 </div>
 <div data-path="api">

@@ -13,13 +13,13 @@ one call. This guide builds that endpoint as a [flow](../features/flows.md):
 it against real entries before it goes live, cache the answer for 30 seconds,
 allow each caller 120 calls a minute, call it with an API key, and export it as
 a file you can import anywhere. Everything here runs on the free tier, and
-every step works in the admin console or with the API.
+every step works in LyEve Console or with the API.
 
 ## Before you start
 
 - A running instance. The [quickstart](../getting-started/quickstart.md) starts
   one and creates the first administrator.
-- For the console steps, the admin console signed in as that administrator.
+- For the console steps, the console signed in as that administrator.
 - For the API steps, `curl`, `jq` and an admin token in `TOKEN`.
   [Sign in](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 - Admin calls go to the Admin API on port `3001`, and the finished endpoint is
@@ -46,7 +46,7 @@ An order belongs to a customer, and a shipment belongs to an order.
    relation named `order` that belongs to one **Order**, with **Req** ticked,
    then two `text` fields, `carrier` and `tracking_number`. Choose **Save**.
 
-The schema builder in console v0.23.0 has no switch for a unique field, so
+The schema builder in console v0.25.0 has no switch for a unique field, so
 `email` is not unique on this path. Nothing below depends on it.
 
 </div>
@@ -246,7 +246,7 @@ curl -X POST http://localhost:3001/api/admin/flows/import \
 
 The answer is `201` with the flow, `"status": "draft"`, `"version": 0` and
 `"unresolved_datasources": []`. Copy its `id` into `FLOW_ID`. The flow now
-appears under **Flows** in the admin console, drawn on the canvas.
+appears under **Flows** in the console, drawn on the canvas.
 
 </div>
 </div>

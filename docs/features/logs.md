@@ -16,7 +16,7 @@ Elasticsearch as well.
 - **Finding out why one request failed.** Every response carries an
   `X-Request-ID` header, and searching by that id returns every line the
   request wrote.
-- **Watching a deploy as it happens.** Tail the live log in the console or over
+- **Watching a deploy as it happens.** Tail the live log in LyEve Console or over
   Server-Sent Events, filtered to warnings and errors.
 - **Debugging one tenant without flooding the rest.** Raise that tenant's level
   to `DEBUG`, then put it back, with no restart.
@@ -52,17 +52,17 @@ records that belong to no tenant in search, tail and the volume view. Naming
 restoring or deleting it, logs under no tenant, so no tenant admin sees it.
 Only a super admin reading the whole log does.
 
-In the admin console, logs are under **Insight > Logs**. **Volume and levels** counts the last
+In the console, logs are under **Insight > Logs**. **Volume and levels** counts the last
 24 hours of entries, shows the **Default level** and the **Sinks**, and a level chip shows only
 that level's entries. Under **Entries**, the search box reads **Message words, a request ID or a
 trace ID**, beside a level picker and a page size. **Volume alerts** opens the rules described
 under [Watch log volume](#watch-log-volume). **Insight > Observability** follows the live log
 under **Live log tail**. The console reads the levels and the sinks but has no control to change
-them on v0.23.0, so changing levels, shipping records and setting retention go through the API.
+them on v0.25.0, so changing levels, shipping records and setting retention go through the API.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console. For the API steps, and for step
+For the console steps, you are signed in to the console. For the API steps, and for step
 1, you need an admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows
 how to get one.
 
@@ -121,7 +121,7 @@ curl "http://localhost:3001/api/admin/logs/search?request_id=try-logs-1" \
 </div>
 
 **3. Turn on debug output for your tenant.** The console shows the **Default level** but has no
-control to change a level on v0.23.0, so this step is an API call:
+control to change a level on v0.25.0, so this step is an API call:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/logging/levels/tenant/default \

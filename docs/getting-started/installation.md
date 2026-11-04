@@ -1,15 +1,15 @@
 ---
 title: Installation
-description: "Choose a database, run the LyEve engine and admin console images against it, and know which settings production requires."
+description: "Choose a database, run the LyEve engine and LyEve Console images against it, and know which settings production requires."
 sidebar:
   order: 3
 ---
 
-LyEve runs from two container images, the engine and the admin console, against a database
+LyEve runs from two container images, the engine and LyEve Console, against a database
 you provide. These images are the supported install. See [Source code](../trust/source-code.md)
 for what is published.
 
-This page covers the choices: which database, how to run the admin console beside the
+This page covers the choices: which database, how to run the console beside the
 engine, what production refuses, and how to start before you have every setting. To try
 LyEve on your laptop first, the [Quickstart](quickstart.md) starts a database and the engine
 for you.
@@ -118,21 +118,21 @@ A refused start prints every problem at once. The
 [Production checklist](../deploy/production-checklist.md) covers the rest of a production
 setup.
 
-## Run the admin console
+## Run the console
 
 ```bash
-docker run -d --name lyeve-admin \
+docker run -d --name lyeve-console \
   -e CORE_INTERNAL_URL=http://<engine-host>:3001 \
   -e CORE_API_INTERNAL_URL=http://<engine-host>:3002 \
   -e ORIGIN=http://localhost:3000 \
   -e PORT=3000 \
   -p 3000:3000 \
-  ghcr.io/lyeve-labs/lyeve-admin:latest
+  ghcr.io/lyeve-labs/lyeve-console:latest
 ```
 
 | Variable | Purpose |
 |---|---|
-| `CORE_INTERNAL_URL` | Where the admin console reaches the engine. It sends both `/api/admin` and `/api/v1` calls to this one address, so put a proxy in front of the two engine ports |
+| `CORE_INTERNAL_URL` | Where the console reaches the engine. It sends both `/api/admin` and `/api/v1` calls to this one address, so put a proxy in front of the two engine ports |
 | `CORE_API_INTERNAL_URL` | Where the console sends the `/api/v1` calls it makes itself, such as the ones the **API reference** page runs: the engine's port 3002 or the proxy in front of it. The console refuses to start without it, because its fallback is the console's own port |
 | `ORIGIN` | The URL you open in the browser. It has to match exactly, or sign-in fails its CSRF check |
 | `PORT` | The port the console listens on. The default is `3002`, which collides with the Content API on a shared host |
@@ -173,13 +173,13 @@ In setup mode the engine connects to no database and serves only setup:
 | `GET /api/admin/setup/status` | What is missing, with the `X-Setup-Token` header |
 | Anything else | `503` with the code `SETUP_REQUIRED` |
 
-To see what is missing, you need the setup token: the one in the engine's log, or
-`LYEVE_SETUP_TOKEN` when you set it.
+To see what is missing, you need the setup token: the one the engine writes to its standard
+error, or `LYEVE_SETUP_TOKEN` when you set it.
 
 <div class="paths">
 <div data-path="console">
 
-Open the admin console. The setup page says the engine is missing settings. Paste the token
+Open the console. The setup page says the engine is missing settings. Paste the token
 into **Setup token** and choose **Show what to set**. The console lists what is missing, with
 the environment lines and a `lyeve.yaml` snippet to paste.
 

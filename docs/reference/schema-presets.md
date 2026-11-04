@@ -57,8 +57,7 @@ The answer is `201`.
 The content types are created in the order the preset lists them, exactly as if you had
 posted each one to `POST /api/admin/schemas`.
 
-- **A name you already use.** If any content type the preset creates already exists, the
-  console says `a schema the preset creates already exists`, the API answers `409` with the
+- **A name you already use.** If any content type the preset creates already exists, LyEve Console says `a schema the preset creates already exists`, the API answers `409` with the
   same message, and nothing is created. A
   preset never merges into an existing content type, because nothing can know whether the
   fields it would add are wanted. Rename or delete yours first, or copy the fields you want

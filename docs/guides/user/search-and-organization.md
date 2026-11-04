@@ -1,11 +1,11 @@
 ---
 title: Search and organization
-description: "Find entries in the admin console by browsing collections and paging their lists, and with full-text search, synonyms and ranking where search is licensed."
+description: "Find entries in LyEve Console by browsing collections and paging their lists, and with full-text search, synonyms and ranking where search is licensed."
 sidebar:
   order: 6
 ---
 
-There are two ways to find content in the admin console. Browsing works on every install:
+There are two ways to find content in LyEve Console. Browsing works on every install:
 narrow the list of collections, open one, and page through its entries. Full-text search
 finds entries by the words in them, and needs a license with the [Search](../../features/search.md)
 feature. This page covers both in the console. You need the `admin` or `super_admin` role.
@@ -65,7 +65,7 @@ The **Search** page holds the settings that shape every search in your tenant.
 - **Ranking weights.** Set how much a match in the **Title**, the **Body** and the **Tags**
   counts, from 0 to 10, and choose **Save**. These apply to every collection that has no
   weights of its own.
-- **Public search.** Under **Anyone may search**, check each collection your site may search
+- **Public search.** Under **Searchable by anyone**, check each collection your site may search
   without signing in, and choose **Save**. Your site's developer then calls the public search
   route described on [Search](../../features/search.md#let-anyone-search-your-site). A public
   search matches every field of a listed collection, and its snippets can quote any of them, so

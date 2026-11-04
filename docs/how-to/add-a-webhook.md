@@ -16,7 +16,7 @@ history and recover what failed. Every field, header and route is described on
 ## Before you start
 
 - An account with the `super_admin` role, such as the first administrator.
-  For the console steps, sign in to the admin console with it. For the API
+  For the console steps, sign in to LyEve Console with it. For the API
   steps, keep its token in `TOKEN`.
   [Sign in](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 - A content type to watch. The steps use `post` from
@@ -416,11 +416,11 @@ which counts what would be sent and sends nothing.
 1. Open **Insight > Events**. Under **Replay**, pick the day and enter the
    hour and minute the receiver went down in **Replay from**, and enter
    `my-receiver-catchup` in **Run name**.
-2. Keep **Rehearse first, posting nothing** ticked and choose **Rehearse**.
-   The page says **Rehearsed. Nothing was published.**, and the run's row
+2. Keep **Rehearse without publishing** ticked and choose **Rehearse**.
+   The page says **Rehearsal started**, and the run's row
    shows how many events it counted, marked **rehearsal** and
    **(nothing was posted)**.
-3. Clear **Rehearse first, posting nothing**. The button now reads
+3. Clear **Rehearse without publishing**. The button now reads
    **Replay**. Choose it. The page says **Replay started.**, and the row
    reads, for one event, **1 replayed, 0 skipped, 0 failed**. The receiver
    prints the event again.

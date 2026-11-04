@@ -35,9 +35,9 @@ the fields it needs, and subscriptions tell it when content changes.
   streams them over Server-Sent Events or WebSocket.
 :::
 
-## In the admin console
+## In the console
 
-Open **Delivery > GraphQL**. **Where it answers** gives the address for
+Open **Delivery > GraphQL**. **Endpoints** gives the address for
 queries and mutations and the one for subscriptions, with **A first request**
 to copy. **Schema** lists every root field generated from your content types
 under **Queries**, **Mutations** and **Subscriptions**, with its arguments and
@@ -75,7 +75,7 @@ The list field is the name with `-` turned into `_`. The single field drops a
 final `s` when at least three characters remain and the name does not end in
 `ss`, `us`, `is` or `ws`, and adds `_one` otherwise. Types and mutations use the
 name in PascalCase, never singularized, so `articles` gives `createArticles`.
-Introspection, or the **GraphQL** page in the admin console, shows the exact
+Introspection, or the **GraphQL** page in LyEve Console, shows the exact
 names.
 
 Every type has `id` and, when the content type keeps them, `created_at` and
@@ -109,7 +109,7 @@ schema and from subscriptions. See [Transports](../reference/api-endpoints.md#se
 
 You need a content type named `post`, such as the one in
 [Create your first content type](../getting-started/first-content-type.md).
-For the console steps, you are signed in to the admin console as an admin.
+For the console steps, you are signed in to the console as an admin.
 For the API steps, you need a token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -118,7 +118,7 @@ For the API steps, you need a token in `TOKEN`. The
 <div class="paths">
 <div data-path="console">
 
-Open **Delivery > GraphQL**. **Where it answers** gives the address for
+Open **Delivery > GraphQL**. **Endpoints** gives the address for
 queries and mutations and the one for subscriptions.
 
 </div>
@@ -129,7 +129,7 @@ curl http://localhost:3002/api/v1/graphql -H "Authorization: Bearer $TOKEN"
 ```
 
 ```json
-{ "message": "GraphQL endpoint ready. POST a query to this URL.", "plugin": "graphql", "version": "v0.57.0" }
+{ "message": "GraphQL endpoint ready. POST a query to this URL.", "plugin": "graphql", "version": "v0.58.0" }
 ```
 
 </div>

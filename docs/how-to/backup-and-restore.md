@@ -12,7 +12,7 @@ puts it back: as a portable SQL file you download, as an encrypted archive in an
 S3 bucket, or as a clone into a new tenant on the same instance. A file taken on
 PostgreSQL loads on MySQL or SQL Server, and the other way round. These routes
 cover one tenant's content types and entries. Back up the whole database with
-your database provider's own tooling. Admin console v0.23.0 has no screen for
+your database provider's own tooling. LyEve Console v0.25.0 has no screen for
 backups, restores or clones, so every step uses the engine API.
 
 ## Before you start

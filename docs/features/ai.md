@@ -8,8 +8,7 @@ sidebar:
 > **Requires** a license with the `ai` feature. See [pricing](https://lyeve.com/pricing/).
 > The [support desk](#support-desk) also needs the `support` capability, and it is beta.
 
-AI puts the model providers you choose, with your own keys, behind the admin
-console, the API and your flows. Your code drafts, rewrites and translates
+AI puts the model providers you choose, with your own keys, behind LyEve Console, the API and your flows. Your code drafts, rewrites and translates
 entries through the API, the media library suggests alt text for an image, and
 flows classify, extract and generate. Each tenant can
 switch AI off, write the instructions every call runs under, and read a
@@ -28,7 +27,7 @@ in its section.
 :::tip[Best for]
 - **Drafting and rewriting from your own code.** The content assistant route
   writes a first draft, changes the tone, shortens or translates an entry. On
-  console v0.23.0 it is API only.
+  console v0.25.0 it is API only.
 - **Translating a field.** Send one field and a target locale, keep product
   names with a glossary, and get text marked as machine translation.
 - **Alt text for the media library.** **Suggest alt text** describes an image
@@ -60,7 +59,7 @@ A call goes to the tenant's enabled providers in priority order, highest
 `priority` first, and the first one that can do the job answers. An operation
 no provider can do answers `409` rather than going somewhere unexpected.
 
-## In the admin console
+## In the console
 
 Open **Operations > AI**. Its tabs are **Providers**, **Prompts**,
 **Transcripts**, **Prices** and **Settings**. **Providers** counts the enabled
@@ -74,7 +73,7 @@ provider is kept and takes no calls.
 ## Try it
 
 You need a key from your provider. For the console steps, you are signed in
-to the admin console as a super admin. For the API steps, you need a super
+to the console as a super admin. For the API steps, you need a super
 admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
 shows how to get one.
 
@@ -130,8 +129,7 @@ The answer is `201` with the provider. The key is never returned:
 </div>
 </div>
 
-**3. Summarize a text.** The summarize route has no control in the admin
-console, so this step is an API call:
+**3. Summarize a text.** The summarize route has no control in the console, so this step is an API call:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/ai/summarize \
@@ -343,7 +341,7 @@ The text depends on the model. To keep it, send it as `alt_text` with
 
 ## Use AI from the API
 
-These routes have no control in admin console v0.23.0. They need an admin.
+These routes have no control in console v0.25.0. They need an admin.
 Most take an optional `provider_id`, `model`, `max_tokens` (up to 200,000)
 and `temperature` (0 to 2, where 0 leaves the provider's default).
 
@@ -363,7 +361,7 @@ translation yourself. A glossary entry that maps a term to itself keeps a
 product name untranslated.
 
 The content assistant is `POST /api/admin/content/ai-assist`. It is API only
-on console v0.23.0: no screen of the console calls it. It takes an `action`
+on console v0.25.0: no screen of the console calls it. It takes an `action`
 (`generate`, `rewrite`, `translate`, `summarize` or `tone-adjust`) and the
 entry's current text:
 
@@ -466,7 +464,7 @@ times.
 
 The support desk answers questions from a knowledge base you write, with the
 same providers, prompts and transcripts. It is for admins: there is no public
-chat route. The support desk has no page in admin console v0.23.0, so it is used
+chat route. The support desk has no page in console v0.25.0, so it is used
 through the API. Each conversation is a transcript of kind `support`, under the
 tenant's `support` prompt.
 

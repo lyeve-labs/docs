@@ -65,9 +65,9 @@ channel and no license.
 Every surface takes the same channel fields, so a setting you write for one
 works on the others.
 
-## In the admin console
+## In the console
 
-Each watched feature has its own channel form in the console, with the same
+Each watched feature has its own channel form in LyEve Console, with the same
 five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 **HTTPS webhook URL** and **PagerDuty routing key**.
 
@@ -82,7 +82,7 @@ five fields: **Email**, **Slack webhook URL**, **Discord webhook URL**,
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin.
+For the console steps, you are signed in to the console as a super admin.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 Email needs a working [email](email.md) transport. Without one, the email
@@ -94,7 +94,7 @@ failure.**
 <div class="paths">
 <div data-path="console">
 
-Console v0.23.0 cannot run a job on demand, so this job runs every minute.
+Console v0.25.0 cannot run a job on demand, so this job runs every minute.
 
 1. Open **Operations > Scheduled jobs** and choose **New job**.
 2. Enter `always-fails` in **Name**, `* * * * *` in **Cron schedule** and

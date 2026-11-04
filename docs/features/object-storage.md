@@ -29,14 +29,14 @@ straight to the bucket.
   [media library](media.md) does that, and stores its files here.
 :::
 
-## In the admin console
+## In the console
 
 Open **Settings > Storage**. **How storage works** explains where uploads go,
-and with no provider the page reads **No provider configured**: uploads are
+and with no provider the page reads **No providers yet**: uploads are
 then written to the engine's own directory. Each provider is a row with
 **Test**, **Edit**, **Duplicate** and **Delete** buttons, and a line under the
 list names the provider new uploads go to. Presigned and multipart uploads
-have no console screen, so they are API only on v0.23.0.
+have no console screen, so they are API only on v0.25.0.
 
 ## How it works
 
@@ -50,7 +50,7 @@ have no console screen, so they are API only on v0.23.0.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin. For the API
+For the console steps, you are signed in to LyEve Console as a super admin. For the API
 steps, you need a super admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -60,7 +60,7 @@ steps, you need a super admin token in `TOKEN`. The
 <div data-path="console">
 
 Open **Settings > Storage**. With no provider configured, the page reads
-**No provider configured** and says uploads are written to the engine's own directory.
+**No providers yet** and says uploads are written to the engine's own directory.
 
 </div>
 <div data-path="api">
@@ -79,7 +79,7 @@ curl http://localhost:3001/api/admin/storage/health \
 
 With no provider configured, files go to local disk.
 
-**2. Ask for a presigned upload.** This is API only on v0.23.0. Local disk cannot presign, so
+**2. Ask for a presigned upload.** This is API only on v0.25.0. Local disk cannot presign, so
 this answers `501` until a bucket is added:
 
 ```bash

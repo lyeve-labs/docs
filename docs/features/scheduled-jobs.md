@@ -49,7 +49,7 @@ Pick a scheduled job when your own service does the work and only needs to be
 told when. Pick a flow when the work is in LyEve's content or needs several
 steps. See [flows](flows.md#how-a-flow-works).
 
-## In the admin console
+## In the console
 
 As a super admin, open **Operations > Scheduled jobs**. Each job is listed with
 its schedule, endpoint, status and last run, and **Enabled** and **Disabled**
@@ -63,7 +63,7 @@ row**.
 
 ## Try it
 
-For the console steps, you are signed in to the admin console as a super admin.
+For the console steps, you are signed in to LyEve Console as a super admin.
 For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md#3-sign-in) shows how to get one.
 Replace the endpoint with a URL of yours that accepts a `POST`, such as a
@@ -118,7 +118,7 @@ The answer is `201` with the job:
 </div>
 
 **2. Run it now instead of waiting for 02:00.** Only the API runs a job on
-demand: console v0.23.0 has no button for it. From either path, find the
+demand: console v0.25.0 has no button for it. From either path, find the
 job's id and trigger it. From the console path, get a token for your console
 account as [Sign in](../getting-started/quickstart.md#3-sign-in) shows:
 
@@ -141,7 +141,7 @@ background, and your endpoint receives `{"format": "csv"}`.
 
 Reload **Operations > Scheduled jobs**. **Last run** shows when the job ran,
 with a check for a run that worked and a cross for one that failed. Console
-v0.23.0 shows no status code or error.
+v0.25.0 shows no status code or error.
 
 </div>
 <div data-path="api">

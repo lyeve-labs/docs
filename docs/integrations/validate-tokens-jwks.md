@@ -18,7 +18,7 @@ too.
 ![Your app signs in and sends the token to your service. The service fetches the key set from the engine once, caches it, and verifies each token itself.](images/token-validation.svg)
 
 :::tip[Best for]
-- **An API of your own behind LyEve.** Accept the same token the admin console
+- **An API of your own behind LyEve.** Accept the same token LyEve Console
   holds, and read the caller's roles and tenant from it.
 - **An edge function or gateway.** Reject unsigned or expired tokens before
   they reach anything else.
@@ -28,7 +28,7 @@ too.
 
 ## Try it
 
-Admin console v0.23.0 has no screen of its own for the key set or for checking a token, so these
+Console v0.25.0 has no screen of its own for the key set or for checking a token, so these
 steps use the engine API.
 
 1. Fetch the key set from the Content API:

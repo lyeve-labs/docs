@@ -10,7 +10,7 @@ sidebar:
 Recommendations learns from what signed-in readers do with your entries: what they view,
 like, share and bookmark. From that it answers three questions: which entries are similar to
 this one, which are trending, and what this reader should see next. Scores are recomputed when
-you ask, from the console or from your own scheduler.
+you ask, from LyEve Console or from your own scheduler.
 
 :::tip[Best for]
 - **"Readers also viewed" blocks.** Show the entries the same readers engaged with under an
@@ -49,7 +49,7 @@ Each action counts toward a reader's feed with its own weight:
 
 You need a token in `TOKEN` for a `super_admin`, which also counts as a reader here. The
 [quickstart](../getting-started/quickstart.md) shows how to get one. For the console steps,
-you are also signed in to the admin console as a `super_admin`. Put the ids of two published
+you are also signed in to the console as a `super_admin`. Put the ids of two published
 entries in `A` and `B`.
 
 **1. Record that you liked both entries.** Recording is API only, because your front end sends

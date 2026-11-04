@@ -24,7 +24,7 @@ load.
   and location data, and scan for viruses.
 :::
 
-In the admin console, **Media library** shows every file in **Grid** or **List** view.
+In LyEve Console, **Media library** shows every file in **Grid** or **List** view.
 [Media library](../guides/user/media-library.md) walks through each task there. Where files
 are kept, local disk or S3 and other providers, is set on [object storage](object-storage.md).
 
@@ -41,7 +41,7 @@ are kept, local disk or S3 and other providers, is set on [object storage](objec
 
 ## Try it
 
-For the console steps, you are signed in to the admin console. For the API steps, you need a
+For the console steps, you are signed in to the console. For the API steps, you need a
 token in `TOKEN`. The [quickstart](../getting-started/quickstart.md) shows how to get one. Any
 PNG or JPEG works as `hero.png`.
 
@@ -201,7 +201,7 @@ kept.
 
 ## Use a file in content
 
-A `media` field holds a string that locates the file. The admin console stores the file's
+A `media` field holds a string that locates the file. The console stores the file's
 `public_url`, so publish a file before you use it in content. Your site adds its own address in
 front of the path, or you can store the full URL of a file hosted elsewhere.
 
@@ -383,6 +383,6 @@ The ones you meet most:
 
 ## Related
 
-- [Media library](../guides/user/media-library.md): the same tasks in the admin console.
+- [Media library](../guides/user/media-library.md): the same tasks in the console.
 - [Object storage](object-storage.md): local disk, S3 and other providers.
 - [Data model](../concepts/data-model.md): the `media` field type.

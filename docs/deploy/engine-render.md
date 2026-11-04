@@ -82,8 +82,9 @@ With `PORT=3001`:
 curl https://your-service.onrender.com/api/admin/setup
 ```
 
-A new install answers `{"setup_required":true,"token_source":"log"}`. The setup token is the
-one-time `setup_token` in the service's log, or `LYEVE_SETUP_TOKEN` when you set it. The
+A new install answers `{"setup_required":true,"token_source":"log"}`. The setup token is
+the one-time `setup_token` the engine writes to its standard error, or `LYEVE_SETUP_TOKEN`
+when you set it. The service's logs show standard error, so search them for `setup_token`. The
 [quickstart](../getting-started/quickstart.md) continues from step 2.
 
 With `PORT=3002`:
@@ -96,10 +97,10 @@ The first request after idle time is slow, and the next ones are fast until the 
 down again. Part of that wait is Render starting the container and part is the engine's own
 start, which the engine logs as `boot_ms` on its `serving` line.
 
-## The admin console
+## LyEve Console
 
-This page sets up the engine alone. The admin console runs as its own service, from the image
-`ghcr.io/lyeve-labs/lyeve-admin`. [The admin image](docker.md#the-admin-image) lists its
+This page sets up the engine alone. The console runs as its own service, from the image
+`ghcr.io/lyeve-labs/lyeve-console`. [The admin image](docker.md#the-admin-image) lists its
 settings and the routing it needs.
 [Run the engine and the console together](../getting-started/engine-and-console.md) shows the
 two side by side on one address.

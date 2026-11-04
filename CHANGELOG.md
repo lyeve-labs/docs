@@ -4,6 +4,23 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.10.0] - 2026-11-04
+
+### Added
+
+- An overview of LyEve Console: what it does, how to sign in, how its sidebar is arranged and what each role can do there. The introduction presents the docs by product.
+- Upgrade sections for engine 0.58.0 with console 0.24.0, and for console 0.25.0, in the Docker, Docker Compose and Kubernetes guides. Console 0.25.0 runs from `ghcr.io/lyeve-labs/lyeve-console`, and `ghcr.io/lyeve-labs/lyeve-admin` receives the same releases until console 0.26.0.
+- The console's switch for the organization field on the sign-in page, `SIGN_IN_ORGANIZATION`.
+
+### Changed
+
+- The pages call the browser app LyEve Console, and every console section uses the same heading. No page moves.
+- The deploy guides pin engine 0.58.0 and console 0.25.0 and name the lyeve-console repository and image. An earlier upgrade command keeps the object names it had.
+- Every statement of what the console or the engine does not do yet was checked again against console 0.25.0 and engine 0.58.0. gRPC reflection lists and describes each service, an event stream with no `Origin` is served unless the browser's `Sec-Fetch-Site` header says it came from another site, a `body` search snippet holds text only, and a slow statement with placeholders is explained as a generic plan in a read-only transaction, so nothing runs it.
+- The console's field labels, headings, confirmations and empty states are quoted in the console's current words.
+- The setup token is printed on standard error.
+- The upgrade to engine 0.58.0 asks you to check your mail relay, because with implicit TLS off a send to a relay that offers no STARTTLS fails, and your quota grace periods, because a tenant past a hard limit is blocked only once its grace period has passed.
+
 ## [0.9.0] - 2026-11-01
 
 ### Added

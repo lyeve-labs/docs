@@ -1,14 +1,13 @@
 ---
 title: Magic link sign-in
-description: Let people sign in to the admin console by clicking a single-use link sent to their email, with optional sign-up on first use and a two-factor step.
+description: Let people sign in to LyEve Console by clicking a single-use link sent to their email, with optional sign-up on first use and a two-factor step.
 sidebar:
   order: 41
 ---
 
 > **Included free** on every install.
 
-A person asks for a sign-in link, receives it by email, and opens it in the
-admin console, which redeems it for a session. Each link works once and
+A person asks for a sign-in link, receives it by email, and opens it in LyEve Console, which redeems it for a session. Each link works once and
 expires after 10 minutes by default. An account with two-factor
 authentication is still asked for its code, and a link issued for one tenant
 never signs anyone into another.
@@ -35,13 +34,14 @@ the log: without a mail relay the logged link has its token replaced by
 `[REDACTED]`.
 :::
 
-## In the admin console
+## In the console
 
 1. On the sign-in page, choose **Email me a sign-in link**.
 2. Enter the account's address and choose **Email me a link**. If your
    organization's identity provider created the account and the console's
    address does not already name your organization, enter its short name in
-   **Organization (optional)**.
+   **Organization (optional)**. The console shows that field when it runs
+   with `SIGN_IN_ORGANIZATION=true`.
 3. Open the link from the email. On **Sign in with your link**, choose
    **Continue** to finish signing in on that device.
 
@@ -71,7 +71,7 @@ end:
   `SMTP host resolves to a restricted address`. See
   [send through one relay](email.md#send-through-one-relay).
 - **The console's public address.** Set `LYEVE_CONSOLE_URL` to the address
-  people open the admin console at. In production it is required and must use
+  people open the console at. In production it is required and must use
   `https`, and magic link sign-in refuses to start without it. Outside
   production it defaults to `http://localhost:5173`.
 

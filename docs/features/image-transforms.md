@@ -41,7 +41,7 @@ can still change before it is marked stable.
   original, and it does the work instead.
 :::
 
-In the admin console, an image's **Preview** in **Media library** holds a
+In LyEve Console, an image's **Preview** in **Media library** holds a
 **Focal point** section and a **Transform URL** section. The sections below show
 each task there and over the Admin API, and list every parameter.
 
@@ -64,8 +64,7 @@ URL always expires, after an hour by default and a week at most. Responses carry
 
 ## Try it
 
-This works on a free install. For the console steps, you are signed in to the
-admin console. For the API steps, you need an admin token in `TOKEN`. The
+This works on a free install. For the console steps, you are signed in to the console. For the API steps, you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Upload an image.**
@@ -184,7 +183,7 @@ every install:
 In the image's **Preview**, under **Focal point**, click the image where a crop
 should center, or move the point with the arrow keys. Choose
 **Save focal point**. The page confirms
-**Focal point saved. Crops cut around the old one are made again.** Once a file
+**Focal point saved. Existing crops are made again around the new point.** Once a file
 has a focal point, **Transform URL** shows
 **Center a crop on the focal point**, which builds the URL around it.
 

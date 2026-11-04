@@ -1,6 +1,6 @@
 ---
 title: Kubernetes
-description: "Deploy the engine and the admin console on Kubernetes with replicas, a shared signing key, probes and a Gateway API route."
+description: "Deploy the engine and LyEve Console on Kubernetes with replicas, a shared signing key, probes and a Gateway API route."
 sidebar:
   order: 15
 ---
@@ -9,7 +9,7 @@ LyEve runs on Kubernetes as two Deployments, one per image:
 
 - `ghcr.io/lyeve-labs/lyeve-core`, the engine: the Admin API on **3001**, and the Content API and
   `/.well-known/jwks.json` on **3002**.
-- `ghcr.io/lyeve-labs/lyeve-admin`, the admin console: a Node server on **3002** that calls the
+- `ghcr.io/lyeve-labs/lyeve-console`, LyEve Console: a Node server on **3002** that calls the
   engine for the browser. It holds no database connection.
 
 :::tip[Best for]
@@ -29,11 +29,10 @@ Every value marked `# cluster-specific` must be replaced before you apply the ma
 | Workload | Image | Ports | Reached through |
 |---|---|---|---|
 | `lyeve-core` | `ghcr.io/lyeve-labs/lyeve-core` | 3001, 3002 | The Gateway: `/api` on the admin host, everything on the API host |
-| `lyeve-admin` | `ghcr.io/lyeve-labs/lyeve-admin` | 3002 | The Gateway: the admin host |
+| `lyeve-console` | `ghcr.io/lyeve-labs/lyeve-console` | 3002 | The Gateway: the admin host |
 
 Both Services are `ClusterIP`. Only the Gateway faces the internet. Give port 3001 no public
-host or `LoadBalancer` of its own: the admin host routes `/api/admin` to it, which is all the
-admin console needs.
+host or `LoadBalancer` of its own: the admin host routes `/api/admin` to it, which is all the console needs.
 
 ## What more than one replica needs
 
@@ -108,7 +107,7 @@ the per-IP limits apply to all users together. Once it is set, the engine ignore
 `X-Forwarded-Proto` from anything else, so a range that misses the proxy pods redirects every
 request.
 
-`ADMIN_CONSOLE_KEY` is shared with the admin console Deployment below. The console signs each call with
+`ADMIN_CONSOLE_KEY` is shared with the console Deployment below. The console signs each call with
 the browser's address, so sign-in limits count each user rather than the console pods.
 
 Do not commit a real Secret. Render it from a secret manager the cluster trusts, such as
@@ -178,7 +177,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.57.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.58.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -290,25 +289,29 @@ spec:
     - backendRefs: [{ name: lyeve-core, port: 3003 }]
 ```
 
-## Admin console Deployment and Service
+## Console Deployment and Service
+
+An install made from this page before the console's image moved to `lyeve-console` named the
+Deployment, its container, the Service and the route `lyeve-admin`. Those objects keep working
+under that name, and each upgrade command below names the object you created.
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lyeve-admin
+  name: lyeve-console
   namespace: lyeve
 spec:
   replicas: 1
   selector:
-    matchLabels: { app: lyeve-admin }
+    matchLabels: { app: lyeve-console }
   template:
     metadata:
-      labels: { app: lyeve-admin }
+      labels: { app: lyeve-console }
     spec:
       containers:
-        - name: lyeve-admin
-          image: ghcr.io/lyeve-labs/lyeve-admin:0.23.0   # cluster-specific: pin a release
+        - name: lyeve-console
+          image: ghcr.io/lyeve-labs/lyeve-console:0.25.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -332,10 +335,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: lyeve-admin
+  name: lyeve-console
   namespace: lyeve
 spec:
-  selector: { app: lyeve-admin }
+  selector: { app: lyeve-console }
   ports:
     - { name: http, port: 80, targetPort: http }
 ```
@@ -370,7 +373,7 @@ admin host routes by path. The Gateway matches the longest prefix first.
 | admin | `/api/admin` | `lyeve-core` 3001 |
 | admin | `/api` | `lyeve-core` 3002 |
 | admin | `/.well-known` | `lyeve-core` 3002 |
-| admin | `/` | `lyeve-admin` 80 |
+| admin | `/` | `lyeve-console` 80 |
 | api | `/` | `lyeve-core` 3002 |
 
 ```yaml
@@ -417,7 +420,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: lyeve-admin
+  name: lyeve-console
   namespace: lyeve
 spec:
   parentRefs: [{ name: lyeve, sectionName: https-admin }]
@@ -430,7 +433,7 @@ spec:
     - matches: [{ path: { type: PathPrefix, value: /.well-known } }]
       backendRefs: [{ name: lyeve-core, port: 3002 }]
     - matches: [{ path: { type: PathPrefix, value: / } }]
-      backendRefs: [{ name: lyeve-admin, port: 80 }]
+      backendRefs: [{ name: lyeve-console, port: 80 }]
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -467,7 +470,7 @@ them with `413`:
 Raise the limit to the largest body you send through this Gateway, or keep each part under
 68 MiB.
 
-**One console replica, unless the Gateway pins a session to one replica.** The Admin console
+**One console replica, unless the Gateway pins a session to one replica.** The console
 section above explains how two replicas can sign users out. The Gateway API's own field for cookie
 session persistence is in its experimental channel only, so it needs the experimental CRDs, and
 it may change. Keep `replicas: 1` on the console unless your implementation pins each browser to
@@ -561,6 +564,35 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
+## Upgrading to console 0.25.0
+
+Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`. Every 0.25 release is also
+published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests, until 0.26.0,
+and the tags already published there stay. Point the console's Deployment at the new name. An
+install made before the rename names its Deployment and container `lyeve-admin`, so use that
+name in the command:
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.25.0
+kubectl -n lyeve rollout status deploy/lyeve-console
+```
+
+## Upgrading to 0.58.0 and console 0.24.0
+
+Upgrade the engine first and the console once the engine is ready. Back up the database first.
+[Docker Compose](docker-compose.md#upgrading-to-0580-and-console-0240) lists the changes to
+read before the first start, among them the setup token on standard error, the mail relay
+check, the quota grace period and the API changes your clients see. From console 0.24.0, a
+console that serves several organizations on an address that names none needs
+`SIGN_IN_ORGANIZATION=true` in its environment.
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.58.0
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.25.0
+kubectl -n lyeve rollout status deploy/lyeve-console
+```
+
 ## Upgrading to 0.57.0 and console 0.23.0
 
 Upgrade the engine first and the console once the engine is ready. Back up the database first.
@@ -600,7 +632,7 @@ content history on for every content type.
 to read before the first start.
 
 Read these notes and the ones above for each newer release, then upgrade with the steps under
-[Upgrading to 0.57.0 and console 0.23.0](#upgrading-to-0570-and-console-0230), which start the
+[Upgrading to 0.58.0 and console 0.24.0](#upgrading-to-0580-and-console-0240), which start the
 newest release.
 
 ## Upgrading to 0.55.0 and console 0.21.0
@@ -630,7 +662,7 @@ does not allow. Read these before the first start of 0.55.0:
   lists the changes they see.
 
 Read these notes and the ones above for each newer release, then upgrade with the steps under
-[Upgrading to 0.57.0 and console 0.23.0](#upgrading-to-0570-and-console-0230), which start the
+[Upgrading to 0.58.0 and console 0.24.0](#upgrading-to-0580-and-console-0240), which start the
 newest release.
 
 ## Before you go live

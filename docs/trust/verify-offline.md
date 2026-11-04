@@ -148,7 +148,7 @@ strings ./lyeve | grep -o "[a-z0-9.-]*lyeve\.com" | sort -u
 
 This prints `api.lyeve.com`, the license server an opaque key is exchanged
 with, plus the hosts of links the server hands out: `app.lyeve.com` (pricing,
-the customer portal and support, shown in the admin console) and
+the customer portal and support, shown in LyEve Console) and
 `docs.lyeve.com` (documentation links). Only `api.lyeve.com` is ever contacted,
 and only for an opaque key. The traces above
 are what prove that.

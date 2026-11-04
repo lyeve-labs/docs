@@ -1,13 +1,13 @@
 ---
 title: Content lifecycle
-description: Move entries through draft, published and archived, compare and roll back revisions, schedule publishing and link entries, in the admin console or Admin API.
+description: Move entries through draft, published and archived, compare and roll back revisions, schedule publishing and link entries, in LyEve Console or Admin API.
 sidebar:
   order: 16
 ---
 
 > **Included free** on every install, with revisions kept for the content types you choose and the last 30 days of them readable. Older revisions, content releases and editorial comment threads need a license with the `content-pro` feature. See [pricing](https://lyeve.com/pricing/).
 
-The admin console's **Content** screens and the Admin API work on the same entries. Both
+LyEve Console's **Content** screens and the Admin API work on the same entries. Both
 create and edit entries and move them between draft and published. When
 [content history](content-history.md) is on for the content type, they keep a numbered
 revision of every change so you can roll back. Over the API an entry can also be archived, compared
@@ -62,11 +62,11 @@ grant and the write routes with `content:write`.
 ## Try it
 
 This creates a draft, publishes it, rolls it back and schedules it. For the console steps,
-you are signed in to the admin console. For the API steps, you need a token in `TOKEN`. The
+you are signed in to the console. For the API steps, you need a token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
 **1. Create a `story` content type with draft and publish.** Only the API turns on drafts and
-publishing. The Schema builder in console v0.23.0 has no switch for them, so run this call
+publishing. The Schema builder in console v0.25.0 has no switch for them, so run this call
 even when you follow the console steps after it.
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows how to get a token with your console account:
@@ -244,7 +244,7 @@ curl -X POST http://localhost:3001/api/admin/content/$ENTRY_ID/rollback \
 </div>
 
 **7. Schedule it to publish and then archive.** Schedules are API only. The console has no
-schedule control in v0.23.0:
+schedule control in v0.25.0:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/content/$ENTRY_ID/entry-schedule \
@@ -316,7 +316,7 @@ answers the translated fields.
 Open the entry, change its fields and choose **Save**. Each save is a new revision, and the
 console goes back to the list. **Publish** and **Unpublish** at the top of the entry change
 its status. To delete an entry, choose the delete button on its row in the list and confirm
-with **Delete**. Its revisions and translations go with it.
+with **Delete**. Its revisions and translations are deleted too.
 
 </div>
 <div data-path="api">
@@ -342,7 +342,7 @@ You can also create an entry as published by sending `"status": "published"` on 
 </div>
 </div>
 
-Archiving and change notes are API only. The console in v0.23.0 has no archive control, and
+Archiving and change notes are API only. The console in v0.25.0 has no archive control, and
 its saves record no note.
 
 ## Compare and roll back revisions
@@ -380,7 +380,7 @@ and the older history comes back with it.
 
 ## Schedule a publish or an archive
 
-Schedules are API only. The console in v0.23.0 has no schedule control.
+Schedules are API only. The console in v0.25.0 has no schedule control.
 
 `PUT /api/admin/content/{id}/entry-schedule` sets `scheduled_publish_at`,
 `scheduled_unpublish_at`, or both, with an optional `timezone`:
@@ -406,7 +406,7 @@ is `published` or `archived`. `GET /api/admin/content/{id}/schedules` lists them
 
 ## Link entries to each other
 
-Links are API only. The console in v0.23.0 has no control for them.
+Links are API only. The console in v0.25.0 has no control for them.
 
 A relationship links two entries directly, without a relation field in the content type. Use
 it for links an editor decides case by case, such as "see also". For links every entry of a
@@ -546,8 +546,7 @@ The release and comment errors are on [Content releases](content-releases.md#err
 
 ## Related
 
-- [Drafts and publishing](../guides/user/drafts-and-publishing.md): the same lifecycle in the
-  admin console.
+- [Drafts and publishing](../guides/user/drafts-and-publishing.md): the same lifecycle in the console.
 - [Content history](content-history.md): which content types keep revisions, retention and
   the activity log.
 - [Data model](../concepts/data-model.md): statuses, revisions and the Content API.

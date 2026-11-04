@@ -53,7 +53,7 @@ The last rule also catches long readable words, so
 A tenant admin always sees their own tenant, and a `tenant_id` they pass is
 ignored. A super admin sees every tenant, or one when they pass `tenant_id`.
 
-## In the admin console
+## In the console
 
 Open **Insight > API analytics** for the last 24 hours. The top row gives the
 total requests, the server and client error rates, and the p50, p95 and p99
@@ -65,13 +65,13 @@ follow.
 
 ![The API analytics page for the last 24 hours, with the request total, the error rates and the latency percentiles at the top, the responses split by status class, three paths under Where the errors are, and the top endpoints ranked by request count.](images/api-analytics.png)
 
-The console always shows the last 24 hours. The breakdown by tenant, the hourly trend, a chosen range or filter, and the settings are
+LyEve Console always shows the last 24 hours. The breakdown by tenant, the hourly trend, a chosen range or filter, and the settings are
 read and changed through the API.
 
 ## Try it
 
 This needs a license with `apianalytics`. For the console steps, you are
-signed in to the admin console as an admin. For the API steps, you need an
+signed in to the console as an admin. For the API steps, you need an
 admin token in `TOKEN`. The [quickstart](../getting-started/quickstart.md)
 shows how to get one.
 

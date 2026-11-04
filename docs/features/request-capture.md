@@ -60,7 +60,7 @@ captures.
 Deleting a tenant deletes its captures. A privacy erasure request for a person
 deletes the captures that name them.
 
-In the admin console, request capture is under **Insight > Observability > Request capture**.
+In LyEve Console, request capture is under **Insight > Observability > Request capture**.
 
 - **Captures from every tenant** lists the newest requests with their **Tenant**, **Status**,
   how long each **Took** and when it was **Captured**. The list and its total cover every
@@ -72,11 +72,11 @@ In the admin console, request capture is under **Insight > Observability > Reque
 
 Without the `request-capture-pro` feature, the page says that capture rules and replay sets
 are not included, and **New rule** and **New replay set** are turned off. Reading one capture in full, replaying it on its own and comparing
-two captures are done with the API on v0.23.0.
+two captures are done with the API on v0.25.0.
 
 ## Try it
 
-For the console step, you are signed in to the admin console as a super admin. Every other
+For the console step, you are signed in to the console as a super admin. Every other
 step is an API call, so you need an admin token in `TOKEN`. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -126,7 +126,7 @@ curl "http://localhost:3001/api/admin/request-captures?method=GET&limit=2" \
 </div>
 </div>
 
-The rest of the steps are API only on v0.23.0. They need a capture id, which the console list
+The rest of the steps are API only on v0.25.0. They need a capture id, which the console list
 does not show, so take one from the API list above: copy an `id` into `CAPTURE_ID`.
 
 **2. Fetch that one capture in full:**
@@ -286,7 +286,7 @@ in order with each replay compared against its original.
    **Replay settings smoke?**.
 
 The page says **Replayed settings smoke** and
-**1 of 1 answered as they did when captured.**, and lists each call with **Same** or what
+**1 of 1 returned the same response as when captured.**, and lists each call with **Same** or what
 changed, its status and its time then and now.
 
 </div>

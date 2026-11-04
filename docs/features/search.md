@@ -44,7 +44,7 @@ site may search, and you can see what readers look for.
 
 This needs at least one published entry, such as the one the
 [content lifecycle](content-lifecycle.md#try-it) steps create, published again after its
-rollback. For the console steps, you are signed in to the admin console as an `admin` or
+rollback. For the console steps, you are signed in to LyEve Console as an `admin` or
 `super_admin`. For the API steps, you need a token in `TOKEN` for one. The
 [quickstart](../getting-started/quickstart.md) shows how to get one.
 
@@ -134,7 +134,7 @@ curl http://localhost:3001/api/admin/search/analytics \
 
 The autocomplete in step 2 is not counted. Each search you run in the console is.
 
-![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card lists landing_page under Anyone may search, and the Ranking weights card starts below it.](images/search.png)
+![The Search page with results for catalog: Winter catalog, Spring catalog as a draft, and Customer stories, each with its rank. Beside them, the Public search card lists landing_page under Searchable by anyone, and the Ranking weights card starts below it.](images/search.png)
 
 [Search and organization](../guides/user/search-and-organization.md) walks through searching
 from the console step by step.
@@ -206,7 +206,7 @@ may all be public.
 <div class="paths">
 <div data-path="console">
 
-On **Search**, pick the content types under **Anyone may search** in the **Public search**
+On **Search**, pick the content types under **Searchable by anyone** in the **Public search**
 card and choose **Save**. Each one shows as a chip, and the card shows an **Example GET
 request** to copy.
 
@@ -256,9 +256,8 @@ curl "https://acme.example.com/api/v1/search/article?q=pricing&limit=10"
   and no author. Snippets are always on.
 - A snippet, here and in the admin search, is HTML in which the text is escaped and each match
   is wrapped in `<mark>` tags, so it is safe to render as HTML, while every other field in a
-  hit is plain text. On v0.57.0 a `body` snippet is the entry's stored body as JSON text, with
-  its field names and quotes escaped, such as
-  `{&#34;body&#34;: &#34;Spring <mark>pricing</mark> notes&#34;}`.
+  hit is plain text. On v0.58.0 a `body` snippet holds the body's text only, with its markup
+  dropped, such as `Spring <mark>pricing</mark> notes`.
 - `q` is required and at most 256 characters. `tags` filters by up to 10 comma-separated tags,
   and any beyond 10 are dropped.
 - `limit` is 10 by default and at most 50, and `offset` is at most 1000.
@@ -326,7 +325,7 @@ curl -X PUT http://localhost:3001/api/admin/search/ranking \
 </div>
 </div>
 
-Weights for one content type are API only. The console in v0.23.0 sets the `*` row.
+Weights for one content type are API only. The console in v0.25.0 sets the `*` row.
 
 A search uses the weights saved for its content type, then the ones saved under `schema_name`
 `*`, then the defaults: title 1.0, body 0.4, tags 0.2. A negative weight counts as 0, and all
@@ -462,6 +461,6 @@ the instance runs makes them answer `402` `payment_required`.
 ## Related
 
 - [Search and organization](../guides/user/search-and-organization.md): finding entries in
-  the admin console.
+  the console.
 - [Content lifecycle](content-lifecycle.md): statuses and the entries search reads.
 - [Localization](localization.md): translated entries.

@@ -28,7 +28,7 @@ pay for. Everything it would keep in a database comes from the configuration fil
   logged at shutdown.
 - **Nothing is metered.** Usage is not counted, and an API key has no monthly limit.
 - **One tenant.** Every request runs as the `default` tenant.
-- **No admin console.** There is no sign-in and no Admin API listener. You read status through
+- **No LyEve Console.** There is no sign-in and no Admin API listener. You read status through
   the API with a key declared in the file.
 - **Only features that need no database start:** flows, webhooks, idempotent requests, request
   profiling and concurrency tuning (`flow`, `webhook`, `idempotency`, `profiler` and
@@ -175,7 +175,7 @@ leaving cron on. `GET /api/admin/flows` shows `fires_on_this_replica` on each cr
 
 ## Read status
 
-The engine serves no sign-in or setup route in this mode, so admin console v0.22.0 cannot sign
+The engine serves no sign-in or setup route in this mode, so console v0.25.0 cannot sign
 in. Status is read with the engine API, with a key holding `admin` or `super_admin`:
 
 | Route | What it returns |
