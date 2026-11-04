@@ -16,10 +16,10 @@
     .edge { fill: none; stroke: #616774; stroke-width: 1.5; }
     .head { fill: #616774; }
     @media (prefers-color-scheme: dark) {
-      .canvas { fill: #0b172a; }
+      .canvas { fill: #0c1728; }
       text, .path { fill: #e6e8ee; }
       .sub, .label, .note, .heading { fill: #9aa1ad; }
-      .node { fill: #111f32; stroke: #616d80; }
+      .node { fill: #121e30; stroke: #616d80; }
       .node-ok { fill: #152f34; stroke: #22c55e; }
       .node-warn { fill: #2c2c31; stroke: #f59e0b; }
       .pill { stroke: #616d80; }
