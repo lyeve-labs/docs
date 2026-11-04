@@ -15,7 +15,7 @@
     .edge-dash { stroke-dasharray: 5 4; }
     .head { fill: #616774; }
     @media (prefers-color-scheme: dark) {
-      .canvas { fill: #101a2b; }
+      .canvas { fill: #11171d; }
       text, .path { fill: #e6e8ee; }
       .sub, .label, .note { fill: #9aa1ad; }
       .node-you { fill: #202843; stroke: #9587f2; }
