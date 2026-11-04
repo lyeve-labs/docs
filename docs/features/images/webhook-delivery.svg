@@ -23,12 +23,12 @@
     .head-warn { fill: #904207; }
     .head-bad { fill: #ab1a1a; }
     @media (prefers-color-scheme: dark) {
-      .canvas { fill: #11171d; }
+      .canvas { fill: #0b172a; }
       text { fill: #e6e8ee; }
       .sub, .note, .label, .frame-label { fill: #9aa1ad; }
       .label-ok { fill: #22c55e; }
       .label-bad { fill: #f87171; }
-      .node { fill: #191e25; stroke: #616d80; }
+      .node { fill: #111f32; stroke: #616d80; }
       .node-ok { fill: #152f34; stroke: #22c55e; }
       .node-warn { fill: #2c2c31; stroke: #f59e0b; }
       .node-bad { fill: #2e2736; stroke: #f87171; }
