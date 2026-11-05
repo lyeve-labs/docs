@@ -468,3 +468,6 @@ entry's `id` and the event.
 - [Event replay](../features/event-replay.md): the event log and how replays
   run.
 - [Flows](../features/flows.md): send your own events with `webhook.deliver`.
+- [Rebuild a static site when content changes](https://lyeve.com/blog/rebuild-static-site-with-webhooks/):
+  a guide on the blog that points a webhook at a receiver which starts one build on
+  Cloudflare, Netlify or Vercel after each burst of edits.

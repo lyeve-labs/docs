@@ -490,3 +490,6 @@ docker compose up -d admin
 - [Backup and restore](../how-to/backup-and-restore.md): tenant snapshots and restores.
 - [Email](../features/email.md): outbound mail for invitations and password resets.
 - [Kubernetes](kubernetes.md): the same images on a cluster.
+- [Self-host on a VPS with Docker Compose](https://lyeve.com/blog/self-host-on-a-vps/): a
+  guide on the blog from an empty Linux server to the console's sign-in page behind TLS,
+  with Caddy and PostgreSQL.

@@ -770,3 +770,6 @@ See [Admin tokens](../how-to/admin-tokens.md).
 - [Message broker events](message-broker-events.md): one stream for many
   consumers.
 - [Flows](flows.md): logic, custom events and alerts around deliveries.
+- [Rebuild a static site when content changes](https://lyeve.com/blog/rebuild-static-site-with-webhooks/):
+  a guide on the blog that starts one build on Cloudflare, Netlify or Vercel after each
+  burst of edits.
