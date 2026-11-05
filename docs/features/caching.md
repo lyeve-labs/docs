@@ -352,6 +352,9 @@ it:
 
 - A content create, update or delete clears, in its tenant, the answers of
   every rule tagged with that content type and of every rule with no tags.
+  Publishing or unpublishing an entry through
+  `PUT /api/v1/content/{schema}/{id}/publish` or `.../unpublish` is an update
+  and clears the same answers.
 - Changing or deleting a rule clears what it cached.
 - A person's [erasure](../trust/data-protection.md#right-to-erasure) clears,
   in every tenant, the answers of every rule tagged `comments` or
@@ -360,11 +363,9 @@ it:
   `POST /api/admin/cache/rules/purge` with `{"tag": "posts"}` clears every rule
   carrying the tag, and with no tag every answer the tenant has cached.
 
-Publishing or unpublishing through the Content API's publish routes does not
-clear cached answers, which expire with their `ttl_seconds`. Each replica
-reads the rules again at most every 10 seconds. With the in-memory provider
-each replica keeps its own cached answers, so a clear reaches only the replica
-that saw the change. A shared Redis gives every replica one cache.
+Each replica reads the rules again at most every 10 seconds. With the
+in-memory provider each replica keeps its own cached answers, so a clear
+reaches only the replica that saw the change. A shared Redis gives every replica one cache.
 
 Rate limits, the firewall and quotas count a cache hit like any other request.
 `GET /api/admin/cache/rules` answers the rules with `licensed` and `limits`,
