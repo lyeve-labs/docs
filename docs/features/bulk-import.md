@@ -440,3 +440,5 @@ call them. `{id}` is the job id.
 - [Data export](data-export.md): write entries to a file that imports back.
 - [Migrate existing content](../how-to/migrate-existing-content.md): which tool fits which move.
 - [Content lifecycle](content-lifecycle.md): what an imported entry is.
+- [Migrate WordPress posts and pages](https://lyeve.com/blog/migrate-from-wordpress/): a
+  guide on the blog that turns a WordPress export into JSON and loads it with bulk import.

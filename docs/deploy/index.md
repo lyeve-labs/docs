@@ -60,6 +60,11 @@ SQL Server needs read committed snapshot isolation turned on before it takes tra
 Use a dedicated database user. A production engine refuses to start as `postgres` on
 PostgreSQL, `root` on MySQL or `sa` on SQL Server.
 
+The blog has a guide for each database, from creating it and its user to the first start:
+[PostgreSQL](https://lyeve.com/blog/headless-cms-on-postgresql/),
+[MySQL](https://lyeve.com/blog/headless-cms-on-mysql/) and
+[SQL Server](https://lyeve.com/blog/headless-cms-on-sql-server/).
+
 ### SQLite, Turso and libSQL are not supported
 
 The engine reads any URL whose scheme is not one of the above as PostgreSQL. A URL for SQLite,

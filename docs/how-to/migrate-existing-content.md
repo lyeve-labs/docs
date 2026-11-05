@@ -308,3 +308,5 @@ reads it, so name the database by its host name. Passwords in connection strings
   convert content types.
 - [Back up and restore](backup-and-restore.md): copy or clone a tenant whole.
 - [Tenants](../features/tenants.md): how tenants are kept apart.
+- [Migrate WordPress posts and pages](https://lyeve.com/blog/migrate-from-wordpress/): a
+  guide on the blog that turns a WordPress export into JSON and loads it with bulk import.
