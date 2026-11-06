@@ -231,6 +231,13 @@ The body replaces the whole list. An endpoint on a private, loopback or
 link-local address, `localhost`, or a name ending in `.local` or `.internal` is
 refused with `400`. Reading the sinks back shows credentials as `[REDACTED]`.
 
+The sinks check the address they connect to, and every redirect, the same way.
+A Loki or Elasticsearch on your own network needs that network in
+`LOGGING_ALLOWED_PRIVATE_NETWORKS`, a comma-separated list of CIDR ranges or
+addresses, set before the engine starts. A listed address is then accepted when
+you save a sink, and the list opens those networks to the log sinks and to
+nothing else.
+
 <details>
 <summary>Sink settings</summary>
 

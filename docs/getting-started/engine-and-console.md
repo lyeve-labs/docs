@@ -64,7 +64,7 @@ services:
       DATABASE_URL: postgres://lyeve:${DB_PASSWORD}@db:5432/lyeve?sslmode=disable
       JWT_SECRET: ${JWT_SECRET}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-      ADMIN_CONSOLE_KEY: ${ADMIN_CONSOLE_KEY}
+      LYEVE_CONSOLE_KEY: ${LYEVE_CONSOLE_KEY}
       LYEVE_SETUP_TOKEN: ${SETUP_TOKEN}
       LYEVE_CONSOLE_URL: http://localhost:8080
       TRUSTED_PROXIES: 172.28.0.0/24
@@ -83,7 +83,7 @@ services:
       ORIGIN: http://localhost:8080
       CORE_INTERNAL_URL: http://proxy:8080
       CORE_API_INTERNAL_URL: http://proxy:8080
-      ADMIN_CONSOLE_KEY: ${ADMIN_CONSOLE_KEY}
+      LYEVE_CONSOLE_KEY: ${LYEVE_CONSOLE_KEY}
       ADDRESS_HEADER: X-Forwarded-For
       XFF_DEPTH: "1"
     depends_on:
@@ -140,7 +140,7 @@ What the less obvious lines do:
 | `ORIGIN` | The address you open in the browser. It has to match exactly, port included, or sign-in fails |
 | `LYEVE_CONSOLE_URL` | The same address, for the engine. Password reset and sign-in link emails point there |
 | `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL` | Where the console's server reaches the engine: through the proxy, by its name inside the network |
-| `ADMIN_CONSOLE_KEY` | The same value on both sides. The console signs each call with the browser's address, so sign-in limits count each person rather than the console |
+| `LYEVE_CONSOLE_KEY` | The same value on both sides. The console signs each call with the browser's address, so sign-in limits count each person rather than the console |
 | `TRUSTED_PROXIES` | The network's address range, which the `networks` block fixes. The engine then believes the client address the proxy passes on |
 | `engine-state` volume | Keeps the engine's signing key, so tokens it issued stay valid. Sessions still end at a restart, once each access token expires, because refresh tokens live in the engine's memory unless `CACHE_DRIVER=redis` and `REDIS_URL` point at a Redis, and this stack runs none |
 
@@ -153,7 +153,7 @@ cat > .env <<SECRETS
 DB_PASSWORD=$(openssl rand -hex 24)
 JWT_SECRET=$(openssl rand -hex 32)
 ENCRYPTION_KEY=$(openssl rand -hex 32)
-ADMIN_CONSOLE_KEY=$(openssl rand -hex 32)
+LYEVE_CONSOLE_KEY=$(openssl rand -hex 32)
 SETUP_TOKEN=$(openssl rand -hex 16)
 LYEVE_LICENSE_KEY=
 SECRETS

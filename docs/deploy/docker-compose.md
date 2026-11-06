@@ -63,7 +63,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       LYEVE_AUDIT_HMAC_KEY: ${AUDIT_HMAC_KEY}
-      ADMIN_CONSOLE_KEY: ${ADMIN_CONSOLE_KEY}
+      LYEVE_CONSOLE_KEY: ${LYEVE_CONSOLE_KEY}
       RATE_LIMIT_RPS: "100"
       SECURE_COOKIE: "true"
       CORS_ORIGINS: https://admin.yourdomain.com
@@ -85,7 +85,7 @@ services:
       ORIGIN: https://admin.yourdomain.com
       CORE_INTERNAL_URL: http://proxy:8080
       CORE_API_INTERNAL_URL: http://proxy:8080
-      ADMIN_CONSOLE_KEY: ${ADMIN_CONSOLE_KEY}
+      LYEVE_CONSOLE_KEY: ${LYEVE_CONSOLE_KEY}
       ADDRESS_HEADER: X-Forwarded-For
       XFF_DEPTH: "1"
     depends_on:
@@ -175,7 +175,7 @@ DB_PASSWORD=$(openssl rand -hex 24)
 JWT_SECRET=$(openssl rand -hex 32)
 ENCRYPTION_KEY=$(openssl rand -hex 32)
 AUDIT_HMAC_KEY=$(openssl rand -hex 32)
-ADMIN_CONSOLE_KEY=$(openssl rand -hex 32)
+LYEVE_CONSOLE_KEY=$(openssl rand -hex 32)
 LYEVE_LICENSE_KEY=
 LYEVE_PLUGINS=
 SECRETS
@@ -281,19 +281,76 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.58.0` and `ghcr.io/lyeve-labs/lyeve-console:0.25.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.60.2` and `ghcr.io/lyeve-labs/lyeve-console:0.26.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
 
+### Upgrading to 0.60.2 and console 0.26.0
+
+Engine 0.60.0 and 0.60.1 have no published image, so an install moves straight to 0.60.2.
+Upgrade the engine first, then the console. Read these before the first start of 0.60.2:
+
+- **Check the settings the engine now refuses.** Three settings that booted before stop the
+  boot of 0.60.0. The boot error names the setting and never prints its value.
+  - `APP_ENV` accepts only `production` and `development`, so `staging` and `test` are
+    refused. Set `development` for local work. Everywhere else leave it unset or set
+    `production`, because unset means production.
+  - A `METRICS_TOKEN` shorter than 32 characters, or one that reads as a placeholder, is
+    refused in every environment. Generate one with `openssl rand -hex 32`, or leave it unset
+    so the metrics route needs a super admin.
+  - A `JWT_SECRETS` entry shorter than 16 characters, or one that reads as a placeholder, is
+    refused, as `JWT_SECRET` already was. Replace it with a long random value.
+- **Rename the console key on both services.** The engine reads the console's signing key from
+  `LYEVE_CONSOLE_KEY` and the previous key it still accepts during a rotation from
+  `LYEVE_CONSOLE_KEY_PREVIOUS`. The console reads `LYEVE_CONSOLE_KEY`, with the same value. The
+  old names `ADMIN_CONSOLE_KEY` and `ADMIN_CONSOLE_KEY_PREVIOUS` still work for one more minor
+  release, and the engine logs a deprecation warning when it reads one. A new name and an old
+  name set to different values stop the engine's boot with an error that names both. Rename
+  the variable in `.env` and in the `environment` block of both `engine` and `admin`, as the
+  [Compose file](#the-compose-file) above does.
+- **Tell the console which header carries the browser's address.** A console served over
+  https behind a proxy refuses to start without `ADDRESS_HEADER`, usually `x-forwarded-for`,
+  and `XFF_DEPTH` set to the number of proxies in front of it. The Compose file above sets
+  both.
+- **List the network of a Loki or Elasticsearch you run yourself.** The log sinks now check
+  the address they connect to, and every redirect, and refuse a loopback, private or
+  link-local one. Before, only the endpoint's spelling was checked, and only when it was
+  saved. A sink on your own network stops sending until you list that network in
+  `LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine, as [Logs](../features/logs.md#send-logs-to-loki-or-elasticsearch)
+  explains.
+- **Move to the new image name.** Console 0.26.0 is also published as
+  `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and digest, but that name stops at a
+  later minor release. A file that still names it changes the console's `image:` line to
+  `ghcr.io/lyeve-labs/lyeve-console`.
+- **Check how your identity provider signs SAML answers.** From 0.60.2, an answer that the
+  provider did not sign as a whole may carry only one assertion, and an assertion with no
+  subject, no subject confirmation or no conditions is refused. A provider that signs the
+  whole answer, or sends one complete assertion, keeps signing people in.
+- **Expect credentialed reads to reach the instance.** A CDN or proxy in front of the API no
+  longer caches reads made with a token, key or session, so those reads reach the instance.
+- **Rename a realtime key's content scope.** An API key that names a content type as
+  `content:blog:read` now opens a realtime stream that carries nothing. Change it to
+  `content.blog:read`.
+
+Then upgrade the engine, wait until it reports healthy, and upgrade the console:
+
+```bash
+docker compose stop engine
+docker compose pull engine admin
+docker compose up -d --wait engine
+docker compose up -d admin
+```
+
 ### Upgrading to console 0.25.0
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so change the console's
 `image:` line to that name. Every 0.25 release is also published under the old name,
 `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and the same digests, so a file that still
-names it keeps updating until 0.26.0. The tags already published under the old name stay. The
+names it keeps updating. The old name has received every release through 0.26.0 so far, and
+the tags already published under it stay. The
 release changes the console's name and look, and adds no setting:
 
 ```bash

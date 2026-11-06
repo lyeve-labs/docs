@@ -72,7 +72,8 @@ cannot create stops the start.
 
 If you run with `JWT_ALG=HS256` instead, `JWT_SECRET` signs and every secret
 in `JWT_SECRETS` verifies. To rotate without signing everyone out, set
-`JWT_SECRET` to the new secret and `JWT_SECRETS=new-secret,old-secret`.
+`JWT_SECRET` to the new secret and `JWT_SECRETS=<new secret>,<old secret>`. Each entry is at
+least 16 characters and no placeholder, or the instance does not start.
 
 **Check:**
 
@@ -244,7 +245,7 @@ Complexity asks for an upper-case letter, a lower-case letter and a digit.
 
 ```ini
 LYEVE_AUDIT_HMAC_KEY=<openssl rand -hex 32>
-METRICS_TOKEN=<a long random value>
+METRICS_TOKEN=<openssl rand -hex 32>
 ```
 
 **Why:** tampering with the audit log becomes detectable, and a metrics
@@ -253,10 +254,10 @@ scraper gets its own credential instead of an admin account.
 - `LYEVE_AUDIT_HMAC_KEY` keys the audit log's hash chain. It must be exactly
   64 hex characters, and production does not start without it.
 - `METRICS_TOKEN` lets a scraper read `GET /api/admin/metrics` with a static
-  bearer token. Once it is set, any other bearer token is refused there, a
-  super admin's included. Unset, the route answers any super admin session.
+  bearer token of at least 32 characters. Once it is set, any other bearer
+  token is refused there, a super admin's included. Unset, the route answers any super admin session.
 - The profiling routes under `/api/admin/debug/pprof/` take a super admin, and
-  the latency ranking at `/api/admin/debug/latency` takes an admin. Treat
+  the latency ranking at `/api/admin/debug/latency` takes one too. Treat
   every super admin account as full access to them.
 
 **Check:**

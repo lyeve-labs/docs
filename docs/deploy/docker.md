@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.58.0
+  ghcr.io/lyeve-labs/lyeve-core:0.60.2
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -109,7 +109,7 @@ lists every check.
 | `LYEVE_CONSOLE_URL` | The console's public URL, `https` in production. Password reset and magic-link emails link to it. Unset in production, those features refuse to start and device sign-in answers `503` |
 | `CORS_ORIGINS` | Browser origins allowed to call the APIs cross-origin, comma-separated |
 | `TRUSTED_PROXIES` | CIDRs of your reverse proxies, so the engine reads the client address from `X-Forwarded-For`. Without it every request counts as the proxy's, and the per-address limits apply to all users together |
-| `ADMIN_CONSOLE_KEY` | A secret of 32 characters or more, shared with the console, so sign-in limits count each browser |
+| `LYEVE_CONSOLE_KEY` | A secret of 32 characters or more, shared with the console, so sign-in limits count each browser |
 | `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, 16 characters or more |
 | `LYEVE_LICENSE_KEY` | Your license, for the paid features |
 
@@ -129,8 +129,8 @@ is on [Configuration](../reference/configuration.md).
 | `ORIGIN` | The public URL the browser uses, such as `https://admin.example.com`. Required, for the cross-site check on form posts and for cookies |
 | `CORE_INTERNAL_URL` | Where the console's server reaches the engine. Every server-side `/api` call goes to this one base URL, so it must route `/api/admin` to the engine's port 3001 and the rest of `/api` to port 3002 |
 | `CORE_API_INTERNAL_URL` | Where the API reference page sends the calls it runs under `/api/v1`. Set it to the same base as `CORE_INTERNAL_URL`, or to the engine's port 3002. The console refuses to start when it is unset or points at the console itself |
-| `ADMIN_CONSOLE_KEY` | The same value the engine holds |
-| `ADDRESS_HEADER`, `XFF_DEPTH` | Behind a proxy, `X-Forwarded-For` and `1`, so the console sees the browser's address |
+| `LYEVE_CONSOLE_KEY` | The same value the engine holds |
+| `ADDRESS_HEADER`, `XFF_DEPTH` | Behind a proxy, `X-Forwarded-For` and the number of proxies, usually `1`, so the console sees the browser's address. With an `https` `ORIGIN` the console refuses to start without `ADDRESS_HEADER` |
 | `SIGN_IN_ORGANIZATION` | `true` shows **Organization (optional)** on the sign-in, password reset and email link pages, for a console that serves more than one organization on an address that names none. Off by default |
 | `PORT` | Listen port. Default `3002` |
 
@@ -189,11 +189,27 @@ which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETU
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
 
+## Upgrading to 0.60.2 and console 0.26.0
+
+Engine 0.60.0 and 0.60.1 have no published image, so run 0.60.2. Upgrade the engine before the
+console. Engine 0.60.0 refuses to start with an `APP_ENV` other than `production` or
+`development`, a `METRICS_TOKEN` shorter than 32 characters, or a `JWT_SECRETS` entry shorter
+than 16, and with a placeholder in either secret. Rename `ADMIN_CONSOLE_KEY` to
+`LYEVE_CONSOLE_KEY` on both images, and `ADMIN_CONSOLE_KEY_PREVIOUS` to
+`LYEVE_CONSOLE_KEY_PREVIOUS` on the engine. The old names work for one more minor release. A
+console with an `https` `ORIGIN` refuses to start without `ADDRESS_HEADER`. A Loki or
+Elasticsearch log sink on your own network needs that network in
+`LOGGING_ALLOWED_PRIVATE_NETWORKS`.
+[Docker Compose](docker-compose.md#upgrading-to-0602-and-console-0260) explains each step, a
+SAML change in 0.60.2, and two changes your clients see: cached reads made with a credential
+and a realtime key's content scope.
+
 ## Upgrading to console 0.25.0
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so run that image from now
 on. Every 0.25 release is also published under `ghcr.io/lyeve-labs/lyeve-admin` with the same
-tags and digests, until 0.26.0, and the tags already published there stay.
+tags and digests. The old name has received every release through 0.26.0 so far, and the tags
+already published there stay.
 [Docker Compose](docker-compose.md#upgrading-to-console-0250) has the details.
 
 ## Upgrading to 0.58.0 and console 0.24.0
