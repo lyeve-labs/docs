@@ -88,6 +88,10 @@ Port 3001 serves the Admin API and port 3002 the Content API. The engine refuses
 without `DATABASE_URL`, `JWT_SECRET` and `ENCRYPTION_KEY`, in every environment. `APP_ENV` defaults to `production`, which refuses a
 weak configuration, so the command above sets `development` for a first run.
 
+The image pulls from GitHub's container registry with no login. If a pull fails,
+[Pull the LyEve images from ghcr.io](https://lyeve.com/blog/pull-from-ghcr/) on the blog
+gives the fix for each error, and how to pin a tag or a digest.
+
 | Variable | Default | Purpose |
 |---|---|---|
 | `DATABASE_URL` | required | Connection string for PostgreSQL, MySQL or SQL Server |

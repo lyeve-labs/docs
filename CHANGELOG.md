@@ -4,6 +4,16 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.10.4] - 2026-11-06
+
+### Changed
+
+- Seven pages link the blog guide that walks through the same task: webhooks, adding a webhook, bulk import, migrating existing content, Docker Compose, installation and the supported databases.
+
+### Fixed
+
+- The caching page says a publish or an unpublish clears the same cached answers as any other content update. It said they were left until they expired.
+
 ## [0.10.3] - 2026-11-04
 
 ### Changed
