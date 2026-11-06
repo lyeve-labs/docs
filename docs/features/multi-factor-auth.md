@@ -388,7 +388,7 @@ again.
 |---|---|---|
 | `WEBAUTHN_RPID` | The domain passkeys are bound to, such as `admin.example.com`. | `DOMAIN`, then `localhost` |
 | `WEBAUTHN_RP_DISPLAY_NAME` | The name an authenticator shows for your instance. | `LyEve` |
-| `WEBAUTHN_RP_ORIGINS` | Comma-separated origins allowed to use passkeys. | `https://<rpid>` and `http://localhost:5173` |
+| `WEBAUTHN_RP_ORIGINS` | Comma-separated origins allowed to use passkeys. List a console development server's origin here. | `https://<rpid>` |
 | `MFA_TOTP_ISSUER` | The name shown against the entry in an authenticator app. | the display name |
 | `PUBLIC_URL` | Base URL for the cross-device QR code when the request has no `Origin` header. | `https://localhost` |
 

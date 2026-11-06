@@ -14,7 +14,7 @@ items marked "refused" itself and will not start until they pass.
 - [ ] `JWT_SECRET` is a random value of at least 16 characters (refused). [Configuration](../reference/configuration.md#start-here)
 - [ ] `ENCRYPTION_KEY` is a different random value of at least 32 characters, stored durably (refused). [Configuration](../reference/configuration.md#start-here)
 - [ ] `LYEVE_AUDIT_HMAC_KEY` is exactly 64 hex characters (refused). [Configuration](../reference/configuration.md#start-here)
-- [ ] `ADMIN_CONSOLE_KEY` holds the same value on the engine and LyEve Console. [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords)
+- [ ] `LYEVE_CONSOLE_KEY` holds the same value on the engine and LyEve Console. [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords)
 - [ ] `LYEVE_SETUP_TOKEN` is set when more than one replica can answer first-run setup. [Configuration](../reference/configuration.md#sign-in-tokens-and-passwords)
 - [ ] Secrets live in a secret store or an uncommitted `.env` file. [Secure your instance](../how-to/secure-your-instance.md)
 

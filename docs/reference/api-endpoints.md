@@ -346,8 +346,8 @@ A build without license support answers `404` on both license routes and reports
 | `GET` | `/api/v1/health`, `/api/v1/ready` | Signed in | The same on the Content API |
 | `GET` | `/api/admin/metrics` | The `METRICS_TOKEN` bearer, or `super_admin` when it is unset | Prometheus metrics. See [Metrics export](../features/metrics-export.md) |
 | `GET` | `/api/admin/pool/health` | `admin` | Database connection pool statistics |
-| `GET` | `/api/admin/debug/latency` | `admin` | The slowest endpoints by p50, p95 and p99 |
-| `GET` | `/api/admin/debug/goroutines` | `admin` | How many goroutines run, and which feature started them |
+| `GET` | `/api/admin/debug/latency` | `super_admin` | The slowest endpoints by p50, p95 and p99 |
+| `GET` | `/api/admin/debug/goroutines` | `super_admin` | How many goroutines run, and which feature started them |
 | `GET` | `/api/admin/debug/gc-config` | `admin` | The garbage collector settings and the memory limit |
 | `POST` | `/api/admin/debug/gc-config` | `super_admin` | Change the collector percentage with `{"gogc": <n>}`, with no restart |
 | `GET` | `/api/admin/debug/pprof/` | `super_admin` | Go's profiler index. `heap`, `goroutine`, `profile`, `allocs`, `block`, `mutex`, `threadcreate`, `trace`, `cmdline` and `symbol` sit under it |

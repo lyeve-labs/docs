@@ -140,7 +140,7 @@ docker run -d --name lyeve-console \
 | `CORE_API_INTERNAL_URL` | Where the console sends the `/api/v1` calls it makes itself, such as the ones the **API reference** page runs: the engine's port 3002 or the proxy in front of it. The console refuses to start without it, because its fallback is the console's own port |
 | `ORIGIN` | The URL you open in the browser. It has to match exactly, or sign-in fails its CSRF check |
 | `PORT` | The port the console listens on. The default is `3002`, which collides with the Content API on a shared host |
-| `ADMIN_CONSOLE_KEY` | Optional. The same value, at least 32 characters, on the engine and the console. The console then signs each call with the browser's address, so sign-in limits count each person rather than the console |
+| `LYEVE_CONSOLE_KEY` | Optional. The same value, at least 32 characters, on the engine and the console. The console then signs each call with the browser's address, so sign-in limits count each person rather than the console |
 
 [Docker Compose](../deploy/docker-compose.md) runs both images with the proxy already
 configured, and is the shortest path to a working console.
