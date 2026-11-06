@@ -4,6 +4,14 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.11.0] - 2026-11-06
+
+### Changed
+
+- The Docker Compose, Docker and Kubernetes guides run engine 0.60.2 and console 0.26.0, and each has an upgrade section for them: the settings the engine refuses at boot, the renamed console signing key, the address header a console behind an https proxy needs, the network list for a self-hosted log sink, the console's new image name and the stricter check of SAML answers in 0.60.2. Engine 0.60.0 and 0.60.1 never published an image, so the guides go straight to 0.60.2.
+- Every example and reference row names the console signing key by its new name, `LYEVE_CONSOLE_KEY`.
+- The configuration reference lists the new boot refusals, and the latency and goroutine debug routes are marked as super admin only.
+
 ## [0.10.4] - 2026-11-06
 
 ### Changed
