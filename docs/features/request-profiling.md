@@ -199,7 +199,7 @@ The answer has `snapshots`, `slope_bytes_per_sec` and `leak_likely`.
   recent requests. `{path}` is the request path as sent, slashes included.
   `limit` (default 100, at most 1000) and `offset` page the requests.
 
-An admin who is not a super admin can read the latency ranking instead:
+A super admin can also read the latency ranking:
 
 ```bash
 curl "http://localhost:3001/api/admin/debug/latency?top=10" \
@@ -381,8 +381,8 @@ counts, garbage collection and the standard pprof URLs are always served. See
 
 | Method | Path | Who | Purpose |
 |---|---|---|---|
-| `GET` | `/api/admin/debug/latency` | Admin | The slowest endpoints, with `top`. |
-| `GET` | `/api/admin/debug/goroutines` | Admin | Goroutine counts. |
+| `GET` | `/api/admin/debug/latency` | Super admin | The slowest endpoints, with `top`. |
+| `GET` | `/api/admin/debug/goroutines` | Super admin | Goroutine counts. |
 | `GET` | `/api/admin/debug/gc-config` | Admin | Garbage collection settings. |
 | `POST` | `/api/admin/debug/gc-config` | Super admin | Set `{"gogc": <n>}` on the running process. |
 | `GET` | `/api/admin/debug/pprof/` | Super admin | The index of standard profiles. |

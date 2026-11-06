@@ -91,7 +91,7 @@ stringData:
   JWT_SECRET: "<openssl rand -hex 32>"
   ENCRYPTION_KEY: "<a different openssl rand -hex 32>"
   LYEVE_AUDIT_HMAC_KEY: "<openssl rand -hex 32>"
-  ADMIN_CONSOLE_KEY: "<openssl rand -hex 32>"
+  LYEVE_CONSOLE_KEY: "<openssl rand -hex 32>"
   LYEVE_SETUP_TOKEN: "<openssl rand -hex 24>"
   STORAGE_S3_KEY: "<access key id>"             # cluster-specific
   STORAGE_S3_SECRET: "<secret access key>"      # cluster-specific
@@ -107,7 +107,7 @@ the per-IP limits apply to all users together. Once it is set, the engine ignore
 `X-Forwarded-Proto` from anything else, so a range that misses the proxy pods redirects every
 request.
 
-`ADMIN_CONSOLE_KEY` is shared with the console Deployment below. The console signs each call with
+`LYEVE_CONSOLE_KEY` is shared with the console Deployment below. The console signs each call with
 the browser's address, so sign-in limits count each user rather than the console pods.
 
 Do not commit a real Secret. Render it from a secret manager the cluster trusts, such as
@@ -177,7 +177,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.58.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.60.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -311,7 +311,7 @@ spec:
     spec:
       containers:
         - name: lyeve-console
-          image: ghcr.io/lyeve-labs/lyeve-console:0.25.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-console:0.26.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -322,9 +322,9 @@ spec:
             - { name: CORE_API_INTERNAL_URL, value: "https://admin.example.com" }  # cluster-specific
             - { name: ADDRESS_HEADER, value: "X-Forwarded-For" }
             - { name: XFF_DEPTH, value: "1" }
-            - name: ADMIN_CONSOLE_KEY
+            - name: LYEVE_CONSOLE_KEY
               valueFrom:
-                secretKeyRef: { name: lyeve-secrets, key: ADMIN_CONSOLE_KEY }
+                secretKeyRef: { name: lyeve-secrets, key: LYEVE_CONSOLE_KEY }
           readinessProbe:
             httpGet: { path: /readyz, port: http }
             periodSeconds: 10
@@ -564,10 +564,31 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
+## Upgrading to 0.60.0 and console 0.26.0
+
+Upgrade the engine first and the console once the engine is ready.
+[Docker Compose](docker-compose.md#upgrading-to-0600-and-console-0260) lists the settings
+engine 0.60.0 now refuses at boot: an `APP_ENV` other than `production` or `development`, a
+short or placeholder `METRICS_TOKEN`, and a short or placeholder `JWT_SECRETS` entry. A Loki or
+Elasticsearch log sink inside the cluster needs its network in
+`LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine. Rename
+the `ADMIN_CONSOLE_KEY` key in the Secret to `LYEVE_CONSOLE_KEY`, and the console's
+environment entry and its `secretKeyRef` with it, as the manifests above do. A rotation's
+`ADMIN_CONSOLE_KEY_PREVIOUS` becomes `LYEVE_CONSOLE_KEY_PREVIOUS`. The old names work for one
+more minor release. Console 0.26.0 is also published under `ghcr.io/lyeve-labs/lyeve-admin`,
+but point the Deployment at `ghcr.io/lyeve-labs/lyeve-console`, as the command below does.
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.60.0
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.26.0
+kubectl -n lyeve rollout status deploy/lyeve-console
+```
+
 ## Upgrading to console 0.25.0
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`. Every 0.25 release is also
-published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests, until 0.26.0,
+published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests, through 0.26.0,
 and the tags already published there stay. Point the console's Deployment at the new name. An
 install made before the rename names its Deployment and container `lyeve-admin`, so use that
 name in the command:

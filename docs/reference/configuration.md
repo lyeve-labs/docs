@@ -54,13 +54,18 @@ With `APP_ENV` unset or `production`, the engine does not start when:
 
 In every environment, the engine does not start when:
 
+- `APP_ENV` is set to anything other than `production` or `development`.
 - `ENCRYPTION_KEY` is unset. The engine then uses `JWT_SECRET` in its place, and the two may
   not be equal.
 - `JWT_SECRET` is shorter than 16 characters, or `ENCRYPTION_KEY` shorter than 32, or the two
   are equal.
-- Either secret is a placeholder: `secret`, `password` or `default`, or a value containing
+- A `JWT_SECRETS` entry is shorter than 16 characters, or `METRICS_TOKEN` is set and shorter
+  than 32.
+- Any of these secrets is a placeholder: `secret`, `password` or `default`, or a value containing
   `changeme`, `change-me`, `change-this`, `replace-me`, `replaceme`, `your-secret`,
   `dev-secret`, `insecure`, `example` or `placeholder`.
+- `LYEVE_CONSOLE_KEY` and `ADMIN_CONSOLE_KEY`, or `LYEVE_CONSOLE_KEY_PREVIOUS` and
+  `ADMIN_CONSOLE_KEY_PREVIOUS`, are both set to different values.
 - `CORS_ORIGINS` contains `*`.
 - `JWT_ALG`, `PASSWORD_HASH_ALGO`, `STORAGE_DRIVER` or `DATABASE_DRIVER` names a value the
   engine does not support.
@@ -251,7 +256,7 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 | `JWT_EXPIRY_SECS` | Session token lifetime in seconds. Production refuses a value above `3600`. | `900` (15 minutes) |
 | `REFRESH_TOKEN_TTL_SECS` | Refresh token lifetime in seconds. | `2592000` (30 days) |
 | `LYEVE_SETUP_TOKEN` | The token the first-run setup asks for, at least 16 characters. Unset, the engine writes a one-time token to its standard error, not to its log, while no account exists. Set it when more than one replica can answer setup, since each prints its own. | unset (a one-time token on standard error) |
-| `ADMIN_CONSOLE_KEY` | A secret of at least 32 characters, shared with the console. The console signs its calls with the browser's address, so sign-in limits count each person instead of the console server. | unset |
+| `LYEVE_CONSOLE_KEY` | A secret of at least 32 characters, shared with the console. The console signs its calls with the browser's address, so sign-in limits count each person instead of the console server. The old name `ADMIN_CONSOLE_KEY` still works for one more minor release, and the engine logs a deprecation warning when it reads it. | unset |
 | `PASSWORD_MIN_LENGTH` | Shortest password accepted. | `12` |
 
 <details>
@@ -260,8 +265,8 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 | Variable | What it does | Default |
 |---|---|---|
 | `JWT_ALG` | `EdDSA` signs sessions with the Ed25519 key. `HS256` signs them with `JWT_SECRET` and creates no key file. Any other value stops the boot. Environment only: a value in the file passes the check but does not change the signing. | `EdDSA` |
-| `JWT_SECRETS` | Comma-separated HS256 secrets that verify tokens during a rotation. `JWT_SECRET` still signs, so list its value first and the old secret after it. Unset, `JWT_SECRET` alone verifies. | unset |
-| `ADMIN_CONSOLE_KEY_PREVIOUS` | The old console key, still accepted while you rotate. Set the new key in `ADMIN_CONSOLE_KEY`, move the console to it, then unset this one. Needs `ADMIN_CONSOLE_KEY`, at least 32 characters. | unset |
+| `JWT_SECRETS` | Comma-separated HS256 secrets that verify tokens during a rotation. `JWT_SECRET` still signs, so list its value first and the old secret after it. Unset, `JWT_SECRET` alone verifies. Each entry is at least 16 characters and no placeholder. | unset |
+| `LYEVE_CONSOLE_KEY_PREVIOUS` | The old console key, still accepted while you rotate. Set the new key in `LYEVE_CONSOLE_KEY`, move the console to it, then unset this one. Needs `LYEVE_CONSOLE_KEY`, at least 32 characters. The old name `ADMIN_CONSOLE_KEY_PREVIOUS` still works for one more minor release. | unset |
 | `PASSWORD_HASH_ALGO` | `bcrypt` or `argon2id`. | `bcrypt` |
 | `PASSWORD_REQUIRE_COMPLEXITY` | Requires an upper-case letter, a lower-case letter and a digit. | `true` |
 | `PASSWORD_CHECK_COMMON` | Refuses passwords on a list of common ones. | `true` |
@@ -414,7 +419,7 @@ See [Idempotent requests](../features/idempotent-requests.md).
 
 | Variable | What it does | Default |
 |---|---|---|
-| `METRICS_TOKEN` | Bearer token for `GET /api/admin/metrics`, so a scraper needs no admin account. While it is set, any other bearer token on that route answers `401`. Unset, the endpoint answers a super admin. | unset |
+| `METRICS_TOKEN` | Bearer token for `GET /api/admin/metrics`, so a scraper needs no admin account. While it is set, any other bearer token on that route answers `401`. Unset, the endpoint answers a super admin. At least 32 characters and no placeholder. | unset |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | OpenTelemetry collector to send traces to. Unset, tracing is off. | unset |
 | `INSTANCE_ID` | Names this replica in logs, traces and the replica list. | host name and process id |
 
