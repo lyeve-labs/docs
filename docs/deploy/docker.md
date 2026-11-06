@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.60.0
+  ghcr.io/lyeve-labs/lyeve-core:0.60.2
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -189,19 +189,20 @@ which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETU
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
 
-## Upgrading to 0.60.0 and console 0.26.0
+## Upgrading to 0.60.2 and console 0.26.0
 
-Upgrade the engine before the console. Engine 0.60.0 refuses to start with an `APP_ENV` other
-than `production` or `development`, a `METRICS_TOKEN` shorter than 32 characters, or a
-`JWT_SECRETS` entry shorter than 16, and with a placeholder in either secret. Rename
-`ADMIN_CONSOLE_KEY` to `LYEVE_CONSOLE_KEY` on both images, and `ADMIN_CONSOLE_KEY_PREVIOUS` to
+Engine 0.60.0 and 0.60.1 have no published image, so run 0.60.2. Upgrade the engine before the
+console. Engine 0.60.0 refuses to start with an `APP_ENV` other than `production` or
+`development`, a `METRICS_TOKEN` shorter than 32 characters, or a `JWT_SECRETS` entry shorter
+than 16, and with a placeholder in either secret. Rename `ADMIN_CONSOLE_KEY` to
+`LYEVE_CONSOLE_KEY` on both images, and `ADMIN_CONSOLE_KEY_PREVIOUS` to
 `LYEVE_CONSOLE_KEY_PREVIOUS` on the engine. The old names work for one more minor release. A
 console with an `https` `ORIGIN` refuses to start without `ADDRESS_HEADER`. A Loki or
 Elasticsearch log sink on your own network needs that network in
 `LOGGING_ALLOWED_PRIVATE_NETWORKS`.
-[Docker Compose](docker-compose.md#upgrading-to-0600-and-console-0260) explains each step,
-and two changes your clients see: cached reads made with a credential and a realtime key's
-content scope.
+[Docker Compose](docker-compose.md#upgrading-to-0602-and-console-0260) explains each step, a
+SAML change in 0.60.2, and two changes your clients see: cached reads made with a credential
+and a realtime key's content scope.
 
 ## Upgrading to console 0.25.0
 

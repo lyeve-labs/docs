@@ -281,16 +281,17 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.60.0` and `ghcr.io/lyeve-labs/lyeve-console:0.26.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.60.2` and `ghcr.io/lyeve-labs/lyeve-console:0.26.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
 
-### Upgrading to 0.60.0 and console 0.26.0
+### Upgrading to 0.60.2 and console 0.26.0
 
-Upgrade the engine first, then the console. Read these before the first start of 0.60.0:
+Engine 0.60.0 and 0.60.1 have no published image, so an install moves straight to 0.60.2.
+Upgrade the engine first, then the console. Read these before the first start of 0.60.2:
 
 - **Check the settings the engine now refuses.** Three settings that booted before stop the
   boot of 0.60.0. The boot error names the setting and never prints its value.
@@ -324,6 +325,10 @@ Upgrade the engine first, then the console. Read these before the first start of
   `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and digest, but that name stops at a
   later minor release. A file that still names it changes the console's `image:` line to
   `ghcr.io/lyeve-labs/lyeve-console`.
+- **Check how your identity provider signs SAML answers.** From 0.60.2, an answer that the
+  provider did not sign as a whole may carry only one assertion, and an assertion with no
+  subject, no subject confirmation or no conditions is refused. A provider that signs the
+  whole answer, or sends one complete assertion, keeps signing people in.
 - **Expect credentialed reads to reach the instance.** A CDN or proxy in front of the API no
   longer caches reads made with a token, key or session, so those reads reach the instance.
 - **Rename a realtime key's content scope.** An API key that names a content type as

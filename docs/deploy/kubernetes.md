@@ -177,7 +177,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.60.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.60.2   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -564,15 +564,17 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
-## Upgrading to 0.60.0 and console 0.26.0
+## Upgrading to 0.60.2 and console 0.26.0
 
-Upgrade the engine first and the console once the engine is ready.
-[Docker Compose](docker-compose.md#upgrading-to-0600-and-console-0260) lists the settings
+Engine 0.60.0 and 0.60.1 have no published image, so roll straight to 0.60.2. Upgrade the
+engine first and the console once the engine is ready.
+[Docker Compose](docker-compose.md#upgrading-to-0602-and-console-0260) lists the settings
 engine 0.60.0 now refuses at boot: an `APP_ENV` other than `production` or `development`, a
 short or placeholder `METRICS_TOKEN`, and a short or placeholder `JWT_SECRETS` entry. A Loki or
 Elasticsearch log sink inside the cluster needs its network in
-`LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine. Compose also lists two changes your
-clients see: cached reads made with a credential and a realtime key's content scope.
+`LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine. Compose also lists a SAML change in 0.60.2
+and two changes your clients see: cached reads made with a credential and a realtime key's
+content scope.
 
 The console key takes a new name, `LYEVE_CONSOLE_KEY`, and the old name `ADMIN_CONSOLE_KEY`
 works for one more minor release. The engine accepts both names while they hold the same value,
@@ -580,7 +582,7 @@ so rename the key in this order and the console keeps signing in at every step:
 
 1. Add `LYEVE_CONSOLE_KEY` to the Secret beside `ADMIN_CONSOLE_KEY`, with the same value. A
    rotation's `ADMIN_CONSOLE_KEY_PREVIOUS` gets a `LYEVE_CONSOLE_KEY_PREVIOUS` the same way.
-2. Roll the engine to 0.60.0.
+2. Roll the engine to 0.60.2.
 3. Apply the console Deployment above, saved as `console.yaml`. It names the new key in its
    `env` entry and its `secretKeyRef` and runs `ghcr.io/lyeve-labs/lyeve-console:0.26.0`. An
    install made before the rename names its console Deployment and container `lyeve-admin`, so
@@ -593,7 +595,7 @@ Deployment at `ghcr.io/lyeve-labs/lyeve-console`, as the manifest does.
 ```bash
 key=$(kubectl -n lyeve get secret lyeve-secrets -o jsonpath='{.data.ADMIN_CONSOLE_KEY}')
 kubectl -n lyeve patch secret lyeve-secrets --type merge -p "{\"data\":{\"LYEVE_CONSOLE_KEY\":\"$key\"}}"
-kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.60.0
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.60.2
 kubectl -n lyeve rollout status deploy/lyeve-core
 kubectl -n lyeve apply -f console.yaml
 kubectl -n lyeve rollout status deploy/lyeve-console
