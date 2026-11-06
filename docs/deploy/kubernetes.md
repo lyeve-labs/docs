@@ -571,25 +571,40 @@ Upgrade the engine first and the console once the engine is ready.
 engine 0.60.0 now refuses at boot: an `APP_ENV` other than `production` or `development`, a
 short or placeholder `METRICS_TOKEN`, and a short or placeholder `JWT_SECRETS` entry. A Loki or
 Elasticsearch log sink inside the cluster needs its network in
-`LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine. Rename
-the `ADMIN_CONSOLE_KEY` key in the Secret to `LYEVE_CONSOLE_KEY`, and the console's
-environment entry and its `secretKeyRef` with it, as the manifests above do. A rotation's
-`ADMIN_CONSOLE_KEY_PREVIOUS` becomes `LYEVE_CONSOLE_KEY_PREVIOUS`. The old names work for one
-more minor release. Console 0.26.0 is also published under `ghcr.io/lyeve-labs/lyeve-admin`,
-but point the Deployment at `ghcr.io/lyeve-labs/lyeve-console`, as the command below does.
+`LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine. Compose also lists two changes your
+clients see: cached reads made with a credential and a realtime key's content scope.
+
+The console key takes a new name, `LYEVE_CONSOLE_KEY`, and the old name `ADMIN_CONSOLE_KEY`
+works for one more minor release. The engine accepts both names while they hold the same value,
+so rename the key in this order and the console keeps signing in at every step:
+
+1. Add `LYEVE_CONSOLE_KEY` to the Secret beside `ADMIN_CONSOLE_KEY`, with the same value. A
+   rotation's `ADMIN_CONSOLE_KEY_PREVIOUS` gets a `LYEVE_CONSOLE_KEY_PREVIOUS` the same way.
+2. Roll the engine to 0.60.0.
+3. Apply the console Deployment above, saved as `console.yaml`. It names the new key in its
+   `env` entry and its `secretKeyRef` and runs `ghcr.io/lyeve-labs/lyeve-console:0.26.0`. An
+   install made before the rename names its console Deployment and container `lyeve-admin`, so
+   keep that name in the manifest you apply and in the commands.
+4. Remove `ADMIN_CONSOLE_KEY`, and `ADMIN_CONSOLE_KEY_PREVIOUS` if you set it, from the Secret.
+
+Console 0.26.0 is also published under `ghcr.io/lyeve-labs/lyeve-admin`, but point the
+Deployment at `ghcr.io/lyeve-labs/lyeve-console`, as the manifest does.
 
 ```bash
+key=$(kubectl -n lyeve get secret lyeve-secrets -o jsonpath='{.data.ADMIN_CONSOLE_KEY}')
+kubectl -n lyeve patch secret lyeve-secrets --type merge -p "{\"data\":{\"LYEVE_CONSOLE_KEY\":\"$key\"}}"
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.60.0
 kubectl -n lyeve rollout status deploy/lyeve-core
-kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.26.0
+kubectl -n lyeve apply -f console.yaml
 kubectl -n lyeve rollout status deploy/lyeve-console
+kubectl -n lyeve patch secret lyeve-secrets --type json -p '[{"op":"remove","path":"/data/ADMIN_CONSOLE_KEY"}]'
 ```
 
 ## Upgrading to console 0.25.0
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`. Every 0.25 release is also
-published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests, through 0.26.0,
-and the tags already published there stay. Point the console's Deployment at the new name. An
+published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests. The old name
+has received every release through 0.26.0 so far, and the tags already published there stay. Point the console's Deployment at the new name. An
 install made before the rename names its Deployment and container `lyeve-admin`, so use that
 name in the command:
 

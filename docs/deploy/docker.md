@@ -199,13 +199,16 @@ than `production` or `development`, a `METRICS_TOKEN` shorter than 32 characters
 console with an `https` `ORIGIN` refuses to start without `ADDRESS_HEADER`. A Loki or
 Elasticsearch log sink on your own network needs that network in
 `LOGGING_ALLOWED_PRIVATE_NETWORKS`.
-[Docker Compose](docker-compose.md#upgrading-to-0600-and-console-0260) explains each step.
+[Docker Compose](docker-compose.md#upgrading-to-0600-and-console-0260) explains each step,
+and two changes your clients see: cached reads made with a credential and a realtime key's
+content scope.
 
 ## Upgrading to console 0.25.0
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so run that image from now
 on. Every 0.25 release is also published under `ghcr.io/lyeve-labs/lyeve-admin` with the same
-tags and digests, through 0.26.0, and the tags already published there stay.
+tags and digests. The old name has received every release through 0.26.0 so far, and the tags
+already published there stay.
 [Docker Compose](docker-compose.md#upgrading-to-console-0250) has the details.
 
 ## Upgrading to 0.58.0 and console 0.24.0

@@ -321,9 +321,14 @@ Upgrade the engine first, then the console. Read these before the first start of
   `LOGGING_ALLOWED_PRIVATE_NETWORKS` on the engine, as [Logs](../features/logs.md#send-logs-to-loki-or-elasticsearch)
   explains.
 - **Move to the new image name.** Console 0.26.0 is also published as
-  `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and digest, but that name is kept only
-  for a while. A file that still names it changes the console's `image:` line to
+  `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and digest, but that name stops at a
+  later minor release. A file that still names it changes the console's `image:` line to
   `ghcr.io/lyeve-labs/lyeve-console`.
+- **Expect credentialed reads to reach the instance.** A CDN or proxy in front of the API no
+  longer caches reads made with a token, key or session, so those reads reach the instance.
+- **Rename a realtime key's content scope.** An API key that names a content type as
+  `content:blog:read` now opens a realtime stream that carries nothing. Change it to
+  `content.blog:read`.
 
 Then upgrade the engine, wait until it reports healthy, and upgrade the console:
 
@@ -339,7 +344,8 @@ docker compose up -d admin
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so change the console's
 `image:` line to that name. Every 0.25 release is also published under the old name,
 `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and the same digests, so a file that still
-names it kept updating through 0.26.0. The tags already published under the old name stay. The
+names it keeps updating. The old name has received every release through 0.26.0 so far, and
+the tags already published under it stay. The
 release changes the console's name and look, and adds no setting:
 
 ```bash
