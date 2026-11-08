@@ -627,8 +627,8 @@ console that serves several organizations on an address that names none needs
 ```bash
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.58.0
 kubectl -n lyeve rollout status deploy/lyeve-core
-kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.25.0
-kubectl -n lyeve rollout status deploy/lyeve-console
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.24.0
+kubectl -n lyeve rollout status deploy/lyeve-admin
 ```
 
 ## Upgrading to 0.57.0 and console 0.23.0
