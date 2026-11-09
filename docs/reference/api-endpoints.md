@@ -120,6 +120,19 @@ always carries one, so a set whose size is a multiple of `limit` ends on an empt
 paging stays fast at depth and never repeats an entry when rows change during the walk. Offset
 paging lets you jump to a page number.
 
+### Public delivery
+
+The delivery routes serve the published entries of the content types marked
+with `"public_delivery": true` to anyone, with no credential, in answers a CDN
+may cache. The tenant comes from the host, and a request that carries a token,
+an API key or a session answers `400`. See
+[public content delivery](../features/content-delivery.md).
+
+| Method | Path | Who | Does |
+|---|---|---|---|
+| `GET` | `/api/v1/delivery/{schema}` | Anyone, rate limited | List the published entries. Answers a bare array. Takes `limit`, `offset`, `filters[<field>]`, `populate`, `depth` and `fields` |
+| `GET` | `/api/v1/delivery/{schema}/{id}` | Anyone, rate limited | One published entry. Takes `populate`, `depth` and `fields`. An entry that is not published, or an id not in lower case with hyphens, answers `404` |
+
 ### Follow changes
 
 `GET /api/v1/content/{schema}/stream` keeps the connection open and sends one Server-Sent

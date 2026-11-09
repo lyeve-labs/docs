@@ -37,6 +37,7 @@ answers `404`. To choose which features start, and to apply a license, see
 
 | Feature | Best for | Free or license | Where in the console |
 |---|---|---|---|
+| [Public content delivery](content-delivery.md) | Serving published entries to anyone without a credential, in answers a CDN may cache | Free | Schema builder > Table settings |
 | [Search](search.md) | Full-text and instant search in the admin and on your site | `search` | Search |
 | [GraphQL API](graphql-api.md) | Clients that want GraphQL queries and live subscriptions | `graphql` | Delivery > GraphQL |
 | [gRPC API](grpc-api.md) | Backend services that speak gRPC | `grpc` | Delivery > gRPC |
