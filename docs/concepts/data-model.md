@@ -162,7 +162,6 @@ curl -X POST http://localhost:3002/api/v1/content/author \
 ```json
 {
   "id": "ce7168fd-648d-4fee-830f-db1a65b8e2af",
-  "schema_name": "author",
   "data": { "id": "ce7168fd-648d-4fee-830f-db1a65b8e2af", "name": "Ada Lovelace", "email": "ada@example.com" },
   "created_at": "2026-10-02T05:05:16.951534Z",
   "updated_at": "2026-10-02T05:05:16.951534Z"
@@ -188,7 +187,6 @@ curl "http://localhost:3002/api/v1/content/post/$POST_ID?populate=author" \
 ```json
 {
   "id": "909f3fb8-64ca-4a5e-a724-d60dd332e0b7",
-  "schema_name": "post",
   "data": {
     "title": "Hello, world",
     "body": "<p>First post.</p>",

@@ -178,7 +178,6 @@ curl "http://localhost:3002/api/v1/content/news/$ENTRY?locale=fr-CA" \
 ```json
 {
   "id": "8c2b6f10-3d4e-4a57-9b81-0c2d3e4f5a67",
-  "schema_name": "news",
   "data": { "title": "Bonjour", "text": "Premier article." },
   "created_at": "2026-10-02T09:30:00Z",
   "updated_at": "2026-10-02T09:30:00Z",

@@ -331,7 +331,6 @@ curl -g "http://localhost:3002/api/v1/content/post?filters[slug]=notes-on-the-en
 [
   {
     "id": "4769807e-2cbe-487b-be6f-1c87aabfbaa3",
-    "schema_name": "post",
     "data": {
       "title": "Notes on the engine",
       "slug": "notes-on-the-engine",

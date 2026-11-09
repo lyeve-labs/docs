@@ -109,6 +109,7 @@ curl -X POST http://localhost:3002/api/v1/content/article \
 | `limit`, `cursor` | The cursor list | Page by cursor. `limit` runs from 1 to 1000 and defaults to 20. A value over 1000 gives 20 |
 | `filters[<field>]=<value>` | The list | Keep entries whose field equals the value. On a content type with draft and publish, the list holds published entries unless you name `filters[_status]`. A status other than `published` answers `403` unless the caller may read drafts |
 | `populate`, `depth` | The list and single reads | Return related entries inline. See [the data model](../concepts/data-model.md) |
+| `fields` | The list, the cursor list and single reads | Return only the named fields in each entry's `data`, such as `fields=title,slug`. A relation field returns both its `<field>_id` and, with `populate`, the related entry. Every entry keeps `id`, `created_at` and `updated_at`. A field you cannot read answers `400`, whether the content type has no such field or an access rule hides it from you |
 | `locale` | The list, the cursor list and single reads | Read the entry in a language, such as `fr` or `pt-BR`. Without it, the `Accept-Language` header decides. It takes effect when [localization](../features/localization.md) runs, which it does on every install unless `LYEVE_PLUGINS` leaves it out |
 
 Use `curl -g` when a URL carries `filters[...]`, so curl does not read the brackets itself.
