@@ -207,7 +207,7 @@ Probe paths are never shed. For the worker pools inside a replica, see
 |---|---|---|
 | `PRESTOP_DRAIN_SECS` | Seconds `/readyz` answers `503` before shutdown starts, so the load balancer stops sending traffic first. | `5` |
 | `GRACEFUL_SHUTDOWN_SECS` | Seconds in-flight requests get to finish. | `60` |
-| `MEMORY_LIMIT_BYTES` | Memory ceiling the instance sizes itself against. Read only when the container's cgroup sets no memory limit. | from the cgroup |
+| `MEMORY_LIMIT_BYTES` | Memory ceiling the instance sizes itself against, used instead of the container's limit and the machine's memory. See [configuration](../reference/configuration.md#concurrency-and-resources). | the container's limit, or the machine's memory |
 
 `PRESTOP_DRAIN_SECS` and `GRACEFUL_SHUTDOWN_SECS` decide whether a rolling
 deploy drops requests. The drain has to outlast the load balancer's

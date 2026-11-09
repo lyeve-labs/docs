@@ -452,16 +452,30 @@ feature. See [Data protection](../trust/data-protection.md).
 
 ## Concurrency and resources
 
-The engine sizes itself to the container's memory and CPU limits, which it reads from the
-cgroup. `GOMEMLIMIT` and `GOMAXPROCS`, Go's own variables, win when you set them.
+The engine follows the machine it runs on, and every variable below is an override.
+
+Go's soft memory limit comes from the first of these:
+
+1. `GOMEMLIMIT`, Go's own variable, which Go reads as the soft limit itself.
+2. 85% of `MEMORY_LIMIT_BYTES`.
+3. 85% of the cgroup's memory limit: a container's, or a systemd unit's `MemoryMax`.
+4. 85% of the machine's total memory, so a VM with no container limit follows its own memory.
+
+The scheduler's thread count comes from the first of these:
+
+1. `GOMAXPROCS`, Go's own variable.
+2. `CPU_QUOTA`, when `GOMAXPROCS` is not set.
+3. Go's default, which follows the cgroup's CPU limit and its changes while the engine runs.
+
+Setting either variable fixes the count, so Go stops following a change to the CPU limit.
 
 <details>
 <summary>Memory, CPU and worker pools</summary>
 
 | Variable | What it does | Default |
 |---|---|---|
-| `MEMORY_LIMIT_BYTES` | Memory limit used when the cgroup sets none. The engine sets Go's soft memory limit to 85% of the limit it finds. | from the cgroup |
-| `CPU_QUOTA` | Whole cores the engine schedules for, instead of the cgroup's CPU limit. | from the cgroup |
+| `MEMORY_LIMIT_BYTES` | Memory limit in bytes, used instead of the cgroup's limit and the machine's memory. The engine sets Go's soft memory limit to 85% of it. `GOMEMLIMIT` wins over it. | the cgroup's limit, or the machine's memory |
+| `CPU_QUOTA` | Whole cores the scheduler runs on, instead of Go's default. `GOMAXPROCS` wins over it. | Go's default |
 | `GOROUTINE_ENGINE_ENABLED` | Warms feature caches and stops features in parallel, instead of one at a time. The shared worker pool runs either way. Needs a license with `goroutine-engine-pro`, and without it the variable is ignored with a warning in the log. See [Concurrency tuning](../features/concurrency-tuning.md). | `false` |
 | `GOROUTINE_ENGINE_POOL_SIZE` | Workers in the shared pool. Needs a license with `goroutine-engine-pro`, and without it the pool keeps 100 workers. | `100` |
 | `DB_WARMUP_PARALLELISM` | How many tasks the parallel stages, such as cache warmup, run at once. | `4` |

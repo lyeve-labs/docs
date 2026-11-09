@@ -91,11 +91,15 @@ docker run -d --name lyeve-engine \
   -e LYEVE_AUDIT_HMAC_KEY="$(openssl rand -hex 32)" \
   -e RATE_LIMIT_RPS=100 \
   -e SECURE_COOKIE=true \
+  --memory 1g \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
   ghcr.io/lyeve-labs/lyeve-core:0.61.0
 ```
+
+`--memory` caps the engine's memory, and the engine sets Go's soft memory limit to 85% of it, so
+it collects garbage harder as it nears the cap instead of being killed at it.
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
 unreadable. `APP_ENV` defaults to `production`,

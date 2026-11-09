@@ -58,6 +58,7 @@ services:
   engine:
     image: ghcr.io/lyeve-labs/lyeve-core:latest
     restart: unless-stopped
+    mem_limit: 1g
     environment:
       DATABASE_URL: postgres://lyeve:${DB_PASSWORD}@db:5432/lyeve?sslmode=require
       JWT_SECRET: ${JWT_SECRET}
@@ -163,6 +164,11 @@ api.yourdomain.com {
 Replace `yourdomain.com` in both files with your domain, so Caddy can obtain certificates for
 both public names. `TRUSTED_PROXIES` names the subnet the Compose file gives its network. If you
 change one, change the other.
+
+`mem_limit` caps the engine's memory. The engine sets Go's soft memory limit to 85% of it, so it
+collects garbage harder as it nears the cap instead of being killed at it. Raise it if the engine
+serves large lists or many tenants. Without a container limit the soft limit is 85% of the host's
+memory. Set `MEMORY_LIMIT_BYTES` or `GOMEMLIMIT` to choose another.
 
 ## Secrets and the `.env` file
 
