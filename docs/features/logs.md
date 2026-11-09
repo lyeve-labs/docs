@@ -105,10 +105,16 @@ curl "http://localhost:3001/api/admin/logs/search?request_id=try-logs-1" \
       "level": "INFO",
       "message": "request",
       "tenant_id": "default",
-      "trace_id": "00000000000000000000000000000000",
-      "span_id": "0000000000000000",
       "request_id": "try-logs-1",
-      "fields": { "bytes": 51, "duration_ms": 1, "method": "GET", "path": "/api/admin/logging/levels", "status": 200 }
+      "fields": {
+        "actor": "4b8e1c52-9a0d-4f37-8c6e-2d51f0a7b913",
+        "bytes": 51,
+        "duration_ms": 1,
+        "method": "GET",
+        "path": "/api/admin/logging/levels",
+        "route": "/api/admin/logging/levels",
+        "status": 200
+      }
     }
   ],
   "total": 1,
@@ -116,6 +122,11 @@ curl "http://localhost:3001/api/admin/logs/search?request_id=try-logs-1" \
   "offset": 0
 }
 ```
+
+`actor` is the id of the account that made the request, or the key id for an API key. `route`
+is the route that served it. A route that takes an identifier in its path, such as
+`/api/admin/email/suppressions/{email}`, is logged by its route alone, with no `path`, so the
+address stays out of the record. `trace_id` and `span_id` appear only while tracing is on.
 
 </div>
 </div>
