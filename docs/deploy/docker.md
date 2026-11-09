@@ -94,7 +94,7 @@ docker run -d --name lyeve-engine \
   -v lyeve-state:/var/lib/lyeve \
   -v lyeve-uploads:/app/uploads \
   -p 3001:3001 -p 3002:3002 \
-  ghcr.io/lyeve-labs/lyeve-core:0.60.2
+  ghcr.io/lyeve-labs/lyeve-core:0.61.0
 ```
 
 Generate the secrets once and store them. A new `ENCRYPTION_KEY` makes stored secrets
@@ -189,6 +189,20 @@ which `docker logs lyeve-engine 2>&1 | grep setup_token` finds. With `LYEVE_SETU
 `token_source` is `env`. The [quickstart](../getting-started/quickstart.md) continues from step
 2.
 
+## Upgrading to 0.61.0 and console 0.27.0
+
+Upgrade the engine before the console. An install on a release before 0.60.2 reads the next
+section first. Neither release adds a setting or refuses one that 0.60.2 and 0.26.0 accept. A
+content entry no longer carries `schema_name`, so a client takes the content type from the
+path it called. A list filter on a number or a relation answers `400` where it answered `422`
+or `503`. The API's messages say content type where they said schema, and error codes keep
+their names. Both releases still read `ADMIN_CONSOLE_KEY`, and a later minor release stops, so
+rename it to `LYEVE_CONSOLE_KEY` if you have not. Console 0.27.0 is also published under
+`ghcr.io/lyeve-labs/lyeve-admin`, but run `ghcr.io/lyeve-labs/lyeve-console`.
+[Docker Compose](docker-compose.md#upgrading-to-0610-and-console-0270) explains each step,
+the integer and decimal fields a schema import now creates, and timestamps in UTC on
+PostgreSQL.
+
 ## Upgrading to 0.60.2 and console 0.26.0
 
 Engine 0.60.0 and 0.60.1 have no published image, so run 0.60.2. Upgrade the engine before the
@@ -208,7 +222,7 @@ and a realtime key's content scope.
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so run that image from now
 on. Every 0.25 release is also published under `ghcr.io/lyeve-labs/lyeve-admin` with the same
-tags and digests. The old name has received every release through 0.26.0 so far, and the tags
+tags and digests. The old name has received every release through 0.27.0 so far, and the tags
 already published there stay.
 [Docker Compose](docker-compose.md#upgrading-to-console-0250) has the details.
 
