@@ -4,6 +4,13 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.12.1] - 2026-11-11
+
+### Changed
+
+- The Docker Compose, Docker and Kubernetes guides run engine 0.62.0 and console 0.28.0, and each has an upgrade section for them: the builder that starts on every install and has to be named in a `LYEVE_PLUGINS` list, the assistant where the license includes `ai`, the OpenAPI document every signed-in role may read, one scheduler thread under a CPU limit of one core, a memory limit before a garbage collector target above 1000, and the Go 1.27.4 fix. The 0.61.0 notes stay for an install that moves straight from 0.60.2.
+- The old console image name, `ghcr.io/lyeve-labs/lyeve-admin`, is stated as receiving every release through 0.28.0.
+
 ## [0.12.0] - 2026-11-11
 
 ### Added
