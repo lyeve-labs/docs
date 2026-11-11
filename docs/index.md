@@ -1,6 +1,6 @@
 ---
 title: LyEve documentation
-description: "Learn what LyEve Core and LyEve Console each do, try them in ten minutes, and find where your own work starts."
+description: "Learn what LyEve Core, LyEve Console and LyEve Builder each do, try them in ten minutes, and find where your own work starts."
 sidebar:
   order: 1
 ---
@@ -17,6 +17,7 @@ features, and the same images serve both.
 |---|---|---|
 | [LyEve Core](concepts/index.md) | The engine. It stores your content, accounts and tenants on PostgreSQL, MySQL or SQL Server and serves them over an API. MIT licensed. | The image `ghcr.io/lyeve-labs/lyeve-core` |
 | [LyEve Console](console/index.md) | The browser app your team works in: write and publish content, manage users and roles, and configure the engine. | The image `ghcr.io/lyeve-labs/lyeve-console` |
+| [LyEve Builder](builder/index.md) | Design and publish your site's pages, while the content stays in your own engine. | A web app you open in your browser, connected to your engine |
 
 The engine has no screens of its own. It answers two HTTP APIs: the Admin API manages the
 instance, and the Content API reads and writes content. The console calls the Admin API for
@@ -31,6 +32,7 @@ service. [Core concepts](concepts/index.md#the-two-apis) explains the two APIs, 
 |---|---|---|
 | Trying it for the first time | [Quickstart](getting-started/quickstart.md) | [Getting started](getting-started/index.md) puts the first pages in order |
 | Writing or publishing content | [LyEve Console](console/index.md) | [User guide](guides/user/index.md) |
+| Designing your site's pages | [LyEve Builder](builder/index.md) | [Connect the builder](builder/connect.md) |
 | Building a site or app on it | [Developer guide](guides/developer/index.md) | [Your first content type](getting-started/first-content-type.md) and the [SDK](sdk/index.md) |
 | Running it in production | [Operator guide](guides/operator/index.md) | [Deployment](deploy/index.md) and the [production checklist](deploy/production-checklist.md) |
 | Evaluating it for your company | [Company and licensing guide](guides/company/index.md) | [Licensing and tiers](concepts/licensing-and-tiers.md) |
@@ -44,6 +46,8 @@ service. [Core concepts](concepts/index.md#the-two-apis) explains the two APIs, 
   whether it is free.
 - **LyEve Console**: the [overview](console/index.md) and the
   [User guide](guides/user/index.md) for the people who work in the browser.
+- **LyEve Builder**: the [overview](builder/index.md), connecting it, sites and pages, and
+  publishing.
 - **LyEve Core**: [concepts](concepts/index.md), the
   [Developer](guides/developer/index.md) and [Operator](guides/operator/index.md) guides,
   the [SDK](sdk/index.md), [integrations](integrations/index.md),
