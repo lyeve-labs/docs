@@ -27,7 +27,7 @@ in its section.
 :::tip[Best for]
 - **Drafting and rewriting from your own code.** The content assistant route
   writes a first draft, changes the tone, shortens or translates an entry. On
-  console v0.25.0 it is API only.
+  console v0.28.0 it is API only.
 - **Translating a field.** Send one field and a target locale, keep product
   names with a glossary, and get text marked as machine translation.
 - **Alt text for the media library.** **Suggest alt text** describes an image
@@ -38,6 +38,9 @@ in its section.
 - **Building flows from plain words.** Describe a flow and get a validated
   draft on the canvas. See
   [Build a flow with the assistant](../how-to/build-a-flow-with-the-assistant.md).
+- **Asking about the page you have open.** The assistant in the console's
+  header answers questions and prepares changes for you to review. See
+  [AI assistant](ai-assistant.md).
 :::
 
 :::note[Use something else when]
@@ -50,7 +53,7 @@ in its section.
 | Part | What it is | Who sets it |
 |---|---|---|
 | **Provider** | An endpoint and its key: OpenAI, Anthropic, or any server that speaks one of their APIs, such as Ollama or OpenRouter | A super admin |
-| **Tenant switch** | Turns AI, and storing transcripts, on or off for one tenant | A tenant admin |
+| **Tenant switch** | Turns AI, storing transcripts and the assistant on or off for one tenant | A tenant admin |
 | **Prompt** | The instructions a kind of call runs under, kept as numbered versions | A tenant admin |
 | **Transcript** | The record of one conversation: what was asked, what came back, the model, tokens and estimated cost | Written by every call |
 | **Price table** | What a model costs per 1,000 tokens or per image, so each call carries an estimate | A super admin |
@@ -94,7 +97,7 @@ curl http://localhost:3001/api/admin/ai/settings \
 ```
 
 ```json
-{ "tenant_id": "default", "enabled": true, "transcripts_enabled": true, "updated_at": "0001-01-01T00:00:00Z" }
+{ "tenant_id": "default", "enabled": true, "transcripts_enabled": true, "assistant_enabled": true, "updated_at": "0001-01-01T00:00:00Z" }
 ```
 
 </div>
@@ -253,9 +256,9 @@ that path.
 
 ## Turn AI off for a tenant
 
-A tenant admin sets two switches on the **Settings** tab of
-**Operations > AI**: **AI for this tenant** and **Store transcripts**. Each
-saves as soon as you change it. Over the API:
+A tenant admin sets three switches on the **Settings** tab of
+**Operations > AI**: **AI for this tenant**, **Store transcripts** and
+**Assistant**. Each saves as soon as you change it. Over the API:
 
 ```bash
 curl -X PUT http://localhost:3001/api/admin/ai/settings \
@@ -267,12 +270,17 @@ curl -X PUT http://localhost:3001/api/admin/ai/settings \
 A field you leave out keeps its value. Off means off everywhere: every AI and
 support desk route except the settings pair answers `404` with
 `AI is switched off for this tenant`, the flow nodes refuse to run, and the
-content and flow assistants refuse.
+content, flow and console assistants refuse.
+
+**Assistant** (`assistant_enabled`) turns off only the
+[assistant](ai-assistant.md) in the console's header and the builder's
+**Assistant** tab, while the rest of AI keeps working.
 
 ## Set the prompts
 
 Every call runs under the prompt for its use case: `default`, `assistant` (the
 content assistant and `generate`), `flow_assistant` (the flow editor),
+`engine_assistant` (the [assistant](ai-assistant.md) in the console's header),
 `translate`, `summarize`, `suggest` (search suggestions), `alt_text`,
 `classify`, `extract`, `recap` and `support`. On the **Prompts** tab, choose
 **Manage** beside a use case, edit the text and choose **Save as version 2**
@@ -341,7 +349,7 @@ The text depends on the model. To keep it, send it as `alt_text` with
 
 ## Use AI from the API
 
-These routes have no control in console v0.25.0. They need an admin.
+These routes have no control in console v0.28.0. They need an admin.
 Most take an optional `provider_id`, `model`, `max_tokens` (up to 200,000)
 and `temperature` (0 to 2, where 0 leaves the provider's default).
 
@@ -361,7 +369,7 @@ translation yourself. A glossary entry that maps a term to itself keeps a
 product name untranslated.
 
 The content assistant is `POST /api/admin/content/ai-assist`. It is API only
-on console v0.25.0: no screen of the console calls it. It takes an `action`
+on console v0.28.0: no screen of the console calls it. It takes an `action`
 (`generate`, `rewrite`, `translate`, `summarize` or `tone-adjust`) and the
 entry's current text:
 
@@ -414,7 +422,9 @@ and the other nodes.
 ## Read and recap transcripts
 
 A transcript has a `kind`: `assistant` (the content assistant),
-`flow_assistant`, `node`, `route` or `support`. It records the provider, model,
+`flow_assistant`, `engine_assistant` (the [assistant](ai-assistant.md) in the
+console's header), `plugin_assistant` (the builder's **Assistant** tab),
+`node`, `route` or `support`. It records the provider, model,
 prompt use case and version, who started it and when, and each message's role,
 text, tokens, latency and cost. A content assistant transcript names its entry,
 and a node transcript its node.
@@ -464,7 +474,7 @@ times.
 
 The support desk answers questions from a knowledge base you write, with the
 same providers, prompts and transcripts. It is for admins: there is no public
-chat route. The support desk has no page in console v0.25.0, so it is used
+chat route. The support desk has no page in console v0.28.0, so it is used
 through the API. Each conversation is a transcript of kind `support`, under the
 tenant's `support` prompt.
 
@@ -548,7 +558,8 @@ See [licensing and tiers](../concepts/licensing-and-tiers.md).
 ## Routes
 
 Every route is on the Admin API. Provider and price changes need a super
-admin, everything else an admin.
+admin, the assistant answers every signed-in role, and everything else needs
+an admin.
 
 <details>
 <summary>AI routes</summary>
@@ -579,6 +590,7 @@ admin, everything else an admin.
 | `GET` | `/api/admin/content/ai-usage` | Token totals |
 | `POST` | `/api/admin/ai/assist/flow` | The flow assistant drafts a definition |
 | `POST` | `/api/admin/ai/assist/flow/explain` | The flow assistant explains a node or a problem |
+| `POST` | `/api/admin/ai/assistant` | The [assistant](ai-assistant.md#ask-from-the-api), streamed as server-sent events. A signed-in session only |
 
 </details>
 
@@ -694,6 +706,8 @@ the product gives you to build it.
 
 ## Related
 
+- [AI assistant](ai-assistant.md): the assistant in the console's header and
+  in the builder.
 - [Build a flow with the assistant](../how-to/build-a-flow-with-the-assistant.md):
   describe a flow and accept the draft.
 - [Flows](flows.md): where the AI nodes run.

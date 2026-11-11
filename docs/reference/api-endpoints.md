@@ -25,8 +25,10 @@ Branch on the code, not the message. Each feature page lists its codes.
 `GET /api/admin/openapi/public.json` answers an OpenAPI document of the Content API and every
 route outside `/api/admin`, including the URLs your flows answer on. It takes the `admin` or
 `super_admin` role. `GET /api/admin/openapi/admin.json` holds the `/api/admin` routes and takes
-`super_admin`. Both describe what this instance runs right now, and LyEve Console shows
-them under **API reference**.
+`super_admin`. `GET /api/admin/openapi.json` answers every signed-in role: the whole document
+for a super admin, and for anyone else the routes outside `/api/admin` with the `/api/admin`
+operations their role may call. Each describes what this instance runs right now, and LyEve
+Console shows them under **API reference**.
 :::
 
 ## Authenticate
@@ -322,7 +324,7 @@ production instance without `LYEVE_CONSOLE_URL` answers the start with `503` and
 | `GET` | `/api/admin/security/controls` | `super_admin` | Which security controls are enforcing. See [Security controls](../trust/security-controls.md) |
 | `GET` | `/api/admin/openapi/public.json` | `admin` | OpenAPI for the Content API and every route outside `/api/admin` |
 | `GET` | `/api/admin/openapi/admin.json` | `super_admin` | OpenAPI for the `/api/admin` routes |
-| `GET` | `/api/admin/openapi.json` | `admin` | The whole document for a super admin, the public half for an admin |
+| `GET` | `/api/admin/openapi.json` | Signed in | The whole document for a super admin. For any other role, every route outside `/api/admin` and the `/api/admin` operations that role may call |
 
 A build without license support answers `404` on both license routes and reports
 `"license_module": false` from the entitlements route.
@@ -392,6 +394,8 @@ body, answer and role.
 | [Recommendations](../features/recommendations.md) | `/api/admin/recommendations/`, `/api/v1/recommendations/` | `recommendations` |
 | [A/B testing](../features/ab-testing.md) | `/api/admin/ab/experiments`, `/api/v1/ab/expose`, `/api/v1/ab/convert` | `ab-testing` |
 | [AI](../features/ai.md) | `/api/admin/ai/`, `/api/admin/content/ai-assist`, `/api/admin/content/ai-usage`, and the support desk at `/api/admin/support/` | `ai`, and `support` for the desk |
+| [AI assistant](../features/ai-assistant.md) | `/api/admin/ai/assistant` | `ai` |
+| [Builder](../features/builder.md) | `/api/admin/builder/`, and the builder's own calls under `/api/v1/builder/` | Free, with 2 sites per tenant, 10 pages in each site and 20 in all. More need `builder-pro` |
 | [Data export](../features/data-export.md) | `/api/admin/data-export/` | `data-export` |
 
 </details>

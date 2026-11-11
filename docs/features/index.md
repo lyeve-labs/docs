@@ -32,6 +32,8 @@ answers `404`. To choose which features start, and to apply a license, see
 | [Bulk import](bulk-import.md) | Loading a CSV, XLSX, JSON, NDJSON or YAML file into a content type | Free. Saved mapping templates and the date, split and lookup transforms need `content-pro` | Insight > Imports |
 | [Localization](localization.md) | Translating entries and serving each reader's language | Free, with two locales per tenant. More need `localization-pro` | Settings > Locales, and the Translations panel on an entry |
 | [AI](ai.md) | Drafting, translating and generating images with your own AI providers | `ai`. The support desk also needs `support` | Operations > AI |
+| [AI assistant](ai-assistant.md) | Asking about the page you have open, and reviewing the changes it prepares before they run | `ai` | **Assistant** in the header |
+| [Builder](builder.md) | Designing and publishing your site's pages in the browser, kept in your own engine | Free, with 2 sites per tenant, 10 pages in each site and 20 in all. More need `builder-pro` | Settings > Builder connections |
 
 ## Deliver content
 

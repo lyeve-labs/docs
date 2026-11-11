@@ -82,6 +82,10 @@ The value of `LYEVE_LICENSE_KEY`. Either a signed token, checked on the instance
 network call, or a key starting `lyeve_live_` that the engine exchanges for a token. See
 [Licensing and tiers](../concepts/licensing-and-tiers.md).
 
+**LyEve Builder**
+Design and publish your site's pages, while the content stays in your own engine. See
+[LyEve Builder](../builder/index.md).
+
 **LyEve Console**
 The browser app your team works in: write and publish content, manage users and roles, and
 configure the engine. It signs you in and calls the Admin API for you, so nothing it does is
