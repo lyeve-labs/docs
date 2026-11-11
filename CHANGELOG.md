@@ -4,6 +4,27 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.12.0] - 2026-11-11
+
+### Added
+
+- A LyEve Builder section: what the builder is and where it keeps sites and pages, connecting it and approving a builder connection, sites, pages, sections, versions and the theme, publishing and rebuilding a static site, listing content entries and giving each entry a page, and taking form posts into a content type or a flow. The free tier keeps 2 sites per tenant, 10 pages in each and 20 in all, and `builder-pro` lifts all three.
+- A Builder feature page and an AI assistant feature page. The assistant page covers what the panel in the console's header needs, what it runs and what it asks you to review first, filling a form, the No AI mark, the tenant's switch, the builder's Assistant tab and the streaming route.
+- A public content delivery page: marking a content type for it, what is served, the URL grammar with the `fields` parameter, the cache headers, a CDN in front and purging it with a webhook.
+
+### Changed
+
+- The AI page names the Assistant switch, the `engine_assistant` prompt and transcript kind, the `plugin_assistant` transcript kind and the assistant route. The API reference says that `/api/admin/openapi.json` answers every signed-in role with the operations that role may call.
+- The console and API tabs name engine 0.62.0 and console 0.28.0.
+- The Docker Compose, Docker and Kubernetes guides run engine 0.61.0 and console 0.27.0, with an upgrade section for them.
+- The content pages describe the `fields` parameter and entries without `schema_name`, the data model describes the integer and decimal field types, and the gRPC page describes the read options on List and Get.
+- The logs page shows the actor and the route on a request line. The configuration reference describes the memory and CPU overrides, and request profiling lists the goroutine leak profile.
+
+### Fixed
+
+- The quickstart says the setup token is written to standard error, not the log.
+- The Kubernetes upgrade to engine 0.58.0 sets the console Deployment to the name and release of that era.
+
 ## [0.11.0] - 2026-11-06
 
 ### Changed
