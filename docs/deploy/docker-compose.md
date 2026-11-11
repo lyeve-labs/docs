@@ -287,50 +287,73 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.61.0` and `ghcr.io/lyeve-labs/lyeve-console:0.27.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.62.0` and `ghcr.io/lyeve-labs/lyeve-console:0.28.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
 
-### Upgrading to 0.61.0 and console 0.27.0
+### Upgrading to 0.62.0 and console 0.28.0
 
-Upgrade the engine first, then the console. An install on a release before 0.60.2 reads
-[the 0.60.2 section](#upgrading-to-0602-and-console-0260) below first. Neither release adds a
-setting or refuses one that 0.60.2 and 0.26.0 accept. Read these before the first start of
-0.61.0:
+Upgrade the engine first, then the console. Console 0.28.0's assistant, help text and No AI
+marks call routes and fields that only engine 0.62.0 serves. Neither release adds a setting or
+refuses one that 0.61.0 and 0.27.0 accept, and the engine applies its new migrations on its
+first start. Read these before that start:
+
+- **The builder starts on every install.** It is free, with 2 sites per tenant, 10 pages in
+  each site and 20 pages in all, and a license with `builder-pro` lifts that ceiling. The first
+  start creates the builder's tables. Each tenant's builder stays off until an administrator
+  turns it on, as [Builder](../features/builder.md) shows. If `LYEVE_PLUGINS` names the
+  features to start, add `builder` to it.
+- **Expect the assistant where the license includes `ai`.** Every signed-in role sees
+  **Assistant** in the console's header. A tenant admin turns it off for one tenant under
+  **Operations > AI**, on the **Settings** tab, as [AI assistant](../features/ai-assistant.md)
+  describes.
+- **The OpenAPI document answers every role.** `GET /api/admin/openapi.json` answers every
+  signed-in role with the operations that role may call, where it answered admins and super
+  admins only. The two halves under `/api/admin/openapi/` keep their roles.
+- **Check the CPU threads under a small limit.** Under a CPU limit of one core or less on a
+  machine with two or more CPUs, the engine runs its scheduler on one thread, where Go's default
+  gave two. The engine also reads the container's CPU and memory limits again every second.
+  `GOMAXPROCS` and `CPU_QUOTA` still set the thread count.
+- **Set a memory limit before a garbage collector target above 1000.**
+  `POST /api/admin/debug/gc-config` refuses a `gogc` above 1000 with `422` unless a memory
+  limit below the container's or the machine's memory is set.
+- **Upgrade for the Go fix.** Engine 0.62.0 is built with Go 1.27.4, which fixes a crash a
+  client could cause in the engine's HTTP server on earlier builds.
+- **Rename the console key if you have not.** This note also applied to 0.61.0. Engine 0.62.0
+  and console 0.28.0 still read `ADMIN_CONSOLE_KEY` and `ADMIN_CONSOLE_KEY_PREVIOUS`, and the
+  engine logs a deprecation warning when it reads one. A later minor release stops reading
+  them, so move to `LYEVE_CONSOLE_KEY` as the 0.60.2 section explains.
+- **Point the console at its new image name.** This note also applied to 0.61.0. Console
+  0.28.0 is also published as `ghcr.io/lyeve-labs/lyeve-admin`, with the same digest. A file
+  that still names it changes the console's `image:` line to `ghcr.io/lyeve-labs/lyeve-console`.
+
+An install on 0.60.2 also reads these changes from 0.61.0, which still apply when it moves
+straight to 0.62.0. An install on a release before 0.60.2 reads
+[the 0.60.2 section](#upgrading-to-0602-and-console-0260) below first.
 
 - **Stop reading `schema_name` from entries.** A content entry no longer carries
   `schema_name`. Every route that serves an entry names its content type in its path, so a
   client takes the type from the path it called.
 - **Check filters on numbers and relations.** A content list filter on a number field compares
   by value on every database, so `10` and `10.0` find the same entries. A filter value that is
-  not a finite number below 10^28 answers `400`. Before, PostgreSQL and SQL Server answered
-  `422`, and MySQL compared it as `0`. A filter that names a has-one, has-many or many-to-many
-  relation answers `400`, where it answered `503`.
+  not a finite number below 10^28 answers `400`. Before 0.61.0, PostgreSQL and SQL Server
+  answered `422`, and MySQL compared it as `0`. A filter that names a has-one, has-many or
+  many-to-many relation answers `400`, where it answered `503`.
 - **Update anything that matches message text.** The API's messages call what a tenant defines
   with fields a content type, where they said schema, and call the server the engine. Routes,
   JSON keys, error codes and stored values keep their names, so a client that reads the error
   code needs no change.
 - **Expect integer and decimal fields from a schema import.** An import from Strapi,
   Contentful, JSON Schema or OpenAPI maps a whole-number type to an integer field, and a
-  Strapi decimal to a decimal field of 18 digits with 2 after the point. Before, both imported
-  as number. Importing the same source again over fields first imported as number changes
-  their type, and the save answers `409` when stored values do not fit the new type.
-- **Use console 0.27.0 for the new field types.** Engine 0.61.0 adds integer and decimal
-  fields, which [the data model](../concepts/data-model.md) describes. Console 0.27.0 offers
-  both in the Schema builder and keeps every digit of their values.
+  Strapi decimal to a decimal field of 18 digits with 2 after the point. Before 0.61.0, both
+  imported as number. Importing the same source again over fields first imported as number
+  changes their type, and the save answers `409` when stored values do not fit the new type.
 - **Expect timestamps in UTC on PostgreSQL.** With a `TZ` other than UTC, the answers about
   tenants, domains, memberships, admin tokens, backups, costs, customization and migration
   give their timestamps in UTC, as they already did on MySQL and SQL Server.
-- **Rename the console key if you have not.** Engine 0.61.0 and console 0.27.0 still read
-  `ADMIN_CONSOLE_KEY` and `ADMIN_CONSOLE_KEY_PREVIOUS`, and the engine logs a deprecation
-  warning when it reads one. A later minor release stops reading them, so move to
-  `LYEVE_CONSOLE_KEY` as the 0.60.2 section explains.
-- **Point the console at its new image name.** Console 0.27.0 is also published as
-  `ghcr.io/lyeve-labs/lyeve-admin`, with the same digest. A file that still names it changes
-  the console's `image:` line to `ghcr.io/lyeve-labs/lyeve-console`.
 - **Find console pages under tabs.** Crowded console pages are split into tabs, one feature per
   tab with an address of its own. The settings groups once called Workspace and Instance are
   Tenant and Engine.
@@ -405,7 +428,7 @@ docker compose up -d admin
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so change the console's
 `image:` line to that name. Every 0.25 release is also published under the old name,
 `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and the same digests, so a file that still
-names it keeps updating. The old name has received every release through 0.27.0 so far, and
+names it keeps updating. The old name has received every release through 0.28.0 so far, and
 the tags already published under it stay. The
 release changes the console's name and look, and adds no setting:
 
