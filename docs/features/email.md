@@ -454,7 +454,13 @@ shows one message's opens, clicks and webhook events.
 Templates are MJML compiled to HTML. Inside one, `{{.Vars.<name>}}` is a value
 you pass and `{{.Branding.<field>}}` is the tenant's branding (`CompanyName`,
 `LogoURL`, `PrimaryColor`, `SecondaryColor`, `FooterText`). The colors default
-to `#3366FF` and `#22CC88`.
+to `#005A77` and `#22CC88`.
+
+`mj-text` holds HTML. Bold and italic text, links, line breaks, lists, tables
+and images are kept. Other elements, scripts included, are reduced to their
+text, attributes such as event handlers are removed, and a link or an image
+must point to an `https:`, `http:`, `mailto:` or `tel:` address or come from
+a variable.
 
 - A tenant holds five templates for free, under any key, the two required
   ones included. `email-pro` removes the ceiling.
@@ -492,6 +498,10 @@ Three rules keep those mails working:
 If a send cannot use the tenant's copy, because it is missing or cannot be
 rendered, the built-in version goes out instead. A reset or sign-in link always
 reaches the person who asked for it.
+
+A copy you never edited follows the built-in version. When an update improves
+the built-in body, your users receive the new one. Once you change its
+subject or body, updates leave the template as you wrote it.
 
 ### Starters
 
