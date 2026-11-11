@@ -112,7 +112,7 @@ curl -X POST http://localhost:3001/api/admin/setup \
   -d '{
         "email": "you@example.com",
         "password": "Quickstart-Demo-2026",
-        "setup_token": "<the token from the log>"
+        "setup_token": "<the token from standard error>"
       }'
 ```
 

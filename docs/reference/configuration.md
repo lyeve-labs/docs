@@ -228,7 +228,7 @@ names a pooler. The `POOL_HEALTH_*` thresholds are read on every install.
 | `LYEVE_BASE_URL` | The public base URL of the engine. Features that build an absolute link to it use this value instead of the request's `Host` header: OAuth and SAML callback URLs, data export downloads and file links. Set it in production. | unset |
 | `LYEVE_OUTBOUND_ALLOW_CGNAT` | `true` lets webhooks, flows, identity providers, JWKS fetches and alert channels reach the shared address space `100.64.0.0/10`, which Tailscale hands out, and the NAT64 or 6to4 form of an address in it. It opens the range to every tenant's outbound targets, cloud metadata services in that range included. Email honors it too: an SMTP relay or API provider host in that range needs no `SMTP_ALLOWED_PRIVATE_NETWORKS` entry. Read once at boot, and the console cannot set it. See [where outbound requests may go](../trust/security-controls.md#where-outbound-requests-may-go). | `false` |
 | `TRUSTED_PROXIES` | Comma-separated CIDRs of the reverse proxies in front. `X-Forwarded-For` is honored only from these, so rate limits and audit entries see the real client address. Unset, every request counts as the proxy's. | unset |
-| `CORS_ORIGINS` | Comma-separated origins of the browser apps that call the APIs cross-origin. `*` is refused. | `http://localhost:5173` |
+| `CORS_ORIGINS` | Comma-separated origins of the browser apps that call the APIs cross-origin. `*` is refused. The [public delivery](../features/content-delivery.md) routes answer every origin, whatever it names, and never allow credentials. | `http://localhost:5173` |
 | `ADMIN_LISTEN_ADDR` | Bind address of the Admin API. | `0.0.0.0:3001` |
 | `API_LISTEN_ADDR` | Bind address of the Content API. | `0.0.0.0:3002` |
 | `TLS_CERT_FILE`, `TLS_KEY_FILE` | A PEM certificate and key, set together. Both listeners then serve TLS 1.2 or later and pick up a rotated certificate without a restart. Unset, both serve plain HTTP for a proxy that terminates TLS. | unset |
@@ -361,6 +361,8 @@ feature's configuration form, and a variable set in the deployment still wins.
 | `CACHE_MAX_ENTRIES` | Most entries in each of those memory caches. | `1000` |
 | `CACHE_DRIVER` | The Caching feature's backend: `memory` or `redis`. Set `redis` to share sessions and sign-in lockouts across replicas. The Content API caches stay in memory either way. | `memory` |
 | `REDIS_URL` | The Redis that caching, idempotency, shared rate limits, realtime and flows use, unless a feature names its own. | `redis://localhost:6379/0` |
+| `DELIVERY_MAX_AGE` | How long a browser may keep an answer of the [public delivery](../features/content-delivery.md) routes, in whole seconds from 1 to 86400. Read once at boot. | `60` |
+| `DELIVERY_SHARED_MAX_AGE` | How long a CDN or another shared cache may keep an answer of the public delivery routes, in whole seconds from 1 to 86400. Without a purge, a change shows within this time plus 60 seconds. Read once at boot. | `300` |
 
 [Scaling](../scaling/index.md) lists what more than one replica needs from Redis.
 
@@ -452,16 +454,30 @@ feature. See [Data protection](../trust/data-protection.md).
 
 ## Concurrency and resources
 
-The engine sizes itself to the container's memory and CPU limits, which it reads from the
-cgroup. `GOMEMLIMIT` and `GOMAXPROCS`, Go's own variables, win when you set them.
+The engine follows the machine it runs on, and every variable below is an override.
+
+Go's soft memory limit comes from the first of these:
+
+1. `GOMEMLIMIT`, Go's own variable, which Go reads as the soft limit itself.
+2. 85% of `MEMORY_LIMIT_BYTES`.
+3. 85% of the cgroup's memory limit: a container's, or a systemd unit's `MemoryMax`.
+4. 85% of the machine's total memory, so a VM with no container limit follows its own memory.
+
+The scheduler's thread count comes from the first of these:
+
+1. `GOMAXPROCS`, Go's own variable.
+2. `CPU_QUOTA`, when `GOMAXPROCS` is not set.
+3. Go's default, which follows the cgroup's CPU limit and its changes while the engine runs.
+
+Setting either variable fixes the count, so Go stops following a change to the CPU limit.
 
 <details>
 <summary>Memory, CPU and worker pools</summary>
 
 | Variable | What it does | Default |
 |---|---|---|
-| `MEMORY_LIMIT_BYTES` | Memory limit used when the cgroup sets none. The engine sets Go's soft memory limit to 85% of the limit it finds. | from the cgroup |
-| `CPU_QUOTA` | Whole cores the engine schedules for, instead of the cgroup's CPU limit. | from the cgroup |
+| `MEMORY_LIMIT_BYTES` | Memory limit in bytes, used instead of the cgroup's limit and the machine's memory. The engine sets Go's soft memory limit to 85% of it. `GOMEMLIMIT` wins over it. | the cgroup's limit, or the machine's memory |
+| `CPU_QUOTA` | Whole cores the scheduler runs on, instead of Go's default. `GOMAXPROCS` wins over it. | Go's default |
 | `GOROUTINE_ENGINE_ENABLED` | Warms feature caches and stops features in parallel, instead of one at a time. The shared worker pool runs either way. Needs a license with `goroutine-engine-pro`, and without it the variable is ignored with a warning in the log. See [Concurrency tuning](../features/concurrency-tuning.md). | `false` |
 | `GOROUTINE_ENGINE_POOL_SIZE` | Workers in the shared pool. Needs a license with `goroutine-engine-pro`, and without it the pool keeps 100 workers. | `100` |
 | `DB_WARMUP_PARALLELISM` | How many tasks the parallel stages, such as cache warmup, run at once. | `4` |

@@ -177,7 +177,7 @@ spec:
             - { name: state, mountPath: /state }
       containers:
         - name: lyeve-core
-          image: ghcr.io/lyeve-labs/lyeve-core:0.60.2   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-core:0.61.0   # cluster-specific: pin a release
           ports:
             - { name: admin, containerPort: 3001 }
             - { name: api, containerPort: 3002 }
@@ -311,7 +311,7 @@ spec:
     spec:
       containers:
         - name: lyeve-console
-          image: ghcr.io/lyeve-labs/lyeve-console:0.26.0   # cluster-specific: pin a release
+          image: ghcr.io/lyeve-labs/lyeve-console:0.27.0   # cluster-specific: pin a release
           ports:
             - { name: http, containerPort: 3002 }
           env:
@@ -564,6 +564,27 @@ creates its key on the state volume and keeps media on the uploads volume. Use
 while the old one holds it. Without Redis, refresh tokens live in the pod's memory, so every
 restart or rollout signs everyone out once their access token expires (`JWT_EXPIRY_SECS`).
 
+## Upgrading to 0.61.0 and console 0.27.0
+
+Upgrade the engine first and the console once the engine is ready. A cluster on a release
+before 0.60.2 follows the next section first. Neither release adds a setting or refuses one
+that 0.60.2 and 0.26.0 accept, so the Secret and the ConfigMap stay as they are.
+[Docker Compose](docker-compose.md#upgrading-to-0610-and-console-0270) lists what your
+clients see: content entries without `schema_name`, list filters that answer `400`, messages
+that say content type where they said schema, and the integer and decimal fields a schema
+import now creates. Both releases still read `ADMIN_CONSOLE_KEY`, and a later minor release
+stops, so finish the key rename below if you have not. Console 0.27.0 is also published under
+`ghcr.io/lyeve-labs/lyeve-admin`, but point the Deployment at
+`ghcr.io/lyeve-labs/lyeve-console`. An install made before the rename names its console
+Deployment and container `lyeve-admin`, so use that name in the commands:
+
+```bash
+kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.61.0
+kubectl -n lyeve rollout status deploy/lyeve-core
+kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.27.0
+kubectl -n lyeve rollout status deploy/lyeve-console
+```
+
 ## Upgrading to 0.60.2 and console 0.26.0
 
 Engine 0.60.0 and 0.60.1 have no published image, so roll straight to 0.60.2. Upgrade the
@@ -584,7 +605,8 @@ so rename the key in this order and the console keeps signing in at every step:
    rotation's `ADMIN_CONSOLE_KEY_PREVIOUS` gets a `LYEVE_CONSOLE_KEY_PREVIOUS` the same way.
 2. Roll the engine to 0.60.2.
 3. Apply the console Deployment above, saved as `console.yaml`. It names the new key in its
-   `env` entry and its `secretKeyRef` and runs `ghcr.io/lyeve-labs/lyeve-console:0.26.0`. An
+   `env` entry and its `secretKeyRef`. For this step, set its image to
+   `ghcr.io/lyeve-labs/lyeve-console:0.26.0`. An
    install made before the rename names its console Deployment and container `lyeve-admin`, so
    keep that name in the manifest you apply and in the commands.
 4. Remove `ADMIN_CONSOLE_KEY`, and `ADMIN_CONSOLE_KEY_PREVIOUS` if you set it, from the Secret.
@@ -606,7 +628,7 @@ kubectl -n lyeve patch secret lyeve-secrets --type json -p '[{"op":"remove","pat
 
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`. Every 0.25 release is also
 published under `ghcr.io/lyeve-labs/lyeve-admin` with the same tags and digests. The old name
-has received every release through 0.26.0 so far, and the tags already published there stay. Point the console's Deployment at the new name. An
+has received every release through 0.27.0 so far, and the tags already published there stay. Point the console's Deployment at the new name. An
 install made before the rename names its Deployment and container `lyeve-admin`, so use that
 name in the command:
 
@@ -627,8 +649,8 @@ console that serves several organizations on an address that names none needs
 ```bash
 kubectl -n lyeve set image deploy/lyeve-core lyeve-core=ghcr.io/lyeve-labs/lyeve-core:0.58.0
 kubectl -n lyeve rollout status deploy/lyeve-core
-kubectl -n lyeve set image deploy/lyeve-console lyeve-console=ghcr.io/lyeve-labs/lyeve-console:0.25.0
-kubectl -n lyeve rollout status deploy/lyeve-console
+kubectl -n lyeve set image deploy/lyeve-admin lyeve-admin=ghcr.io/lyeve-labs/lyeve-admin:0.24.0
+kubectl -n lyeve rollout status deploy/lyeve-admin
 ```
 
 ## Upgrading to 0.57.0 and console 0.23.0

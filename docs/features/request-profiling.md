@@ -313,9 +313,8 @@ only control.
 
 ## Tune garbage collection
 
-`GET /api/admin/debug/gc-config` shows the `GOGC` and `GOMEMLIMIT` environment
-values the process started with, and `memory_limit`, the limit in force in
-bytes. With no limit set, `memory_limit` is `9223372036854775807`.
+`GET /api/admin/debug/gc-config` shows the settings in force: `gogc`, and
+`memory_limit` in bytes, which is `0` when no limit is set.
 
 `GOGC` says how far the heap may grow before the next collection, as a
 percentage of what survived the last one. The default, `100`, collects when
@@ -330,14 +329,15 @@ curl -X POST http://localhost:3001/api/admin/debug/gc-config \
 ```
 
 ```json
-{ "previous_gogc": 100, "current_gogc": 200 }
+{ "previous_gogc": 100, "current_gogc": 200, "memory_limit": 912680550 }
 ```
 
 :::caution
 The change applies to this replica until it restarts. Set the `GOGC`
-environment variable to keep it. A value of `-1` turns garbage collection off,
-which lets memory grow until the process is killed. For the memory ceiling the
-instance sizes itself against, see [scale and tune](../scaling/index.md).
+environment variable to keep it. A negative value turns garbage collection off,
+so the engine refuses one with `422` unless a memory limit is set, and then the
+memory limit is the only thing that starts a collection. For the memory ceiling
+the instance sizes itself against, see [scale and tune](../scaling/index.md).
 :::
 
 ## Settings

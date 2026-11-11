@@ -187,8 +187,8 @@ values are JSON objects rather than encoded strings.
 
 | Method | Request | Answer |
 |---|---|---|
-| `ContentService.List` | `schema`, `limit` (default 50, 1 to 500), `offset`, `filters` (equality on known fields), `locale` | `items` |
-| `ContentService.Get` | `schema`, `id`, `locale` | `item` |
+| `ContentService.List` | `schema`, `limit` (default 50, 1 to 500), `offset`, `filters` (equality on known fields), `locale`, `fields`, `populate`, `depth` | `items` |
+| `ContentService.Get` | `schema`, `id`, `locale`, `fields`, `populate`, `depth` | `item` |
 | `ContentService.Create` | `schema`, `data` | `item` |
 | `ContentService.Update` | `schema`, `id`, `data` | `item` |
 | `ContentService.Delete` | `schema`, `id` | empty |
@@ -208,6 +208,51 @@ A content type's `transports` block decides what gRPC serves:
 | It is served, but not in this direction (`r` refuses writes, `w` refuses reads) | `FAILED_PRECONDITION` |
 
 See [Transports](../reference/api-endpoints.md#serve-a-content-type-over-some-transports-only).
+
+### Choose fields and related entries
+
+`List` and `Get` take the read options the Content API takes:
+
+- `fields` keeps only the named fields of each entry. `id`, `created_at`,
+  `updated_at` and `resolved_locale` stay whatever you name, and a belongs-to
+  relation keeps its key column and its entry together. A name the content
+  type does not have, or one you may not read, answers `INVALID_ARGUMENT`.
+- `populate` serves a relation as the entries it points at: a belongs-to or
+  has-one relation as an entry or `null`, a has-many or many-to-many relation
+  as a list, newest first. `author.company` reaches a relation of the related
+  entry, `*` populates every relation at its level, and `author{name}` keeps
+  only the named fields of each related entry. A name that is not a relation
+  is skipped.
+- `depth` populates every relation, to that many levels, from 0 to 10.
+- `filters`, on `List`, keeps the entries whose fields equal the values you
+  give. A value written as text is read by its field's type: `true` or
+  `false`, a number, a UUID with its dashes, a date written `2006-01-02`, or
+  a time in RFC 3339. A value its field cannot hold, and a filter on a JSON
+  field, answer `INVALID_ARGUMENT`. A field name the content type does not
+  have is ignored, so check the spelling.
+
+A related entry is what a read of its own content type gives you: from your
+tenant, not deleted, with that type's field rules, and a draft only when you
+may read drafts there. A has-one relation serves the newest entry you may
+read. A relation into a content type you may not read, or one gRPC does not
+read, is left out of the entry. So is a has-one or has-many relation whose
+related entries hide the field that links them to this one from you.
+
+A read has three bounds, and past one it answers `INVALID_ARGUMENT`: 5000
+related entries, counting an entry once under each entry it is served
+under, 32 MiB of them, and 1000 database queries. A request to `List` that
+keeps two fields of each post and serves its author's name and its tags:
+
+```json
+{
+  "schema": "post",
+  "fields": ["title", "author"],
+  "populate": ["author{name}", "tags"]
+}
+```
+
+Send it from a JSON client as in [Try it](#try-it), to
+`/lyeve.core.v1.ContentService/List`.
 
 ## Authenticate
 
@@ -233,8 +278,8 @@ The health and JSON listener offers the same calls for clients without gRPC:
 | `GET` | `/healthz` | Health summary. `?service=<name>` checks one service. No token needed. |
 | `GET` | `/api/schemas` | `SchemaService.ListSchemas` |
 | `GET` | `/api/schemas/{name}` | `SchemaService.GetSchema` |
-| `GET` | `/api/content/{schema}` | `ContentService.List`. Takes `locale`. |
-| `GET` | `/api/content/{schema}/{id}` | `ContentService.Get`. Takes `locale`. |
+| `GET` | `/api/content/{schema}` | `ContentService.List`. Takes `limit`, `offset`, `locale`, `filters[<field>]`, `fields`, `populate` and `depth`. |
+| `GET` | `/api/content/{schema}/{id}` | `ContentService.Get`. Takes `locale`, `fields`, `populate` and `depth`. |
 | `POST` | `/api/content/{schema}` | `ContentService.Create`. Answers `201`. |
 | `PUT` | `/api/content/{schema}/{id}` | `ContentService.Update` |
 | `DELETE` | `/api/content/{schema}/{id}` | `ContentService.Delete`. Answers `{"deleted": "<id>"}`. |
@@ -258,6 +303,19 @@ curl -X POST http://localhost:3004/api/content/post \
 
 The answer is `201` with `{"item": {...}}`. A body is at most 1 MB, and one
 that is not JSON answers `400` with `{"error": "invalid JSON body"}`.
+
+The read options go in the query string, `fields` and `populate` as comma
+lists, and a comma inside a projection's braces stays in its path:
+
+```bash
+curl "http://localhost:3004/api/content/post?fields=title,author&populate=author%7Bid,name%7D&filters%5Bfeatured%5D=true" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+A `filters` key without its closing bracket, an empty name in `fields`, two
+values for one filter, a brace in `populate` left open or closed without
+opening, or a `limit`, `offset` or `depth` that is not a whole number
+answers `400` with `{"error": "invalid query parameter: <name>"}`.
 
 ## Run flows
 

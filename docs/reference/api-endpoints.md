@@ -25,8 +25,10 @@ Branch on the code, not the message. Each feature page lists its codes.
 `GET /api/admin/openapi/public.json` answers an OpenAPI document of the Content API and every
 route outside `/api/admin`, including the URLs your flows answer on. It takes the `admin` or
 `super_admin` role. `GET /api/admin/openapi/admin.json` holds the `/api/admin` routes and takes
-`super_admin`. Both describe what this instance runs right now, and LyEve Console shows
-them under **API reference**.
+`super_admin`. `GET /api/admin/openapi.json` answers every signed-in role: the whole document
+for a super admin, and for anyone else the routes outside `/api/admin` with the `/api/admin`
+operations their role may call. Each describes what this instance runs right now, and LyEve
+Console shows them under **API reference**.
 :::
 
 ## Authenticate
@@ -109,6 +111,7 @@ curl -X POST http://localhost:3002/api/v1/content/article \
 | `limit`, `cursor` | The cursor list | Page by cursor. `limit` runs from 1 to 1000 and defaults to 20. A value over 1000 gives 20 |
 | `filters[<field>]=<value>` | The list | Keep entries whose field equals the value. On a content type with draft and publish, the list holds published entries unless you name `filters[_status]`. A status other than `published` answers `403` unless the caller may read drafts |
 | `populate`, `depth` | The list and single reads | Return related entries inline. See [the data model](../concepts/data-model.md) |
+| `fields` | The list, the cursor list and single reads | Return only the named fields in each entry's `data`, such as `fields=title,slug`. A relation field returns both its `<field>_id` and, with `populate`, the related entry. Every entry keeps `id`, `created_at` and `updated_at`. A field you cannot read answers `400`, whether the content type has no such field or an access rule hides it from you |
 | `locale` | The list, the cursor list and single reads | Read the entry in a language, such as `fr` or `pt-BR`. Without it, the `Accept-Language` header decides. It takes effect when [localization](../features/localization.md) runs, which it does on every install unless `LYEVE_PLUGINS` leaves it out |
 
 Use `curl -g` when a URL carries `filters[...]`, so curl does not read the brackets itself.
@@ -118,6 +121,19 @@ The cursor list answers `{"data": [...], "next_cursor": "..."}`. Send `next_curs
 always carries one, so a set whose size is a multiple of `limit` ends on an empty page. Cursor
 paging stays fast at depth and never repeats an entry when rows change during the walk. Offset
 paging lets you jump to a page number.
+
+### Public delivery
+
+The delivery routes serve the published entries of the content types marked
+with `"public_delivery": true` to anyone, with no credential, in answers a CDN
+may cache. The tenant comes from the host, and a request that carries a token,
+an API key or a session answers `400`. See
+[public content delivery](../features/content-delivery.md).
+
+| Method | Path | Who | Does |
+|---|---|---|---|
+| `GET` | `/api/v1/delivery/{schema}` | Anyone, rate limited | List the published entries. Answers a bare array. Takes `limit`, `offset`, `filters[<field>]`, `populate`, `depth` and `fields` |
+| `GET` | `/api/v1/delivery/{schema}/{id}` | Anyone, rate limited | One published entry. Takes `populate`, `depth` and `fields`. An entry that is not published, or an id not in lower case with hyphens, answers `404` |
 
 ### Follow changes
 
@@ -308,7 +324,7 @@ production instance without `LYEVE_CONSOLE_URL` answers the start with `503` and
 | `GET` | `/api/admin/security/controls` | `super_admin` | Which security controls are enforcing. See [Security controls](../trust/security-controls.md) |
 | `GET` | `/api/admin/openapi/public.json` | `admin` | OpenAPI for the Content API and every route outside `/api/admin` |
 | `GET` | `/api/admin/openapi/admin.json` | `super_admin` | OpenAPI for the `/api/admin` routes |
-| `GET` | `/api/admin/openapi.json` | `admin` | The whole document for a super admin, the public half for an admin |
+| `GET` | `/api/admin/openapi.json` | Signed in | The whole document for a super admin. For any other role, every route outside `/api/admin` and the `/api/admin` operations that role may call |
 
 A build without license support answers `404` on both license routes and reports
 `"license_module": false` from the entitlements route.
@@ -348,9 +364,9 @@ A build without license support answers `404` on both license routes and reports
 | `GET` | `/api/admin/pool/health` | `admin` | Database connection pool statistics |
 | `GET` | `/api/admin/debug/latency` | `super_admin` | The slowest endpoints by p50, p95 and p99 |
 | `GET` | `/api/admin/debug/goroutines` | `super_admin` | How many goroutines run, and which feature started them |
-| `GET` | `/api/admin/debug/gc-config` | `admin` | The garbage collector settings and the memory limit |
-| `POST` | `/api/admin/debug/gc-config` | `super_admin` | Change the collector percentage with `{"gogc": <n>}`, with no restart |
-| `GET` | `/api/admin/debug/pprof/` | `super_admin` | Go's profiler index. `heap`, `goroutine`, `profile`, `allocs`, `block`, `mutex`, `threadcreate`, `trace`, `cmdline` and `symbol` sit under it |
+| `GET` | `/api/admin/debug/gc-config` | `admin` | The garbage collector percentage and the memory limit in force |
+| `POST` | `/api/admin/debug/gc-config` | `super_admin` | Change the collector percentage with `{"gogc": <n>}`, with no restart. A negative value needs a memory limit |
+| `GET` | `/api/admin/debug/pprof/` | `super_admin` | Go's profiler index. `heap`, `goroutine`, `goroutineleak`, `profile`, `allocs`, `block`, `mutex`, `threadcreate`, `trace`, `cmdline` and `symbol` sit under it |
 
 [Request profiling](../features/request-profiling.md) shows how to read these, and adds its
 own routes under `/api/admin/debug/profiler/`.
@@ -378,6 +394,8 @@ body, answer and role.
 | [Recommendations](../features/recommendations.md) | `/api/admin/recommendations/`, `/api/v1/recommendations/` | `recommendations` |
 | [A/B testing](../features/ab-testing.md) | `/api/admin/ab/experiments`, `/api/v1/ab/expose`, `/api/v1/ab/convert` | `ab-testing` |
 | [AI](../features/ai.md) | `/api/admin/ai/`, `/api/admin/content/ai-assist`, `/api/admin/content/ai-usage`, and the support desk at `/api/admin/support/` | `ai`, and `support` for the desk |
+| [AI assistant](../features/ai-assistant.md) | `/api/admin/ai/assistant` | `ai` |
+| [Builder](../features/builder.md) | `/api/admin/builder/`, and the builder's own calls under `/api/v1/builder/` | Free, with 2 sites per tenant, 10 pages in each site and 20 in all. More need `builder-pro` |
 | [Data export](../features/data-export.md) | `/api/admin/data-export/` | `data-export` |
 
 </details>

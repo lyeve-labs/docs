@@ -88,6 +88,8 @@ Creating, changing and deleting them takes `admin` or `super_admin`.
 | `email` | An email address | A string. One that is not an address answers `422`. |
 | `url` | A link | A string. Add the `url` rule below to refuse one that is not a URL. |
 | `number` | A number | A JSON number |
+| `integer` | A whole number up to 64 bits, from -9223372036854775808 to 9223372036854775807 | A JSON number. Answers return a JSON number. |
+| `decimal` | An exact number with a declared precision and scale | A string, such as `"19.9"`, or a JSON number. Answers return a string with exactly `scale` digits after the point, such as `"19.90"`. |
 | `boolean` | Yes or no | `true` or `false`. Anything else answers `422`. |
 | `date` | A calendar date | `"2026-10-01"` |
 | `datetime` | A moment in time | An RFC 3339 timestamp, such as `"2026-10-01T09:00:00Z"` |
@@ -95,6 +97,15 @@ Creating, changing and deleting them takes `admin` or `super_admin`.
 | `media` | A file | A string that locates the file. The console stores the file's public link from the [media library](../features/media.md). |
 | `relation` | A link to another entry | See [Relations](#relations). |
 | `uid` | A unique identifier | A UUID string |
+
+`number` is unchanged. A `decimal` field takes `precision`, the number of digits it holds, from 1
+to 38, and `scale`, how many of those digits follow the point, from 0 to 30 and no more than
+`precision`. A field that sets neither holds 18 digits, 2 of them after the point. A value with
+more digits than the field holds answers `422`. It is never rounded.
+
+JavaScript's `JSON.parse` rounds an integer past 9007199254740991, so a browser reads a larger
+`integer` value wrong. When a browser client needs larger values exactly, use a `decimal` field
+with `scale` 0, which arrives as a string.
 
 `validation` is a list of rules. Each names a `rule` and its `params`:
 
@@ -162,7 +173,6 @@ curl -X POST http://localhost:3002/api/v1/content/author \
 ```json
 {
   "id": "ce7168fd-648d-4fee-830f-db1a65b8e2af",
-  "schema_name": "author",
   "data": { "id": "ce7168fd-648d-4fee-830f-db1a65b8e2af", "name": "Ada Lovelace", "email": "ada@example.com" },
   "created_at": "2026-10-02T05:05:16.951534Z",
   "updated_at": "2026-10-02T05:05:16.951534Z"
@@ -188,7 +198,6 @@ curl "http://localhost:3002/api/v1/content/post/$POST_ID?populate=author" \
 ```json
 {
   "id": "909f3fb8-64ca-4a5e-a724-d60dd332e0b7",
-  "schema_name": "post",
   "data": {
     "title": "Hello, world",
     "body": "<p>First post.</p>",

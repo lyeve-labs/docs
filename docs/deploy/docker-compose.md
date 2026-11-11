@@ -58,6 +58,7 @@ services:
   engine:
     image: ghcr.io/lyeve-labs/lyeve-core:latest
     restart: unless-stopped
+    mem_limit: 1g
     environment:
       DATABASE_URL: postgres://lyeve:${DB_PASSWORD}@db:5432/lyeve?sslmode=require
       JWT_SECRET: ${JWT_SECRET}
@@ -163,6 +164,11 @@ api.yourdomain.com {
 Replace `yourdomain.com` in both files with your domain, so Caddy can obtain certificates for
 both public names. `TRUSTED_PROXIES` names the subnet the Compose file gives its network. If you
 change one, change the other.
+
+`mem_limit` caps the engine's memory. The engine sets Go's soft memory limit to 85% of it, so it
+collects garbage harder as it nears the cap instead of being killed at it. Raise it if the engine
+serves large lists or many tenants. Without a container limit the soft limit is 85% of the host's
+memory. Set `MEMORY_LIMIT_BYTES` or `GOMEMLIMIT` to choose another.
 
 ## Secrets and the `.env` file
 
@@ -281,12 +287,62 @@ docker compose up -d
 ```
 
 `latest` follows every release. For a deliberate upgrade, pin both images to a version tag such
-as `ghcr.io/lyeve-labs/lyeve-core:0.60.2` and `ghcr.io/lyeve-labs/lyeve-console:0.26.0`, and change
+as `ghcr.io/lyeve-labs/lyeve-core:0.61.0` and `ghcr.io/lyeve-labs/lyeve-console:0.27.0`, and change
 the tags when you choose to.
 
 Upgrade the engine before the console. A console release can call routes that only the engine
 release beside it serves, so a new console in front of an older engine shows errors on those
 pages.
+
+### Upgrading to 0.61.0 and console 0.27.0
+
+Upgrade the engine first, then the console. An install on a release before 0.60.2 reads
+[the 0.60.2 section](#upgrading-to-0602-and-console-0260) below first. Neither release adds a
+setting or refuses one that 0.60.2 and 0.26.0 accept. Read these before the first start of
+0.61.0:
+
+- **Stop reading `schema_name` from entries.** A content entry no longer carries
+  `schema_name`. Every route that serves an entry names its content type in its path, so a
+  client takes the type from the path it called.
+- **Check filters on numbers and relations.** A content list filter on a number field compares
+  by value on every database, so `10` and `10.0` find the same entries. A filter value that is
+  not a finite number below 10^28 answers `400`. Before, PostgreSQL and SQL Server answered
+  `422`, and MySQL compared it as `0`. A filter that names a has-one, has-many or many-to-many
+  relation answers `400`, where it answered `503`.
+- **Update anything that matches message text.** The API's messages call what a tenant defines
+  with fields a content type, where they said schema, and call the server the engine. Routes,
+  JSON keys, error codes and stored values keep their names, so a client that reads the error
+  code needs no change.
+- **Expect integer and decimal fields from a schema import.** An import from Strapi,
+  Contentful, JSON Schema or OpenAPI maps a whole-number type to an integer field, and a
+  Strapi decimal to a decimal field of 18 digits with 2 after the point. Before, both imported
+  as number. Importing the same source again over fields first imported as number changes
+  their type, and the save answers `409` when stored values do not fit the new type.
+- **Use console 0.27.0 for the new field types.** Engine 0.61.0 adds integer and decimal
+  fields, which [the data model](../concepts/data-model.md) describes. Console 0.27.0 offers
+  both in the Schema builder and keeps every digit of their values.
+- **Expect timestamps in UTC on PostgreSQL.** With a `TZ` other than UTC, the answers about
+  tenants, domains, memberships, admin tokens, backups, costs, customization and migration
+  give their timestamps in UTC, as they already did on MySQL and SQL Server.
+- **Rename the console key if you have not.** Engine 0.61.0 and console 0.27.0 still read
+  `ADMIN_CONSOLE_KEY` and `ADMIN_CONSOLE_KEY_PREVIOUS`, and the engine logs a deprecation
+  warning when it reads one. A later minor release stops reading them, so move to
+  `LYEVE_CONSOLE_KEY` as the 0.60.2 section explains.
+- **Point the console at its new image name.** Console 0.27.0 is also published as
+  `ghcr.io/lyeve-labs/lyeve-admin`, with the same digest. A file that still names it changes
+  the console's `image:` line to `ghcr.io/lyeve-labs/lyeve-console`.
+- **Find console pages under tabs.** Crowded console pages are split into tabs, one feature per
+  tab with an address of its own. The settings groups once called Workspace and Instance are
+  Tenant and Engine.
+
+Then upgrade the engine, wait until it reports healthy, and upgrade the console:
+
+```bash
+docker compose stop engine
+docker compose pull engine admin
+docker compose up -d --wait engine
+docker compose up -d admin
+```
 
 ### Upgrading to 0.60.2 and console 0.26.0
 
@@ -349,7 +405,7 @@ docker compose up -d admin
 Console 0.25.0 is published as `ghcr.io/lyeve-labs/lyeve-console`, so change the console's
 `image:` line to that name. Every 0.25 release is also published under the old name,
 `ghcr.io/lyeve-labs/lyeve-admin`, with the same tags and the same digests, so a file that still
-names it keeps updating. The old name has received every release through 0.26.0 so far, and
+names it keeps updating. The old name has received every release through 0.27.0 so far, and
 the tags already published under it stay. The
 release changes the console's name and look, and adds no setting:
 

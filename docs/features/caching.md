@@ -326,6 +326,26 @@ answer is stored only when it is a `200` that sets no cookie, is not marked
 `no-store` or `private`, and is at most 1 MiB. A hit answers with
 `X-Cache: HIT`, and a matching `If-None-Match` gets `304`.
 
+### Cache public delivery
+
+The [public delivery](content-delivery.md) routes answer without a
+credential, so a rule can keep their answers. One rule covers every marked
+content type:
+
+```bash
+curl -X POST http://localhost:3001/api/admin/cache/rules \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"pattern": "/api/v1/delivery/**", "ttl_seconds": 300, "tags": []}'
+```
+
+With no tags, every content change in the tenant clears the rule's answers,
+and so does a change to a content type's definition. That keeps an entry that
+populates a changed one fresh too. A rule tagged with content type names is
+cleared by changes to those types, and by a change to their definitions,
+only. The rule keeps answers on the instance, and a CDN in front still needs
+its own purge.
+
 ### What is never cached
 
 Whatever a rule names, these requests are never served from the cache or
