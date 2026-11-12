@@ -272,7 +272,7 @@ name outside it is refused at creation.
 | `content:write` | Create, update, publish and delete content entries. |
 | `media:read` | List and download media files. |
 | `media:write` | Upload, replace and delete media files. |
-| `schemas:read` | Read schema definitions, their row counts and the schema export. |
+| `schemas:read` | Read content type definitions, their row counts and the schema export. |
 | `flows:read` | Read flows and their runs. |
 | `flows:write` | Create, change, activate and delete flows. |
 | `webhooks:read` | Read webhooks and their deliveries. |

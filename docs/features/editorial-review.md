@@ -120,7 +120,7 @@ Copy the entry's `id` into `ENTRY`.
 
 1. Open **Reviews** and choose **New definition**.
 2. Enter `Blog review` in **Name** and `blog` in **Slug**, and pick **blog_post** in
-   **Content schema**. **Publish on approval** is on.
+   **Content type**. **Publish on approval** is on.
 3. Under **Stages, in order**, enter `Copy edit` in **Stage name**, `editor` in
    **Required role** and `24` in **SLA, hours**.
 4. Choose **New stage**, and enter `Legal` in **Stage name** and `legal` in
@@ -356,7 +356,7 @@ may approve. Anyone else gets `403` `only an assignee may approve a quorum stage
 <div data-path="console">
 
 1. Open **Reviews** and choose **New definition**. Enter `Legal sign-off` in **Name** and
-   pick `blog_post` in **Content schema**.
+   pick `blog_post` in **Content type**.
 2. On the stage, enter `Legal` in **Stage name**, `editor` in **Required role** and `2` in
    **Approvals needed**, then choose **Create**. The page says **Definition created.**, and
    the definition's row shows **2 approvals**.

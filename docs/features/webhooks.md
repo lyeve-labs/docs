@@ -356,7 +356,7 @@ For example, a webhook that posts a chat message for one title only:
 A post titled `Launch` now sends `{"text":"New post: Launch"}`, and a post
 with any other title sends nothing.
 
-![The New webhook form on an install licensed for webhook-pro, with post picked under Schemas and Delivery options open, showing a payload template and the field filter title=Launch.](images/webhooks-delivery-options.png)
+![The New webhook form on an install licensed for webhook-pro, with post picked under Content types and Delivery options open, showing a payload template and the field filter title=Launch.](images/webhooks-delivery-options.png)
 
 </div>
 <div data-path="api">
@@ -601,7 +601,7 @@ Creating or changing one needs the `super_admin` role and `webhook-pro`.
 <div data-path="console">
 
 1. Open **Delivery > Incoming webhooks** and choose **New incoming webhook**.
-2. Enter `Guest notes` in **Name** and pick `post` in **Target schema**.
+2. Enter `Guest notes` in **Name** and pick `post` in **Target content type**.
 3. Enter a long random secret in **Signing secret**, and give it to the other
    service.
 4. In **Field map**, enter `{"headline": "title", "text": "body"}`, which maps
@@ -609,7 +609,7 @@ Creating or changing one needs the `super_admin` role and `webhook-pro`.
 5. Leave **IP allowlist** empty to take requests from any address, or enter
    one address or CIDR range per line. Choose **Create**.
 
-The list shows the webhook as **Enabled**, with **Schema: post** and the
+The list shows the webhook as **Enabled**, with **Content type: post** and the
 address the other service posts to, `POST /api/v1/webhooks/in/` and its id.
 
 </div>

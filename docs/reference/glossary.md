@@ -31,9 +31,9 @@ their limits. See [Licensing and tiers](../concepts/licensing-and-tiers.md).
 The HTTP API on port `3002`, under `/api/v1/`, that your sites, apps and services use to read
 and write entries. See [the two APIs](../concepts/index.md#the-two-apis).
 
-**Content type (schema)**
+**Content type**
 The shape of one kind of content: a name, its fields and options such as draft and publish.
-The API calls it a schema, so both words mean the same thing here. See
+The API calls a content type's definition a schema. See
 [The data model](../concepts/data-model.md).
 
 **Database dialect**
