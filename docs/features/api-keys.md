@@ -51,8 +51,8 @@ and **Revoked** narrow the list.
    choose **Create**.
 3. Copy the key from **API key created**. It is not shown again.
 
-Under **Access**, **Content** chooses **Every schema** or **Chosen schemas**,
-with read, create, update and delete on each. **Schema catalog** lets the key
+Under **Access**, **Content** chooses **Every content type** or **Chosen content types**,
+with read, create, update and delete on each. **Content type catalog** lets the key
 discover the content types. Every other route group your instance opens to
 keys folds out below with its routes, and one whose path names something,
 such as flow endpoints, takes a list of the names the key may call under
@@ -151,7 +151,7 @@ a key with no role reads nothing. Sign in as a super admin first.
    the steps.
 2. Open **Access > API keys** and choose **New key**. Enter `website-build` in
    **Name**. Under **Roles**, keep **viewer**, which the form ticks for you.
-3. Leave **Content** on **Every schema** with **Read** ticked. Open **Schema
+3. Leave **Content** on **Every content type** with **Read** ticked. Open **Content type
    catalog** and tick **Discover content types**, so the summary reads **2 scopes: content:read,
    schemas:read**.
 4. Leave **Expires** on **No expiry** and choose **Create**.
@@ -325,7 +325,7 @@ can be granted, unless you are a super admin.
    **Read**, **Create** and **Update**.
 2. On **Access > API keys**, choose **New key** and name it `catalog-import`.
    Under **Roles**, untick **viewer** and tick **editor**.
-3. Under **Content**, choose **Chosen schemas** and tick **Read product**,
+3. Under **Content**, choose **Chosen content types** and tick **Read product**,
    **Create product** and **Update product**. The form adds `schemas:read`,
    and the key's content types become `product` alone.
 4. Choose **Create** and copy the key.

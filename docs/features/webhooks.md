@@ -39,7 +39,7 @@ the other way: another service posts to LyEve and an entry is created.
 ## In the console
 
 Open **Delivery > Webhooks**. The table lists each webhook with its **URL**,
-**Events**, **Schemas** and **Status**, and the **All**, **Enabled** and
+**Events**, **Content types** and **Status**, and the **All**, **Enabled** and
 **Disabled** filter narrows it. Each row has buttons to test the webhook, open
 its **Delivery history**, rotate its signing secret, edit, duplicate or delete
 it. **Dead letters** opens the **Dead letter queue**, which holds the
@@ -48,7 +48,7 @@ deliveries that ran out of attempts.
 ![The Webhooks page listing two webhooks, Rebuild site enabled for post and Search index sync disabled for post and author, each with its URL, its after_create, after_update and after_delete events and its action buttons.](images/webhooks.png)
 
 **New webhook** asks for a **Name**, a **URL**, a **Signing secret**, the
-**Events** and the **Schemas**, with the template and filters under
+**Events** and the **Content types**, with the template and filters under
 **Delivery options**. The **Events** list also offers `before_create`,
 `before_update` and `before_delete`, which never send a delivery, so tick the
 `after_` events.
@@ -96,7 +96,7 @@ resolve to a public address when you save.
 2. Enter `Rebuild site` in **Name** and your address in **URL**. Enter a long
    random value in **Signing secret**.
 3. Under **Events**, tick `after_create`, `after_update` and `after_delete`.
-4. In **Schemas**, which reads **Every schema**, pick `post`.
+4. In **Content types**, which reads **Every content type**, pick `post`.
 5. Choose **Create**.
 
 The form in console v0.25.0 has no field list, so this webhook sends every
@@ -346,7 +346,7 @@ For example, a webhook that posts a chat message for one title only:
 
 1. On **Delivery > Webhooks**, choose **New webhook**. Enter `Chat notice` in
    **Name** and the chat service's address in **URL**, tick `after_create`
-   under **Events**, and pick `post` in **Schemas**.
+   under **Events**, and pick `post` in **Content types**.
 2. Open **Delivery options**. Enter `{"text": "New post: {{.Data.title}}"}`
    in **Payload template** and `title=Launch` in **Field filters**, one
    `field=value` per line. A condition such as `$.data.title == "Launch"`

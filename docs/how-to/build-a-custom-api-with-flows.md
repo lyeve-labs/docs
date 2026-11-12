@@ -145,7 +145,7 @@ first administrator included.
 1. Open **Access > Users** and choose **New user**. Enter
    `flows@example.com` in **Email** and a password in **Password**. Under
    **Roles**, untick **editor** and tick **admin**, then choose **Create**.
-2. Open **Access > Permissions** and choose **Add a schema rule for admin**.
+2. Open **Access > Permissions** and choose **Add a content type rule for admin**.
    Pick `customers` in **Resource**, tick **Read** and choose **Create**.
    Do the same for `orders` and `shipments`.
 3. Sign out, and sign in again as `flows@example.com`.

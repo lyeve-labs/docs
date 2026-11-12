@@ -48,7 +48,7 @@ LyEve Console as an `admin` or `super_admin`. For the API steps, you need a toke
 <div data-path="console">
 
 1. Open **Insight > Data export** and choose **New export**.
-2. Enter `posts-csv` in **Name**, pick `post` under **Schemas** and pick **CSV** in
+2. Enter `posts-csv` in **Name**, pick `post` under **Content types** and pick **CSV** in
    **Format**.
 3. Choose **Start**.
 

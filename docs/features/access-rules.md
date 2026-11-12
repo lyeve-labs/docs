@@ -33,7 +33,7 @@ session token, and to API keys through the roles each key carries.
 ## In the console
 
 Open **Access > Permissions**. Only a super admin sees the page. Each role is a
-row, and expanding it lists its rules: **Every schema** for the `*` rule, then
+row, and expanding it lists its rules: **Every content type** for the `*` rule, then
 one row per content type or flow. A filled dot is an action the rule allows,
 and **Field mask** lists the fields the role does not read.
 
@@ -115,7 +115,7 @@ offers. Sign in as a super admin first.
 1. Open **Access > Permissions**. If the page says **3 of 3 roles**, the
    instance is at its [role ceiling](#the-role-ceiling) and takes no new role.
 2. Choose **New role**, enter `viewer` in **Role name** and choose **Create**.
-   The role's row appears with an empty **Every schema** rule.
+   The role's row appears with an empty **Every content type** rule.
 3. Choose the plus button on the `viewer` row. In **Resource**, pick `post`.
    Tick **Read**, enter `body` in **Field mask** and choose **Create**. The row
    now says **2 rules**.
