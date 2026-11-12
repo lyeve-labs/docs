@@ -14,7 +14,7 @@ A **collection** in the console is one content type, such as Article or Product,
 **entry** is one item in it. Someone with the `admin` role defines the collection and its
 fields in the **Schema builder**. What content types, fields and entries are is explained on
 [the data model](../../concepts/data-model.md) page. If the **Content** screen says
-**No schemas yet**, start with [Your first content type](../../getting-started/first-content-type.md)
+**No content types yet**, start with [Your first content type](../../getting-started/first-content-type.md)
 or a [schema preset](../../reference/schema-presets.md).
 
 ## Find a collection

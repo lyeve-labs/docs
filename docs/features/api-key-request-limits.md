@@ -79,7 +79,7 @@ Create a key that may make three requests an hour:
 1. Open **Access > API keys** and choose **New key**. Enter `partner-feed` in
    **Name**. Under **Roles**, untick **editor**, which the form ticks for you,
    and tick **viewer**.
-2. Leave **Content** on **Every schema** with **Read** ticked.
+2. Leave **Content** on **Every content type** with **Read** ticked.
 3. Under **Request limits**, enter `3` in **Per hour** and `1000` in
    **Per month**, then choose **Create**.
 4. Copy the key from **API key created** into `KEY`. It is shown once.
