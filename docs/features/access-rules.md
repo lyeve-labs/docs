@@ -46,7 +46,7 @@ and **Field mask** lists the fields the role does not read.
 - **Show resources with no rule** lists the content types and flows a role has
   no rule for.
 
-![Access > Permissions with a support role that reads every content type and updates author, and a viewer role with an empty Every schema rule that reads post without its body.](images/access-rules.png)
+![Access > Permissions with a support role that reads every content type and updates author, and a viewer role with an empty Every content type rule that reads post without its body.](images/access-rules.png)
 
 ## How it works
 

@@ -1,6 +1,6 @@
 ---
 title: gRPC API
-description: "Read and write schemas and content over gRPC from typed clients on your network, or over the matching JSON routes, and run flows a gRPC call starts."
+description: "Read and write content types and content over gRPC from typed clients on your network, or over the matching JSON routes, and run flows a gRPC call starts."
 sidebar:
   order: 32
 ---

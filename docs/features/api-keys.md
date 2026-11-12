@@ -1,6 +1,6 @@
 ---
 title: API keys
-description: Give a website, app or service its own Content API key, limited to the schemas and endpoints it needs. Cap its requests by hour, day or month and see each call.
+description: Give a website, app or service its own Content API key, limited to the content types and endpoints it needs. Cap its requests by hour, day or month and see each call.
 sidebar:
   order: 5
 ---
@@ -9,7 +9,7 @@ sidebar:
 
 An API key lets a program call the Content API (`/api/v1/*`) without a person
 signing in. Each key carries scopes that say what it may read, create, update
-and delete, down to one schema or one endpoint, an optional expiry and
+and delete, down to one content type or one endpoint, an optional expiry and
 optional hourly, daily and monthly request limits. Every request a key makes
 is recorded against it, refused ones included.
 
@@ -90,7 +90,7 @@ together. `content:*` allows every action on content, `*:read` reads
 everything, and `*:*` allows everything. Scopes ignore case. A key with no
 scopes is refused everywhere.
 
-### Hold a key to one schema or one endpoint
+### Hold a key to one content type or one endpoint
 
 A resource can name one thing under it, after a dot. The name is the next path
 segment, so `/api/v1/content/post/42` needs `content.post:<action>` and

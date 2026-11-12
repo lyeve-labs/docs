@@ -117,7 +117,7 @@ You get `posts-csv.csv`.
 <div data-path="console">
 
 1. Choose **New schedule**.
-2. Enter `Nightly` in **Name**, pick **JSON** in **Format** and turn on **Include the schema
+2. Enter `Nightly` in **Name**, pick **JSON** in **Format** and turn on **Include the content type
    definitions**.
 3. Pick **Every day at 02:00 UTC** in **When**, keep **Run on the timetable** on, and choose
    **Create**.
@@ -169,7 +169,7 @@ The pause answers `200` without a `next_run_at`, and the delete answers `204`.
 ![The Data export page. Exports lists two finished exports, published-pages-json in JSON and landing-pages-csv in CSV, each with its entry count, size and a download button. Schedules lists Nightly backup, every day at 02:00 UTC, enabled and next running on October 24.](images/data-export.png)
 
 The console's **New export** and **New schedule** also take the **Statuses**, **Include the
-schema definitions** and **Bundle referenced media**. **When** offers **Every hour**, **Every
+content type definitions** and **Bundle referenced media**. **When** offers **Every hour**, **Every
 day at 02:00 UTC**, **Every Monday at 02:00 UTC**, **On the first of each month at 02:00 UTC**
 and **Custom cron expression**. Sending an export to S3, and the options below that the
 console does not list, are API only.
@@ -202,7 +202,7 @@ are, one content type at a time.
 |-------|---------|---------|
 | `format` | Required. One of the formats above. | |
 | `name` | A label for the job. | `export-<format>` |
-| `filter.schemas` | Schemas to include. Every name must be a schema of the tenant. | all |
+| `filter.schemas` | Content types to include. Every name must be a content type of the tenant. | all |
 | `filter.statuses` | `draft`, `published`, `archived`. | all |
 | `filter.from`, `filter.to` | Entries updated at or after `from` and before `to`. RFC 3339. | none |
 | `filter.slug` | One entry by slug. | none |
@@ -211,7 +211,7 @@ are, one content type at a time.
 | `filter.order_by` | `updated_at`, `created_at` or `title`. | `updated_at` |
 | `filter.order_asc` | Oldest or A to Z first. | `false` |
 | `filter.limit` | Most entries. `0` means the default cap. | `10000` |
-| `include_schemas` | Add each schema's definition. Inside the document for `json` and `yaml`, as `schemas.json` beside the data otherwise, which makes the download a ZIP. | `false` |
+| `include_schemas` | Add each content type's definition. Inside the document for `json` and `yaml`, as `schemas.json` beside the data otherwise, which makes the download a ZIP. | `false` |
 | `include_media` | Bundle the media files entries reference. The download becomes a ZIP. One file may be up to 5 GiB. | `false` |
 | `flatten_json` | Write a nested CSV value as `key=value; key=value` in its cell instead of JSON. | `false` |
 | `s3` | `{"bucket", "key", "region"}`. Upload the result instead of keeping it for download. The file lands at `data-exports/<tenant>/<key>.<ext>`, so `key` names only the part after the tenant's prefix and tenants that share a bucket cannot write over each other's exports. | none |
@@ -321,7 +321,7 @@ while the instance runs makes them answer `402` `payment_required`.
 | `400` | `invalid JSON body` | The body is not JSON. |
 | `400` | `format must be json, ndjson, yaml, csv, markdown, hugo, or template` | Missing or unknown format. |
 | `400` | `template is required for format=template` | Template format without a template. |
-| `400` | `filter.schemas names a schema this tenant does not define: <name>` | A schema name is wrong. |
+| `400` | `filter.schemas names a schema this tenant does not define: <name>` | A content type name is wrong. |
 | `400` | `S3 exports are not configured: ...` | `DATA_EXPORT_S3_ALLOWED_BUCKETS` is empty. |
 | `400` | `S3 bucket "<name>" is not in the allowed list` | The bucket is not allowed. |
 | `400` | `S3 region "<name>" is not in the allowed list` | The region is not allowed. |
