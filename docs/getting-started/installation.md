@@ -32,29 +32,34 @@ default superuser (`postgres` on PostgreSQL, `root` on MySQL, `sa` on SQL Server
 PostgreSQL, use `sslmode=require` unless the database is on a private network. A production
 engine logs a warning on every start when the connection can run without TLS.
 
-### MySQL needs two settings
+### What the engine sets on MySQL
 
 LyEve is tested on MySQL 8.0 and 8.4. MySQL 9 is not supported yet.
 
-Create the database with the `utf8mb4_unicode_ci` collation:
+The engine's tables need the `utf8mb4_unicode_ci` collation. MySQL gives a new database
+`utf8mb4_0900_ai_ci` when the statement names no collation, and so does the official
+container image. On its first start the engine switches the default collation of a database
+that holds none of its tables yet, so a stock server or container works as it is. The
+database user needs the `ALTER` privilege on the database for that. Without it the engine
+stops and names the statement to run. You can also create the database with the collation
+yourself:
 
 ```sql
 CREATE DATABASE lyeve CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-MySQL gives a new database `utf8mb4_0900_ai_ci` when the statement names no collation, and
-so does the official container image. Under that collation the engine stops on its first
-start with "Illegal mix of collations". To run MySQL in a container, start the server with
-`--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci` and it creates the
-database the right way.
+On a database that already holds the engine's tables, the engine never changes the
+collation, because that would leave its existing tables and its new ones on different
+collations. When the default differs, it starts and logs the warning "database default
+collation differs from the engine's tables", with the current collation and the one it
+wants. The fix the warning names is a database created with `utf8mb4_unicode_ci`.
 
-Then add `parseTime=true` to the URL:
+The engine also adds `parseTime=true` to a MySQL URL, and replaces `parseTime=false`, so
+the URL needs no options:
 
 ```
-mysql://lyeve:password@tcp(db:3306)/lyeve?parseTime=true
+mysql://lyeve:password@tcp(db:3306)/lyeve
 ```
-
-Without it the engine starts, but the first setup request fails.
 
 ### SQL Server needs one setting first
 
