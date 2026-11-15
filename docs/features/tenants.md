@@ -491,7 +491,7 @@ curl -X POST http://localhost:3001/api/admin/cost-monitor/aggregate \
 { "tenant_id": "default", "entries_saved": 2, "budget_events": 0, "anomalies": 0 }
 ```
 
-Then create the budget. `amount` is a string, and a number is refused:
+Then create the budget. `amount` is a decimal, sent as a string or a JSON number, and a number keeps the digits you sent:
 
 ```bash
 curl -X POST http://localhost:3001/api/admin/cost-monitor/budgets \
@@ -643,7 +643,7 @@ Every route above except the last needs the `super_admin` role.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET`, `POST` | `/api/admin/cost-monitor/entries` | List entries (`resource_type`, `from`, `to` in RFC 3339, paginated) or add one. |
+| `GET`, `POST` | `/api/admin/cost-monitor/entries` | List entries (`resource_type`, `from`, `to` in RFC 3339, paginated) or add one. A new entry needs `resource_type`, `amount`, `period_start` and `period_end`, and a missing one is a `400` that names it. |
 | `GET`, `DELETE` | `/api/admin/cost-monitor/entries/{id}` | One entry. |
 | `GET` | `/api/admin/cost-monitor/summary` | Spend over `from` and `to`. |
 | `GET`, `POST` | `/api/admin/cost-monitor/budgets` | List or create budgets. |
