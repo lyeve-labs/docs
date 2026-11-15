@@ -461,8 +461,8 @@ The two you meet most:
 | `409` | A message that starts `a rename of this schema` and says it has not finished | A save, rename or delete of a name an unfinished rename holds. Run the rename again, or abandon it. |
 | `409` | `the rename cannot be abandoned: a schema of another tenant holds its old name` | Another tenant created a content type under the old name. |
 | `409` | `another schema shares this table and defines it differently: ...` | Another tenant's content type of the same name stores the field as another type, or with a name that differs only in case. |
-| `412` | `a schema of this name already exists, and this write was sent to create one only`, code `SCHEMA_EXISTS` | `POST` with `If-None-Match: *` names a content type that exists. |
-| `412` | `the schema changed since the version this write was sent with: read it again and make the change on what it holds now`, code `SCHEMA_VERSION_MISMATCH` | `POST` or a field rename with `If-Match` names a version the content type is no longer at. |
+| `412` | `a content type of this name already exists, and this write was sent to create one only`, code `SCHEMA_EXISTS` | `POST` with `If-None-Match: *` names a content type that exists. |
+| `412` | `the content type changed since the version this write was sent with: read it again and make the change on what it holds now`, code `SCHEMA_VERSION_MISMATCH` | `POST` or a field rename with `If-Match` names a version the content type is no longer at. |
 | `413` | `layout too large` | The canvas layout is over 256 KiB. |
 | `422` | `invalid schema: ...` | `POST` with an invalid name, field or option. |
 | `422` | `schema migration failed` | The database refused the change, such as stored values that do not convert to a new field type. Nothing changes. |
