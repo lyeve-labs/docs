@@ -136,9 +136,9 @@ Every request goes through the same steps, in order:
    tenant a `super_admin` named.
 4. **The credential's own limits.** An API key needs the scope the route
    needs. An admin token needs the grant the route declares.
-5. **The access rule.** On content, flows and reviews, the caller's roles need
-   a rule that allows the action. An API key is judged by the roles it
-   carries, so a key with no role reads no content.
+5. **The access rule.** On the Content API, and on flows and reviews, the
+   caller's roles need a rule that allows the action. An API key is judged by
+   the roles it carries, so a key with no role reads no content.
 
 `401` means "I do not know who you are": fix the credential. `403` means "I
 know who you are, and you may not do this": fix the role, the rule, the scope
