@@ -10,7 +10,9 @@ sidebar:
 An access rule says what one role may do with one resource. It names the role,
 the resource, the actions allowed, and the fields removed from what that role
 reads. Rules apply to people who sign in, in LyEve Console or with a
-session token, and to API keys through the roles each key carries.
+session token, and to API keys through the roles each key carries. The
+exception is an admin in the console's content screens, as
+[the fixed answers](#how-rules-combine) say.
 
 :::tip[Best for]
 - **Editors who must not delete.** Give `editor` `read` and `update` on
@@ -91,15 +93,20 @@ moves an entry through a review. On a content type it is refused with `422`.
   masks apply. A user holding two roles has every field hidden that either
   role hides.
 
-Three answers are fixed:
+Four answers are fixed:
 
 - A super admin is allowed everything and reads every field.
 - An admin is allowed every flow and review until a rule names `admin` on that
   resource. From then on the rule decides.
-- Any other role with no rule is refused.
+- In the console's content screens, an admin reads and writes every content
+  type, and no rule or field mask limits an admin there. A rule that names
+  `admin` on a content type, and its field mask, apply on the Content API.
+- Any other role with no rule is refused. Only admins and super admins open
+  the console's content screens, so the rules bind every other role
+  everywhere.
 
-A fresh install has no rules, so only super admins read or write content until
-you write some.
+A fresh install has no rules, so on the Content API only super admins read or
+write content until you write some.
 
 ## Try it
 
