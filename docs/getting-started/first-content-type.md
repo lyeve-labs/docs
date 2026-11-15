@@ -209,11 +209,10 @@ curl -X POST http://localhost:8080/api/admin/schemas \
 
 The answer is `200` with `"with_draft_publish": true`.
 
-:::caution
-Reload the schema builder before you save Post in it again. A schema builder that had Post open
-before this call still holds the definition without drafts, and saving from it turns drafts
-off and drops every post's status. Its **Preview DDL** shows that as a step that drops the
-status column. After a reload, a save keeps drafts on.
+:::note
+A schema builder that had Post open before this call still holds the definition without drafts.
+A save from it is refused with `Someone changed this schema after you opened it`, and Post
+keeps its drafts. Choose **Reload** beside that message, then make your change again.
 :::
 
 ## 6. Write an author and a post
