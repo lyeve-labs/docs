@@ -78,16 +78,17 @@ curl "http://localhost:3001/api/admin/usage/tenants?period=2026-10" \
 ```
 
 ```json
-[{ "tenant_id": "default", "billing_period": "2026-10", "api_calls": 0, "storage_bytes": 0, "bandwidth_bytes": 0, "content_count": 1, "media_count": 0 }]
+[{ "tenant_id": "default", "billing_period": "2026-10", "api_calls": 0, "storage_bytes": 0, "bandwidth_bytes": 0, "content_count": 1, "media_count": 0, "requests_used": 12 }]
 ```
 
-A tenant is listed once it holds an API key, an entry or a media file, so a new install with
-none answers `[]`.
+Every tenant is listed, with zeros for a tenant that has used nothing, so a new install lists
+its `default` tenant.
 
 </div>
 </div>
 
-`api_calls` and `bandwidth_bytes` count requests made with API keys.
+`api_calls` and `bandwidth_bytes` count requests made with API keys. `requests_used` counts every request the quota counted this month, signed-in
+ones included, and the request limit is enforced against it.
 
 **2. Write this month's snapshot for every active tenant.** This is API only on v0.25.0.
 
