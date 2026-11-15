@@ -132,10 +132,9 @@ The last call answers `201` with the shipment, its `order_id` set to the order.
 ## 3. Create the account that publishes the flow
 
 The flow's content nodes read as the account that publishes it, and a test
-run reads as the account that runs it. The first administrator belongs to no
-tenant, so a flow it publishes stops at its first content node with
-`the flow's publisher is not an active account in this tenant`. Create an
-admin of the tenant for the flow, and let the `admin` role read the three
+run reads as the account that runs it. The first administrator is a super
+admin, and no access rule limits a super admin. To hold the flow to the rules,
+create an admin of the tenant for the flow, and let the `admin` role read the three
 content types. A free install holds three accounts with an admin role, the
 first administrator included.
 

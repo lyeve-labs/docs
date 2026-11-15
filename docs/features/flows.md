@@ -378,10 +378,13 @@ page. A rule names either `flows`, which covers every flow in the tenant, or
 Content nodes read and write as the account that published the flow, and a test
 run as the account that runs it, so that account's access rules apply to every
 content type the flow touches. The first administrator, the one setup creates,
-belongs to no tenant. A flow it publishes or tests stops at its first content
-node with `the flow's publisher is not an active account in this tenant`.
-Publish and test those flows as an admin of the tenant who may read the content
-types involved. [Build a custom API with flows](../how-to/build-a-custom-api-with-flows.md#3-create-the-account-that-publishes-the-flow)
+belongs to no tenant. A flow it publishes or tests acts as that super admin in
+the tenant the flow runs in, for as long as the account is an active super
+admin. Any other publisher that is not an active account in the run's tenant
+stops the flow at its first content node with
+`the flow's publisher is not an active account in this tenant`. No access rule
+limits a super admin, so to hold a flow to the rules, publish it as an admin of
+the tenant who may read the content types involved. [Build a custom API with flows](../how-to/build-a-custom-api-with-flows.md#3-create-the-account-that-publishes-the-flow)
 sets one up.
 
 Datasources and variables can hold credentials, so only the `admin` and
