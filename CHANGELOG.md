@@ -4,6 +4,33 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.12.2] - 2026-11-15
+
+### Changed
+
+- Pages that mean one content type say content type rather than schema, and the API keys section is now Hold a key to one content type or one endpoint.
+
+### Fixed
+
+- The SCIM page shows how to link a connection to a SAML provider in the console, whose New connection form has a SAML provider field.
+- The SAML page describes the console's Start from picker with the Okta, Azure AD and OneLogin templates.
+- The settings guide lists every setting with its default, and says a value saved for a setting read at start applies at the next restart. It names the settings the console cannot save.
+- The email page names the Implicit TLS switch, which starts off, and its screenshot shows the current form.
+- The data protection and PII masking pages name legal holds and the content activity log among the answers a super admin reads in full.
+- The data export page says an export stored in S3 downloads through the instance.
+- The media page lists the 409, 422 and 503 answers an upload can get from storage.
+- The migration guide gives the 400 for a missing content type, the 64 MiB limit of a SQL dump import and the default field mapping.
+- The schema page explains the If-None-Match and If-Match headers and their 412 answers, and the getting started note says a stale schema save is refused.
+- The tenants page accepts a budget amount sent as a JSON number and names the fields a new cost entry needs.
+- The usage page lists every tenant and shows the requests_used count.
+- The migration and usage pages name console 0.28.0 where a task is API only.
+- The firewall page says a PUT changes only the settings it sends, and what max_violation_body_length keeps.
+- The gRPC page names the proto files by their paths and describes their Struct fields.
+- The flows pages say a flow the setup account publishes runs past its content nodes.
+- The access rules, API keys, request limits, data export, editorial review and webhooks pages, and the guides that use those screens, quote the console's content type labels, such as Every content type, Chosen content types and Target content type.
+- The OAuth sign-in page says a new provider starts disabled, in the console and when made from a template with the API.
+- The installation and deploy guides say what the engine sets on MySQL itself: the utf8mb4_unicode_ci collation on a new database, and parseTime=true in the URL.
+
 ## [0.12.1] - 2026-11-11
 
 ### Changed
