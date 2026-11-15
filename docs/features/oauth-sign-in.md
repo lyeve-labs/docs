@@ -42,8 +42,8 @@ each provider with its issuer, scopes and roles, and whether it is enabled.
 1. Choose **New provider**.
 2. Fill in **Provider name**, **Issuer URL**, **Client ID** and **Client
    secret**. **Scopes**, **Roles claim** and **Default roles** are optional.
-3. **Enabled** is on when the form opens, which offers the provider on the
-   login page. Choose **Create**.
+3. **Enabled** is off when the form opens. Turn it on to offer the provider on
+   the login page, then choose **Create**.
 
 The pencil on a row edits a provider. Leave **New client secret** blank to keep
 the stored one. Templates and the backup provider are set over the API below.
@@ -103,7 +103,7 @@ address. Sign in as a super admin.
    **Issuer URL**, and your client's **Client ID** and **Client secret**.
    Leave **Scopes**, **Roles claim** and **Default roles** empty, which saves
    `openid email profile`, `roles` and `editor`.
-3. Leave **Enabled** on and choose **Create**. The row shows the provider as
+3. Turn **Enabled** on and choose **Create**. The row shows the provider as
    enabled.
 
 </div>
@@ -143,7 +143,7 @@ You need a super admin token in `TOKEN`. The
    curl -X POST http://localhost:3001/api/admin/oauth-templates/apply \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"key": "google", "overrides": {"client_id": "1234.apps.googleusercontent.com", "client_secret": "GOCSPX-..."}}'
+     -d '{"key": "google", "overrides": {"client_id": "1234.apps.googleusercontent.com", "client_secret": "GOCSPX-...", "enabled": true}}'
    ```
 
    ```json
@@ -168,8 +168,8 @@ You need a super admin token in `TOKEN`. The
    }
    ```
 
-   The answer is `201`. A provider made from a template is enabled unless
-   `overrides` holds `"enabled": false`.
+   The answer is `201`. A provider made from a template is disabled unless
+   `overrides` holds `"enabled": true`.
 
 </div>
 </div>

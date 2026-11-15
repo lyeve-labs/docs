@@ -188,7 +188,7 @@ Use the address the instance reaches your receiver at, and the same secret.
 2. Enter `My receiver` in **Name** and the receiver's address in **URL**.
    Enter the value of `WEBHOOK_SECRET` in **Signing secret**.
 3. Under **Events**, tick `after_create`, `after_update` and `after_delete`.
-4. In **Schemas**, which reads **Every schema**, pick `post`.
+4. In **Content types**, which reads **Every content type**, pick `post`.
 5. Choose **Create**.
 
 </div>

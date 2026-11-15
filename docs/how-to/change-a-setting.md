@@ -51,15 +51,15 @@ curl http://localhost:8080/api/admin/config \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-Each entry under `settings` carries the `key`, its `value`, its `source` (`env`, `file` or
-`admin`) and whether it is `editable` in the console. A secret carries no value. `counts` says
+Each entry under `settings` carries the `key`, its `value`, its `source` (`env`, `file`,
+`admin`, or `default` when no place sets it) and whether it is `editable` in the console. A secret carries no value. `counts` says
 how many come from each place.
 
 </div>
 </div>
 
-Both list the settings one of the three places sets. A setting that only has its default is
-not listed.
+Both list every setting the engine reads. A setting no place sets is listed with its default
+and the source `default`.
 
 The console has a few settings of its own, which only the console container reads: `ORIGIN`,
 `CORE_INTERNAL_URL`, `CORE_API_INTERNAL_URL`, `PORT`, `LYEVE_CONSOLE_KEY`, `ADDRESS_HEADER`,
@@ -122,15 +122,21 @@ file sets them. A setting the feature reads each time it uses it applies at once
 reads only at start applies at the next restart.
 [Where settings come from](../reference/configuration.md#where-settings-come-from) names the
 three that always wait for a restart. The engine's own settings, such as `JWT_EXPIRY_SECS`, are
-read from the environment or the file when the engine starts, so change those there.
+read when the engine starts, so a value saved for one applies at the next restart. The settings
+the engine needs before it can read the console layer, such as the database, the encryption
+key, the listeners and the license, take their value from the environment or the file only.
+A few more are reserved to whoever runs the engine, such as the key management settings, the
+storage bucket and the private networks a webhook may reach. The console cannot save those, and
+the list marks them as not `editable`.
 
 <div class="paths">
 <div data-path="console">
 
 - A feature's settings page, such as **Settings > Email** or **Settings > Storage**, saves that
   feature's settings and credentials. A credential is encrypted and never shown again.
-- **Settings > Configuration** edits a value already saved in the console layer: change it in
-  its row and choose **Save**.
+- **Settings > Configuration** edits any setting the list marks `editable`, whether or not it
+  holds a saved value: change it in its row and choose **Save**. A setting the engine
+  reads at start says **Saved. It applies when the engine next restarts.**
 - **Settings > License** activates a license. The paid parts of features that are running apply
   at once, and a paid feature that was not running starts at the next restart.
 
@@ -155,10 +161,6 @@ refused the answer is `409`. A license goes to `POST /api/admin/license/renew`, 
 
 </div>
 </div>
-
-On console v0.25.0, **Settings > Configuration** lists only the settings one of the three places
-sets, so it cannot save a setting for the first time. Save that one with the API, or on its
-feature's own settings page.
 
 To let the console take over a setting the environment sets, name it in `LYEVE_OVERRIDABLE` on
 the engine. The environment value then stays in force until someone saves another one.

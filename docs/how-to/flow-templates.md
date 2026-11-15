@@ -374,7 +374,7 @@ change the `status` field of the notify step to `{{ trigger.data._status }}`. Se
 
 Record values are written literally, so they cannot add formatting or mention a
 group. To post to two services, copy the flow and set `channel` and
-`datasource` on the copy's node. Set the trigger's schema to `*` to post every
+`datasource` on the copy's node. Set the trigger's `schema` to `*` to post every
 content type.
 
 ### `cost-ledger`

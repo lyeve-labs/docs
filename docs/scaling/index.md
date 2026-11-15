@@ -86,7 +86,7 @@ token you present.
 Each replica applies pending migrations when it boots, under a database lock,
 so replicas that start together apply each migration once. A schema change can
 be saved on any replica. A save that meets another replica's change to the
-same schema answers `503` with `Retry-After: 1`, and succeeds when retried.
+same content type answers `503` with `Retry-After: 1`, and succeeds when retried.
 
 ### Name and see the replicas
 

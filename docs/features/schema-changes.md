@@ -221,11 +221,21 @@ possible. The name in the path wins over a name in the body.
 ## Save a change
 
 `POST /api/admin/schemas` creates a content type or updates the one with the same name. It
-takes `admin` or `super_admin`.
+takes `admin` or `super_admin`. Without a condition it replaces a content type of that name,
+so send one of two headers to make it refuse instead:
+
+- `If-None-Match: *` creates only. A name that already has a content type answers `412` with
+  the code `SCHEMA_EXISTS`.
+- `If-Match: "<version>"` updates only the definition at that version. Every read answers its
+  `version`, and `GET /api/admin/schemas/{name}` also sends it as `ETag`. A content type saved
+  since that read, or one that does not exist, answers `412` with the code
+  `SCHEMA_VERSION_MISMATCH`. `If-Match: *` matches any version of a content type that exists.
+
+A refused save changes nothing. The Schema builder sends one of the two on every save.
 
 `PUT /api/admin/schemas/{name}` replaces the definition of a content type that exists and
-answers `404` for one that does not. It takes `super_admin`. A definition it refuses answers
-`400` with the reason, where `POST` answers `422`.
+answers `404` for one that does not. It takes `super_admin` and ignores both headers. A
+definition it refuses answers `400` with the reason, where `POST` answers `422`.
 
 Both answer `200` with the stored definition, and every save is recorded in the
 [audit log](audit-log.md).
@@ -451,6 +461,8 @@ The two you meet most:
 | `409` | A message that starts `a rename of this schema` and says it has not finished | A save, rename or delete of a name an unfinished rename holds. Run the rename again, or abandon it. |
 | `409` | `the rename cannot be abandoned: a schema of another tenant holds its old name` | Another tenant created a content type under the old name. |
 | `409` | `another schema shares this table and defines it differently: ...` | Another tenant's content type of the same name stores the field as another type, or with a name that differs only in case. |
+| `412` | `a content type of this name already exists, and this write was sent to create one only`, code `SCHEMA_EXISTS` | `POST` with `If-None-Match: *` names a content type that exists. |
+| `412` | `the content type changed since the version this write was sent with: read it again and make the change on what it holds now`, code `SCHEMA_VERSION_MISMATCH` | `POST` or a field rename with `If-Match` names a version the content type is no longer at. |
 | `413` | `layout too large` | The canvas layout is over 256 KiB. |
 | `422` | `invalid schema: ...` | `POST` with an invalid name, field or option. |
 | `422` | `schema migration failed` | The database refused the change, such as stored values that do not convert to a new field type. Nothing changes. |

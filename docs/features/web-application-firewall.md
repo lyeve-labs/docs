@@ -232,14 +232,14 @@ curl -X PUT http://localhost:3001/api/admin/waf/config \
   -d '{"anomaly_threshold": 8, "max_inspect_body_bytes": 131072, "max_violation_body_length": 500}'
 ```
 
-A `PUT` replaces all three settings, so send each one. A setting left out is
-saved as `0`, which leaves `max_violation_body_length` at `0`.
+A `PUT` changes only the settings it sends. A setting left out keeps its
+saved value, or its default when none is saved.
 
 | Setting | What it does | Default |
 |---|---|---|
 | `anomaly_threshold` | A request whose score is above this is blocked. `0` becomes `5`, and a negative value is refused. | `5` |
 | `max_inspect_body_bytes` | How much of a body is inspected. `0` takes the default, `-1` inspects whole bodies. | `131072` |
-| `max_violation_body_length` | Stored and returned. A logged value is cut to 200 characters whatever it says. | `500` |
+| `max_violation_body_length` | How many bytes of a matched value a logged violation keeps, cut between characters. `0` keeps none. A match is already cut to 200 bytes and marked with `...`, so a higher setting keeps no more. | `500` |
 
 Inspecting whole bodies costs CPU on requests that need no credential. Raise
 the limit with care.

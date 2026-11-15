@@ -61,13 +61,14 @@ here joins the pool at once. **Fallback transport**, below the pool, holds the
 engine reads those at boot, so a change saved there takes effect at the next
 restart.
 
-The **TLS** switch on an SMTP provider is on by default and turns on implicit
-TLS, usually on port 465, although its hint reads "STARTTLS on the
-connection". Turn it off for a relay that starts in plain text, such as one on
-port 587 or a local mail catcher. With it on, sending to such a relay fails
-with `TLS handshake: first record does not look like a TLS handshake`.
+The **Implicit TLS** switch on an SMTP provider starts off. Turn it on for a
+server that expects TLS from the first byte, usually on port 465. Leave it off
+for a relay that starts in plain text, such as one on port 587 or a local mail
+catcher. Off, the connection upgrades with STARTTLS when the server offers it.
+With it on, sending to such a relay fails with
+`TLS handshake: first record does not look like a TLS handshake`.
 
-![The New provider form with the SMTP transport, the from address noreply@example.com, the host smtp.example.com on port 587, a username, a hidden password and TLS turned off.](images/email.png)
+![The New provider form with the SMTP transport, the from address noreply@example.com, the host smtp.example.com on port 587, a username, a hidden password and the Implicit TLS switch turned off.](images/email.png)
 
 **Templates**, at the top of the page, opens **Email templates**: every
 template with its subject and status, and how many of the tenant's templates

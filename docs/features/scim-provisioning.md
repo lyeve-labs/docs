@@ -41,11 +41,10 @@ directory, `/api/v1/scim/v2`, with **Copy base path**, and each connection
 with what happens to an account the directory removes. The refresh button on a
 connection replaces its token, and the trash button removes the connection.
 
-A connection is linked to a [SAML provider](saml-sso.md) only when it is
-created over the API with `saml_provider_id`, as
-[Link a connection to SAML](#link-a-connection-to-saml) shows. The console
-form has no field for it on this release, and no route changes a connection
-later, so a connection made in the console stays unlinked.
+A connection is linked to a [SAML provider](saml-sso.md) when it is created,
+as [Link a connection to SAML](#link-a-connection-to-saml) shows. No route
+changes the link later, so to change it, create a new connection and remove
+the old one.
 
 ![Access > SCIM provisioning with the base path and two connections, one that disables removed accounts and one that deletes them.](images/scim-provisioning.png)
 
@@ -233,10 +232,22 @@ creates their LyEve account.
 
 ## Link a connection to SAML
 
-Only the API sets the link on this release, and only when it creates the
-connection. To link a connection you made in the console, remove it and
-create it again this way. You need a super admin token in `TOKEN` and the
-directory's token in `SCIM_TOKEN`.
+The link is set only when the connection is created. To link a connection
+that exists, create a new one with the link and remove the old one.
+
+<div class="paths">
+<div data-path="console">
+
+On **Access > SCIM provisioning**, choose **New connection**. Fill in
+**Name** and **Bearer token**, choose the provider under **SAML provider**
+and choose **Create**. The field shows only while SAML SSO is turned on. The
+page says **Created azure-ad**.
+
+</div>
+<div data-path="api">
+
+You need a super admin token in `TOKEN` and the directory's token in
+`SCIM_TOKEN`.
 
 1. Find the SAML provider's id and copy it into `SAML_ID`. Here the provider
    is named `okta`:
@@ -256,9 +267,13 @@ directory's token in `SCIM_TOKEN`.
      -d '{"name": "azure-ad", "bearer_token": "'"$SCIM_TOKEN"'", "saml_provider_id": "'"$SAML_ID"'"}'
    ```
 
-The answer is `201`, and `provider.saml_provider_id` holds the id. A user the
-directory then creates has no LyEve account until they first sign in through
-that provider. That sign-in creates the account with `editor`.
+The answer is `201`, and `provider.saml_provider_id` holds the id.
+
+</div>
+</div>
+
+A user the directory then creates has no LyEve account until they first sign
+in through that provider. That sign-in creates the account with `editor`.
 
 ## Rotate the token
 
