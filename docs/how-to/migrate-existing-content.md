@@ -197,7 +197,8 @@ works on their own tenant. Naming another tenant in `tenant_id` takes `super_adm
 routes are API only on v0.25.0.
 
 The content types have to exist in the target tenant first. The import maps records onto
-them and never creates one, and a missing type answers `404` with `import failed`.
+them and never creates one. A missing type answers `400` with
+`target tenant has no content type "<name>"`, which names every type the target lacks.
 
 1. Export one content type as JSON Lines:
 
@@ -246,11 +247,13 @@ The import body is limited to 1 MiB, so split a large tenant by content type.
 
 `POST /api/admin/migrate/sqldump/export` writes a portable dump instead, the same whatever
 database wrote it, and `"include_ddl": true` adds each table's definition to it.
-`POST /api/admin/migrate/sqldump/import` loads it on PostgreSQL, MySQL or SQL Server, with
-the same rules as the JSON Lines import: the content types must already exist in the target
-tenant, because the definitions in the dump are not applied, and every content type needs an
-entry in `field_mapping` or its records are skipped. Its `data` holds at most 65,535
-characters, so the dump suits a small tenant.
+`POST /api/admin/migrate/sqldump/import` loads it on PostgreSQL, MySQL or SQL Server. The
+content types must already exist in the target tenant, because the definitions in the dump are
+not applied. With no `field_mapping`, each record goes to the content type of the same name.
+Once `field_mapping` names a content type, the records of every type it leaves out are
+skipped. The import and `POST /api/admin/migrate/sqldump/validate` take a dump of up to
+64 MiB from a signed-in session. An admin token cannot call them. Move a larger tenant with
+the licensed [backup import](backup-and-restore.md).
 
 ## Move the whole database
 
