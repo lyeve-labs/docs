@@ -48,8 +48,11 @@ are expired or close to expiry.
   certificate waits under **Waiting to be promoted**. Once the provider has
   it, choose **Promote**.
 
-The templates for Okta, Azure AD and OneLogin are served by the API. The
-console has no template picker on this release.
+- In **New provider**, **Start from** offers the templates for Okta, Azure AD
+  and OneLogin. Choosing one fills the **NameID format**, **Attribute
+  mapping** and **Expect encrypted assertions** that provider usually takes,
+  and its hint under **Their signing certificate** says where the provider
+  shows its certificate.
 
 ![Access > SAML SSO with two providers and their certificate expiry dates, and a new certificate for azure-ad waiting to be promoted.](images/saml-sso.png)
 
@@ -102,9 +105,9 @@ See [tenants](tenants.md).
 
 ## Try it
 
-Sign in as a super admin. Read the settings a template holds, which only the
-API serves on this release. If you work in the console, sign in over the API
-to get a token, as
+Sign in as a super admin. Read the settings a template holds over the API.
+**Start from** in the console fills the same settings into **New provider**.
+If you work in the console, sign in over the API to get a token, as
 [Turn on drafts and publishing](../getting-started/first-content-type.md#5-turn-on-drafts-and-publishing)
 shows, and keep it in `TOKEN`.
 
