@@ -20,7 +20,7 @@ The engine stores everything in one database:
 
 | Database | `DATABASE_URL` starts with |
 |---|---|
-| PostgreSQL | `postgres://` |
+| PostgreSQL 15 to 18 | `postgres://` |
 | MySQL 8.0 or 8.4 | `mysql://` |
 | SQL Server and Azure SQL | `sqlserver://` |
 
