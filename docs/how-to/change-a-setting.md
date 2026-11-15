@@ -125,14 +125,17 @@ three that always wait for a restart. The engine's own settings, such as `JWT_EX
 read when the engine starts, so a value saved for one applies at the next restart. The settings
 the engine needs before it can read the console layer, such as the database, the encryption
 key, the listeners and the license, take their value from the environment or the file only.
+A few more are reserved to whoever runs the engine, such as the key management settings, the
+storage bucket and the private networks a webhook may reach. The console cannot save those, and
+the list marks them as not `editable`.
 
 <div class="paths">
 <div data-path="console">
 
 - A feature's settings page, such as **Settings > Email** or **Settings > Storage**, saves that
   feature's settings and credentials. A credential is encrypted and never shown again.
-- **Settings > Configuration** edits any setting no environment variable or file sets, whether
-  or not it holds a saved value: change it in its row and choose **Save**. A setting the engine
+- **Settings > Configuration** edits any setting the list marks `editable`, whether or not it
+  holds a saved value: change it in its row and choose **Save**. A setting the engine
   reads at start says **Saved. It applies when the engine next restarts.**
 - **Settings > License** activates a license. The paid parts of features that are running apply
   at once, and a paid feature that was not running starts at the next restart.
