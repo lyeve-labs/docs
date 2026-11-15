@@ -175,15 +175,17 @@ The answer lists your content types as `schemas`, each with `name` and
 | `grpc.reflection.v1.ServerReflection` | | a token, and only outside production. On engine v0.58.0 it lists and describes each service. |
 
 A super admin may call every method. The services are defined in
-`schema.proto`, `content.proto` and `flow.proto`, package `lyeve.core.v1`.
+`lyeve/core/v1/schema.proto`, `lyeve/core/v1/content.proto` and
+`lyeve/core/v1/flow.proto`, package `lyeve.core.v1`.
 
 Messages travel as JSON, so you can call the services without generated message
 types: use the `json` content subtype, which sends
 `Content-Type: application/grpc+json`. In Go, pass
-`grpc.CallContentSubtype("json")`. The `.proto` files name some fields with a
-`_json` suffix (`definition_json`, `items_json`, `data_json`, `item_json`). On
-the wire the keys are `definition`, `items`, `data` and `item`, and their
-values are JSON objects rather than encoded strings.
+`grpc.CallContentSubtype("json")`. In the `.proto` files, `definition`,
+`items`, `item`, `data`, `filters`, `input` and `input_schema` are
+`google.protobuf.Struct` fields, and the `body` of a flow run is a
+`google.protobuf.Value`. On the wire each key is the field's own name, and its
+value is a JSON object, or any JSON value for `body`, never an encoded string.
 
 | Method | Request | Answer |
 |---|---|---|
