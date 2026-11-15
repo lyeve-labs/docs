@@ -8,7 +8,7 @@ sidebar:
 This guide is for whoever deploys LyEve and keeps it running, from a trial on a laptop to a
 production install with paying tenants. LyEve ships as two container images, the engine
 (`ghcr.io/lyeve-labs/lyeve-core`) and LyEve Console (`ghcr.io/lyeve-labs/lyeve-console`),
-on PostgreSQL, MySQL 8.0 or 8.4, or SQL Server. The pages below hold the detail.
+on PostgreSQL 15 to 18, MySQL 8.0 or 8.4, or SQL Server. The pages below hold the detail.
 
 In the console, **Settings** groups every settings screen by what you came to change:
 

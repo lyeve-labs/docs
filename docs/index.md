@@ -22,7 +22,7 @@ features, and the same images serve both.
 The engine has no screens of its own. It answers two HTTP APIs: the Admin API manages the
 instance, and the Content API reads and writes content. The console calls the Admin API for
 you, so everything it does is also open to a script. The database is yours to provide:
-PostgreSQL, MySQL 8.0 or 8.4, or SQL Server and Azure SQL, on your own server or a managed
+PostgreSQL 15 to 18, MySQL 8.0 or 8.4, or SQL Server and Azure SQL, on your own server or a managed
 service. [Core concepts](concepts/index.md#the-two-apis) explains the two APIs, and
 [Source code](trust/source-code.md) says what is published and under which license.
 

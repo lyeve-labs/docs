@@ -17,7 +17,7 @@ LyEve runs on Kubernetes as two Deployments, one per image:
 - **A cluster you already run**, with its secret store and certificate manager.
 :::
 
-The database is external. Point `DATABASE_URL` at PostgreSQL, MySQL 8.0 or 8.4, or SQL
+The database is external. Point `DATABASE_URL` at PostgreSQL 15 to 18, MySQL 8.0 or 8.4, or SQL
 Server, managed or running in the cluster. The manifests below also expect a Redis and an
 S3-compatible bucket, because more than one engine replica needs both. To run one replica with neither, see
 [One replica](#one-replica).
