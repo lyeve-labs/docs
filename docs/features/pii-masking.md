@@ -71,9 +71,9 @@ its job: `/api/admin/auth`, `/api/admin/users`, `/api/admin/invitations`,
 `/api/admin/gdpr`, `/api/admin/api-keys` and `/api/admin/admin-tokens`. Reads on
 those paths are still recorded in the access log.
 
-A super admin reads four more answers in full: the audit log, the
-[content activity log](content-history.md#activity-log), the compliance export
-of a legal hold and a tenant's member list. Each of those reads is recorded in
+A super admin reads five more answers in full: the audit log, the
+[content activity log](content-history.md#activity-log), legal holds, the
+compliance export of a legal hold and a tenant's member list. Each of those reads is recorded in
 the access log, and everyone else gets them masked.
 
 Admin API answers that hold configuration or text the product ships are sent

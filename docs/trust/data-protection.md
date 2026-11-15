@@ -474,8 +474,9 @@ curl -X POST http://localhost:3001/api/admin/legal-holds \
   -d '{"name": "Supplier dispute", "description": "Keep what touches this customer", "filter_resource_id": "person@example.com"}'
 ```
 
-The answer is `201` with the hold. With [masking](#masking) on, it shows the address as
-`[redacted-email]`, and so does the list. Copy its `id` into `HOLD_ID`. Release it with
+The answer is `201` with the hold. With [masking](#masking) on, a super admin reads the
+address in full, in this answer and in the list. A tenant admin reads the list with
+`[redacted-email]` in its place. Copy its `id` into `HOLD_ID`. Release it with
 `DELETE /api/admin/legal-holds/$HOLD_ID`, which answers `204`.
 
 </div>
@@ -645,8 +646,8 @@ On the Admin API these paths are never masked, because the personal data is the
 record being administered there: `/api/admin/gdpr`, `/api/admin/auth`,
 `/api/admin/users`, `/api/admin/invitations`, `/api/admin/admin-tokens` and
 `/api/admin/api-keys`. Reads there are still recorded. A super admin also reads
-the audit log, the compliance export of a legal hold and a tenant's member list
-in full, and each of those reads is recorded. Everyone else gets them masked.
+the audit log, the content activity log, legal holds, the compliance export of a
+legal hold and a tenant's member list in full, and each of those reads is recorded. Everyone else gets them masked.
 Answers that hold only configuration or text the product ships are sent as
 written and not recorded, as [PII masking](../features/pii-masking.md#how-it-works)
 lists. The access log records `viewer_user_id`,
@@ -729,7 +730,7 @@ Its controls include `pii-mask` and `data-residency`. In the console,
 
 - **SOC 2.** LyEve has no SOC 2 report.
 - **Unmasked access by role.** No setting lets a role read past the masking.
-  Only a super admin does, on the audit log, a legal hold's compliance export
-  and a tenant's member list.
+  Only a super admin does, on the audit log, the content activity log, legal
+  holds, a legal hold's compliance export and a tenant's member list.
 - **Client geolocation.** Residency governs where a tenant's writes land, not
   where a request comes from.

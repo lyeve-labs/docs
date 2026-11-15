@@ -371,12 +371,15 @@ The ones you meet most:
 | `400` | `not an image` on reprocess |
 | `404` | `not found`, or `media not found` on reprocess and thumbnails |
 | `413` | `Request body exceeds the <n> byte limit.` |
+| `409` | `no storage provider can accept this upload for this tenant` when no storage your operator configured can take a write for the tenant, such as a tenant pinned to a region no provider serves |
 | `416` | `invalid range: failed to overlap`, as plain text, for a byte range outside the file |
 | `422` | `file too large: <size> bytes (max <limit>)` |
 | `422` | `declared content type "<type>" does not match detected type "<type>"`, `SVG uploads are not allowed`, `virus detected: <name>` |
 | `422` | `folder path contains disallowed character: '<c>'` on an upload |
 | `422` | On import: `url is required`, `url must be an absolute http or https address`, `url must not carry a user name or password`, `that address is private or not allowed`, `the file is larger than <n> bytes` |
+| `422` | `storage refused this file, so check its folder, name and size` when the object store refuses the file's key or size on an upload or import. A retry fails the same way. |
 | `502` | `the file could not be fetched from that address` |
+| `503` | `storage did not accept the file` when storage is down or refuses the write for a reason it does not name |
 | `503` | `upload failed`, `import failed` |
 
 </details>
