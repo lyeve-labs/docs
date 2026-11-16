@@ -48,7 +48,7 @@ The engine stores everything in one database. It reads the type from the scheme 
 | Database | `DATABASE_URL` form |
 |---|---|
 | PostgreSQL 15 to 18 | `postgres://user:pass@host:5432/lyeve?sslmode=require` (or `postgresql://`) |
-| MySQL 8.0 or 8.4 | `mysql://user:pass@tcp(host:3306)/lyeve`, with the host in `tcp(...)` |
+| MySQL 8.0.14 or later, or 8.4 | `mysql://user:pass@tcp(host:3306)/lyeve`, with the host in `tcp(...)` |
 | SQL Server 2019 or later, and Azure SQL | `sqlserver://user:pass@host:1433?database=lyeve` |
 
 On MySQL the engine gives a new database the `utf8mb4_unicode_ci` collation and adds

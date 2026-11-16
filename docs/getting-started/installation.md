@@ -21,7 +21,7 @@ The engine stores everything in one database:
 | Database | `DATABASE_URL` starts with |
 |---|---|
 | PostgreSQL 15 to 18 | `postgres://` |
-| MySQL 8.0 or 8.4 | `mysql://` |
+| MySQL 8.0.14 or later, or 8.4 | `mysql://` |
 | SQL Server and Azure SQL | `sqlserver://` |
 
 The engine picks the database from that scheme and creates its tables on first start. If you
@@ -34,7 +34,8 @@ engine logs a warning on every start when the connection can run without TLS.
 
 ### What the engine sets on MySQL
 
-LyEve is tested on MySQL 8.0 and 8.4. MySQL 9 is not supported yet.
+LyEve needs MySQL 8.0.14 or later and is tested on MySQL 8.0 and 8.4. MySQL 9 is not
+supported yet.
 
 The engine's tables need the `utf8mb4_unicode_ci` collation. MySQL gives a new database
 `utf8mb4_0900_ai_ci` when the statement names no collation, and so does the official
