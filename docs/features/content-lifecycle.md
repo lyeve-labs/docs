@@ -395,8 +395,6 @@ Schedules are API only. The console in v0.25.0 has no schedule control.
 `DELETE` on the same path clears the schedule.
 `GET /api/admin/content/{id}/preview?at=2027-11-02T00:00:00Z` answers the status the entry
 will have at that moment, as `effective_status`, with `will_publish` and `will_unpublish`.
-`POST /api/admin/content/{id}/schedule-conflicts` checks proposed times against other
-entries and answers `{"has_conflicts": true, "conflicts": [...]}`.
 `GET /api/admin/content/scheduled` lists every entry with a schedule.
 
 To queue one change on its own, `POST /api/admin/content/{id}/schedule` takes
@@ -493,7 +491,6 @@ Which content types keep revisions, and for how long, is set under
 | `POST` | `/api/admin/content/{id}/rollback` | Restore a revision: `to_revision`. | `content:write` |
 | `PUT`, `DELETE` | `/api/admin/content/{id}/entry-schedule` | Set or clear the publish and archive times. | `content:write` |
 | `GET` | `/api/admin/content/{id}/preview` | The status at a moment: `at`. | `content:read` |
-| `POST` | `/api/admin/content/{id}/schedule-conflicts` | Check proposed times against other entries. | `content:read` |
 | `GET` | `/api/admin/content/scheduled` | Entries with a schedule. | `content:read` |
 | `POST` | `/api/admin/content/{id}/schedule` | Queue one change of status. | `content:write` |
 | `GET` | `/api/admin/content/{id}/schedules` | Queued changes. | `content:read` |
@@ -537,7 +534,6 @@ The ones you meet most:
 | `404` | `failed to set entry schedule`, `failed to clear entry schedule`, for an entry that does not exist |
 | `409` | `slug is already taken by another entry of this content type`, or by another content type as above |
 | `422` | An `errors` list naming each field that breaks the content type's rules |
-| `422` | `scheduled_publish_at or scheduled_unpublish_at is required` on schedule-conflicts |
 
 The release and comment errors are on [Content releases](content-releases.md#errors) and
 [Editorial comments](editorial-comments.md#errors).
