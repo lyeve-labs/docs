@@ -93,27 +93,47 @@ definition is refused with the limit it reached. With the license, they take val
 
 > **Included free** on every install.
 
+The assignee has to be an account of the tenant, and the account made at setup is not one, so
+add a reviewer first. [Lesson 16](users-and-roles.md) covers accounts in full.
+
 <div class="paths">
 <div data-path="console">
 
-1. Unpublish **Portugal by train** from **Content > Trip**, so it is a draft again.
-2. In the review bar of the entry, pick **Trip review** in **Definition** and yourself in
-   **Assignee**, then choose **Start review**.
-3. Open **Reviews**. The **Review assignments** list shows the trip at the **Fact check**
+1. Open **Access > Users** and choose **New user**. Enter `reviewer@example.com` in **Email**
+   and a password in **Password**, tick **editor** and clear **viewer** under **Roles**, and
+   choose **Create**.
+2. Unpublish **Portugal by train** from **Content > Trip**, so it is a draft again.
+3. In the review bar of the entry, pick **Trip review** in **Definition** and
+   `reviewer@example.com` in **Assignee**, then choose **Start review**.
+4. Open **Reviews**. The **Review assignments** list shows the trip at the **Fact check**
    stage, with its assignee and when it is due.
-4. Back on the trip, write a **Comment** and choose **Approve**. The last approval publishes the
+5. Back on the trip, write a **Comment** and choose **Approve**. The last approval publishes the
    trip. **Request changes** and **Reject** send it back instead.
 
 </div>
 <div data-path="api">
 
-Your user id is the `id` that `GET /api/admin/auth/me` answers.
+Add the reviewer and keep its `id`:
 
 ```bash
+curl -X POST http://localhost:3001/api/admin/users \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "reviewer@example.com", "password": "Reviewer-Account-2026", "roles": ["editor"]}'
+
+export REVIEWER_ID="<the id from the answer>"
+```
+
+Unpublish the trip, then start the review with the reviewer as assignee:
+
+```bash
+curl -X PUT http://localhost:3002/api/v1/content/trip/$TRIP_ID/unpublish \
+  -H "Authorization: Bearer $TOKEN"
+
 curl -X POST http://localhost:3001/api/admin/review/assignments \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{\"entry_id\": \"$TRIP_ID\", \"definition_id\": \"$DEF\", \"assignee_id\": \"<your user id>\"}"
+  -d "{\"entry_id\": \"$TRIP_ID\", \"definition_id\": \"$DEF\", \"assignee_id\": \"$REVIEWER_ID\"}"
 ```
 
 Keep the assignment's `id` from the answer, then approve it:
@@ -125,7 +145,7 @@ curl -X POST http://localhost:3001/api/admin/review/assignments/<assignment id>/
   -d '{"action": "approve", "comment": "Dates checked."}'
 ```
 
-`GET /api/admin/review/assignments` lists every assignment.
+The approval publishes the trip. `GET /api/admin/review/assignments` lists every assignment.
 
 </div>
 </div>
