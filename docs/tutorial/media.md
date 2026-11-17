@@ -59,7 +59,7 @@ export MEDIA_ID="<the id from the answer>"
 </div>
 </div>
 
-![Upload files is chosen, a photo is picked, and it appears in the media library grid.](./media/media-upload.webm)
+![Upload files is chosen, a photo is picked, and it appears in the media library grid.](./media/media-upload.mp4)
 
 ## Describe and publish it
 
@@ -92,7 +92,7 @@ The answer carries the file's `public_url`, which a site or a content field uses
 </div>
 </div>
 
-![A photo is opened, its alt text, tags and folder are saved, and Publish turns the badge from Private to Published.](./media/media-describe-publish.webm)
+![A photo is opened, its alt text, tags and folder are saved, and Publish turns the badge from Private to Published.](./media/media-describe-publish.mp4)
 
 With the `ai` feature licensed and a model provider connected in lesson 21, **Suggest alt text**
 asks a model to describe the image. Review the text before you save it.
@@ -123,7 +123,7 @@ curl -X PUT http://localhost:3002/api/v1/content/trip/$TRIP_ID \
 </div>
 </div>
 
-![The trip's Cover field opens Choose a file, the Lisbon photo is picked, and the trip is saved.](./media/media-cover.webm)
+![The trip's Cover field opens Choose a file, the Lisbon photo is picked, and the trip is saved.](./media/media-cover.mp4)
 
 ## Import a file from a URL
 
@@ -205,7 +205,7 @@ The answer is a path and `expires_at`. Put `http://localhost:3002` in front of t
 </div>
 </div>
 
-![A focal point is clicked on the tram and saved, then a WebP transform 800 pixels wide is built and its signed URL appears.](./media/media-focal-transform.webm)
+![A focal point is clicked on the tram and saved, then a WebP transform 800 pixels wide is built and its signed URL appears.](./media/media-focal-transform.mp4)
 
 [Image transforms](../features/image-transforms.md) lists every parameter, how long a URL lasts
 and what happens at the free ceiling. To remove a file, choose **Delete** in its panel, or
@@ -266,7 +266,7 @@ again.
 </div>
 </div>
 
-![A new S3 provider is filled in and saved disabled, the test from its row passes, and it is enabled to receive uploads.](./media/media-storage-provider.webm)
+![A new S3 provider is filled in and saved disabled, the test from its row passes, and it is enabled to receive uploads.](./media/media-storage-provider.mp4)
 
 [Storage](../features/object-storage.md) covers every store, uploads straight from the client
 and the settings behind it.

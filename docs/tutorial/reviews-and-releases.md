@@ -79,7 +79,7 @@ export DEF="<the id from the answer>"
 </div>
 </div>
 
-![A review definition is created: the name and content type are set, a Fact check stage is given the editor role and a 24 hour SLA, and Create adds it to the list.](./media/reviews-and-releases-definition.webm)
+![A review definition is created: the name and content type are set, a Fact check stage is given the editor role and a 24 hour SLA, and Create adds it to the list.](./media/reviews-and-releases-definition.mp4)
 
 Each stage also holds **Approvals needed**, **Escalate to** and a **Condition field**. On a free
 install those controls are turned off and marked as not enabled on this engine, and a second
@@ -130,7 +130,7 @@ curl -X POST http://localhost:3001/api/admin/review/assignments/<assignment id>/
 </div>
 </div>
 
-![A review starts from the trip's review bar, the trip appears under Review assignments, and Approve with a comment publishes it.](./media/reviews-and-releases-review.webm)
+![A review starts from the trip's review bar, the trip appears under Review assignments, and Approve with a comment publishes it.](./media/reviews-and-releases-review.mp4)
 
 The **Status** filter on **Reviews** narrows the list, and a late assignment reads **Overdue**.
 [Editorial review](../features/editorial-review.md) covers who may act, deadlines, events and
@@ -178,7 +178,7 @@ curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/items 
 </div>
 </div>
 
-![A release named Spring trips is created, and two trips are included in it, each to be published.](./media/reviews-and-releases-build-release.webm)
+![A release named Spring trips is created, and two trips are included in it, each to be published.](./media/reviews-and-releases-build-release.mp4)
 
 On a free install, **Releases** says the feature is not enabled on this engine and links to
 how to enable it, and the entry editor has no **Add to release** card. With the license, the
@@ -220,7 +220,7 @@ curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/publis
 </div>
 </div>
 
-![A publish time is set and Schedule marks the release with when it goes out, then Publish now publishes both trips and each shows its outcome.](./media/reviews-and-releases-publish.webm)
+![A publish time is set and Schedule marks the release with when it goes out, then Publish now publishes both trips and each shows its outcome.](./media/reviews-and-releases-publish.mp4)
 
 The **Status** filter on **Releases** shows **Draft**, **Scheduled**, **Published**, **Failed**
 or **Canceled** releases. [Content releases](../features/content-releases.md) explains

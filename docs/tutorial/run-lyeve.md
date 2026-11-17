@@ -130,7 +130,7 @@ account now exists.
 </div>
 </div>
 
-![The setup form is filled in with the token, an email address and the password twice, then submitted, and the console opens the dashboard.](./media/run-lyeve-first-admin.webm)
+![The setup form is filled in with the token, an email address and the password twice, then submitted, and the console opens the dashboard.](./media/run-lyeve-first-admin.mp4)
 
 The account holds the `super_admin` role, which may do everything, in every tenant.
 

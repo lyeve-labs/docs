@@ -53,7 +53,7 @@ curl -X PUT http://localhost:3001/api/admin/localization/locales \
 </div>
 </div>
 
-![The Locales settings: pt is added under Enabled locales and saved.](./media/languages-and-activity-locales.webm)
+![The Locales settings: pt is added under Enabled locales and saved.](./media/languages-and-activity-locales.mp4)
 
 A third locale is where the editions part. On a free install, adding it is refused with
 **No more locales on this engine** and how many are in use, and the API answers `402` with
@@ -97,7 +97,7 @@ curl -X POST http://localhost:3001/api/admin/content/$TRIP_ID/translations \
 </div>
 </div>
 
-![The pt tab of the Translations card: the title and summary are typed, saved as a draft, then marked translated.](./media/languages-and-activity-translate.webm)
+![The pt tab of the Translations card: the title and summary are typed, saved as a draft, then marked translated.](./media/languages-and-activity-translate.mp4)
 
 When someone changes the English source later, the `pt` tab reads **outdated**, so you know
 which languages need another look.
@@ -151,7 +151,7 @@ curl "http://localhost:3001/api/admin/content/activity?schema=trip&limit=20" \
 </div>
 </div>
 
-![Content activity is narrowed to Trip, then to changes by one person, and an entry is opened from its row.](./media/languages-and-activity-activity.webm)
+![Content activity is narrowed to Trip, then to changes by one person, and an entry is opened from its row.](./media/languages-and-activity-activity.mp4)
 
 A super admin of an instance with several tenants also sees a **Tenant** filter. The audit log
 in lesson 18 records every other action on the instance.

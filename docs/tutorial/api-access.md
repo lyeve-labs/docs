@@ -69,7 +69,7 @@ The answer carries `token` and `expires_in`, in seconds.
 </div>
 </div>
 
-![API access: the role capabilities table, then an email and password exchanged for a bearer token with Generate token.](./media/api-access-token.webm)
+![API access: the role capabilities table, then an email and password exchanged for a bearer token with Generate token.](./media/api-access-token.mp4)
 
 Give an app that signs in its own account with the `viewer` or `editor` role, never a person's.
 Lesson 16 creates accounts.
@@ -125,7 +125,7 @@ curl http://localhost:3002/api/v1/content/trip \
   -H "X-API-Key: $KEY"
 ```
 
-![A new API key named travel-site is created with the viewer role and read access to Trip and Trip stop, and the key is shown once to copy.](./media/api-access-new-key.webm)
+![A new API key named travel-site is created with the viewer role and read access to Trip and Trip stop, and the key is shown once to copy.](./media/api-access-new-key.mp4)
 
 The list shows each key's **Roles**, **Scopes**, **Content types**, **Status** and **Usage
 (this month)**, and narrows to **Active** or **Revoked** keys. A key with an admin role is
@@ -163,9 +163,9 @@ in UTC.
 On a free install, saving a limit is refused with a notice that the feature is not enabled on
 this engine. With the license, the limits save and show on the key's row.
 
-![Request limits on a free install: Save is refused with a notice that the feature is not enabled on this engine.](./media/api-access-limits-free.webm)
+![Request limits on a free install: Save is refused with a notice that the feature is not enabled on this engine.](./media/api-access-limits-free.mp4)
 
-![Request limits with a license: an hourly, daily and monthly limit are saved and show on the key's row.](./media/api-access-limits-licensed.webm)
+![Request limits with a license: an hourly, daily and monthly limit are saved and show on the key's row.](./media/api-access-limits-licensed.mp4)
 
 [API keys](../features/api-keys.md) and [API key request limits](../features/api-key-request-limits.md)
 cover scopes, writing keys and each key's request history.
@@ -217,7 +217,7 @@ curl http://localhost:3001/api/admin/schemas/export \
   -H "Authorization: Bearer $ADMIN_TOKEN" > travel-guide.yaml
 ```
 
-![A new admin token named deploy-content-types gets one grant, an expiry and an address range, the password confirms it, and the token is shown once with a request to try it.](./media/api-access-admin-token.webm)
+![A new admin token named deploy-content-types gets one grant, an expiry and an address range, the password confirms it, and the token is shown once with a request to try it.](./media/api-access-admin-token.mp4)
 
 Each row has its **Request log**, which lists every call, refused ones included, with the
 **Time**, **Method**, **Route** and **Address** (`GET /api/admin/admin-tokens/{id}/requests`).
@@ -256,7 +256,7 @@ The answer is the OpenAPI document of every route your role may call.
 </div>
 </div>
 
-![The API reference is filtered to content routes, the list route for a content type is opened, trip is filled in, and Send shows the answer.](./media/api-access-reference.webm)
+![The API reference is filtered to content routes, the list route for a content type is opened, trip is filled in, and Send shows the answer.](./media/api-access-reference.mp4)
 
 Only a super admin can send a request other than `GET` from the page. For anyone else, the
 page shows the complete `curl` line to run instead. Lesson 11 sends requests of every kind from

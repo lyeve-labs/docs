@@ -128,7 +128,7 @@ export TRIP_ID="<the id from the answer>"
 </div>
 </div>
 
-![A new trip is written: the title, slug, summary, start date and country are filled in, and after Create the trip is listed as a draft.](./media/write-and-publish-new-trip.webm)
+![A new trip is written: the title, slug, summary, start date and country are filled in, and after Create the trip is listed as a draft.](./media/write-and-publish-new-trip.mp4)
 
 Where locales are set up, **New entry** also asks for the **Locale** of the entry. Lesson 8 adds
 a second one.
@@ -171,7 +171,7 @@ Each answer is `201` and carries the link as `trip_id` under `data`.
 </div>
 </div>
 
-![A stop is written: the name, day and notes are filled in, and typing in the Trip field offers Portugal by train, which is picked before Create.](./media/write-and-publish-stop-relation.webm)
+![A stop is written: the name, day and notes are filled in, and typing in the Trip field offers Portugal by train, which is picked before Create.](./media/write-and-publish-stop-relation.mp4)
 
 ## Publish and unpublish
 
@@ -206,7 +206,7 @@ curl http://localhost:3002/api/v1/content/trip \
 </div>
 </div>
 
-![Publish is chosen on a draft trip, the status changes to published, and the trip shows as published in the list.](./media/write-and-publish-publish.webm)
+![Publish is chosen on a draft trip, the status changes to published, and the trip shows as published in the list.](./media/write-and-publish-publish.mp4)
 
 [Content lifecycle](../features/content-lifecycle.md) covers archiving, scheduled publishing
 and publishing many entries at once.
@@ -244,7 +244,7 @@ curl -X PUT http://localhost:3002/api/v1/content/trip/$TRIP_ID/revisions/<rev_id
 </div>
 </div>
 
-![The trip's history panel opens, an earlier revision is picked, and Restore brings back the old title.](./media/write-and-publish-restore.webm)
+![The trip's history panel opens, an earlier revision is picked, and Restore brings back the old title.](./media/write-and-publish-restore.mp4)
 
 A content type with history off says **History is off for this type.** in place of the panel,
 with a link to turn it on.
@@ -266,7 +266,7 @@ fields.
 
 ![A trip on a free install: the fields, status, history and translations, with no comments card.](./media/write-and-publish-comments-free.png)
 
-![A trip with the license: a new thread is written, a colleague is mentioned, and a reply follows.](./media/write-and-publish-comments-licensed.webm)
+![A trip with the license: a new thread is written, a colleague is mentioned, and a reply follows.](./media/write-and-publish-comments-licensed.mp4)
 
 The same editor holds three more cards that later lessons use: **Translations** in lesson 8,
 the review bar in lesson 6, and **Add to release** in lesson 6.

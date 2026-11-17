@@ -135,7 +135,7 @@ curl -X POST http://localhost:3001/api/admin/request-captures/sets/$SET_ID/repla
 </div>
 </div>
 
-![Ticking three trip reads, saving them as a replay set, replaying it and reading Same on each call.](./media/captures-and-telemetry-replay-set.webm)
+![Ticking three trip reads, saving them as a replay set, replaying it and reading Same on each call.](./media/captures-and-telemetry-replay-set.mp4)
 
 A set takes only captures from the tenant you are signed in to, up to 50 of them.
 
@@ -184,7 +184,7 @@ curl -X PUT http://localhost:3001/api/admin/synthetic-monitoring/probes/$PROBE_I
 </div>
 </div>
 
-![Creating a health check probe for the travel site, running it now and the last run updating.](./media/captures-and-telemetry-new-probe.webm)
+![Creating a health check probe for the travel site, running it now and the last run updating.](./media/captures-and-telemetry-new-probe.mp4)
 
 A probe can also create and delete a record through the API, sign in, or deliver a webhook.
 [Set up a probe](../features/synthetic-monitoring.md#set-up-a-probe) describes each kind.

@@ -61,7 +61,7 @@ curl http://localhost:3002/api/v1/content/trip \
 </div>
 </div>
 
-![Searching the endpoint list in API labs, selecting the content list route, entering trip and sending it.](./media/graphql-and-streams-rest-send.webm)
+![Searching the endpoint list in API labs, selecting the content list route, entering trip and sending it.](./media/graphql-and-streams-rest-send.mp4)
 
 The list comes from the engine's own API document, so a route a feature adds appears here
 while that feature runs. When the document cannot be read, the page says so and falls back
@@ -142,7 +142,7 @@ The answer is `201` with `query_hash`, the SHA-256 of the query text.
 </div>
 </div>
 
-![Opening New persisted query, entering the trip query and its operation name, and creating it.](./media/graphql-and-streams-persisted-query.webm)
+![Opening New persisted query, entering the trip query and its operation name, and creating it.](./media/graphql-and-streams-persisted-query.mp4)
 
 [GraphQL API](../features/graphql-api.md#lock-clients-to-persisted-queries) shows how a client
 sends the hash, and how to refuse every query that is not on the list.
@@ -213,7 +213,7 @@ block with the record id and the action.
 </div>
 </div>
 
-![Connecting a stream on content:trip, saving a trip in a second tab, and the event arriving in the list.](./media/graphql-and-streams-stream.webm)
+![Connecting a stream on content:trip, saving a trip in a second tab, and the event arriving in the list.](./media/graphql-and-streams-stream.mp4)
 
 A refused stream usually means the feature is not running, or that the page's origin is not
 the engine's own host or one of its allowed origins.

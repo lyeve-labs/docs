@@ -108,7 +108,7 @@ curl -X POST http://localhost:3001/api/admin/ab/experiments/$EXP/start \
 </div>
 </div>
 
-![Adding the two variants and the metric on the experiment page, then starting it from the list.](./media/experiments-and-analytics-variants.webm)
+![Adding the two variants and the metric on the experiment page, then starting it from the list.](./media/experiments-and-analytics-variants.mp4)
 
 The **Event name** has to match what your application sends exactly. A mismatch counts
 nothing and shows no error. When the shares do not add up to 100, the page says so.
@@ -221,7 +221,7 @@ The answer's `config` reads `{"redacted": true}`, because a secret is never retu
 </div>
 </div>
 
-![Opening New destination, picking Google Analytics 4, filling in its settings and creating it.](./media/experiments-and-analytics-destination.webm)
+![Opening New destination, picking Google Analytics 4, filling in its settings and creating it.](./media/experiments-and-analytics-destination.mp4)
 
 Saving a destination needs `ENCRYPTION_KEY` on the engine, because its secrets are encrypted
 at rest.
@@ -266,7 +266,7 @@ curl -X POST http://localhost:3001/api/admin/recommendations/refresh \
 </div>
 </div>
 
-![Recomputing, then generating one reader's feed from their email address.](./media/experiments-and-analytics-recommendations.webm)
+![Recomputing, then generating one reader's feed from their email address.](./media/experiments-and-analytics-recommendations.mp4)
 
 ## Next
 

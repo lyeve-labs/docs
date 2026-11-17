@@ -63,7 +63,7 @@ The answer is `201` with the job. Copy its `id` into `JOB_ID`.
 </div>
 </div>
 
-![Opening New job, entering the schedule and the endpoint, setting an email alert and creating the job.](./media/jobs-and-features-new-job.webm)
+![Opening New job, entering the schedule and the endpoint, setting an email alert and creating the job.](./media/jobs-and-features-new-job.mp4)
 
 The list shows each job's **Schedule**, **Endpoint**, **Status** and **Last run**. The
 buttons on a row edit the job or delete it. Deleting stops its schedule and deletes its run

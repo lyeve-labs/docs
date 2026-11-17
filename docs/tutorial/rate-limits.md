@@ -112,7 +112,7 @@ The answer is `201`.
 </div>
 </div>
 
-![Opening New rule, choosing the trip route, setting the role, rate and burst, and creating it.](./media/rate-limits-new-rule.webm)
+![Opening New rule, choosing the trip route, setting the role, rate and burst, and creating it.](./media/rate-limits-new-rule.mp4)
 
 On a free install, **Custom rules** shows a not enabled card in place of the list, and the
 protections say that changing them is not enabled on this engine. The global limit and the protections still apply.
@@ -205,7 +205,7 @@ curl -X POST http://localhost:3001/api/admin/rate-limits/ip-rules \
 Add your own address to the allow list first. A deny entry that covers the address you are
 signed in from is refused unless that address is on the allow list.
 
-![Adding a range to the deny list with a note.](./media/rate-limits-deny-address.webm)
+![Adding a range to the deny list with a note.](./media/rate-limits-deny-address.mp4)
 
 On a free install the page says that setting a tenant limit and adding an address are not
 enabled on this engine. Saved entries still apply.

@@ -86,7 +86,7 @@ curl -X POST http://localhost:3001/api/admin/oauth-templates/apply \
 </div>
 </div>
 
-![Opening New provider, filling in Google's issuer and client, and enabling it.](./media/sign-in-and-sso-oauth.webm)
+![Opening New provider, filling in Google's issuer and client, and enabling it.](./media/sign-in-and-sso-oauth.mp4)
 
 The sign-in page now offers a button for Google. [OAuth sign-in](../features/oauth-sign-in.md)
 covers role mapping and what happens when an email already has an account.
@@ -177,7 +177,7 @@ The answer is `201`, and the only time the token comes back.
 </div>
 </div>
 
-![Opening New connection, pasting the token, choosing what a removal does and creating it.](./media/sign-in-and-sso-scim.webm)
+![Opening New connection, pasting the token, choosing what a removal does and creating it.](./media/sign-in-and-sso-scim.mp4)
 
 **Rotate token**, on a connection's row, replaces the token. Provisioning fails until the
 directory holds the new one.

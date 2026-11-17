@@ -71,7 +71,7 @@ The answer is `201` with the webhook and its `id`, which never shows the secret.
 </div>
 </div>
 
-![Opening New webhook, filling in the name, URL and secret, ticking three events, picking trip and creating it.](./media/webhooks-and-email-new-webhook.webm)
+![Opening New webhook, filling in the name, URL and secret, ticking three events, picking trip and creating it.](./media/webhooks-and-email-new-webhook.mp4)
 
 The form has more than the basics:
 
@@ -246,7 +246,7 @@ curl -X POST http://localhost:3001/api/admin/email/providers \
 </div>
 </div>
 
-![Opening New provider, filling in the SMTP server and creating it.](./media/webhooks-and-email-provider.webm)
+![Opening New provider, filling in the SMTP server and creating it.](./media/webhooks-and-email-provider.mp4)
 
 **Fallback transport**, below the pool, holds the engine settings used when the pool is empty
 or every provider fails. A change there applies at the next engine restart.
@@ -313,7 +313,7 @@ engine. A tenant with no active template is told to create one first.
 
 ![The Email triggers page on a free install, with the notice in place of New trigger.](./media/webhooks-and-email-triggers-free.png)
 
-![Creating the Trip updated trigger on a licensed install.](./media/webhooks-and-email-triggers-licensed.webm)
+![Creating the Trip updated trigger on a licensed install.](./media/webhooks-and-email-triggers-licensed.mp4)
 
 ## Next
 

@@ -104,7 +104,7 @@ content type gets. A field without `field_type` answers `422`.
 </div>
 </div>
 
-![A new Trip content type is built: the display and machine names are typed, five fields are added with their types and flags, and Save turns the badge to Saved.](./media/model-content-create-trip.webm)
+![A new Trip content type is built: the display and machine names are typed, five fields are added with their types and flags, and Save turns the badge to Saved.](./media/model-content-create-trip.mp4)
 
 [The data model](../concepts/data-model.md) lists every field type and flag.
 
@@ -152,7 +152,7 @@ that undoes it. Nothing changes until you send the same body to `POST /api/admin
 </div>
 </div>
 
-![Preview DDL opens a dialog with the add column statement for country and its down SQL, then Close returns to the editor.](./media/model-content-preview-ddl.webm)
+![Preview DDL opens a dialog with the add column statement for country and its down SQL, then Close returns to the editor.](./media/model-content-preview-ddl.mp4)
 
 A save that removes a field or changes a type that holds data asks first, in a dialog titled
 **This save changes columns that hold data**. A removal is queued rather than run: the column
@@ -210,7 +210,7 @@ A `belongs_to` field stores the other entry's id. Entries carry it as `trip_id` 
 </div>
 </div>
 
-![A relation is added to Trip stop: Add relation makes a row named trip, Belongs to one stays selected, Trip is picked as the target, and the panel shows the key and what saving creates.](./media/model-content-relation.webm)
+![A relation is added to Trip stop: Add relation makes a row named trip, Belongs to one stays selected, Trip is picked as the target, and the panel shows the key and what saving creates.](./media/model-content-relation.mp4)
 
 **How relations work**, folded under the fields, compares the four kinds: **Belongs to one**,
 **Has one**, **Has many** and **Has and belongs to many**.
@@ -304,9 +304,9 @@ The answer holds the saved positions. `PUT` on the same route saves them, and
 On a free install, **Canvas** shows what the canvas does and that your license does not include
 it, and the list editor works as before. With the license, it draws the diagram.
 
-![Choosing Canvas on a free install shows a notice about the schema canvas in place of the diagram.](./media/model-content-canvas-free.webm)
+![Choosing Canvas on a free install shows a notice about the schema canvas in place of the diagram.](./media/model-content-canvas-free.mp4)
 
-![Choosing Canvas with a license draws Trip and Trip stop joined by a line, and the Trip stop box is dragged below Trip.](./media/model-content-canvas-licensed.webm)
+![Choosing Canvas with a license draws Trip and Trip stop joined by a line, and the Trip stop box is dragged below Trip.](./media/model-content-canvas-licensed.mp4)
 
 ## Next
 

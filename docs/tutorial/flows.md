@@ -85,7 +85,7 @@ This is a console task. Over the API, the definition you sent above holds the sa
    its body to `{{ input }}`, which answers with the list the node before it read.
 4. Choose **Save**. The badge beside the flow name reads **Saved**.
 
-![Dragging Query content and Response from the palette, joining them to the trigger, and setting the schema to trip in the Inspector.](./media/flows-draw.webm)
+![Dragging Query content and Response from the palette, joining them to the trigger, and setting the schema to trip in the Inspector.](./media/flows-draw.mp4)
 
 The editor has these parts:
 
@@ -130,7 +130,7 @@ The answer's `output` is the list of trips, and `steps` lists every node.
 </div>
 </div>
 
-![Opening Test, running the draft and reading the trips in the response step.](./media/flows-test.webm)
+![Opening Test, running the draft and reading the trips in the response step.](./media/flows-test.mp4)
 
 ## Publish it and call it
 

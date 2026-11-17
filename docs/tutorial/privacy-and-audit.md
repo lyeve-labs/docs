@@ -93,7 +93,7 @@ again finishes it.
 </div>
 </div>
 
-![Typing the subject twice, the erase button turning available, and the result.](./media/privacy-and-audit-erase.webm)
+![Typing the subject twice, the erase button turning available, and the result.](./media/privacy-and-audit-erase.mp4)
 
 When part of the data cannot be told apart from another account's data in this tenant, the
 page says so and erases nothing there. **Before a person exports their own data**, lower on
@@ -169,7 +169,7 @@ curl -X POST http://localhost:3001/api/admin/pii/rules \
 </div>
 </div>
 
-![Writing a rule, testing it on a sample, and creating it with masking on.](./media/privacy-and-audit-pii-rule.webm)
+![Writing a rule, testing it on a sample, and creating it with masking on.](./media/privacy-and-audit-pii-rule.mp4)
 
 **Priority** decides which rule wins when two patterns match the same text, and lower runs
 first. A rule named like a preset replaces that preset. The **Unmasked reads** tab lists who
@@ -340,7 +340,7 @@ curl -X POST http://localhost:3001/api/admin/audit-log/sinks \
 Every entry is delivered at least once and in order. The destination type cannot be changed
 afterward, so create a new destination instead.
 
-![Creating an HTTPS destination, copying its signing secret, and sending a test.](./media/privacy-and-audit-streaming.webm)
+![Creating an HTTPS destination, copying its signing secret, and sending a test.](./media/privacy-and-audit-streaming.mp4)
 
 ## Next
 

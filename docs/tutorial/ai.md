@@ -112,7 +112,7 @@ The answer is `201` with the provider and `"has_key": true`. Copy its `id` into 
 </div>
 </div>
 
-![Opening New provider, choosing OpenAI, pasting a key, entering the default model and priority, and creating the provider.](./media/ai-new-provider.webm)
+![Opening New provider, choosing OpenAI, pasting a key, entering the default model and priority, and creating the provider.](./media/ai-new-provider.mp4)
 
 The form shows the fields each kind needs:
 
@@ -189,7 +189,7 @@ The answer is `201` with the new `version`, which is now active.
 </div>
 </div>
 
-![Opening the summarize prompt, editing the system prompt, saving it as version 1 and seeing it in the versions list.](./media/ai-prompt-version.webm)
+![Opening the summarize prompt, editing the system prompt, saving it as version 1 and seeing it in the versions list.](./media/ai-prompt-version.mp4)
 
 ## Price the model
 
@@ -271,7 +271,7 @@ curl -X POST http://localhost:3001/api/admin/ai/transcripts/$TRANSCRIPT_ID/recap
 </div>
 </div>
 
-![Opening the newest transcript, reading its messages and totals, and choosing Recap.](./media/ai-transcript-recap.webm)
+![Opening the newest transcript, reading its messages and totals, and choosing Recap.](./media/ai-transcript-recap.mp4)
 
 With **Store transcripts** off, the list says so and links to the settings, and calls return no
 `transcript_id`. Cost and latency are still recorded.

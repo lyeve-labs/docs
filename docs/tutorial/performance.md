@@ -130,7 +130,7 @@ Save the `svg` field to a file and open it in a browser.
 </div>
 </div>
 
-![Entering the trip endpoint and a five second window on the Profiles tab, choosing Capture and the flame graph appearing.](./media/performance-flamegraph.webm)
+![Entering the trip endpoint and a five second window on the Profiles tab, choosing Capture and the flame graph appearing.](./media/performance-flamegraph.mp4)
 
 ## Check the heap for a leak
 
@@ -272,7 +272,7 @@ curl -X POST http://localhost:3001/api/admin/cache/flush \
 </div>
 </div>
 
-![Opening New rule on Response cache rules, entering the delivery route, a time to live and the trip tag, and creating it.](./media/performance-cache-rule.webm)
+![Opening New rule on Response cache rules, entering the delivery route, a time to live and the trip tag, and creating it.](./media/performance-cache-rule.mp4)
 
 A request that carries a token, an API key or a cookie is never served from the cache.
 [What is never cached](../features/caching.md#what-is-never-cached) lists the rest.

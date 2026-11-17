@@ -82,7 +82,7 @@ The answer lists each saved setting under `saved`, and one a higher place holds 
 </div>
 </div>
 
-![Filtering Configuration for flow_run_retention, entering a new value and saving it.](./media/customize-the-console-configuration.webm)
+![Filtering Configuration for flow_run_retention, entering a new value and saving it.](./media/customize-the-console-configuration.mp4)
 
 [Change a setting](../how-to/change-a-setting.md) covers the environment and the file, and
 [Configuration](../reference/configuration.md) lists every setting.
@@ -224,7 +224,7 @@ curl -X PUT http://localhost:3001/api/admin/customization/dashboard \
 </div>
 </div>
 
-![Adding an entry counts widget for trip and trip_stop and a latest entries widget, previewing as an editor and saving.](./media/customize-the-console-dashboard.webm)
+![Adding an entry counts widget for trip and trip_stop and a latest entries widget, previewing as an editor and saving.](./media/customize-the-console-dashboard.mp4)
 
 A widget shows only what its viewer could open anyway.
 [Page blocks and dashboard widgets](../features/tenants.md#brand-the-console-per-tenant) lists
@@ -263,7 +263,7 @@ curl -X PUT http://localhost:3001/api/admin/customization/pages/this-week \
 </div>
 </div>
 
-![Creating a page, adding a text block and a list of published trips, saving it and viewing it.](./media/customize-the-console-page.webm)
+![Creating a page, adding a text block and a list of published trips, saving it and viewing it.](./media/customize-the-console-page.mp4)
 
 ## Next
 

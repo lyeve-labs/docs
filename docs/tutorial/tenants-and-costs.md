@@ -101,7 +101,7 @@ The answer is `201` with the tenant. Copy its `id` into `TENANT_ID`.
 </div>
 </div>
 
-![Opening New tenant, entering the slug partner_agency and the display name, and creating it.](./media/tenants-and-costs-new-tenant.webm)
+![Opening New tenant, entering the slug partner_agency and the display name, and creating it.](./media/tenants-and-costs-new-tenant.mp4)
 
 The new tenant starts empty and does not see the `default` tenant's `trip` entries.
 [Run more than one tenant](../features/tenants.md#run-more-than-one-tenant)
@@ -168,7 +168,7 @@ curl -X PUT http://localhost:3001/api/admin/users/$USER_ID/memberships \
 </div>
 </div>
 
-![Opening New member on the tenant's page, entering an account, choosing editor and creating the membership.](./media/tenants-and-costs-new-member.webm)
+![Opening New member on the tenant's page, entering an account, choosing editor and creating the membership.](./media/tenants-and-costs-new-member.mp4)
 
 A free install holds up to three admin seats, so a membership with the `admin` role can be
 refused there. [Give an account more than one tenant](../features/tenants.md#give-an-account-more-than-one-tenant)
@@ -314,7 +314,7 @@ The answer is `201` with the budget and its `current_spend`.
 </div>
 </div>
 
-![Opening New budget, entering a name, an amount and the month's window, and creating it.](./media/tenants-and-costs-new-budget.webm)
+![Opening New budget, entering a name, an amount and the month's window, and creating it.](./media/tenants-and-costs-new-budget.mp4)
 
 ## Set your own prices
 

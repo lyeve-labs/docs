@@ -139,7 +139,7 @@ The answer is `{"enabled": true, "backup_codes": [...]}`. Save the codes.
 </div>
 </div>
 
-![Two-factor authentication is turned on: the password check, the QR code, the code typed from the app, and the backup codes with Copy all codes.](./media/find-your-way-mfa-on.webm)
+![Two-factor authentication is turned on: the password check, the QR code, the code typed from the app, and the backup codes with Copy all codes.](./media/find-your-way-mfa-on.mp4)
 
 From the next sign-in, the console asks for an **Authenticator code** after your password. To
 move to another phone, choose **Replace the authenticator app**. To stop, choose **Turn off the
@@ -187,7 +187,7 @@ enable it. With the license, it shows the form and the list.
 
 ![Trusted devices on a free install: a notice that the feature is not enabled on this engine.](./media/find-your-way-devices-free.png)
 
-![Trusted devices with a license: this browser is named Work laptop and trusted, and it appears in the list.](./media/find-your-way-devices-licensed.webm)
+![Trusted devices with a license: this browser is named Work laptop and trusted, and it appears in the list.](./media/find-your-way-devices-licensed.mp4)
 
 [Trusted devices](../features/trusted-devices.md) explains the risk scoring, brute-force blocks
 and login history.
@@ -236,7 +236,7 @@ curl -X POST http://localhost:3001/api/admin/auth/device/<user_code>/approve \
 </div>
 </div>
 
-![A device sign-in is approved: the code from the device matches the terminal, the password is entered and Approve is chosen.](./media/find-your-way-device-approve.webm)
+![A device sign-in is approved: the code from the device matches the terminal, the password is entered and Approve is chosen.](./media/find-your-way-device-approve.mp4)
 
 The engine builds the link from `LYEVE_CONSOLE_URL`, which the Compose file sets.
 [API endpoints](../reference/api-endpoints.md) lists the polling route the tool calls.
@@ -277,7 +277,7 @@ curl -X POST http://localhost:3001/api/admin/auth/magic-link/verify \
 </div>
 </div>
 
-![A sign-in link is requested, then opened from the email, and Continue signs in.](./media/find-your-way-magic-link.webm)
+![A sign-in link is requested, then opened from the email, and Continue signs in.](./media/find-your-way-magic-link.mp4)
 
 [Magic link sign-in](../features/magic-link-sign-in.md) covers sign-up by link and the rate
 limits.
@@ -312,7 +312,7 @@ curl -X POST http://localhost:3001/api/admin/auth/password-reset/confirm \
 </div>
 </div>
 
-![A password reset is requested, the link from the email opens Choose a new password, the new password is saved, and the page offers Sign in.](./media/find-your-way-reset-password.webm)
+![A password reset is requested, the link from the email opens Choose a new password, the new password is saved, and the page offers Sign in.](./media/find-your-way-reset-password.mp4)
 
 Every session the account held ends when the password changes.
 [Password reset](../features/password-reset.md) has the limits and what to check when no mail

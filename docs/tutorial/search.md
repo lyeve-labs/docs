@@ -37,7 +37,7 @@ API's search route answers `404`. With the license, the tabs work as below.
 
 ![Search on a free install: a notice that search is not enabled on this engine.](./media/search-free.png)
 
-![Search with a license: a query for Lisbon lists the trip and the stop with their rank.](./media/search-licensed.webm)
+![Search with a license: a query for Lisbon lists the trip and the stop with their rank.](./media/search-licensed.mp4)
 
 ## Search the content
 
@@ -113,7 +113,7 @@ curl -X POST http://localhost:3001/api/admin/search/synonyms \
 </div>
 </div>
 
-![New synonym opens a form, train is entered with railway and rail as matches, and Create adds the group to the list.](./media/search-synonym.webm)
+![New synonym opens a form, train is entered with railway and rail as matches, and Create adds the group to the list.](./media/search-synonym.mp4)
 
 ## Let visitors search trips
 
@@ -161,7 +161,7 @@ curl "http://localhost:3002/api/v1/search/trip?q=porto&limit=10"
 </div>
 </div>
 
-![Trip is made searchable by anyone and saved, the example request is copied, and the title weight is raised above the body weight.](./media/search-settings.webm)
+![Trip is made searchable by anyone and saved, the example request is copied, and the title weight is raised above the body weight.](./media/search-settings.mp4)
 
 A visitor sees published trips only. [Search](../features/search.md) covers instant search,
 facets, Elasticsearch and Meilisearch, and the limits on public search.

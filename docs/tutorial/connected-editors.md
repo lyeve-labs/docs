@@ -96,7 +96,7 @@ An account without an authenticator app sends `password` in place of `mfa_code`.
 </div>
 </div>
 
-![Entering the code from the builder, checking the key, confirming and approving.](./media/connected-editors-approve.webm)
+![Entering the code from the builder, checking the key, confirming and approving.](./media/connected-editors-approve.mp4)
 
 Approve only a code you started yourself. If someone sends you a code, they are asking for
 access to your pages. A connection can do no more than you can.

@@ -56,7 +56,7 @@ The answer is `201` with the new user. Copy its `id` into `USER_ID`.
 </div>
 </div>
 
-![Opening New user, entering the email and password, ticking editor and creating the account.](./media/users-and-roles-new-user.webm)
+![Opening New user, entering the email and password, ticking editor and creating the account.](./media/users-and-roles-new-user.mp4)
 
 The list has these controls:
 
@@ -133,7 +133,7 @@ Sending a rule for the same role and resource again replaces it.
 </div>
 </div>
 
-![Creating the viewer role, adding a rule on trip and ticking Read.](./media/users-and-roles-rule.webm)
+![Creating the viewer role, adding a rule on trip and ticking Read.](./media/users-and-roles-rule.mp4)
 
 A rule with no action and no field mask changes nothing, and the form warns you, because it
 still counts toward the role ceiling. **Show resources with no rule** lists the content types

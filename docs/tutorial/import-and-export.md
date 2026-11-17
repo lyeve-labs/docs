@@ -96,7 +96,7 @@ its progress with `GET /api/admin/imports/{id}`.
 </div>
 </div>
 
-![A new import of trips.csv: the file and content type are chosen, the columns are mapped onto the fields, the dry run says 2 rows would import, and Import 2 rows starts it.](./media/import-and-export-import.webm)
+![A new import of trips.csv: the file and content type are chosen, the columns are mapped onto the fields, the dry run says 2 rows would import, and Import 2 rows starts it.](./media/import-and-export-import.mp4)
 
 **History** lists every import with its outcome and how many rows it created, updated, skipped
 and rejected, and updates until each finishes. A rejected row can be downloaded with its reason,
@@ -146,7 +146,7 @@ template** saves one.
 
 ![Templates on a free install: the notice that saving templates is not enabled on this engine.](./media/import-and-export-templates-free.png)
 
-![Templates with a license: a template for trips is created with its columns, key field and mode.](./media/import-and-export-templates-licensed.webm)
+![Templates with a license: a template for trips is created with its columns, key field and mode.](./media/import-and-export-templates-licensed.mp4)
 
 ## Export the guide
 
@@ -178,7 +178,7 @@ curl http://localhost:3001/api/admin/data-export/jobs \
 </div>
 </div>
 
-![A new export of the trips as CSV is started, its row moves to finished, and the file is downloaded.](./media/import-and-export-export.webm)
+![A new export of the trips as CSV is started, its row moves to finished, and the file is downloaded.](./media/import-and-export-export.mp4)
 
 To run it every night, choose **New schedule** under **Export schedules**, give it a **Name**,
 pick **When** or write a **Cron expression** in UTC, keep **Run on the timetable** on and choose
@@ -255,7 +255,7 @@ Replace `localhost:3001` with the second engine's address when it runs elsewhere
 </div>
 </div>
 
-![A bundle is applied on a second engine: the file and passphrase are given, Compare lists the trip and trip_stop content types to create, the dry run passes, and Apply finishes.](./media/import-and-export-config-sync.webm)
+![A bundle is applied on a second engine: the file and passphrase are given, Compare lists the trip and trip_stop content types to create, the dry run passes, and Apply finishes.](./media/import-and-export-config-sync.mp4)
 
 On a free install, **Config sync** says the feature is not enabled on this engine. With the
 license, it shows the export and apply panels.

@@ -96,7 +96,7 @@ curl -N "http://localhost:3001/api/admin/logs/stream?min_level=INFO&from_head=tr
 </div>
 </div>
 
-![The live log tail connecting, filtering on a keyword, and a new line arriving when a trip is read.](./media/logs-and-errors-live-tail.webm)
+![The live log tail connecting, filtering on a keyword, and a new line arriving when a trip is read.](./media/logs-and-errors-live-tail.mp4)
 
 ## Get an alert when log volume climbs
 
@@ -129,7 +129,7 @@ curl -X PUT http://localhost:3001/api/admin/logging/alerts \
 </div>
 </div>
 
-![Opening New rule on Volume alerts, setting the level, ceiling and window, adding an email channel and creating the rule.](./media/logs-and-errors-volume-rule.webm)
+![Opening New rule on Volume alerts, setting the level, ceiling and window, adding an email channel and creating the rule.](./media/logs-and-errors-volume-rule.mp4)
 
 ## Triage a failure
 
@@ -187,7 +187,7 @@ curl -X POST http://localhost:3001/api/admin/error-tracking/alerts/$ALERT_ID/res
 </div>
 </div>
 
-![Filtering Failures to Open, assigning the trip import failure and resolving it.](./media/logs-and-errors-triage.webm)
+![Filtering Failures to Open, assigning the trip import failure and resolving it.](./media/logs-and-errors-triage.mp4)
 
 The next matching event opens a resolved failure again.
 
