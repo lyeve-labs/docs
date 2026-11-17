@@ -156,7 +156,7 @@ After the second failure the email arrives with the subject
 <div data-path="console">
 
 Open **Insight > Observability > Errors** and choose **Spike alerts**. On an
-install without `alerts-pro`, the page says **Not enabled on this instance**
+install without `alerts-pro`, the page says **Not enabled on this engine**
 above the Slack, Discord, HTTPS webhook and PagerDuty fields, and those fields
 take no input. On the job, choose **Edit** and enter a Slack URL in
 **Slack webhook URL**. Saving says **This needs alerts-pro**, and nothing is
