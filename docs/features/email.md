@@ -298,7 +298,7 @@ The first SMTP provider is free. To add one:
 2. Enter `primary` in **Name**, keep **SMTP** as the **Transport** and enter
    `no-reply@example.com` in **From address**.
 3. Enter your relay's **Host**, `587` in **Port**, and its **Username** and
-   **Password**. Turn **TLS** off, because port 587 starts in plain text.
+   **Password**. Leave **Implicit TLS** off, because port 587 starts in plain text.
 4. Keep **Priority** at `0`, enter `1000` in **Max per hour**, and choose
    **Create**.
 

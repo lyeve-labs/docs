@@ -54,7 +54,7 @@ and write is then limited to the resolved tenant.
 Open **Operations > Tenants**. A super admin sees every tenant with a record,
 with its slug, name, plan, status and creation date, and the buttons on a row
 edit, disable or delete the tenant. Without `multitenant-provisioning` the page
-reads **Tenant provisioning** and **Not enabled on this instance**, and has no
+reads **Tenant provisioning** and **Not enabled on this engine**, and has no
 **New tenant** button. The tenant's name opens its page, with **Archive**,
 **Features**, and its **Members** with **New member**.
 
@@ -87,7 +87,7 @@ API steps, you need a super admin token in `TOKEN`. The
 <div data-path="console">
 
 Open **Operations > Tenants**. The page has a **New tenant** button when this install may
-create tenants, and reads **Not enabled on this instance** under **Tenant provisioning** when
+create tenants, and reads **Not enabled on this engine** under **Tenant provisioning** when
 it may not.
 
 </div>

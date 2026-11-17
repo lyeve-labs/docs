@@ -264,7 +264,7 @@ Every other part of localization is free.
 Open **Settings > Locales**. Set the **Default locale**, add each language under
 **Enabled locales** with **Add locale**, build the **Fallback chain** in order with
 **Append**, then choose **Save**. A locale past the ceiling shows
-**No more locales on this instance** with the count, and nothing is saved.
+**No more locales on this engine** with the count, and nothing is saved.
 
 </div>
 <div data-path="api">

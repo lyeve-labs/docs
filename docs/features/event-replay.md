@@ -46,8 +46,9 @@ Open **Insight > Events**. **Recorded**, **With errors** and
 3. Untick it to send the events for real. The button then reads **Replay**.
 
    :::caution
-   **Replay** starts the run at once, with no question first, and every
-   listener gets the events.
+   **Replay** asks first, naming the window and the run name, because nothing
+   undoes it. Choose **Replay** in that dialog and every listener gets the
+   events.
    :::
 
 Each run is listed with its run name, status, progress and result, and a
@@ -195,8 +196,8 @@ listeners react. A webhook watching the content type gets a delivery for each
 one.
 
 :::caution
-A real replay starts at once, with no question first, from the console and
-from the API alike.
+The console asks before a real replay. The API starts one at once, with no
+question first.
 :::
 
 <div class="paths">
