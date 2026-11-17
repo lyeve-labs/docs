@@ -5,6 +5,7 @@ sidebar:
   order: 1
 covers:
   console:
+    - "/"
     - "/setup"
     - "/login"
   api:
