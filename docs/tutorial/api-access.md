@@ -202,17 +202,23 @@ curl -X POST http://localhost:3001/api/admin/admin-tokens \
     "name": "deploy-content-types",
     "grants": ["schemas:read"],
     "expires_at": "2027-01-31T00:00:00Z",
-    "allowed_ips": ["203.0.113.0/24"],
     "password": "<your password>"
   }'
 ```
 
+The answer carries the token once, as `token`. Set `expires_at` to a date within the next 90
+days. On a server, add `"allowed_ips"` with the addresses the script runs from, such as
+`["203.0.113.0/24"]`. A call from any other address is refused with `403`, so leave it out while
+you try the token on your own computer.
+
 </div>
 </div>
 
-The script sends it like a session token:
+The script sends the token like a session token:
 
 ```bash
+export ADMIN_TOKEN="<the admin token>"
+
 curl http://localhost:3001/api/admin/schemas/export \
   -H "Authorization: Bearer $ADMIN_TOKEN" > travel-guide.yaml
 ```

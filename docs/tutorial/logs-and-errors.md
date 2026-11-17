@@ -59,7 +59,8 @@ curl "http://localhost:3001/api/admin/logs/search?request_id=tutorial-trips-1" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-The entry's `fields` hold the method, the route, the status and how long it took.
+The entry's `fields` hold the method, the route, the status and how long it took. A request
+reaches the search a few seconds after it is answered, so search again if `results` is empty.
 
 </div>
 </div>

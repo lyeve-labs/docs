@@ -21,12 +21,12 @@ it runs.
 
 ## 1. Ask the binary for its version and health
 
-The engine image runs one binary, `lyeve`. Reach it in the container, here named
-`lyeve-engine` as in the [quickstart](../getting-started/quickstart.md):
+The engine image runs one binary, `lyeve`. Reach it in the `engine` service of the stack from
+[lesson 1](run-lyeve.md), from the folder that holds its `docker-compose.yml`:
 
 ```bash
-docker exec lyeve-engine /app/lyeve --version
-docker exec lyeve-engine /app/lyeve healthcheck
+docker compose exec engine /app/lyeve --version
+docker compose exec engine /app/lyeve healthcheck
 ```
 
 The first prints the version, the commit and the build date. The second asks the engine's own

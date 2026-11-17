@@ -334,6 +334,8 @@ curl -X POST http://localhost:3001/api/admin/audit-log/sinks \
   -d '{"name": "security-siem", "kind": "https", "url": "https://siem.example.com/audit"}'
 ```
 
+Put your collector's address in `url`. An address that does not resolve is refused with `422`.
+
 </div>
 </div>
 

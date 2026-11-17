@@ -50,7 +50,7 @@ curl -X POST http://localhost:3001/api/admin/media \
   -F "alt_text=Yellow tram on a steep street in Lisbon"
 ```
 
-The answer carries the file's `id`. Keep it:
+The answer is a list that holds the uploaded file. Keep its `id`:
 
 ```bash
 export MEDIA_ID="<the id from the answer>"

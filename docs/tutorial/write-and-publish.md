@@ -229,12 +229,23 @@ and publishing many entries at once.
 </div>
 <div data-path="api">
 
+Change the title. A `PUT` keeps every field it does not name:
+
+```bash
+curl -X PUT http://localhost:3002/api/v1/content/trip/$TRIP_ID \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"title": "Portugal by rail"}}'
+```
+
+List the versions kept from before the change:
+
 ```bash
 curl http://localhost:3002/api/v1/content/trip/$TRIP_ID/revisions \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-Pick the `id` of the revision you want, then restore it:
+Pick the `id` of the revision whose `title` is `Portugal by train`, then restore it:
 
 ```bash
 curl -X PUT http://localhost:3002/api/v1/content/trip/$TRIP_ID/revisions/<rev_id>/restore \

@@ -124,8 +124,8 @@ curl -X POST http://localhost:3001/api/admin/setup \
       }'
 ```
 
-The answer is `201` with the new `user` and a `token`. A second call answers `409`, because an
-account now exists.
+The answer is `201` with the new `user` and a `token`. The engine then retires the setup token,
+so a second call answers `401`.
 
 </div>
 </div>

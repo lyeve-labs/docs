@@ -180,11 +180,11 @@ curl -X POST http://localhost:3001/api/admin/content/releases/$RELEASE_ID/items 
 
 ![A release named Spring trips is created, and two trips are included in it, each to be published.](./media/reviews-and-releases-build-release.mp4)
 
-On a free install, **Releases** says the feature is not enabled on this engine and links to
-how to enable it, and the entry editor has no **Add to release** card. With the license, the
-list and the editor show both.
+On a free install, **Releases** opens, but **Create** in **New release** is refused with **Not
+enabled on this engine** and a link to the license. The entry editor has no **Add to release**
+card. With the license, the list and the editor show both.
 
-![Releases on a free install: a notice that the feature is not enabled on this engine.](./media/reviews-and-releases-releases-free.png)
+![New release on a free install: Create is refused with a notice that the feature is not enabled on this engine.](./media/reviews-and-releases-releases-free.png)
 
 ![Releases with a license: the Spring trips release with its two entries and its status.](./media/reviews-and-releases-releases-licensed.png)
 

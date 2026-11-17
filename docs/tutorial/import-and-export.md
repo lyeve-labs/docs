@@ -257,10 +257,10 @@ Replace `localhost:3001` with the second engine's address when it runs elsewhere
 
 ![A bundle is applied on a second engine: the file and passphrase are given, Compare lists the trip and trip_stop content types to create, the dry run passes, and Apply finishes.](./media/import-and-export-config-sync.mp4)
 
-On a free install, **Config sync** says the feature is not enabled on this engine. With the
-license, it shows the export and apply panels.
+On a free install, **Config sync** shows the same panels, but exporting or applying a bundle
+is refused with **Not enabled on this engine** and a link to the license.
 
-![Config sync on a free install: a notice that the feature is not enabled on this engine.](./media/import-and-export-config-sync-free.png)
+![Config sync on a free install: Export is refused with a notice that the feature is not enabled on this engine.](./media/import-and-export-config-sync-free.png)
 
 ![Config sync with a license: the Export this engine and Apply a bundle panels.](./media/import-and-export-config-sync-licensed.png)
 

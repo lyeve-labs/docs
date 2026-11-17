@@ -65,7 +65,8 @@ curl -X POST http://localhost:3001/api/admin/webhooks \
       }'
 ```
 
-The answer is `201` with the webhook and its `id`, which never shows the secret. Copy the
+Put your receiver's address in `url`. The engine refuses an address that does not resolve with
+`400`. The answer is `201` with the webhook and its `id`, which never shows the secret. Copy the
 `id` into `WEBHOOK_ID`.
 
 </div>
@@ -242,6 +243,9 @@ curl -X POST http://localhost:3001/api/admin/email/providers \
         "priority": 0
       }'
 ```
+
+Use your own mail server in `host`. The engine looks the name up when you save and refuses one
+that does not resolve.
 
 </div>
 </div>

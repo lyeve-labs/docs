@@ -212,10 +212,12 @@ code in the console, and the tool receives a session with your roles.
 </div>
 <div data-path="api">
 
-The tool starts the sign-in, with no credential:
+The tool starts the sign-in with no credential, and names itself in `client_name`:
 
 ```bash
-curl -X POST http://localhost:3001/api/admin/auth/device
+curl -X POST http://localhost:3001/api/admin/auth/device \
+  -H "Content-Type: application/json" \
+  -d '{"client_name": "lyeve on my laptop"}'
 ```
 
 The answer carries a `device_code` for the tool and a `user_code` for you. Look the request

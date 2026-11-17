@@ -64,10 +64,11 @@ A licensed install answers `{"enabled": true}`, and a free one `{"enabled": fals
 </div>
 </div>
 
-On a free install the page lists `default`, has no **New tenant** button, and shows
-**Tenant provisioning** with **Not enabled on this engine** above the list.
+On a free install the page says **No tenants yet**, has no **New tenant** button, and shows
+**Tenant provisioning** with **Not enabled on this engine** above the list. Your content lives
+in the install's built-in tenant, which the list does not show.
 
-![The Tenants page on a free install, with the default tenant and the tenant provisioning card that says it is not enabled.](./media/tenants-and-costs-tenants-free.png)
+![The Tenants page on a free install, with no tenants listed and the tenant provisioning card that says it is not enabled.](./media/tenants-and-costs-tenants-free.png)
 
 ![The Tenants page on a licensed install, with the New tenant button and two tenants.](./media/tenants-and-costs-tenants-licensed.png)
 
