@@ -5,3 +5,8 @@
 0dd6690d4c12ee286663f72e0011ff8da2bf5b8a:docs/features/multi-factor-auth.md:generic-api-key:107
 0dd6690d4c12ee286663f72e0011ff8da2bf5b8a:docs/features/multi-factor-auth.md:generic-api-key:108
 024736d03dd5f811a3db857f6ed980e7b68d8c8b:docs/features/webhooks.md:generic-api-key:53
+
+# An idempotency key in a sample request, a resource name, a place and a
+# counter. The client picks it to deduplicate a retried write, and it grants
+# nothing. The rule takes the Idempotency-Key header for a key name.
+1b930372fc99473cbf0dc79e5ea76bea46376ad2:docs/tutorial/performance.md:generic-api-key:291
