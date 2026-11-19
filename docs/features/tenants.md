@@ -1,6 +1,6 @@
 ---
-title: Tenants
-description: Run several customers, brands or sites on one instance, each with its own content, users and settings, and control which tenant every request reaches.
+title: Multi-tenancy
+description: Run several customers, brands or sites on one multi-tenant instance, each with its own content, users and settings. Choose which tenant a request reaches.
 sidebar:
   order: 48
 ---

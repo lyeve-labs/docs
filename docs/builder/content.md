@@ -1,6 +1,6 @@
 ---
 title: Show content entries
-description: "List a content type's entries on a builder page, give each entry a page of its own, and draw a block's text, links and images from the entry."
+description: "List a content type's entries on a builder page and give each entry a page of its own. Draw a block's text, links and images from the entry."
 sidebar:
   order: 6
 ---

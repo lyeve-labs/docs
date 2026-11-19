@@ -1,6 +1,6 @@
 ---
 title: Content releases
-description: "Group entries into a release and publish or unpublish them together, now or at a set time, with every entry put back if any fails."
+description: "Group entries into a release and publish or unpublish them together, now or at a set time. If any entry fails, every entry is put back."
 sidebar:
   order: 17
 capability_of: content

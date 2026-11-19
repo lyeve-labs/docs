@@ -1,5 +1,5 @@
 ---
-title: Kubernetes
+title: Deploy on Kubernetes
 description: "Deploy the engine and LyEve Console on Kubernetes with replicas, a shared signing key, probes and a Gateway API route."
 sidebar:
   order: 15

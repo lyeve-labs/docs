@@ -1,6 +1,6 @@
 ---
-title: Sites and pages
-description: "Make sites in LyEve Builder, start one from a preset, give each page a path, share sections between pages and keep a page's earlier versions."
+title: Create sites and pages
+description: "Make sites in LyEve Builder, start one from a preset and give each page a path. Share sections between pages and keep a page's earlier versions."
 sidebar:
   order: 3
 ---

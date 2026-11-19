@@ -1,6 +1,6 @@
 ---
 title: Search
-description: "Add full-text and instant search to the admin and your public site, with synonyms, ranking weights and analytics, on your database or an external engine."
+description: "Add full-text and instant search to the admin and your public site, on your database or an external engine. Tune it with synonyms and ranking weights."
 sidebar:
   order: 64
 ---

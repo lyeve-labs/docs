@@ -1,6 +1,6 @@
 ---
 title: Message broker events
-description: "Publish every content create, update and delete to NATS, Kafka or RabbitMQ once, so any number of your services can consume the changes."
+description: "Publish every content create, update and delete to NATS, Kafka or RabbitMQ once. Any number of your services can then consume the changes."
 sidebar:
   order: 43
 ---

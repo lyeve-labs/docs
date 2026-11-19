@@ -1,6 +1,6 @@
 ---
 title: Connect the builder
-description: "Turn LyEve Builder on for a tenant, approve a builder connection with your password or authenticator code, and end one or all of them."
+description: "Turn LyEve Builder on for a tenant and approve a builder connection with your password or authenticator code. End one or all of them."
 sidebar:
   order: 2
 ---

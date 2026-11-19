@@ -1,6 +1,6 @@
 ---
 title: SAML single sign-on
-description: Let your team sign in to LyEve Console through Okta, Azure AD, OneLogin or any SAML 2.0 provider, and rotate the signing certificate without downtime.
+description: Let your team sign in to LyEve Console through Okta, Azure AD, OneLogin or any SAML 2.0 provider. Rotate the signing certificate without downtime.
 sidebar:
   order: 61
 ---

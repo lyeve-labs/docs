@@ -1,6 +1,6 @@
 ---
 title: LyEve documentation
-description: "Learn what LyEve Core, LyEve Console and LyEve Builder each do, try them in ten minutes, and find where your own work starts."
+description: "Learn what LyEve Core, LyEve Console and LyEve Builder each do, and try them in ten minutes. Find where your own work starts."
 sidebar:
   order: 1
 ---

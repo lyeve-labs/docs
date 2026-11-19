@@ -1,6 +1,6 @@
 ---
 title: Company and licensing guide
-description: "Evaluate LyEve: find what is free, what a license adds, and the security and compliance pages a review needs, each by link."
+description: "Evaluate LyEve: see what is free and what a license adds. Find each security and compliance page a review needs."
 sidebar:
   order: 1
 ---

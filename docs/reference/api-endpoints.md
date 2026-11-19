@@ -1,6 +1,6 @@
 ---
 title: API endpoints reference
-description: "Find the route for any job on the Admin API and the Content API, the role it needs, and the page that documents its request and response."
+description: "Find the route for any job on the Admin API and the Content API, and the role it needs. Then open the page that documents its request and response."
 sidebar:
   order: 2
 ---

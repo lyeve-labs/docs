@@ -1,6 +1,6 @@
 ---
 title: API key request limits
-description: "Cap how many requests an API key may make in an hour, a day and a calendar month, so a key you hand to a partner or a script cannot run up your traffic."
+description: "Cap how many requests an API key may make in an hour, a day and a calendar month. A key you hand to a partner or a script cannot run up your traffic."
 sidebar:
   order: 5
 capability_of: apikey

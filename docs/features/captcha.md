@@ -1,6 +1,6 @@
 ---
 title: Captcha
-description: Ask for a Turnstile, hCaptcha or reCAPTCHA v3 challenge after repeated failed admin sign-ins, and check captcha tokens on your own forms in a flow.
+description: Ask for a Turnstile, hCaptcha or reCAPTCHA v3 challenge after repeated failed admin sign-ins. Check captcha tokens on your own forms in a flow.
 sidebar:
   order: 12
 ---

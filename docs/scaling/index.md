@@ -1,6 +1,6 @@
 ---
 title: Scale and tune
-description: Decide when one replica is enough, run several behind a load balancer, and tune the connection pool, caching, load shedding, shutdown and tracing.
+description: Decide when one replica is enough and run several behind a load balancer. Tune the connection pool, caching, load shedding, shutdown and tracing.
 ---
 
 One replica on a well-sized database serves a lot of traffic. This page helps

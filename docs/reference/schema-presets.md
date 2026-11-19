@@ -1,6 +1,6 @@
 ---
 title: Schema presets
-description: "Create a ready-made set of content types in one call, save presets of your own, and add the flow templates that act on comments, forms and SEO metadata."
+description: "Create a ready-made set of content types in one call and save presets of your own. Add the flow templates that act on comments, forms and SEO metadata."
 sidebar:
   order: 3
 ---

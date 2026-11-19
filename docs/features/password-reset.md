@@ -1,6 +1,6 @@
 ---
 title: Password reset
-description: Let LyEve Console users reset a forgotten password through a single-use link sent by email, and sign the account out everywhere when they do.
+description: Let LyEve Console users reset a forgotten password through a single-use link sent by email. Sign the account out everywhere when they do.
 sidebar:
   order: 50
 ---

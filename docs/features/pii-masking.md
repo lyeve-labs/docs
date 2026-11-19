@@ -1,6 +1,6 @@
 ---
 title: PII masking
-description: "Mask emails, phone numbers, IP addresses, card numbers, SSNs and tokens in API responses and logs, add your own patterns, and see who received them."
+description: "Mask emails, phone numbers, IP addresses, card numbers, SSNs and tokens in API responses and logs. Add your own patterns and see who received them."
 sidebar:
   order: 51
 ---

@@ -1,6 +1,6 @@
 ---
 title: Server binary
-description: "Run the server binary, use its built-in health check, know what happens to migrations when it starts, and repair a lost migration record."
+description: "Run the server binary and use its built-in health check. Know what happens to migrations when it starts, and repair a lost migration record."
 sidebar:
   order: 3
 ---

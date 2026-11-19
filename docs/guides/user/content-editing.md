@@ -1,6 +1,6 @@
 ---
 title: Creating and editing content
-description: "Create and edit entries in LyEve Console: pick a collection, fill in each kind of field, fix what a save refuses, and delete what you no longer need."
+description: "Create and edit entries in LyEve Console: pick a collection and fill in each kind of field. Fix what a save refuses and delete what you no longer need."
 sidebar:
   order: 2
 ---

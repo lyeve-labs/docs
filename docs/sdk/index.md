@@ -1,6 +1,6 @@
 ---
-title: SDK overview
-description: "Pick the TypeScript client package for calling LyEve, point it at your instance, or call the REST routes from any other language."
+title: TypeScript SDK
+description: "Pick the TypeScript client package for calling LyEve and point it at your instance. From any other language, call the REST routes."
 sidebar:
   order: 1
 ---

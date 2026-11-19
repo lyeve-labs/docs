@@ -1,6 +1,6 @@
 ---
-title: Take form posts
-description: "Put a form on a builder page that saves each post in a content type or starts a flow, and see what publish refuses and what visitors see."
+title: Add a form to a builder page
+description: "Put a form on a builder page that saves each post in a content type or starts a flow. See what publish refuses and what visitors see."
 sidebar:
   order: 5
 ---

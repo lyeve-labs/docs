@@ -1,6 +1,6 @@
 ---
 title: Request profiling
-description: Find the slowest endpoints, watch heap growth, download CPU, heap and goroutine profiles, and tune garbage collection on a running instance.
+description: Find the slowest endpoints and watch heap growth on a running instance. Download CPU, heap and goroutine profiles and tune garbage collection.
 sidebar:
   order: 53
 ---

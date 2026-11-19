@@ -1,6 +1,6 @@
 ---
 title: Web application firewall
-description: Block SQL injection, cross-site scripting, path traversal and other attacks before they reach the API, tune the rules, and review what was caught.
+description: Block SQL injection, cross-site scripting, path traversal and other attacks before they reach the API. Tune the rules and review what was caught.
 sidebar:
   order: 77
 ---

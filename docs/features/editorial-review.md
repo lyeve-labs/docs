@@ -1,6 +1,6 @@
 ---
 title: Editorial review
-description: Send content entries through staged editorial review, with a role per stage, deadlines, comments, and publishing on final approval.
+description: Send content entries through staged editorial review, with a role per stage. Set deadlines, comment, and publish on final approval.
 sidebar:
   order: 62
 ---

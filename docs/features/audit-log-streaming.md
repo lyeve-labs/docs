@@ -1,6 +1,6 @@
 ---
 title: Audit log streaming
-description: "Stream the audit log as it is written to Splunk, Datadog or any HTTPS endpoint, in order, with retries and a signature you can verify."
+description: "Stream the audit log as it is written to Splunk, Datadog or any HTTPS endpoint. Entries arrive in order, with retries and a signature you can verify."
 sidebar:
   order: 7
 capability_of: audit

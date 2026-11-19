@@ -1,6 +1,6 @@
 ---
 title: How-to guides
-description: "Pick a step-by-step recipe for webhooks, admin tokens, flows, content migration, backups and hardening, and see what you end up with."
+description: "Pick a step-by-step recipe for webhooks, admin tokens, flows, content migration, backups and hardening. Each says what you end up with."
 sidebar:
   order: 1
 ---

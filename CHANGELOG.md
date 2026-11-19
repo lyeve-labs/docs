@@ -4,6 +4,14 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [Unreleased]
+
+### Changed
+
+- Thirteen page titles name what a reader searches for. Nine lead with their task, such as Install LyEve and Deploy on Kubernetes, and four name their subject: Object storage, Multi-tenancy, TypeScript SDK and Offline license verification. No address changed.
+- Every page description opens with a sentence of 120 characters or fewer, which the share card shows, and stays within 155 characters. The installation page names PostgreSQL, MySQL and SQL Server, and the flow templates page no longer counts the templates.
+- The contributing guide gives the description rule.
+
 ## [0.12.4] - 2026-11-19
 
 ### Changed

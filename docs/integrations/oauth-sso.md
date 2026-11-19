@@ -1,6 +1,6 @@
 ---
 title: Sign-in options
-description: Compare every way people can sign in to LyEve Console, from passwords and magic links to OAuth, SAML, SCIM, MFA and trusted devices, and pick one.
+description: "Compare every way people sign in to LyEve Console: passwords, magic links, OAuth, SAML, SCIM, MFA and trusted devices. Pick the one that fits."
 sidebar:
   order: 7
 ---

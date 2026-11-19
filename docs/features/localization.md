@@ -1,6 +1,6 @@
 ---
 title: Localization
-description: "Translate content entries into other locales, serve each read in the reader's language with a fallback chain, and track translations that fall out of date."
+description: "Translate entries into other locales and serve each read in the reader's language with a fallback chain. Track translations that fall out of date."
 sidebar:
   order: 39
 ---

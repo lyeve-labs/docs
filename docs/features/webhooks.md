@@ -1,6 +1,6 @@
 ---
 title: Webhooks
-description: "Call your HTTP endpoint with a signed request when content changes, retry what fails, and turn payloads from other services into entries."
+description: "Call your HTTP endpoint with a signed request when content changes, and retry what fails. Turn payloads from other services into entries."
 sidebar:
   order: 78
 ---

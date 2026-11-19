@@ -1,6 +1,6 @@
 ---
 title: AI assistant
-description: "Ask the assistant in LyEve Console about the page you have open, and accept or run the changes it prepares, within your own role."
+description: "Ask the assistant in LyEve Console about the page you have open. Accept or run the changes it prepares, within your own role."
 sidebar:
   order: 2
 capability_of: ai

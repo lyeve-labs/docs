@@ -1,6 +1,6 @@
 ---
 title: Content lifecycle
-description: Move entries through draft, published and archived, compare and roll back revisions, schedule publishing and link entries, in LyEve Console or Admin API.
+description: Move entries through draft, published and archived in LyEve Console or Admin API. Compare and roll back revisions, schedule publishing and link entries.
 sidebar:
   order: 16
 ---

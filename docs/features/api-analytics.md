@@ -1,6 +1,6 @@
 ---
 title: API analytics
-description: See request volume, error rates and latency for your API by endpoint, tenant, method and client, and spot the hours that stand out.
+description: See request volume, error rates and latency for your API by endpoint, tenant, method and client. Spot the hours that stand out.
 sidebar:
   order: 4
 ---
