@@ -1,6 +1,6 @@
 ---
 title: Security controls
-description: "Check the audit chain, API keys, rate limits, the web application firewall, sign-in controls and what the server never sends anywhere, on a running install."
+description: "Check the audit chain, API keys, rate limits, the web application firewall, sign-in controls and what the server never sends out, on a running install."
 sidebar:
   order: 4
 ---
