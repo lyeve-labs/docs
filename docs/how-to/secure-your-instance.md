@@ -1,6 +1,6 @@
 ---
 title: Harden your instance
-description: Set the secrets, signing, cookies, CORS, hosts, rate limits, API key and password settings a production instance needs, and check each one took effect.
+description: Set the secrets, signing, cookies, CORS, hosts, rate limits, API key and password settings a production instance needs. Check each one took effect.
 sidebar:
   order: 8
 ---

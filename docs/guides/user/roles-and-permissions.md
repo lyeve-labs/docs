@@ -1,6 +1,6 @@
 ---
 title: Users, roles and permissions
-description: Create accounts, choose each person's role, see what every role may do, and pick the right credential for a person, an app, a script or a service.
+description: Create accounts, choose each person's role and see what every role may do. Pick the right credential for a person, an app, a script or a service.
 sidebar:
   order: 5
 ---

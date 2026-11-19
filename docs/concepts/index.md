@@ -1,6 +1,6 @@
 ---
 title: Core concepts
-description: "Learn the ideas the rest of the LyEve docs assume: content types and entries, publishing, users and credentials, tenants, licenses and the two APIs."
+description: "Learn the ideas the rest of the docs assume: content types and entries, publishing, users and credentials. It covers tenants, licenses and both APIs too."
 sidebar:
   order: 1
 ---

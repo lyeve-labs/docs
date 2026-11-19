@@ -1,6 +1,6 @@
 ---
 title: Realtime
-description: "Push content changes to browsers and apps over Server-Sent Events or WebSocket, show who is online, broadcast to a tenant and run flows over a socket."
+description: "Push content changes to browsers and apps over Server-Sent Events or WebSocket. Show who is online, broadcast to a tenant and run flows over a socket."
 sidebar:
   order: 58
 ---

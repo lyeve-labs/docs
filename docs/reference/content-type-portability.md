@@ -1,6 +1,6 @@
 ---
 title: Moving content types between projects
-description: "Export content types as a portable bundle, declare them in configuration, or import them from JSON Schema, OpenAPI, Strapi, Contentful and WordPress."
+description: "Export content types as a portable bundle or declare them in configuration. Import them from JSON Schema, OpenAPI, Strapi, Contentful and WordPress."
 sidebar:
   order: 2
 ---

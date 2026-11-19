@@ -1,6 +1,6 @@
 ---
 title: OAuth sign-in
-description: Let your team sign in to LyEve Console with Google, Okta, Azure AD, Keycloak or any OpenID Connect provider instead of a password.
+description: Let your team sign in to LyEve Console with Google, Okta, Azure AD, Keycloak or any OpenID Connect provider.
 sidebar:
   order: 49
 ---

@@ -1,6 +1,6 @@
 ---
 title: Builder
-description: "Design and publish your site's pages in the builder, with every site kept in your own engine, and see what the free tier holds."
+description: "Design and publish your site's pages in the builder, with every site kept in your own engine. See what the free tier holds."
 sidebar:
   order: 3
 ---

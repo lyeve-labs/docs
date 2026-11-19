@@ -1,6 +1,6 @@
 ---
 title: Data residency
-description: "Define data regions, assign each tenant to one, refuse writes that reach the wrong region, and report where every tenant's data lives."
+description: "Define data regions, assign each tenant to one and refuse writes that reach the wrong region. Report where every tenant's data lives."
 sidebar:
   order: 22
 ---

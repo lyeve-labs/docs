@@ -1,6 +1,6 @@
 ---
 title: Usage and quotas
-description: Meter API traffic per key and per tenant, read each tenant's usage, write monthly snapshots and export usage for billing.
+description: Meter API traffic per key and per tenant, and read each tenant's usage. Write monthly snapshots and export usage for billing.
 sidebar:
   order: 76
 ---

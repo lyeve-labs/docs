@@ -1,6 +1,6 @@
 ---
 title: Flows
-description: Build automations and custom API endpoints on a canvas, start them over HTTP, on a schedule or from events, and test every step before you publish.
+description: Build automations and custom API endpoints on a canvas. Start them over HTTP, on a schedule or from events, and test every step before you publish.
 sidebar:
   order: 29
 ---

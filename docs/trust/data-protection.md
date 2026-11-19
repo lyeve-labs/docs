@@ -1,6 +1,6 @@
 ---
 title: Data protection
-description: "Check what LyEve does for data subject requests, legal holds, retention, residency, masked personal data and tenant deletion, through routes you can call."
+description: "Check what LyEve does for data subject requests, legal holds, retention, residency, masked data and tenant deletion. Each runs through routes you can call."
 sidebar:
   order: 3
 ---

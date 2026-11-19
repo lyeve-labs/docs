@@ -1,6 +1,6 @@
 ---
 title: Connect LyEve to other systems
-description: "Pick the right way to connect LyEve to your apps and services: push changes out, read and write content, sign in, store files, send email."
+description: "Pick the right way to connect LyEve to your apps and services. Push changes out, read and write content, sign in, store files and send email."
 sidebar:
   order: 1
 ---

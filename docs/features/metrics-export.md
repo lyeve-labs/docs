@@ -1,6 +1,6 @@
 ---
 title: Metrics export
-description: Send your instance's metrics to Prometheus Pushgateway, an OTLP collector, Datadog or New Relic, and let each tenant scrape its own request metrics.
+description: Send your instance's metrics to Prometheus Pushgateway, an OTLP collector, Datadog or New Relic. Let each tenant scrape its own request metrics.
 sidebar:
   order: 72
 ---

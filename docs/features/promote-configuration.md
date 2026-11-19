@@ -1,6 +1,6 @@
 ---
 title: Promote configuration
-description: "Move content types, flows, access rules, webhooks and settings from one instance to another as one bundle: export it, compare it, dry run it and apply it."
+description: "Move content types, flows, access rules, webhooks and settings from one instance to another as one bundle. Export, compare, dry run and apply it."
 sidebar:
   order: 66
 capability_of: schema

@@ -1,6 +1,6 @@
 ---
 title: Validate LyEve tokens (JWKS)
-description: Verify LyEve session tokens in your own services with the public key the instance publishes, with no shared secret and no call back to LyEve.
+description: Verify LyEve session tokens in your own services with the public key the instance publishes. It needs no shared secret and no call back to LyEve.
 sidebar:
   order: 11
 ---

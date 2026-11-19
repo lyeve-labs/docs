@@ -1,6 +1,6 @@
 ---
-title: Publish
-description: "Publish pages, sections and the theme from LyEve Builder at once, see why a publish is refused, and rebuild a static site through its host's deploy hook."
+title: Publish a builder site
+description: "Publish pages, sections and the theme from LyEve Builder at once, and see why a publish is refused. Rebuild a static site through its host's deploy hook."
 sidebar:
   order: 4
 ---

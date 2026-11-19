@@ -1,6 +1,6 @@
 ---
 title: Media
-description: Upload files to the media library, get image thumbnails and metadata, search the library, import from a URL, and publish files at a public link.
+description: Upload files to the media library and get image thumbnails and metadata. Search the library, import from a URL and publish files at a public link.
 sidebar:
   order: 42
 ---

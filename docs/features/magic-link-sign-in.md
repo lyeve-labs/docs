@@ -1,6 +1,6 @@
 ---
 title: Magic link sign-in
-description: Let people sign in to LyEve Console by clicking a single-use link sent to their email, with optional sign-up on first use and a two-factor step.
+description: Let people sign in to LyEve Console with a single-use link sent to their email. Allow sign-up on first use and add a two-factor step.
 sidebar:
   order: 41
 ---

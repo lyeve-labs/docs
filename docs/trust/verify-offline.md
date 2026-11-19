@@ -1,6 +1,6 @@
 ---
-title: Verify offline
-description: "Confirm on your own machine that, given a signed license token, the server makes no outbound call to verify a license or gate a feature."
+title: Offline license verification
+description: "Confirm on your own machine that, given a signed license token, the server makes no outbound call to verify a license. Feature checks stay local too."
 sidebar:
   order: 1
 ---

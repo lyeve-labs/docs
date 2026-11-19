@@ -1,6 +1,6 @@
 ---
 title: Add a webhook
-description: "Run a receiver that checks LyEve's signature, register it, send a test and a real event, read the history and recover missed deliveries."
+description: "Run a receiver that checks LyEve's signature, register it, and send a test and a real event. Read the history and recover missed deliveries."
 sidebar:
   order: 6
 ---

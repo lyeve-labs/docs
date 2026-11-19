@@ -1,6 +1,6 @@
 ---
 title: Data export
-description: "Export content to JSON, NDJSON, YAML, CSV, Markdown, Hugo or your own template, download it or send it to S3, and run exports on a schedule."
+description: "Export content to JSON, NDJSON, YAML, CSV, Markdown, Hugo or your own template. Download it or send it to S3, and run exports on a schedule."
 sidebar:
   order: 21
 ---

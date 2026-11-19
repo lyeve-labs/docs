@@ -1,6 +1,6 @@
 ---
-title: Installation
-description: "Choose a database, run the LyEve engine and LyEve Console images against it, and know which settings production requires."
+title: Install LyEve
+description: "Install the LyEve headless CMS on PostgreSQL, MySQL or SQL Server from the engine and LyEve Console images. See what production requires."
 sidebar:
   order: 3
 ---

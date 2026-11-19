@@ -1,6 +1,6 @@
 ---
 title: Editorial comments
-description: "Discuss an entry in comment threads beside it, with replies, resolve and reopen, and mentions that email the people you name."
+description: "Discuss an entry in comment threads beside it, with replies, resolve and reopen. Mentions email the people you name."
 sidebar:
   order: 18
 capability_of: content

@@ -1,6 +1,6 @@
 ---
 title: Run the engine and LyEve Console together
-description: "Start the engine, LyEve Console and a database with one Compose file, then sign in, tour the console and change a setting."
+description: "Start the engine, LyEve Console and a database with one Compose file. Then sign in, tour the console and change a setting."
 sidebar:
   order: 6
 ---

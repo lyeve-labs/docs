@@ -1,6 +1,6 @@
 ---
 title: AI
-description: "Connect your own AI providers and keys, set the prompts each call runs under, and use AI for writing, translation, alt text, flows and a support desk."
+description: "Connect your own AI providers and keys, and set the prompts each call runs under. Use AI for writing, translation, alt text, flows and a support desk."
 sidebar:
   order: 2
 ---

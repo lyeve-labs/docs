@@ -1,6 +1,6 @@
 ---
 title: Error tracking
-description: Record errors from your services and flows, group repeats into alerts you resolve, ignore or assign, and get told when errors spike.
+description: Record errors from your services and flows, and group repeats into alerts you resolve, ignore or assign. Get told when errors spike.
 sidebar:
   order: 27
 ---

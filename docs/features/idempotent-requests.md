@@ -1,6 +1,6 @@
 ---
 title: Idempotent requests
-description: Send an Idempotency-Key header so a retried write runs once and the retry gets the original response, and inspect or clear stored keys.
+description: Send an Idempotency-Key header so a retried write runs once and the retry gets the original response. Inspect or clear stored keys.
 sidebar:
   order: 34
 ---

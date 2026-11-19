@@ -1,6 +1,6 @@
 ---
 title: Bulk import
-description: Load CSV, XLSX, JSON, NDJSON or YAML into a content type from an upload or a URL, check it with a dry run, and roll back what an import created.
+description: Import CSV, XLSX, JSON, NDJSON or YAML into a content type from an upload or a URL. Check it with a dry run and roll back what an import created.
 sidebar:
   order: 10
 ---

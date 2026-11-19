@@ -1,6 +1,6 @@
 ---
 title: Synthetic monitoring
-description: Check your endpoints on a schedule with health checks, API round trips, login checks and webhook checks, and get an alert after repeated failures.
+description: Check your endpoints on a schedule with health checks, API round trips, login checks and webhook checks. Get an alert after repeated failures.
 sidebar:
   order: 71
 ---

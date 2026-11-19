@@ -1,6 +1,6 @@
 ---
 title: Licensing and tiers
-description: "See what LyEve runs for free, what a license adds, how to apply a license key, and what happens when there is none or it expires."
+description: "See what LyEve runs for free and what a license adds. Apply a license key, and learn what happens when there is none or it expires."
 sidebar:
   order: 5
 ---

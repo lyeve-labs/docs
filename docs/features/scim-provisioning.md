@@ -1,6 +1,6 @@
 ---
 title: SCIM provisioning
-description: Let Azure AD, Okta or another directory create, update and remove LyEve users and groups over SCIM 2.0, so access follows your directory.
+description: Let Azure AD, Okta or another directory create, update and remove LyEve users and groups over SCIM 2.0. Access then follows your directory.
 sidebar:
   order: 63
 ---

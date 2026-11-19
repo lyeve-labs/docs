@@ -1,6 +1,6 @@
 ---
 title: Request capture
-description: Record API requests and responses, inspect and compare them, replay one or a saved set, and choose which routes to keep and for how long.
+description: Record API requests and responses, inspect and compare them, and replay one or a saved set. Choose which routes to keep and for how long.
 sidebar:
   order: 60
 ---

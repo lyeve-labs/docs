@@ -1,6 +1,6 @@
 ---
 title: Database on Neon
-description: "Connect the engine to a free Neon Postgres database, pick the right connection string, and plan for compute that suspends when idle."
+description: "Connect the engine to a free Neon Postgres database and pick the right connection string. Plan for compute that suspends when idle."
 sidebar:
   order: 10
 ---

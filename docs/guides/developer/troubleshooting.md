@@ -1,6 +1,6 @@
 ---
-title: Troubleshooting
-description: "Find out why a request failed: match the error you got to its cause and fix, then follow its request id into the engine's log."
+title: Troubleshoot failed requests
+description: "Find out why a request failed by matching the error you got to its cause and fix. Follow its request id into the engine's log."
 sidebar:
   order: 5
 ---

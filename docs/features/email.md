@@ -1,6 +1,6 @@
 ---
 title: Email
-description: "Send LyEve's mail over an SMTP relay or a pool of providers, write branded templates per language, and track delivery, bounces, opens and clicks."
+description: "Send LyEve's mail over an SMTP relay or a pool of providers, and write branded templates per language. Track delivery, bounces, opens and clicks."
 sidebar:
   order: 25
 ---

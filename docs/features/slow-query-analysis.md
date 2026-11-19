@@ -1,6 +1,6 @@
 ---
 title: Slow query analysis
-description: Find the requests that are slow because of the database, read their query plans and get index suggestions on PostgreSQL, MySQL and SQL Server.
+description: Find the requests that are slow because of the database and read their query plans. Get index suggestions on PostgreSQL, MySQL and SQL Server.
 sidebar:
   order: 55
 ---
