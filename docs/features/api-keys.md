@@ -1,6 +1,6 @@
 ---
 title: API keys
-description: Give a website, app or service its own Content API key, limited to the content types and endpoints it needs. Cap its requests by hour, day or month and see each call.
+description: Give a site, app or service its own Content API key, limited to the content types and endpoints it needs. Cap it by hour, day or month and see each call.
 sidebar:
   order: 5
 ---
