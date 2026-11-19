@@ -4,6 +4,12 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.12.4] - 2026-11-19
+
+### Changed
+
+- The builder publishing, audit log, object storage and security controls pages have shorter descriptions, which fit a search result without being cut. Every page description now fits in 155 characters.
+
 ## [0.12.3] - 2026-11-19
 
 ### Changed
