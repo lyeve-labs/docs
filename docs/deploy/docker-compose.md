@@ -117,6 +117,13 @@ volumes:
   caddy-data:
 ```
 
+:::note[PostgreSQL 18]
+From PostgreSQL 18, the official image keeps its data one level deeper and refuses to start
+with a volume at `/var/lib/postgresql/data`. A new install on 18 mounts the volume at
+`/var/lib/postgresql` instead. An existing install keeps its path while it stays on its
+PostgreSQL version.
+:::
+
 The proxy reads a `Caddyfile` next to the Compose file:
 
 ```text

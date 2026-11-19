@@ -1,6 +1,6 @@
 ---
 title: Public content delivery
-description: Serve the published entries of chosen content types to anyone without a credential, in answers a CDN and a browser may cache, and purge the CDN when content changes.
+description: Serve published entries of chosen content types to anyone without a credential, in answers a CDN and browser may cache. Purge the CDN when content changes.
 capability_of: content
 ---
 

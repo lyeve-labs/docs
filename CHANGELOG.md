@@ -4,6 +4,20 @@ All notable changes to the LyEve documentation are recorded here. The format fol
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the repository is versioned as
 [VERSIONING.md](VERSIONING.md) describes.
 
+## [0.12.3] - 2026-11-19
+
+### Changed
+
+- The API keys and content delivery feature pages have shorter descriptions, which fit a search result without being cut.
+- Five feature pages use the console's current wording: a capability an install lacks is not available on this engine, the SMTP switch is Implicit TLS, and the console asks before it replays a real event.
+- The access rules page says where a rule binds an admin, and its screenshot shows the current permissions screen.
+- Every page that lists the databases names PostgreSQL 15 to 18, and the installation and deployment pages ask for MySQL 8.0.14 or later.
+
+### Fixed
+
+- The deployment pages say where a new install on PostgreSQL 18 mounts its data volume, and that an existing install keeps its path.
+- The content lifecycle page no longer describes a schedule conflict check that never reports a conflict.
+
 ## [0.12.2] - 2026-11-15
 
 ### Changed
