@@ -1,6 +1,6 @@
 ---
 title: Concurrency tuning
-description: See how busy the instance's background workers are, and with a license resize the worker pool, the parallel width and the async hook queue while it runs.
+description: See how busy the instance's background workers are. With a license, resize the worker pool, the parallel width and the async hook queue while it runs.
 sidebar:
   order: 31
 ---

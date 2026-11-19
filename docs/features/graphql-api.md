@@ -1,6 +1,6 @@
 ---
 title: GraphQL API
-description: "Query and change your content over a GraphQL schema built from your content types, subscribe to changes, and lock clients to approved queries."
+description: "Query and change your content over a GraphQL schema built from your content types. Subscribe to changes and lock clients to approved queries."
 sidebar:
   order: 31
 ---

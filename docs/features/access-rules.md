@@ -1,6 +1,6 @@
 ---
 title: Access rules
-description: Decide which role may create, read, update or delete each content type, flow and review, and hide fields a role should not read.
+description: Decide which role may create, read, update or delete each content type, flow and review. Hide fields a role should not read.
 sidebar:
   order: 77
 ---

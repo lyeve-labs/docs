@@ -1,6 +1,6 @@
 ---
 title: Operator guide
-description: "Find the shortest path to deploying and running LyEve, the page that holds each operating job, and the right tool for watching a running instance."
+description: "Find the shortest path to deploying and running LyEve, and the page that holds each operating job. Pick the right tool for watching a running instance."
 sidebar:
   order: 1
 ---

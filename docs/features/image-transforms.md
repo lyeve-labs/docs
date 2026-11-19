@@ -1,6 +1,6 @@
 ---
 title: Image transforms
-description: "Resize, crop around a focal point and convert images to WebP, AVIF, JPEG or PNG from a signed URL, generated on the first request and cached."
+description: "Resize, crop around a focal point and convert images to WebP, AVIF, JPEG or PNG from a signed URL. Each is generated on first request and cached."
 sidebar:
   order: 43
 capability_of: media

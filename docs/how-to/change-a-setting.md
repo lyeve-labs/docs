@@ -1,6 +1,6 @@
 ---
 title: Change a setting
-description: "Change an engine or LyEve Console setting where your deployment keeps it, apply it with the right restart, and confirm the value the engine is using."
+description: "Change an engine or LyEve Console setting where your deployment keeps it, and apply it with the right restart. Confirm the value the engine is using."
 sidebar:
   order: 3
 ---

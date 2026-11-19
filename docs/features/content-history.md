@@ -1,6 +1,6 @@
 ---
 title: Content history
-description: Choose which content types keep earlier versions of their entries, how long they keep them, and read who changed what in the content activity log.
+description: Choose which content types keep earlier versions of their entries and for how long. Read who changed what in the content activity log.
 sidebar:
   order: 15
 capability_of: content

@@ -1,6 +1,6 @@
 ---
 title: Event replay
-description: "Keep a log of every content change and publish a past window again, so webhooks, flows and other listeners catch up after an outage."
+description: "Keep a log of every content change and publish a past window again. Webhooks, flows and other listeners catch up after an outage."
 sidebar:
   order: 28
 ---

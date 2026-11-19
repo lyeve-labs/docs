@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: "Start LyEve on Docker, create the first administrator, get a token, and write and read your first entry in about ten minutes."
+description: "Start LyEve on Docker, create the first administrator and get a token. Write and read your first entry in about ten minutes."
 sidebar:
   order: 4
 ---

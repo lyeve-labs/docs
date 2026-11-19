@@ -1,6 +1,6 @@
 ---
 title: Tenant quotas
-description: "Hold each tenant to a monthly request, storage and bandwidth limit, block a tenant that goes past one, and approve requests for more."
+description: "Hold each tenant to a monthly request, storage and bandwidth limit, and block a tenant that goes past one. Approve requests for more."
 sidebar:
   order: 75
 capability_of: usage

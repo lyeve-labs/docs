@@ -1,6 +1,6 @@
 ---
 title: Features
-description: "Find the feature for the job you are doing, see whether it is free or needs a license, and where it lives in LyEve Console."
+description: "Find the feature for the job you are doing and see whether it is free or needs a license. Each says where it lives in LyEve Console."
 sidebar:
   order: 1
 ---

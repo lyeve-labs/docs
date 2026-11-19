@@ -1,6 +1,6 @@
 ---
 title: Caching
-description: Cache reads in memory or in Redis, Valkey or KeyDB, serve public routes from cached responses, fail over between cache servers, and flush the cache.
+description: Cache reads in memory or in Redis, Valkey or KeyDB, and serve public routes from cached responses. Fail over between cache servers and flush the cache.
 sidebar:
   order: 11
 ---

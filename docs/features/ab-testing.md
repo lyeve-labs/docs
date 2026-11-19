@@ -1,6 +1,6 @@
 ---
 title: A/B testing
-description: "Run experiments with weighted variants, record exposures and conversions from your app, and read per-variant results with significance."
+description: "Run A/B tests with weighted variants and record exposures and conversions from your app. Read per-variant results with significance."
 sidebar:
   order: 1
 ---

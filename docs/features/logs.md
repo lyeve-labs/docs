@@ -1,6 +1,6 @@
 ---
 title: Logs
-description: Search and tail your instance's logs, change a tenant's log level while it runs, ship records to Loki or Elasticsearch, and set retention.
+description: Search and tail your instance's logs, and change a tenant's log level while it runs. Ship records to Loki or Elasticsearch and set retention.
 sidebar:
   order: 40
 ---

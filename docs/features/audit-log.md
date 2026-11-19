@@ -1,6 +1,6 @@
 ---
 title: Audit log
-description: Record who did what in LyEve Console and the Admin API, search and export the log, and set how long entries stay with retention policies and legal holds.
+description: Record who did what in LyEve Console and the Admin API, and search and export the log. Set how long entries stay with retention policies and legal holds.
 sidebar:
   order: 6
 ---

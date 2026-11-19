@@ -25,7 +25,7 @@ Every page starts with front matter:
 ```yaml
 ---
 title: Concise Title
-description: One sentence, under 160 characters, starting with a verb.
+description: 50 to 155 characters, starting with a verb. The first sentence, 120 at most, says what the reader gets.
 sidebar:
   order: 3
 ---

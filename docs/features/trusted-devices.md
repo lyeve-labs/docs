@@ -1,6 +1,6 @@
 ---
 title: Trusted devices
-description: Score the risk of every admin sign-in, ask for a second factor when it looks risky, block brute force and flagged addresses, and review login history.
+description: Score the risk of every admin sign-in and ask for a second factor when it looks risky. Block brute force and flagged addresses, and review login history.
 sidebar:
   order: 23
 ---

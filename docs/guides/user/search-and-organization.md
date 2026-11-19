@@ -1,6 +1,6 @@
 ---
 title: Search and organization
-description: "Find entries in LyEve Console by browsing collections and paging their lists, and with full-text search, synonyms and ranking where search is licensed."
+description: "Find entries in LyEve Console by browsing collections and paging their lists. Where search is licensed, use full-text search, synonyms and ranking."
 sidebar:
   order: 6
 ---

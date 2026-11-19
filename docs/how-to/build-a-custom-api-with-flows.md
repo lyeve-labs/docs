@@ -1,6 +1,6 @@
 ---
 title: Build a custom API with flows
-description: "Join three content types into one GET endpoint with a flow, then test it, cache it, rate limit it, call it with an API key and copy it."
+description: "Join three content types into one GET endpoint with a flow. Then test it, cache it, rate limit it, call it with an API key and copy it."
 sidebar:
   order: 10
 ---

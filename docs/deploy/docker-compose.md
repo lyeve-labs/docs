@@ -1,5 +1,5 @@
 ---
-title: Docker Compose
+title: Deploy with Docker Compose
 description: "Run the engine, LyEve Console, Postgres and a TLS proxy on one host with one Compose file."
 sidebar:
   order: 14

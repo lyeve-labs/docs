@@ -1,6 +1,6 @@
 ---
 title: Flow definition format
-description: "Look up any part of a flow definition: top-level keys, settings, graph rules, expressions, and every trigger and node with its settings and limits."
+description: "Look up any part of a flow definition: top-level keys, settings, graph rules and expressions. Every trigger and node has its settings and limits."
 sidebar:
   order: 5
 ---

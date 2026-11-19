@@ -1,6 +1,6 @@
 ---
 title: Rate limiting
-description: Cap how fast clients can call your instance, block or allow addresses, give each tenant its own limit, and see which requests were refused.
+description: Cap how fast clients can call your instance, block or allow addresses and give each tenant its own limit. See which requests were refused.
 sidebar:
   order: 57
 ---

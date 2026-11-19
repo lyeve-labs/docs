@@ -1,6 +1,6 @@
 ---
 title: Schema changes
-description: Change a live content type safely by previewing the database statements, renaming without losing data, and applying field removals when you are ready.
+description: "Change a live content type safely: preview the database statements and rename without losing data. Apply field removals when you are ready."
 sidebar:
   order: 65
 ---

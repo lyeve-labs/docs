@@ -1,6 +1,6 @@
 ---
 title: Alerts
-description: "Get an email, a chat message, a PagerDuty incident or a signed webhook call when a job fails, errors spike, log volume jumps or a probe goes down."
+description: "Get an email, chat message, PagerDuty incident or signed webhook call when a job fails or errors spike. Watch log volume and probes too."
 sidebar:
   order: 20
 capability_of: cron
