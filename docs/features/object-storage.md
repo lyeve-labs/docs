@@ -1,6 +1,6 @@
 ---
 title: Storage
-description: Keep media and other files on local disk, Amazon S3, an S3-compatible store, Google Cloud Storage or Azure Blob, and let clients upload straight to a bucket.
+description: Keep media and files on local disk, Amazon S3, an S3-compatible store, Google Cloud Storage or Azure Blob, and let clients upload straight to a bucket.
 sidebar:
   order: 69
 ---
